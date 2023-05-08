@@ -5,37 +5,68 @@ import java.text.ParseException;
 import server.Terminal;
 
 
-public class App 
+public class App
 {
-    public static void main( String[] args ) throws InterruptedException
-    {
-        new App();
+    Database database = null;
+    boolean databaseConnected = false;
+    Terminal terminal = null;
+    boolean running = false;
+    Server server = null;
+
+
+    public static void main( String[] args ) throws InterruptedException {
+        new App(args);
     }
 
-    public App () throws InterruptedException {
+    public App (String[] args) throws InterruptedException {
 
-        Terminal terminal = new Terminal(this);
-        terminal.start();
-        terminal.printLine();
+        //Class.forName("org.postgresql.Driver");
+        int attemptCount = 0;
+        int attemptMAX = 10;
 
-        Database db = null;
-        
+        this.terminal = new Terminal(this);
+        terminal.printInfo_ln("Application Running...");
+        terminal.printInfo_ln("Establishing database connection ");
 
-        try {
-            //Class.forName("org.postgresql.Driver");
-            db = Database.getInstance();
+        while ((attemptCount++ < attemptMAX) && !databaseConnected) {
+            try {
+                database = Database.getInstance();
+                databaseConnected = database.testconnection();
 
-        } catch (SQLException e) {
-            terminal.printError(e.toString());
-
-        } catch (Exception e) {
-            terminal.printError(e.toString());
+            } catch (SQLException e) {
+                terminal.printError_ln("connection attempt failed");
+                Thread.sleep(1000);
+            }
         }
 
+        if(databaseConnected) {
+            terminal.printSucces_ln("connection established");
+        } else {
+            terminal.printError_ln("Database not available");
+        }
 
-        while(terminal.isAlive()) {
-            Thread.sleep(1000);
-            terminal.printInfo("...");
+        
+        terminal.printLine();
+        terminal.start();
+
+       
+
+
+        
+    }
+
+    public void runServer() {
+
+        if(server != null && !server.isAlive()) {
+            this.server = new Server();
+            server.start();
+        }
+    }
+
+    public void StopServer() {
+        
+        if(server != null && server.isAlive()) {
+            this.server = null;
         }
     }
     

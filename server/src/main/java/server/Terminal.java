@@ -1,5 +1,6 @@
 package server;
 
+
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -93,9 +94,11 @@ public class Terminal extends Thread {
 
     private enum MessageType{
 
+        NONE(""),
         INFO("[" + Color.BLUE + "INFO" + Color.RESET + "]"),
         ERROR("[" + Color.RED_BOLD + "ERROR" + Color.RESET + "]"),
-        REQUEST("[" + Color.YELLOW + "REQUEST" + Color.RESET + "]");
+        REQUEST("[" + Color.YELLOW + "REQUEST" + Color.RESET + "]"),
+        SUCCES("[" + Color.GREEN + "SUCCES" + Color.RESET + "]");
         
         private final String message;
 
@@ -116,68 +119,77 @@ public class Terminal extends Thread {
     private boolean running;
     private App main;
     
-    public Terminal(App main) {
-
-
+    public Terminal(App main) 
+    {
         this.main = main;
         this.running = true;
-        System.out.print("> ");
-    }
+    }    
 
     @Override
     public void run() {
+
+        String data = "";
+        Scanner in = new Scanner(System.in);
         
-        while(this.running) {
-           
-            char ch = '\0';
-            String data = "";
+        while(this.running) 
+        {
+            printArrow();
+            String message = in.nextLine();
+            
+            switch (message) {
 
-            while(ch != '\n') {
-                try {
-                    ch = (char) System.in.read();
-                    System.out.println("press: " + ch);
-                    data += ch;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            switch(data) {
-
-                case "quit": this.running = false; break;
-            }
+                case "exit": System.exit(1);
+                case "start": 
+                    main.runServer();
+                    in.nextLine();
+                    while(main.running)
+                    main.StopServer();
+                    break;
+            };
         }
+    }
+
+    public synchronized void printArrow () {
+        System.out.print("> ");
     }
 
     private synchronized void printOnTerminal(MessageType type, String message, Color MessageColor) {
 
         //System.out.print("\033[s");
-        System.out.print("\033[100D");
-        System.out.print("\n");
-        System.out.print("\033[3A");
+        //System.out.print("\033[100D");
+        //System.out.print("\n");
+        //System.out.print("\033[3A");
         
 
         //if(MessageColor == null)
-        //System.out.print(type + message);   
-        System.out.print("\033[100D");
-        System.out.print("\033[3B");
-        System.out.print(">  ");
+        System.out.print(type + message);   
+        //System.out.print("\033[100D");
+        //System.out.print("\033[3B");
+        
 
         //System.out.print("\033[u");
        
     }
 
-
-    public void printInfo(String message) {
-        printOnTerminal(MessageType.INFO, message, null);
+    public void print_ln(String message) {
+        printOnTerminal(MessageType.NONE, message + "\n", null);
     }
 
-    public void printError(String message) {
-        printOnTerminal(MessageType.ERROR, message, null);
+
+    public void printInfo_ln(String message) {
+        printOnTerminal(MessageType.INFO, " " + message + "\n", null);
     }
 
-    public void printConnection(String message) {
-        printOnTerminal(MessageType.ERROR, message, null);
+    public void printSucces_ln(String message) {
+        printOnTerminal(MessageType.SUCCES, " " + message + "\n", null);
+    }
+
+    public void printError_ln(String message) {
+        printOnTerminal(MessageType.ERROR, " " + message + "\n", null);
+    }
+
+    public void printConnection_ln(String message) {
+        printOnTerminal(MessageType.ERROR, " " + message + "\n", null);
     }
 
     public void printLine() {
@@ -186,6 +198,6 @@ public class Terminal extends Thread {
         for(int i = 0; i < Terminal.LINE_ELEMENT; i++) {
             line += LINE_CHAR;
         }
-        printInfo(line);
+        print_ln(line);
     }
 }

@@ -38,6 +38,10 @@ public class Database {
         return database;
     }
 
+    public boolean testconnection() throws SQLException {
+        return Database.connection.isValid(2); //timeout
+    }
+
 
     public static Statement getStatement() {
         return statement;

@@ -141,12 +141,12 @@ class SpotifyInterface:
 
 def main():
     db: DataBase  = DataBase(PORT = 5432, IP = "localhost")
-    db.inizializeDatabase()
+    #db.inizializeDatabase()
     
     print("Element: ", db.getArtistsNumber())
     #db.getArtistAt_by_Followers(0)
 
-    #driver = SpotifyInterface(db)
+    driver = SpotifyInterface(db)
 
 if __name__ == '__main__':
     main()
