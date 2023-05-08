@@ -2,13 +2,8 @@
     "Operation": {
         "operationType": "SearchArtists"
     },
-    "Ricerca": {
-        "ElementAvailable": 0,
-        "ElementProcessed": 0,
-        "LastArtistsKey": "b"
-    },
     "Token": {
-        "fetched": "03/05/2023 22:39:59",
-        "token": "BQBhRoMlkBB6sHPpklD-tMikTMqPiR_Ea93cBQlGymhLXXTOUEOm4X6JUpt1ITehkhCTpQcaifwl_820lJgXZUrDNx-1W_ctsS9D8DFBm4DCDWsoCELE"
+        "fetched": "07/05/2023 15:30:26",
+        "token": "BQBNer98YOEE4wRP9oiGqhonBJq9ufB2MoslU8Z6Afr8g12f9YzjMmfB-ffvhGg5KxliOD8ux5TKUY6WMJcqKGVy8e2ZV6buVAdlpTHOBHWbp7X9tLi-"
     }
 }
