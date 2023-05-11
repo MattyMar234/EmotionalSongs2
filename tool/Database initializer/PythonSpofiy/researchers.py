@@ -11,6 +11,7 @@ import time
 import json
 import requests
 import base64
+import os
 
 
 @dataclass
@@ -79,13 +80,54 @@ class Token:
 class DataResearch():
     
     MUTEX = threading.Lock()
+    FILE_SETTINGS = "ResearcherSettings.json"
+    PAGE_FILE_NAME = "Page[i].json"
 
 
-    def __init__(self, threadNumber:int, database: DataBase, token: Token):
+    def __init__(self, threadNumber:int, database: DataBase, token: Token, Folderpath: str):
         self.token = token
         self.threadNumber = threadNumber
         self.database = database
         self.threads = []
+        self.FolderPath = Folderpath
+        self.informationsFile: dict
+
+    def loadSettings(self) -> bool:
+        if os.path.exists(self.FolderPath + "/" + DataResearch.FILE_SETTINGS):
+            with open(self.FolderPath + DataResearch.FILE_SETTINGS, 'r') as file:
+                data = file.read()
+
+                if data != "":
+                    self.informationsFile = json.loads(data)
+                    return True
+        else:
+            return False
+
+    def saveSettings(self):
+        with open(self.FolderPath + "/" + DataResearch.FILE_SETTINGS, 'w') as file:
+            json.dump(self.informationsFile, file,  sort_keys = True, indent=4)
+
+
+    def savePage(self, pageIndex, pageData):
+        fileName = self.FolderPath + "/" + DataResearch.PAGE_FILE_NAME.replace("[i]", f'{pageIndex}')
+        with open(fileName, 'w') as file:
+            json.dump(pageData, file,  sort_keys = True, indent=4)
+
+
+    def loadPage(self, pageIndex) -> dict:
+        fileName = self.FolderPath + "/" + DataResearch.PAGE_FILE_NAME.replace("[i]", f'{pageIndex}')
+        
+        if os.path.exists(fileName):
+            with open(fileName, 'r') as file:
+                data = file.read()
+                if data != "":
+                    return json.loads(data)
+                else:
+                    data = {}
+                    return data
+        else:
+            data = {}
+            return data
 
     def waith_threads(self) -> None:
         for t in self.threads:
@@ -109,23 +151,20 @@ class DataResearch():
             self.running = True
             self.token = token
 
+
             self.JSON_Header:dict = None
             self.JSON_Items:dict = None
 
         def stop(self):
             self.running = False
 
-        def get_auth_headers(self, token: str):
-            return {"Authorization": "Bearer " + token}
+        def get_auth_headers(self):
+            return {"Authorization": "Bearer " + self.token.token}
         
         def make_Request_to(self, query: str):
             self.lastRequest = query
 
-            """with DataResearch.MUTEX:
-                if not self.token.isValid():
-                    self.token.getNewToken()"""
-
-            response = requests.get(query, headers = self.get_auth_headers(self.token.token))
+            response = requests.get(query, headers = self.get_auth_headers())
 
             if not response.ok:
                 Terminal.error(f"req: {response.url} --> {response} --> {response.text}" )
@@ -209,7 +248,7 @@ class TrackResearch(DataResearch):
 
         def makeRequest(self, query:str) -> bool:
             with ArtistsResearch.MUTEX3:
-                time.sleep(0.100)
+                time.sleep(0.040)
 
             if not super().make_Request_to(query):
                 return False
@@ -271,29 +310,69 @@ class ArtistsResearch(DataResearch):
     MUTEX1 = threading.Lock()
     MUTEX2 = threading.Lock()
     MUTEX3 = threading.Lock()
+    FILE_MUTEX = threading.Lock()
 
+    ELEMENT_PER_PAGE = 12000
+
+    StartArtistKey: str = "a"
     CurrentArtistKey: str = "a"
     EndArtistKey: str = "b"
 
-    Database: DataBase
-    token: Token
 
-    def __init__(self, threadNumber:int, database: DataBase, token: Token, startKey: str, endKey: str):
-        super().__init__(token, threadNumber)
+    def __init__(self, threadNumber:int, database: DataBase, tk: Token, startKey: str, endKey: str, path: str, lastSessionData):
+        super().__init__(threadNumber, database, tk, path)
         
         ArtistsResearch.CurrentArtistKey = startKey
+        ArtistsResearch.StartArtistKey = startKey
         ArtistsResearch.EndArtistKey = endKey
         ArtistsResearch.Database = database
+
+        self.lastSessionData = lastSessionData
+
+        self.processedKey: dict = self.lastSessionData["processedKey"]
+        self.currentPageIndex: int = self.lastSessionData["lastPageIndex"]
+        self.pageData: dict = self.loadPage(self.currentPageIndex)
+        self.pageElement = len(self.pageData.keys())
+
         
+    @staticmethod
+    def inizializeConfiguration() -> dict:
+        data = {
+            "lastPageElement" : 0,
+            "lastPageIndex" : 0,
+            "processedKey" : {}
+        }
+
+        return data
+    
+    def toDict(self) -> dict:
+        out = super().todict()
+        out["lastPageIndex"] = self.currentPageIndex
+        out["lastPageElement"] = self.pageElement
+        out["processedKey"] = self.processedKey
+        return out
         
     def start(self):
         Terminal.info(f"creating Threads for Search Artists")
 
-        for i in range(super().threadNumber):
-            th = self.ArtistSerarcher(i)
-            super().threads.append(th)
+        for i in range(self.threadNumber):
+            th = self.ArtistSerarcher(i, self.token, self)
+            self.threads.append(th)
             th.start()
 
+    def totalElement(self) -> int:
+        return (self.keyToNumber(ArtistsResearch.EndArtistKey) - self.keyToNumber(ArtistsResearch.StartArtistKey))
+    
+    def progress(self):
+        return (self.keyToNumber(ArtistsResearch.CurrentArtistKey))
+
+    def keyToNumber(self, k: str) -> int:
+        k = k.lower()
+        sum = 0
+ 
+        for i in range(len(k)):
+            sum += ((ord(k[i]) - 96) * (26**i))
+        return sum - 1
 
     @staticmethod
     def setkeys(start: str, end: str):
@@ -323,28 +402,53 @@ class ArtistsResearch(DataResearch):
             out += artistsKey[i]
 
         return out
+    
+    """def makeString(self, k: int) -> str:
+    str = ""
+    while True:
+        res = (k % 26)
+        str += chr(res + 97)
+        if k < 26:
+            return str
+        k -= res
+        k = int(k/26)"""
 
     class ArtistSerarcher(DataResearch.ResearchThread):
 
-        def __init__(self, thNumber):
-            super().__init__(self, thNumber)
+        def __init__(self, thNumber, token, classRef):
+            super().__init__(thNumber, token)
 
+            self.controllerClass = classRef
 
         def run(self):
-            Terminal.info(f" Thread ArtistSerarcher [{self.thNumber}] started")
+            #Terminal.info(f" Thread ArtistSerarcher [{self.thNumber}] started")
 
             while self.running:
                 key: str
                 
                 with ArtistsResearch.MUTEX1:
-                    key = ArtistsResearch.CurrentArtistKey
+                    FindKey = True
 
-                    if key == ArtistsResearch.EndArtistKey:
-                        self.running = False
-                        break
+                    while FindKey:
+                        key = ArtistsResearch.CurrentArtistKey
+
+                        #è l'ultima chiave ?
+                        if key == ArtistsResearch.EndArtistKey:
+                            self.running = False
+                            FindKey = False
+                            break
                     
-                    ArtistsResearch.CurrentArtistKey = ArtistsResearch.nextKey(key)
-                    
+                        #se no, non è stata ancora processata ?
+                        if key not in self.controllerClass.processedKey or not self.controllerClass.processedKey[key]:
+                            self.controllerClass.processedKey[key] = False
+                            FindKey = False
+                        else:
+                            Terminal.success(f" \"{Fore.MAGENTA}{key}{Fore.RESET}\" already processed")
+                        
+                        ArtistsResearch.CurrentArtistKey = ArtistsResearch.nextKey(key)
+                
+                if key == ArtistsResearch.EndArtistKey:   
+                   break 
                     
                 #Terminal.info(f" Search Artist by: \"{Fore.MAGENTA}{key}{Fore.RESET}\"")
 
@@ -368,7 +472,12 @@ class ArtistsResearch(DataResearch):
                         self.saveResearchOutput()
                
                 Terminal.success(f" Search for \"{Fore.MAGENTA}{key}{Fore.RESET}\" completed")
-            Terminal.info(f" Thread ArtistSerarcher [{self.thNumber}] finished")
+                with self.controllerClass.FILE_MUTEX:
+                    self.controllerClass.savePage(self.controllerClass.currentPageIndex, self.controllerClass.pageData)
+                
+                self.controllerClass.processedKey[key] = True
+                
+            #Terminal.info(f" Thread ArtistSerarcher [{self.thNumber}] finished")
 
     
         def search_for_artist(self, limitValue:int, artistKeyName: str) -> bool:
@@ -383,7 +492,7 @@ class ArtistsResearch(DataResearch):
 
         def makeRequest(self, query:str) -> bool:
             with ArtistsResearch.MUTEX3:
-                time.sleep(0.100)
+                time.sleep(0.040)
 
             super().make_Request_to(query)
 
@@ -420,24 +529,23 @@ class ArtistsResearch(DataResearch):
             return self.makeRequest(self.JSON_Header['href'])
 
 
-        def nextPage(self, token) -> bool:
-            if self.JSON_artistsHeader == None or self.JSON_artistsHeader['next'] == None:
+        def nextPage(self) -> bool:
+            if self.JSON_Header == None or self.JSON_Header['next'] == None:
                 Terminal.error(f"next page not available")
                 return False
-            return self.makeRequest(self.JSON_artistsHeader['next'])
+            return self.makeRequest(self.JSON_Header['next'])
         
         
 
-        
         def saveResearchOutput(self) -> bool:
             
-            if self.JSON_artistsHeader == None:
+            if self.JSON_Header == None:
                 return False
             
             outputDict: dict = {}
 
             #processo i nuovi elementi
-            for artist in self.JSON_artistItems['items']:
+            for artist in self.JSON_Items['items']:
                 if outputDict.get(artist['name']) is not None:
                     continue
 
@@ -452,12 +560,23 @@ class ArtistsResearch(DataResearch):
                     'name' : artist['name'].replace('\''," ")
                 }
 
-                ArtistsResearch.Database.addArtist(artistsDataDict)
+                with self.controllerClass.FILE_MUTEX:
+                    if self.controllerClass.pageElement == ArtistsResearch.ELEMENT_PER_PAGE:
+                        self.controllerClass.savePage(self.controllerClass.currentPageIndex, self.controllerClass.pageData)
+                        
+                        self.controllerClass.currentPageIndex += 1
+                        self.controllerClass.pageData = {}
+                        self.controllerClass.pageElement = 0
+                    
+                    if artistsDataDict['id'] not in self.controllerClass.pageData:
+                        self.controllerClass.pageData[artistsDataDict['id']] = artistsDataDict
+                        self.controllerClass.pageElement += 1
+
+
+                #ArtistsResearch.Database.addArtist(artistsDataDict)
                 #outputDict[artist['name']] = artistsDataDict
             return True
         
 
-    def toDict(self) -> dict:
-        out = super().todict()
-        return out
+    
 
