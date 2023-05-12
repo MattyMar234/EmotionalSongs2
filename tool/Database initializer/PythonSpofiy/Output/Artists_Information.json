@@ -1,6 +1,6 @@
 {
     "ArtistsResearch": {
-        "lastPageElement": 5243,
+        "lastPageElement": 918,
         "lastPageIndex": 51,
         "processedKey": {
             "a": true,
@@ -704,7 +704,7 @@
             "zw": true,
             "zx": true,
             "zy": true,
-            "zz": false
+            "zz": true
         }
     }
 }
