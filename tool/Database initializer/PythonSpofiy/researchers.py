@@ -1,190 +1,22 @@
 from Logger import Terminal
 from DatabaseInterface import DataBase
+from Researchers_Base import *
+from PagesController import PageController
 
-from dataclasses import dataclass
-from datetime import datetime
+
 from colorama import init as colorama_init
 from colorama import Fore
 from colorama import Style
+
 import threading
 import time
 import json
 import requests
-import base64
 import os
+import numpy as np
 
 
-@dataclass
-class Token:
 
-    validToken_Time_s = 60 * 60 #60s * 60m = 1h
-    token: str
-    fetched_at: datetime
-    
-    def __init__(self, token: str, time, clientID, clientSecret):
-        self.token = token
-        self.clientID = clientID
-        self.clientSecret = clientSecret
-
-        if time == None:
-            self.fetched_at = datetime.now()
-        else:
-            self.fetched_at = datetime.strptime(time, '%d/%m/%Y %H:%M:%S')
-
-        self.getNewToken()
-        
-        if not self.isValid():
-            ...
-            
-
-    def isValid(self):
-        time_elapsed = datetime.now() - self.fetched_at
-        return True if time_elapsed.seconds < self.validToken_Time_s else False
-
-    def getNewToken(self) -> bool:
-        auth_string = self.clientID + ":" + self.clientSecret
-        auth_bytes = auth_string.encode("utf-8")
-        auth_base64 = str(base64.b64encode(auth_bytes), "utf-8")
-
-        Terminal.info(f" Request new Token")
-
-        URL = 'https://accounts.spotify.com/api/token'
-
-        headers = {
-            "Authorization": "Basic " + auth_base64,
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
-
-        data = {"grant_type": "client_credentials"}
-
-        response = requests.post(URL, headers = headers, data = data)
-        json_file = json.loads(response.content)
-
-        self.fetched_at = datetime.now()
-        self.token = json_file["access_token"]
-
-        Terminal.success(f" token: {self.token}")
-
-        return True
-
-
-    def toDict(self):
-        dict = {
-            "fetched" : self.fetched_at.strftime('%d/%m/%Y %H:%M:%S'),
-            "token" : self.token
-        }
-
-        return dict
-
-
-class DataResearch():
-    
-    MUTEX = threading.Lock()
-    FILE_SETTINGS = "ResearcherSettings.json"
-    PAGE_FILE_NAME = "Page[i].json"
-
-
-    def __init__(self, threadNumber:int, database: DataBase, token: Token, Folderpath: str):
-        self.token = token
-        self.threadNumber = threadNumber
-        self.database = database
-        self.threads = []
-        self.FolderPath = Folderpath
-        self.informationsFile: dict
-
-    def loadSettings(self) -> bool:
-        if os.path.exists(self.FolderPath + "/" + DataResearch.FILE_SETTINGS):
-            with open(self.FolderPath + DataResearch.FILE_SETTINGS, 'r') as file:
-                data = file.read()
-
-                if data != "":
-                    self.informationsFile = json.loads(data)
-                    return True
-        else:
-            return False
-
-    def saveSettings(self):
-        with open(self.FolderPath + "/" + DataResearch.FILE_SETTINGS, 'w') as file:
-            json.dump(self.informationsFile, file,  sort_keys = True, indent=4)
-
-
-    def savePage(self, pageIndex, pageData):
-        fileName = self.FolderPath + "/" + DataResearch.PAGE_FILE_NAME.replace("[i]", f'{pageIndex}')
-        with open(fileName, 'w') as file:
-            json.dump(pageData, file,  sort_keys = True, indent=4)
-
-
-    def loadPage(self, pageIndex) -> dict:
-        fileName = self.FolderPath + "/" + DataResearch.PAGE_FILE_NAME.replace("[i]", f'{pageIndex}')
-        
-        if os.path.exists(fileName):
-            with open(fileName, 'r') as file:
-                data = file.read()
-                if data != "":
-                    return json.loads(data)
-                else:
-                    data = {}
-                    return data
-        else:
-            data = {}
-            return data
-
-    def waith_threads(self) -> None:
-        for t in self.threads:
-            t.join()
-
-    def finisched(self) -> bool:
-        return False
-    
-    def stop(self):
-        for th in self.threads:
-            th.stop()
-
-    class ResearchThread(threading.Thread):
-
-        def __init__(self, thNumber, token: Token):
-            threading.Thread.__init__(self)
-            self.thNumber = thNumber
-            self.lastRequest:str = ""
-            self.lastResponse_json = None
-            self.lastResponse = None
-            self.running = True
-            self.token = token
-
-
-            self.JSON_Header:dict = None
-            self.JSON_Items:dict = None
-
-        def stop(self):
-            self.running = False
-
-        def get_auth_headers(self):
-            return {"Authorization": "Bearer " + self.token.token}
-        
-        def make_Request_to(self, query: str):
-            self.lastRequest = query
-
-            response = requests.get(query, headers = self.get_auth_headers())
-
-            if not response.ok:
-                Terminal.error(f"req: {response.url} --> {response} --> {response.text}" )
-                self.lasrResponse = None
-                self.lastResponse_json = None
-                return False
-            else:
-                self.lastResponse = response
-                self.lastResponse_json = json.loads(self.lastResponse.content.decode("utf-8"))
-                return True
-
-    def todict(self) -> dict:
-        out = {
-         
-        }
-
-        return out
-    
-
-    
 class TrackResearch(DataResearch):
 
     URL = "https://api.spotify.com/v1/artists/{id}/top-tracks?market=US"
@@ -194,80 +26,150 @@ class TrackResearch(DataResearch):
 
     CurrentIndex: int
     TotalElement: int
+    file_list: list
 
-    def __init__(self, threadNumber:int, database: DataBase, token: Token):
+    def __init__(self, threadNumber:int, database: DataBase, token: Token, artistPath:str, trackPath:str, albumPath:str):
         super().__init__(threadNumber, database, token)
 
-        TrackResearch.TotalElement = database.getArtistsNumber()
-        TrackResearch.CurrentIndex = 0
+        #TrackResearch.TotalElement = database.getArtistsNumber()
+        #TrackResearch.CurrentIndex = 0
+        self.ArtistPath = artistPath
+        self.TrackPath = trackPath
+        self.AlbumPath = albumPath
+
+        self.pageController_Track = PageController(self.TrackPath)
+        self.pageController_Album = PageController(self.AlbumPath)
+
+        self.Arists_ID:dict = {}
+
+        #========================================================#
+        #conto gli elementi e rimuovo i duplicati
+        self.file_list = [ f"{self.ArtistPath}/" + file for file in os.listdir(self.ArtistPath) if file.endswith('.json')]
+        self.files_index = 0
+
+        for _ in range(20):
+            th = self.ElementFinder_Thread(self)
+            self.threads.append(th)
+            th.start()
+        
+        for th in self.threads:
+            th.join()
+        
+        self.pageController_Track.savePage()
+        self.pageController_Album.savePage()
+        #========================================================#
+        
+        self.array_ID = np.array(list(self.Arists_ID.keys()))
+        self.TotalElement = self.array_ID.shape[0]
+        self.ID_Index = 0
+        self.threads.clear()
+        self.Arists_ID.clear()
+    
+    def getElementCount(self) -> int:
+        return self.TotalElement
+    
+    def getProgress(self) -> int:
+        return self.ID_Index
+    
+    def toDict(self) -> dict:
+        out = super().todict()
+        return out
 
     def start(self):
-        Terminal.info(f"creating Threads for Search Tracks")
-
+        #Terminal.info(f"creating Threads for Search Tracks")
         for i in range(self.threadNumber):
-            th = self.TrackReSerarcher(i, self.database, self.token)
+            th = self.TrackReSerarcher(i, self)
+            self.threads.append(th)
             th.start()
 
-            self.threads.append(th)
-
-
-    class TrackReSerarcher(DataResearch.ResearchThread):
-
-        def __init__(self, thNumber: int, database: DataBase, token: Token):
-            super().__init__(thNumber, token)
-            self.database = database
+    @classmethod
+    class ElementFinder_Thread(threading.Thread):
+        def __init__(self, bho, classReference):
+            super().__init__()
+            self.classReference: TrackResearch = classReference
 
         def run(self):
-            Terminal.info(f" Thread {self.__class__.name} [{self.thNumber}] started")
-            index: int = 0
+            fileNumber = len(self.classReference.file_list)
+            
+            while True:
+                with TrackResearch.MUTEX1:
+                    index = self.classReference.files_index
+                    self.classReference.files_index += 1
+
+                    if not index < fileNumber:
+                        return
+                    
+                with open(self.classReference.file_list[index], 'r') as file:
+                    json_data:dict = json.load(file)
+                    for k in json_data.keys():
+                        with TrackResearch.MUTEX2:
+                            self.classReference.Arists_ID[k] = None
+
+    @classmethod
+    class TrackReSerarcher(DataResearch.ResearchThread):
+
+        def __init__(self, thNumber: int, bho, classReference):
+            self.classReference: TrackResearch = classReference
+            super().__init__(thNumber, self.classReference.token)
+
+        def run(self):
+            index:int = 0
+            #Terminal.info(f" Thread {self.__class__.name} [{self.thNumber}] started")
 
             while self.running:
                 with ArtistsResearch.MUTEX1:
-                    index = TrackResearch.CurrentIndex
-                    TrackResearch.CurrentIndex += 1
-                    artistsDict = self.database.getArtistAt_order_by_ID(index) 
+                    if self.classReference.ID_Index >= self.classReference.TotalElement:
+                        return
+                    else:
+                        index = self.classReference.ID_Index
+                        self.classReference.ID_Index += 1
+        
                     
-                
-                self.search_traks_by_artistID(artistsDict['id'])
-                    
-                    
+                #artistsDict = self.database.getArtistAt_order_by_ID(index) 
+                id = self.classReference.array_ID[index]
+                reties = 0
 
-               
+                while not self.search_traks_by_artistID(id):
+                    reties += 1
+                    if reties >= 24:
+                        Terminal(" to much failed requests !!!")
+                        os._exit(1)
+                    
             #Terminal.success(f" Search for \"{Fore.MAGENTA}{key}{Fore.RESET}\" completed")
             #Terminal.info(f" Thread ArtistSerarcher [{self.thNumber}] finished")
 
-    
+
         def search_traks_by_artistID(self, artist_ID:str) -> bool:
-            
             if artist_ID == "": 
                 Terminal.error(" Invalid artist ID")
                 return False
             
-            return self.makeRequest(f'{TrackResearch.URL.replace("{id}", artist_ID)}')
-
-
-        def makeRequest(self, query:str) -> bool:
             with ArtistsResearch.MUTEX3:
-                time.sleep(0.040)
+                time.sleep(0.050)
 
-            if not super().make_Request_to(query):
+            if not super().make_Request_to(f'{TrackResearch.URL.replace("{id}", artist_ID)}'):
                 return False
             
             songsList = []
             
 
             for idx, song in enumerate(self.lastResponse_json['tracks']):
-                
+
+                for arist in song['artists']:
+                    Artists_ID = arist['id']
+
+                for arist in song['album']['artists']:
+                    Album_Artists_ID = arist['id']
+
                 SongData = {
                     'album_ID'      :   song['album']['id'],
+                    'artists_ID'    :   Artists_ID,
                     'duration_ms'   :   song['duration_ms'],
                     'spotify_url'   :   song['external_urls']['spotify'],
                     'id'            :   song['id'],
                     'name'          :   song['name'],
                     'popularity'    :   song['popularity']
                 }
-
-                songsArtists = song['artists']
 
                 songsAlbum = {
                     'id'            :   song['album']['id'],
@@ -277,32 +179,22 @@ class TrackResearch(DataResearch):
                     'name'          :   song['album']['name'],
                     'release_date'  :   song['album']['release_date'],
                     'type'          :   song['album']['album_type'],
+                    #'album_genres'  :   song['album']['genres'],
+                    #'popularity'    :   song['album']['popularity'],
+                    'artists_ID'    :   Album_Artists_ID
                 }   
 
-                print(SongData)
+                self.classReference.pageController_Track.saveData(SongData, SongData['id'])
+                self.classReference.pageController_Album.saveData(songsAlbum, songsAlbum['id'])
 
                 
-                """'spotify_url' : artist['external_urls']['spotify'],
-                    'popularity' : artist['popularity'],
-                    'followers' : artist['followers']['total'],
-                    'genres' : artist['genres'],
-                    'images' : artist['images'],
-                    'id' : artist['id'],
-                    'type' : artist['type'],
-                    'name' : artist['name'].replace('\''," ")"""
 
-            """self.JSON_Items = {
-                'items'     :   self.lastResponse_json['artists']['items']
-            }"""
-            #Terminal.success(f" Output: {self.JSON_artistsHeader}")
+             
             return True
 
         
 
-    def toDict(self) -> dict:
-        out = super().todict()
-        return out
-
+    
 
 class ArtistsResearch(DataResearch):
 
