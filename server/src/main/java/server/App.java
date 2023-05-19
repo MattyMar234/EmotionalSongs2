@@ -34,7 +34,7 @@ public class App
                 databaseConnected = database.testconnection();
 
             } catch (SQLException e) {
-                terminal.printError_ln("connection attempt failed");
+                terminal.printError_ln("connection attempt: failed");
                 Thread.sleep(1000);
             }
         }

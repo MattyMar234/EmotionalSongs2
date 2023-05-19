@@ -1,7 +1,9 @@
 package server;
 
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Scanner;
 
 enum Color {
@@ -112,6 +114,29 @@ public class Terminal extends Thread {
         }
     }
 
+    private enum Command {
+
+        HELP("help", "Elenco dei comandi"),
+        START("start", "Avvia il Server"),
+        CLOSE("exit", "Termina l'applicazione"),
+        BUILD_SERVER("init_database", "inizilizza il database dell'applicazione");
+
+        public final String value;
+        private final String descrizione;
+
+        Command(String str, String desc) {
+            this.value = str;
+            this.descrizione = desc;
+        }
+
+        @Override
+        public String toString() {
+            return value.toUpperCase() + " - " + descrizione;
+        }
+        
+
+    }
+
 
     private static final int LINE_ELEMENT = 100;
     private static final char LINE_CHAR = '-';
@@ -129,23 +154,43 @@ public class Terminal extends Thread {
     public void run() {
 
         String data = "";
-        Scanner in = new Scanner(System.in);
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         
         while(this.running) 
         {
-            printArrow();
-            String message = in.nextLine();
-            
-            switch (message) {
+            try {
+                printArrow();
+                String message = in.readLine();
 
-                case "exit": System.exit(1);
-                case "start": 
+            
+                if(message.equals(Command.HELP.value)) {
+                    for (Command commad : Command.values()) {
+                        System.out.println(commad);
+                    } 
+                }
+                else if(message.equals(Command.START.value)) {
                     main.runServer();
-                    in.nextLine();
-                    while(main.running)
+                    in.readLine();
                     main.StopServer();
-                    break;
-            };
+                }
+                else if(message.equals(Command.CLOSE.value)) {
+                    System.exit(1);
+                }
+                else if(message.equals(Command.BUILD_SERVER.value)) {
+                    System.out.println("init database");
+                }
+
+                
+                
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+                System.out.println(e);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                System.out.println(e);
+            }
         }
     }
 
