@@ -14,7 +14,7 @@ public class PredefinedSQLCode {
     // create view - to create view
 
     protected enum NomiTabelle {
-        SONG("Canzone"), ARTIST("Artista"), COMMENTO("Commento"), EMOZIONE("Emozione"), PLAYLIST("Playlist"), ACCOUNT("Account"), PROVINCIA("Provincia"), COMUNE("Comune"), LUOGO_RESIDENZA("LuogoResidenza"),;
+        SONG("Canzone"), ARTIST("Artista"), GENERE_MUSICALE("GenereMusicale"), ALBUM("Album"), COMMENTO("Commento"), EMOZIONE("Emozione"), PLAYLIST("Playlist"), ACCOUNT("Account"), PROVINCIA("Provincia"), COMUNE("Comune"), LUOGO_RESIDENZA("LuogoResidenza"), IMAGES("Immagine"), GEN_ARTIST("GenereArtista"), SONG_ATIST("CanzoneArtista"), SONG_PLAYLIST("PlaylistCanzone");
 
         private String name;
        
@@ -35,6 +35,29 @@ public class PredefinedSQLCode {
     {
         {
         create_table_hashtable_query.put(
+            NomiTabelle.GENERE_MUSICALE,
+            "INSERT INTO" + NomiTabelle.GENERE_MUSICALE.toString() + " ("
+                    + "Genere_musicale, "
+                    + "Id, "
+            );
+        }
+
+        {
+        create_table_hashtable_query.put(
+            NomiTabelle.ALBUM,
+            "INSERT INTO" + NomiTabelle.ALBUM.toString() + " ("
+                    + "ID, "
+                    + "Nome, "
+                    + "Release_date, "
+                    + "Spotify_URL, "
+                    + "Type, "
+                    + "Element, "
+                    + "Id_Image" 
+            );
+        }
+
+        {
+        create_table_hashtable_query.put(
             NomiTabelle.SONG,
             "INSERT INTO" + NomiTabelle.SONG.toString() + " ("
                     + "ID, "
@@ -42,8 +65,9 @@ public class PredefinedSQLCode {
                     + "Spotify_URL, "
                     + "Duration_ms, "
                     + "Popularity, "
-                    + "years, "
-                    + "Album, "                   
+                    + "Year, "
+                    + "Album, "    
+                    + "Id_Image"               
             );
         }
 
@@ -55,7 +79,8 @@ public class PredefinedSQLCode {
                     + "Nome, "
                     + "Spotify_URL, "
                     + "Followers, "
-                    + "Popularity, "                  
+                    + "Popularity, "
+                    + "Id_Image"         
             );
         }
 
@@ -134,6 +159,43 @@ public class PredefinedSQLCode {
             );
         }
 
+        {
+        create_table_hashtable_query.put(
+            NomiTabelle.IMAGES,
+            "INSERT INTO" + NomiTabelle.IMAGES.toString() + " ("
+                    + "tipe, "    
+                    + "size, "  
+                    + "link, "
+                    + "id, "         
+            );
+        }
+
+        {
+        create_table_hashtable_query.put(
+            NomiTabelle.GEN_ARTIST,
+            "INSERT INTO" + NomiTabelle.GEN_ARTIST.toString() + " ("
+                    + "ID_Artista, "    
+                    + "Id_genere, "             
+            );
+        }
+
+        {
+        create_table_hashtable_query.put(
+            NomiTabelle.SONG_ATIST,
+            "INSERT INTO" + NomiTabelle.SONG_ARTIST.toString() + " ("
+                    + "ID_Artista, "    
+                    + "Id_Song, "             
+            );
+        }
+
+        {
+        create_table_hashtable_query.put(
+            NomiTabelle.SONG_PLAYLIST,
+            "INSERT INTO" + NomiTabelle.SONG_PLAYLIST.toString() + " ("
+                    + "ID_Playlist, "    
+                    + "Id_Song, "             
+            );
+        }
 
     };
         
