@@ -2,8 +2,10 @@ package server;
 
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 enum Color {
@@ -119,7 +121,7 @@ public class Terminal extends Thread {
         HELP("help", "Elenco dei comandi"),
         START("start", "Avvia il Server"),
         CLOSE("exit", "Termina l'applicazione"),
-        BUILD_SERVER("init_database", "inizilizza il database dell'applicazione");
+        BUILD_SERVER("init_database", "inizilizza il database dell'applicazione. parametri: p=path");
 
         public final String value;
         private final String descrizione;
@@ -153,31 +155,31 @@ public class Terminal extends Thread {
     @Override
     public void run() {
 
-        String data = "";
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("type \"help\" to see available commands");
         
         while(this.running) 
         {
             try {
                 printArrow();
-                String message = in.readLine();
+           
+                String command = in.readLine().toLowerCase();
 
             
-                if(message.equals(Command.HELP.value)) {
-                    for (Command commad : Command.values()) {
-                        System.out.println(commad);
-                    } 
+                if(command.equals(Command.HELP.value)) {
+                    dumpCommands();
                 }
-                else if(message.equals(Command.START.value)) {
+                else if(command.equals(Command.START.value)) {
+                    printInfo_ln("server starting...");
                     main.runServer();
                     in.readLine();
                     main.StopServer();
                 }
-                else if(message.equals(Command.CLOSE.value)) {
+                else if(command.equals(Command.CLOSE.value)) {
                     System.exit(1);
                 }
-                else if(message.equals(Command.BUILD_SERVER.value)) {
-                    System.out.println("init database");
+                else if(command.equals(Command.BUILD_SERVER.value)) {
+                    initializeDatabase(in);
                 }
 
                 
@@ -193,6 +195,66 @@ public class Terminal extends Thread {
             }
         }
     }
+
+    /*private String[] getCommadData(String command) {
+
+        ArrayList<String> data = new ArrayList<String>();
+        String temp = "";
+        char lastChar = '\0';
+
+        for(int i = 0; i < command.length(); i++) {
+            char c = command.charAt(i);
+
+            
+        }
+
+
+        return (String[]) data.toArray();
+
+    }*/
+
+    private int initializeDatabase(BufferedReader in) throws IOException {
+
+        printInfo_ln("start database configuration...");
+        printInfo_ln("files folder: ");
+        String path = in.readLine();
+
+         
+        if (path.length() <= 10) {
+            printError_ln("invalid parameters");
+            return -1;
+        }
+
+        String Artist = path + "\\Artist";
+
+        File Folder = new File(path);
+        File ArtistFolder = new File(path);
+
+        if (!Folder.isDirectory()) {
+            printError_ln("files not found");
+            return -1;
+        }
+        
+        if(!ArtistFolder.exists()) {
+            printError_ln("folder \"Artist\" not found");
+            return -1;
+        }
+
+
+        printInfo_ln("folder \"Artist\" found");
+        
+        return 0;
+    
+    }
+
+    private void dumpCommands() {
+        System.out.println();
+        for (Command commad : Command.values()) {
+            System.out.println(commad);
+        } 
+        System.out.println();
+    }
+
 
     public synchronized void printArrow () {
         System.out.print("> ");
