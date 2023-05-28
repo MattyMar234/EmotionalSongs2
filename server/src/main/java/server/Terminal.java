@@ -1,6 +1,11 @@
 package server;
 
+
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 enum Color {
@@ -93,9 +98,11 @@ public class Terminal extends Thread {
 
     private enum MessageType{
 
+        NONE(""),
         INFO("[" + Color.BLUE + "INFO" + Color.RESET + "]"),
         ERROR("[" + Color.RED_BOLD + "ERROR" + Color.RESET + "]"),
-        REQUEST("[" + Color.YELLOW + "REQUEST" + Color.RESET + "]");
+        REQUEST("[" + Color.YELLOW + "REQUEST" + Color.RESET + "]"),
+        SUCCES("[" + Color.GREEN + "SUCCES" + Color.RESET + "]");
         
         private final String message;
 
@@ -109,6 +116,29 @@ public class Terminal extends Thread {
         }
     }
 
+    private enum Command {
+
+        HELP("help", "Elenco dei comandi"),
+        START("start", "Avvia il Server"),
+        CLOSE("exit", "Termina l'applicazione"),
+        BUILD_SERVER("init_database", "inizilizza il database dell'applicazione. parametri: p=path");
+
+        public final String value;
+        private final String descrizione;
+
+        Command(String str, String desc) {
+            this.value = str;
+            this.descrizione = desc;
+        }
+
+        @Override
+        public String toString() {
+            return value.toUpperCase() + " - " + descrizione;
+        }
+        
+
+    }
+
 
     private static final int LINE_ELEMENT = 100;
     private static final char LINE_CHAR = '-';
@@ -116,68 +146,157 @@ public class Terminal extends Thread {
     private boolean running;
     private App main;
     
-    public Terminal(App main) {
-
-
+    public Terminal(App main) 
+    {
         this.main = main;
         this.running = true;
-        System.out.print("> ");
-    }
+    }    
 
     @Override
     public void run() {
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("type \"help\" to see available commands");
         
-        while(this.running) {
+        while(this.running) 
+        {
+            try {
+                printArrow();
            
-            char ch = '\0';
-            String data = "";
+                String command = in.readLine().toLowerCase();
 
-            while(ch != '\n') {
-                try {
-                    ch = (char) System.in.read();
-                    System.out.println("press: " + ch);
-                    data += ch;
-                } catch (IOException e) {
-                    e.printStackTrace();
+            
+                if(command.equals(Command.HELP.value)) {
+                    dumpCommands();
                 }
+                else if(command.equals(Command.START.value)) {
+                    printInfo_ln("server starting...");
+                    main.runServer();
+                    in.readLine();
+                    main.StopServer();
+                }
+                else if(command.equals(Command.CLOSE.value)) {
+                    System.exit(1);
+                }
+                else if(command.equals(Command.BUILD_SERVER.value)) {
+                    initializeDatabase(in);
+                }
+
+                
+                
             }
-
-            switch(data) {
-
-                case "quit": this.running = false; break;
+            catch (IOException e) {
+                e.printStackTrace();
+                System.out.println(e);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                System.out.println(e);
             }
         }
+    }
+
+    /*private String[] getCommadData(String command) {
+
+        ArrayList<String> data = new ArrayList<String>();
+        String temp = "";
+        char lastChar = '\0';
+
+        for(int i = 0; i < command.length(); i++) {
+            char c = command.charAt(i);
+
+            
+        }
+
+
+        return (String[]) data.toArray();
+
+    }*/
+
+    private int initializeDatabase(BufferedReader in) throws IOException {
+
+        printInfo_ln("start database configuration...");
+        printInfo_ln("files folder: ");
+        String path = in.readLine();
+
+         
+        if (path.length() <= 10) {
+            printError_ln("invalid parameters");
+            return -1;
+        }
+
+        String Artist = path + "\\Artist";
+
+        File Folder = new File(path);
+        File ArtistFolder = new File(path);
+
+        if (!Folder.isDirectory()) {
+            printError_ln("files not found");
+            return -1;
+        }
+        
+        if(!ArtistFolder.exists()) {
+            printError_ln("folder \"Artist\" not found");
+            return -1;
+        }
+
+
+        printInfo_ln("folder \"Artist\" found");
+        
+        return 0;
+    
+    }
+
+    private void dumpCommands() {
+        System.out.println();
+        for (Command commad : Command.values()) {
+            System.out.println(commad);
+        } 
+        System.out.println();
+    }
+
+
+    public synchronized void printArrow () {
+        System.out.print("> ");
     }
 
     private synchronized void printOnTerminal(MessageType type, String message, Color MessageColor) {
 
         //System.out.print("\033[s");
-        System.out.print("\033[100D");
-        System.out.print("\n");
-        System.out.print("\033[3A");
+        //System.out.print("\033[100D");
+        //System.out.print("\n");
+        //System.out.print("\033[3A");
         
 
         //if(MessageColor == null)
-        //System.out.print(type + message);   
-        System.out.print("\033[100D");
-        System.out.print("\033[3B");
-        System.out.print(">  ");
+        System.out.print(type + message);   
+        //System.out.print("\033[100D");
+        //System.out.print("\033[3B");
+        
 
         //System.out.print("\033[u");
        
     }
 
-
-    public void printInfo(String message) {
-        printOnTerminal(MessageType.INFO, message, null);
+    public void print_ln(String message) {
+        printOnTerminal(MessageType.NONE, message + "\n", null);
     }
 
-    public void printError(String message) {
-        printOnTerminal(MessageType.ERROR, message, null);
+
+    public void printInfo_ln(String message) {
+        printOnTerminal(MessageType.INFO, " " + message + "\n", null);
     }
 
-    public void printConnection(String message) {
-        printOnTerminal(MessageType.ERROR, message, null);
+    public void printSucces_ln(String message) {
+        printOnTerminal(MessageType.SUCCES, " " + message + "\n", null);
+    }
+
+    public void printError_ln(String message) {
+        printOnTerminal(MessageType.ERROR, " " + message + "\n", null);
+    }
+
+    public void printConnection_ln(String message) {
+        printOnTerminal(MessageType.ERROR, " " + message + "\n", null);
     }
 
     public void printLine() {
@@ -186,6 +305,6 @@ public class Terminal extends Thread {
         for(int i = 0; i < Terminal.LINE_ELEMENT; i++) {
             line += LINE_CHAR;
         }
-        printInfo(line);
+        print_ln(line);
     }
 }
