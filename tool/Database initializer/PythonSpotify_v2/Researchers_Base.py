@@ -1,7 +1,6 @@
 from Logger import Terminal
 from dataclasses import dataclass
 from datetime import datetime
-from DatabaseInterface import DataBase
 
 import threading
 import time
@@ -62,8 +61,7 @@ class Token:
 
     def toDict(self):
         dict = {
-            "fetched" : self.fetched_at.strftime('%d/%m/%Y %H:%M:%S'),
-            "token" : self.token
+            
         }
 
         return dict
@@ -76,29 +74,33 @@ class DataResearch():
     PAGE_FILE_NAME = "Page[i].json"
     
 
-
-    def __init__(self, threadNumber:int, database: DataBase, token: Token):
-        self.token = token
-        self.threadNumber = threadNumber
-        self.database = database
+    def __init__(self):
         self.threads = []
-
         self.informationsFile: dict
 
-    def loadSettings(self) -> bool:
-        if os.path.exists(self.FolderPath + "/" + DataResearch.FILE_SETTINGS):
-            with open(self.FolderPath + DataResearch.FILE_SETTINGS, 'r') as file:
+    def toDict(self):
+        dict = {
+            
+        }
+
+        return dict
+
+    def loadSettings(self, path:str) -> dict:
+        if os.path.exists(path):
+            with open(path, 'r') as file:
                 data = file.read()
 
                 if data != "":
-                    self.informationsFile = json.loads(data)
-                    return True
+                    informationsFile = json.loads(data)
+                    return informationsFile
         else:
-            return False
+            with open(path, 'w') as file:
+                pass
+            return None
 
-    def saveSettings(self):
-        with open(self.FolderPath + "/" + DataResearch.FILE_SETTINGS, 'w') as file:
-            json.dump(self.informationsFile, file,  sort_keys = True, indent=4)
+    def saveSettings(self, path:str, data:dict) -> None:
+        with open(path, 'w') as file:
+            json.dump(data, file, indent=4)
 
     def savePage(self, pageIndex, pageData, path):
         fileName = path + "/" + DataResearch.PAGE_FILE_NAME.replace("[i]", f'{pageIndex}')
@@ -135,15 +137,14 @@ class DataResearch():
             
     class ResearchThread(threading.Thread):
 
-        def __init__(self, thNumber, token: Token):
+        def __init__(self, thNumber):
             threading.Thread.__init__(self)
             self.thNumber = thNumber
             self.lastRequest:str = ""
             self.lastResponse_json = None
             self.lastResponse = None
             self.running = True
-            self.token = token
-
+        
             self.JSON_Header:dict = None
             self.JSON_Items:dict = None
 
@@ -172,7 +173,3 @@ class DataResearch():
         def writeJson(self, pageData, fileName, path):
             with open(path + f"/{fileName}.json", 'w') as file:
                 json.dump(pageData, file,  sort_keys = False, indent=4)
-
-    def todict(self) -> dict:
-        out = {}
-        return out

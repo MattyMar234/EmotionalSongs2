@@ -2,6 +2,10 @@ package server;
 
 import java.sql.SQLException;
 import java.text.ParseException;
+
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 import server.Terminal;
 
 
@@ -14,7 +18,9 @@ public class App
     Server server = null;
 
 
-    public static void main( String[] args ) throws InterruptedException {
+    public static void main( String[] args ) throws InterruptedException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
+        
+        UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         new App(args);
     }
 
@@ -25,6 +31,8 @@ public class App
         int attemptMAX = 10;
 
         this.terminal = new Terminal(this);
+        Thread terminalThread = new Thread(this.terminal);
+
         terminal.printInfo_ln("Application Running...");
         terminal.printInfo_ln("Establishing database connection ");
 
@@ -47,7 +55,7 @@ public class App
 
         
         terminal.printLine();
-        terminal.start();
+        terminalThread.start();
 
        
 

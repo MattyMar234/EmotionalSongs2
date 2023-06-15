@@ -6,7 +6,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
+
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 
 enum Color {
     //Color end string, color reset
@@ -94,7 +98,7 @@ enum Color {
     }
 }
 
-public class Terminal extends Thread {
+public class Terminal extends JFrame implements Runnable {
 
     private enum MessageType{
 
@@ -146,8 +150,10 @@ public class Terminal extends Thread {
     private boolean running;
     private App main;
     
+
     public Terminal(App main) 
     {
+        
         this.main = main;
         this.running = true;
     }    
@@ -155,6 +161,7 @@ public class Terminal extends Thread {
     @Override
     public void run() {
 
+        
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("type \"help\" to see available commands");
         
@@ -166,19 +173,19 @@ public class Terminal extends Thread {
                 String command = in.readLine().toLowerCase();
 
             
-                if(command.equals(Command.HELP.value)) {
+                if(command.equals(Command.HELP.value.toLowerCase())) {
                     dumpCommands();
                 }
-                else if(command.equals(Command.START.value)) {
+                else if(command.equals(Command.START.value.toLowerCase())) {
                     printInfo_ln("server starting...");
                     main.runServer();
                     in.readLine();
                     main.StopServer();
                 }
-                else if(command.equals(Command.CLOSE.value)) {
+                else if(command.equals(Command.CLOSE.value.toLowerCase())) {
                     System.exit(1);
                 }
-                else if(command.equals(Command.BUILD_SERVER.value)) {
+                else if(command.equals(Command.BUILD_SERVER.value.toLowerCase())) {
                     initializeDatabase(in);
                 }
 
@@ -213,35 +220,66 @@ public class Terminal extends Thread {
 
     }*/
 
-    private int initializeDatabase(BufferedReader in) throws IOException {
+    private int initializeDatabase(BufferedReader in) throws IOException 
+    {
+        final String[] folders = {"Artists", "Album", "Tracks"};
+        HashMap<String, File> foldersPath = new HashMap<String, File>();
+        File database_information_folder;
+
 
         printInfo_ln("start database configuration...");
-        printInfo_ln("files folder: ");
-        String path = in.readLine();
-
-         
-        if (path.length() <= 10) {
-            printError_ln("invalid parameters");
-            return -1;
-        }
-
-        String Artist = path + "\\Artist";
-
-        File Folder = new File(path);
-        File ArtistFolder = new File(path);
-
-        if (!Folder.isDirectory()) {
-            printError_ln("files not found");
-            return -1;
-        }
         
-        if(!ArtistFolder.exists()) {
-            printError_ln("folder \"Artist\" not found");
-            return -1;
+
+        final JFileChooser fileChooser = new JFileChooser(PathFormatter.formatPath(System.getProperty("user.home") + "/Desktop"));
+        fileChooser.setVisible(true);
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+        switch(fileChooser.showOpenDialog(null))
+        {
+            case JFileChooser.CANCEL_OPTION:
+                printInfo_ln("database configuration ended");
+                return 0;
+
+            case JFileChooser.APPROVE_OPTION:
+                database_information_folder = new File(fileChooser.getSelectedFile().getAbsolutePath());
+                printInfo_ln("select folder: " + database_information_folder);
+                break;
+
+            default:
+                printError_ln("FileDialog Error");
+                return 0;
         }
 
 
-        printInfo_ln("folder \"Artist\" found");
+        //verifico la validità della cartella
+        if (database_information_folder.isDirectory()) {
+            boolean tuttePresenti = true;
+
+            for (String cartella : folders) {
+                File subFolder = new File(database_information_folder, cartella);
+
+                if (!subFolder.exists() || !subFolder.isDirectory()) {
+                    tuttePresenti = false;
+                    printError_ln(cartella + " folder not found");
+                } 
+                else {
+                    foldersPath.put(cartella, subFolder);
+                }
+            }
+
+            if(!tuttePresenti) {
+                printInfo_ln("database configuration ended");
+                return 0;
+            }
+            else {
+                printSucces_ln("All folder found");
+            }
+        }
+        else {
+            printError_ln("invalid path");
+            return 0;
+        }
+
         
         return 0;
     

@@ -20,3 +20,4 @@ class PathFormatter():
             return "\\"
         elif systemType == "Linux":
             return "/"
+        

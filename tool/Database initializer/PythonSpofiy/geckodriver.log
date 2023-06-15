@@ -1,0 +1,65 @@
+1684589590435	geckodriver	INFO	Listening on 127.0.0.1:61175
+1684589593462	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "61176" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\Utente\\AppData\\Local\\Temp\\rust_mozprofiletKVnfM"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1684589593829	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1684589593833	Marionette	INFO	Listening on port 61194
+WebDriver BiDi listening on ws://127.0.0.1:61176
+Read port: 61194
+1684589594042	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\Utente\\AppData\\Local\\Temp\\rust_mozprofiletKVnfM\\search.json.mozlz4", (void 0)))
+[ERROR glean_core] Error setting metrics feature config: Json(Error("EOF while parsing a value", line: 1, column: 0))
+DevTools listening on ws://127.0.0.1:61176/devtools/browser/aa352428-0a08-4118-a839-cd92acdb12e4
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+console.error: (new TypeError("lazy.AsyncShutdown.profileBeforeChange is undefined", "resource://services-settings/Database.sys.mjs", 599))
+1684589624199	geckodriver	INFO	Listening on 127.0.0.1:61285
+1684589627223	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "61286" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\Utente\\AppData\\Local\\Temp\\rust_mozprofile7UGM4u"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1684589627431	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1684589627433	Marionette	INFO	Listening on port 61299
+Read port: 61299
+WebDriver BiDi listening on ws://127.0.0.1:61286
+1684589627503	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\Utente\\AppData\\Local\\Temp\\rust_mozprofile7UGM4u\\search.json.mozlz4", (void 0)))
+[ERROR glean_core] Error setting metrics feature config: Json(Error("EOF while parsing a value", line: 1, column: 0))
+DevTools listening on ws://127.0.0.1:61286/devtools/browser/d201d04e-ccbf-4684-a18f-a8f36f0db08e
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+console.error: (new TypeError("lazy.AsyncShutdown.profileBeforeChange is undefined", "resource://services-settings/Database.sys.mjs", 599))
+JavaScript error: https://open.spotifycdn.com/cdn/build/web-player/web-player.2e10f8a5.js, line 1: HttpResponseError: 
+1684589667612	geckodriver	INFO	Listening on 127.0.0.1:61400
+1684589670652	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "61401" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\Utente\\AppData\\Local\\Temp\\rust_mozprofileKJOTht"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1684589670859	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1684589670861	Marionette	INFO	Listening on port 61414
+Read port: 61414
+WebDriver BiDi listening on ws://127.0.0.1:61401
+1684589670930	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\Utente\\AppData\\Local\\Temp\\rust_mozprofileKJOTht\\search.json.mozlz4", (void 0)))
+[ERROR glean_core] Error setting metrics feature config: Json(Error("EOF while parsing a value", line: 1, column: 0))
+DevTools listening on ws://127.0.0.1:61401/devtools/browser/3ca8fe41-02d4-44d1-a5eb-05a2d9a0d214
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+console.error: (new TypeError("lazy.AsyncShutdown.profileBeforeChange is undefined", "resource://services-settings/Database.sys.mjs", 599))
+1684589862240	geckodriver	INFO	Listening on 127.0.0.1:61522
+1684589865266	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "61523" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\Utente\\AppData\\Local\\Temp\\rust_mozprofilejAPYW1"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1684589865462	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1684589865464	Marionette	INFO	Listening on port 61531
+Read port: 61531
+WebDriver BiDi listening on ws://127.0.0.1:61523
+1684589865532	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\Utente\\AppData\\Local\\Temp\\rust_mozprofilejAPYW1\\search.json.mozlz4", (void 0)))
+[ERROR glean_core] Error setting metrics feature config: Json(Error("EOF while parsing a value", line: 1, column: 0))
+DevTools listening on ws://127.0.0.1:61523/devtools/browser/663a94fa-d5b3-48d3-9ad7-d6f866347fa9
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+console.error: (new TypeError("lazy.AsyncShutdown.profileBeforeChange is undefined", "resource://services-settings/Database.sys.mjs", 599))

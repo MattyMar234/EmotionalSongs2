@@ -1,9 +1,8 @@
 from Logger import Terminal
-from DatabaseInterface import DataBase
 from Researchers_Base import *
-from PagesController import PageController
+from SpotifyUser import SpotifyUser
 from pathFormatter import PathFormatter as PF
-from SpotifyScraper import *
+
 
 from colorama import init as colorama_init
 from colorama import Fore
@@ -15,71 +14,164 @@ import json
 import requests
 import os
 import numpy as np
+import csv
+import ssl
 
 
 
-class TrackResearch(DataResearch):
+class Track_and_Album_Research(DataResearch):
 
-    URL = "https://api.spotify.com/v1/artists/{id}/top-tracks?market=US"
+    URL = "https://api.spotify.com/v1/artists/[id]/top-tracks?market=US"
+    FILE_SETTINGS = PF.formatPath(os.getcwd() + "\\Track_and_Album_settings.json")
+    FILE_ID = PF.formatPath(os.getcwd() + "\\processedID.csv")
     MUTEX1 = threading.Lock()
     MUTEX2 = threading.Lock()
     MUTEX3 = threading.Lock()
+
+    THREAD_NUMBER:int = 20
 
     CurrentIndex: int
     TotalElement: int
     file_list: list
 
-    def __init__(self, threadNumber:int, database: DataBase, token: Token, artistPath:str, trackPath:str, albumPath:str, lastSessionData):
-        super().__init__(threadNumber, database, token)
+    def __init__(self, Accounts:list, artistPath:str, trackPath:str, albumPath:str):
+        super().__init__()
 
-        self.ArtistPath = artistPath
-        self.TrackPath = trackPath
-        self.AlbumPath = albumPath
+        self.Accounts = Accounts
+        self.ArtistPath = artistPath        #PATH artists folder
+        self.TrackPath = trackPath          #PATH track folder
+        self.AlbumPath = albumPath          #PATH album folder
 
-        self.pageController_Track = PageController(self.TrackPath)
-        self.pageController_Album = PageController(self.AlbumPath)
+        self.file_list = []                 #lista dei file
+        self.files_index = 0                #l'indice del file attuale
+        self.currentLetterIndex = 0         #la lettera che si sta processando
+        self.LetterElement = 0
 
-        self.processed_ID: dict = lastSessionData["processed_ID"]
-        self.Arists_ID:dict = {}
+        self.processed_ID:dict = {}              #gli ID già processati 
+        self.Arists_ID:dict = {}            #tutti gli ID da fare
+        self.TotalAlfabeticLetter:int = 0
+        self.total_ID:int = 0
+        self.processed_ID_count:int = 0
 
         #========================================================#
-        #conto gli elementi e rimuovo i duplicati
-        self.file_list = [ PF.formatPath(f"{self.ArtistPath}\\" + file) for file in os.listdir(self.ArtistPath) if file.endswith('.json')]
-        self.files_index = 0
+        ### Ripristino sessione precedente ###
+        #informazione delle operazioni svolte precedentemente
+        """lastSessionData = self.loadSettings(Track_and_Album_Research.FILE_SETTINGS)
+        save = False
 
-        for _ in range(32):
-            th = self.ElementFinder_Thread(self)
-            self.threads.append(th)
+        #verifico se hol salvate delle informazioni precedentemente
+        if lastSessionData == None:
+            lastSessionData = self.inizializeConfiguration()
+            save = True
+            
+        self.processed_ID: dict = lastSessionData["processed_ID"]   #Gli ID processati
+                                        
+
+        #se non ho infromazioni, salvo quelle di base
+        if save:
+            self.saveSettings(Track_and_Album_Research.FILE_SETTINGS, self.todict())"""
+        self.loadProcessedID()
+
+        #========================================================#
+        #cerco i file che devo processare e gli ID
+
+        for file in os.listdir(self.ArtistPath):
+            if file.endswith('.json'):
+                self.file_list.append(PF.formatPath(f'{self.ArtistPath}\\{file}'))
+                
+                with open(self.file_list[-1], "r") as f:
+                    ordineAlfabetico = self.file_list[-1].split(PF.getSplitterChar())[-1].split('.')[0]
+                    
+                    print("reading file: ", self.file_list[-1], "\tkey: ", ordineAlfabetico)
+                    fileData:dict = json.load(f)
+                    temp:list = []
+
+                    for k in fileData.keys():
+                        temp.append(k)
+
+                    #incremento in base al numero degli ID presenti nel file
+                    self.total_ID += len(fileData.keys())
+
+                    #print("ID found:", temp)
+                    self.Arists_ID[ordineAlfabetico] = temp
+                    #time.sleep(4)
+
+                    #print("dict keys:",  self.Arists_ID.keys())
+                    #print(f"key {ordineAlfabetico} element: ",  len(self.Arists_ID[ordineAlfabetico]))
+                    #time.sleep(2)
             
 
-        for th in self.threads:
-            th.start()
-        
-        for th in self.threads:
-            th.join()
+        self.TotalAlfabeticLetter = len(self.Arists_ID)
+        #print(self.Arists_ID)
+        print("Total letter found:", self.TotalAlfabeticLetter)
+        print("Total ID found:", self.total_ID)
 
-        with open("verifica.json", "w") as f:
-            json.dump(self.Arists_ID, f, indent=4)
+        
+
+        #print(self.Arists_ID.items())
         #========================================================#
-        
-        self.TotalElement:int = 0
-        for key in self.Arists_ID.keys():
-            self.TotalElement += len(self.Arists_ID[key])
-        
-        self.ID_Index: int = 0
-        self.totalkey = self.Arists_ID.keys()
-        self.currentkey_index = 0
-        self.threads.clear()
+        if not os.path.exists(self.TrackPath):
+            os.mkdir(self.TrackPath)
+
+        if not os.path.exists(self.AlbumPath):
+            os.mkdir(self.AlbumPath)
+
+        for alfabeticChar in self.Arists_ID.keys():
+            if not os.path.exists(PF.formatPath(self.TrackPath + '\\' + alfabeticChar)):
+                os.mkdir(PF.formatPath(self.TrackPath + '\\' + alfabeticChar))
+
+            if not os.path.exists(PF.formatPath(self.AlbumPath + '\\' + alfabeticChar)):
+                os.mkdir(PF.formatPath(self.AlbumPath + '\\' + alfabeticChar))
+
        #========================================================#
 
-        
-    @staticmethod
-    def inizializeConfiguration() -> dict:
+    def SaveThreadLoop(self):
+        running =  True
+
+        while running:
+            time.sleep(4)
+            with Track_and_Album_Research.MUTEX2:
+                self.saveData()
+
+            running = False
+            for th in self.threads: 
+                if th.is_alive():
+                    running = True
+                    break
+
+    def appendData(self, id:str):
+        temp:list = [id]
+
+        with open(Track_and_Album_Research.FILE_ID, 'a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(temp)
+
+    def saveData(self):
+        self.saveSettings(Track_and_Album_Research.FILE_SETTINGS, self.todict())   
+ 
+    def loadProcessedID(self):
+
+        if not os.path.exists(Track_and_Album_Research.FILE_ID):
+            with open(Track_and_Album_Research.FILE_ID, 'w'):
+                pass
+            return
+
+        with open(Track_and_Album_Research.FILE_ID, 'r') as file:
+            reader = csv.reader(file)
+            for row in reader:
+                self.processed_ID[row[0]] = None
+               
+
+
+
+    """def inizializeConfiguration(self) -> dict:
         data = {
             "processed_ID" : {}
         }
 
-        return data
+        return data"""
+    
+    
     
     def getElementCount(self) -> int:
         return self.TotalElement
@@ -87,24 +179,33 @@ class TrackResearch(DataResearch):
     def getProgress(self) -> int:
         return self.ID_Index
     
-    def toDict(self) -> dict:
-        out = super().todict()
+    def todict(self) -> dict:
+        out = super().toDict()
         #out["lastPageIndex"] = self.currentPageIndex
         #out["lastPageElement"] = self.pageElement
         out["processed_ID"] = self.processed_ID
+
+        print(f"ID processed: {len(self.processed_ID)}")
+
+        #print(out)
         return out
 
     def start(self):
-        for i in range(self.threadNumber):
-            th = self.TrackReSerarcher(i, self)
-            self.threads.append(th)
-            th.start()
+        for Account in self.Accounts:
+            for i in range(Track_and_Album_Research.THREAD_NUMBER):
+                th = self.TrackReSerarcher(i, self, Account)
+                self.threads.append(th)
+                th.start()
 
-    @classmethod
+        #self.SaveThread = threading.Thread(target=self.SaveThreadLoop)
+        #self.SaveThread.start()
+
+
+
     class ElementFinder_Thread(threading.Thread):
-        def __init__(self, bho, classReference):
+        def __init__(self, classReference):
             super().__init__()
-            self.classReference: TrackResearch = classReference
+            self.classReference: Track_and_Album_Research = classReference
             self.ElementDict:dict = self.classReference.Arists_ID
 
         def run(self):
@@ -141,14 +242,15 @@ class TrackResearch(DataResearch):
    
     class TrackReSerarcher(DataResearch.ResearchThread):
 
-        def __init__(self, thNumber: int, classReference):
-            super().__init__(thNumber, classReference.token)
+        def __init__(self, thNumber: int, classReference, Account: SpotifyUser):
+            super().__init__(thNumber)
             
-            self.classReference: TrackResearch = classReference
+            self.classReference: Track_and_Album_Research = classReference
+            self.Account:SpotifyUser = Account
             self.fileData_song:dict = {}
             self.fileData_album:dict = {}
 
-            self.scraper: SpotifyScraper = SpotifyScraper()
+            #self.scraper: SpotifyScraper = SpotifyScraper()
 
         def getelementAt(self, index: int) -> str:
             merged_list = sum(self.classReference.Arists_ID.values(), [])  # Unione di tutte le liste nel dizionario
@@ -162,40 +264,83 @@ class TrackResearch(DataResearch):
                 index -= len(lst)
 
 
+        def getElement(self) -> tuple:
+            totalKeys = self.classReference.TotalAlfabeticLetter
+            #LetterIndex = self.classReference.currentLetterIndex  
+            #LetterElement = self.classReference.LetterElement
+
+            while self.classReference.currentLetterIndex < totalKeys: 
+
+                #ottengo la la lettera attuale
+                ArtistAlfabeticKey = [*self.classReference.Arists_ID][self.classReference.currentLetterIndex]
+
+                #ottengo l'id & incremento l'indice
+                artistID_list = self.classReference.Arists_ID[ArtistAlfabeticKey]
+                artistID = artistID_list[self.classReference.LetterElement]
+
+                #print(self.classReference.LetterElement, end = ' | ')
+
+                #se ero l'ultimo elemento di quella lettera
+                if self.classReference.LetterElement + 1 >= len(self.classReference.Arists_ID[ArtistAlfabeticKey]):
+                    self.classReference.LetterElement = 0
+                    self.classReference.currentLetterIndex += 1
+                else:
+                    self.classReference.LetterElement += 1
+                   
+                self.classReference.processed_ID_count += 1
+
+                #Verifico se sono già stato processato
+                if artistID in self.classReference.processed_ID:
+                    #print(f'{artistID} already processed')
+                    continue #ripeto tutta l'operazione
+                else:
+                    return (ArtistAlfabeticKey, artistID)
+            
+            return None
+        
+        
         def run(self):
             index:int = 0
             
             while self.running:
 
                 #verifico qual è l'elemento che devo processare
-                with ArtistsResearch.MUTEX1:
-                    if self.classReference.ID_Index >= self.classReference.TotalElement:
-                        return
-                    else:
-                        index = self.classReference.ID_Index
-                        self.classReference.ID_Index += 1
-
-
-                id, key = self.getelementAt(index)
-
-                #verifico se esiste la cartella
                 with ArtistsResearch.MUTEX2:
-                    path1 = PF.formatPath(self.classReference.TrackPath + '\\' + key)
-                    path2 = PF.formatPath(self.classReference.AlbumPath + '\\' + key)
+                    result = self.getElement()
+                    if result == None:
+                        return
+                    #print(result)
+                    
+                #salvo i dati
+                alfabeticChar = result[0]
+                artistID = result[1]
 
-                    if not os.path.exists(path1):
-                        os.makedirs(path1)
-                    if not os.path.exists(path2):
-                        os.makedirs(path2)
+               
+                #eseguo la raccolta dei dati
+                #albums, tracks = self.scraper.getArtist_albums_and_tracks(id)
+                self.search_traks_and_album_by_artistID(artistID)
+                
 
-                #eseguo lo screaping
-                albums, tracks = self.scraper.getArtist_albums_and_tracks(id)
+                #salvo i dati
+                path1 = PF.formatPath(self.classReference.TrackPath + '\\' + alfabeticChar + "\\" + artistID + ".json")
+                path2 = PF.formatPath(self.classReference.AlbumPath + '\\' + alfabeticChar + "\\" + artistID + ".json")
 
-                with open(PF.formatPath(f'{path1}\\{id}.json'), 'w') as file:
-                    json.dump(tracks, file, indent=4)
+                with open(path1, 'w') as file:
+                    json.dump(self.fileData_song, file, indent=4)
 
-                with open(PF.formatPath(f'{path2}\\{id}.json'), 'w') as file:
-                    json.dump(albums, file, indent=4)
+                with open(path2, 'w') as file:
+                    json.dump(self.fileData_album, file, indent=4)
+
+                self.fileData_song.clear()
+                self.fileData_album.clear()
+
+                #salvo il progresso
+                with ArtistsResearch.MUTEX2:
+                    self.classReference.processed_ID[artistID] = 1
+                    self.classReference.appendData(artistID)
+
+                
+
 
                 """reties = 0
                 while not self.search_traks_by_artistID(id):
@@ -208,25 +353,64 @@ class TrackResearch(DataResearch):
             #Terminal.success(f" Search for \"{Fore.MAGENTA}{key}{Fore.RESET}\" completed")
             #Terminal.info(f" Thread ArtistSerarcher [{self.thNumber}] finished")
 
+        
 
-        def search_traks_by_artistID(self, artist_ID:str) -> bool:
+
+        def search_traks_and_album_by_artistID(self, artist_ID:str):
+            
+            data:dict = {}
+            reties:int = 0
+            proxyErrors = 0
+            
             if artist_ID == "": 
                 Terminal.error(" Invalid artist ID")
-                return False
-            
-            with ArtistsResearch.MUTEX3:
-                time.sleep(0.050)
+                os._exit(0)
 
-            if not super().make_Request_to(f'{TrackResearch.URL.replace("{id}", artist_ID)}'):
-                return False
-            
-            songsList = []
+            #ripeto finché ho errori
+            while True:
+
+                #creo la richiesta
+                query = Track_and_Album_Research.URL
+                query = query.replace("[id]", f'{artist_ID}')
+                proxy = self.Account.getProxy()
+                try:
+                    response = requests.get(query, proxies=proxy,headers = self.Account.get_auth_headers())
+                    reties += 1
+                except Exception as e:
+                    reties += 1
+                    proxyErrors += 1
+                    Terminal.error(e)
+                    time.sleep(0.200)
+
+                    if proxyErrors >= 2:
+                        self.Account.changeProxy()
+
+                    continue
+
+                #verifico lo stato della richiesta
+                if response.ok:
+                    data = json.loads(response.content.decode("utf-8"))
+                    break
+
+                elif "limit exceeded" not in response.text:
+                    with Track_and_Album_Research.MUTEX1:
+                        temp = response.text.replace('\n','')
+                        Terminal.error(f"req: {response.url} --> {response} --> {temp}" )
+
+                if reties >= 24:
+                    with Track_and_Album_Research.MUTEX1:
+                        Terminal.error(" to much failed requests !!!")
+                    os._exit(0)
+
+                time.sleep(0.200)
+
             
 
-            for idx, song in enumerate(self.lastResponse_json['tracks']):
+            for idx, song in enumerate(data['tracks']):
 
-                Artists_ID = []
-                Album_Artists_ID = []
+                Artists_ID = []             #gli artisti che hanno realizzato quella canzone
+                Album_Artists_ID = []       #gli album
+
                 for arist in song['artists']:
                     Artists_ID.append(arist['id'])
 
@@ -255,25 +439,14 @@ class TrackResearch(DataResearch):
                     #'popularity'    :   song['album']['popularity'],
                     'artists_ID'    :   Album_Artists_ID
                 }
+
                 self.fileData_song[SongData['id']] = SongData
                 self.fileData_album[songsAlbum['id']] = songsAlbum  
 
-            self.writeJson(self.fileData_song, artist_ID, self.classReference.TrackPath)
-            self.writeJson(self.fileData_album, artist_ID, self.classReference.AlbumPath)
+            """self.writeJson(self.fileData_song, artist_ID, self.classReference.TrackPath)
+            self.writeJson(self.fileData_album, artist_ID, self.classReference.AlbumPath)"""
 
-            self.classReference.processed_ID[artist_ID] = True
 
-            """self.classReference.pageController_Track.saveData(SongData, SongData['id'])
-            self.classReference.pageController_Album.saveData(songsAlbum, songsAlbum['id'])"""
-
-                
-
-             
-            return True
-
-        
-
-    
 
 class ArtistsResearch(DataResearch):
 
@@ -290,7 +463,7 @@ class ArtistsResearch(DataResearch):
     EndArtistKey: str = "b"
 
 
-    def __init__(self, threadNumber:int, database: DataBase, tk: Token, startKey: str, endKey: str, path: str, lastSessionData):
+    def __init__(self, threadNumber:int, database, tk: Token, startKey: str, endKey: str, path: str, lastSessionData):
         super().__init__(threadNumber, database, tk)
         
         ArtistsResearch.CurrentArtistKey = startKey
