@@ -1,16 +1,28 @@
 package server;
 
+import database.PredefinedSQLCode;
+import database.QueryBuilder;
+import database.PredefinedSQLCode.Tabelle;
+import me.tongfei.progressbar.ProgressBar;
+import me.tongfei.progressbar.ProgressBarStyle;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.Scanner;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+
+import Parser.JsonParser;
 
 enum Color {
     //Color end string, color reset
@@ -98,15 +110,23 @@ enum Color {
     }
 }
 
-public class Terminal extends JFrame implements Runnable {
 
-    private enum MessageType{
+public class Terminal implements Runnable {
 
+    private static final int LINE_ELEMENT = 100;
+    private static final char LINE_CHAR = '-';
+    
+    private boolean running;
+    private App main;
+    
+
+    private enum MessageType 
+    {
         NONE(""),
-        INFO("[" + Color.BLUE + "INFO" + Color.RESET + "]"),
+        INFO("[" + Color.BLUE_BOLD + "INFO" + Color.RESET + "]"),
         ERROR("[" + Color.RED_BOLD + "ERROR" + Color.RESET + "]"),
-        REQUEST("[" + Color.YELLOW + "REQUEST" + Color.RESET + "]"),
-        SUCCES("[" + Color.GREEN + "SUCCES" + Color.RESET + "]");
+        REQUEST("[" + Color.YELLOW_BOLD + "REQUEST" + Color.RESET + "]"),
+        SUCCES("[" + Color.GREEN_BOLD + "SUCCES" + Color.RESET + "]");
         
         private final String message;
 
@@ -120,12 +140,14 @@ public class Terminal extends JFrame implements Runnable {
         }
     }
 
-    private enum Command {
-
+    private enum Command 
+    {
         HELP("help", "Elenco dei comandi"),
         START("start", "Avvia il Server"),
         CLOSE("exit", "Termina l'applicazione"),
-        BUILD_SERVER("init_database", "inizilizza il database dell'applicazione. parametri: p=path");
+        BUILD_SERVER("init", "inizilizza il database dell'applicazione"),
+        CLEAR_DB("clear", "cancella tutte le informazioni del database"),
+        PRINT_SQL("sql", "mostra i codici SQL statici creati");
 
         public final String value;
         private final String descrizione;
@@ -139,29 +161,18 @@ public class Terminal extends JFrame implements Runnable {
         public String toString() {
             return value.toUpperCase() + " - " + descrizione;
         }
-        
-
     }
 
 
-    private static final int LINE_ELEMENT = 100;
-    private static final char LINE_CHAR = '-';
-    
-    private boolean running;
-    private App main;
-    
 
-    public Terminal(App main) 
-    {
-        
+    public Terminal(App main)  {
         this.main = main;
         this.running = true;
     }    
 
     @Override
-    public void run() {
-
-        
+    public void run() 
+    {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("type \"help\" to see available commands");
         
@@ -169,24 +180,29 @@ public class Terminal extends JFrame implements Runnable {
         {
             try {
                 printArrow();
-           
-                String command = in.readLine().toLowerCase();
-
-            
-                if(command.equals(Command.HELP.value.toLowerCase())) {
+                String command = in.readLine();
+                
+       
+                if(command.equalsIgnoreCase(Command.HELP.value)) {
                     dumpCommands();
                 }
-                else if(command.equals(Command.START.value.toLowerCase())) {
+                else if(command.equalsIgnoreCase(Command.START.value)) {
                     printInfo_ln("server starting...");
                     main.runServer();
                     in.readLine();
                     main.StopServer();
                 }
-                else if(command.equals(Command.CLOSE.value.toLowerCase())) {
+                else if(command.equalsIgnoreCase(Command.CLOSE.value)) {
                     System.exit(1);
                 }
-                else if(command.equals(Command.BUILD_SERVER.value.toLowerCase())) {
-                    initializeDatabase(in);
+                else if(command.equalsIgnoreCase(Command.BUILD_SERVER.value)) {
+                    initializeDatabase();
+                }
+                else if(command.equalsIgnoreCase(Command.CLEAR_DB.value)) {
+                    clearDatabase(in);
+                }
+                else if(command.equalsIgnoreCase(Command.PRINT_SQL.value)) {
+                    printSQL();
                 }
 
                 
@@ -203,51 +219,104 @@ public class Terminal extends JFrame implements Runnable {
         }
     }
 
-    /*private String[] getCommadData(String command) {
 
-        ArrayList<String> data = new ArrayList<String>();
-        String temp = "";
-        char lastChar = '\0';
+    private void printSQL() {
 
-        for(int i = 0; i < command.length(); i++) {
-            char c = command.charAt(i);
-
+        for (Hashtable<Tabelle, String> queries : PredefinedSQLCode.elenco_QuerySQL) {
+            boolean verificaTipologia = true;
+   
             
+            for (Tabelle key : queries.keySet()) {
+                String sql = queries.get(key);
+
+                //sql = sql.replace("(", "(\n\t").replace(",  ", ",\n\t");
+
+                if(verificaTipologia) {
+                    verificaTipologia = false;
+
+                    for(int i = 0; i < 64; i++) System.out.print("-");
+                    if (sql.contains(PredefinedSQLCode.Operazioni_SQL.CREATE.toString())) {
+                        System.out.print(" [TABLE CREATION] ");
+                    
+                    }
+                    else if (sql.contains(PredefinedSQLCode.Operazioni_SQL.DELETE.toString())) {
+                        System.out.print(" [TABLE DROPPING] ");
+                    }
+                    else if (sql.contains(PredefinedSQLCode.Operazioni_SQL.INSERT.toString())) {
+                        System.out.print(" [TABLE INSERTION] ");
+                    }
+                    for(int i = 0; i < 64; i++) System.out.print("-");
+                    System.out.println("\n");
+
+                }
+                System.out.println(sql);
+            }
         }
 
+    }
 
-        return (String[]) data.toArray();
-
-    }*/
-
-    private int initializeDatabase(BufferedReader in) throws IOException 
+    private int clearDatabase(BufferedReader in) throws IOException 
     {
-        final String[] folders = {"Artists", "Album", "Tracks"};
+        //System.out.println(PredefinedSQLCode.NomiTabelle.ARTIST);
+        System.out.println(PredefinedSQLCode.createTable_Queries.get(PredefinedSQLCode.Tabelle.ARTIST));
+        return 0;
+    }
+
+    private void buildTables(boolean clear) {
+        try {
+            for (Tabelle table : PredefinedSQLCode.Tabelle.values()) 
+            {
+                if(clear)
+                    this.main.database.submitQuery(PredefinedSQLCode.deleteTable_Queries.get(table));
+
+                this.main.database.submitQuery(PredefinedSQLCode.createTable_Queries.get(table)); 
+                System.out.println("Table " + table + " created");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.exit(0);
+        }
+    }
+
+
+    private int initializeDatabase() throws IOException 
+    {
+        final boolean test = true;
+        final String ARTIST = "Artists";
+        final String ALBUM = "Album";
+        final String TRACKS = "Tracks";
+        final String[] folders = {ARTIST, ALBUM, TRACKS};
         HashMap<String, File> foldersPath = new HashMap<String, File>();
         File database_information_folder;
 
 
         printInfo_ln("start database configuration...");
         
+        if(!test) {
 
-        final JFileChooser fileChooser = new JFileChooser(PathFormatter.formatPath(System.getProperty("user.home") + "/Desktop"));
-        fileChooser.setVisible(true);
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            final JFileChooser fileChooser = new JFileChooser(PathFormatter.formatPath(System.getProperty("user.home") + "/Desktop"));
+            fileChooser.setVisible(true);
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-        switch(fileChooser.showOpenDialog(null))
-        {
-            case JFileChooser.CANCEL_OPTION:
-                printInfo_ln("database configuration ended");
-                return 0;
 
-            case JFileChooser.APPROVE_OPTION:
-                database_information_folder = new File(fileChooser.getSelectedFile().getAbsolutePath());
-                printInfo_ln("select folder: " + database_information_folder);
-                break;
+            switch(fileChooser.showOpenDialog(null))
+            {
+                case JFileChooser.CANCEL_OPTION:
+                    printInfo_ln("database configuration ended");
+                    return 0;
 
-            default:
-                printError_ln("FileDialog Error");
-                return 0;
+                case JFileChooser.APPROVE_OPTION:
+                    database_information_folder = new File(fileChooser.getSelectedFile().getAbsolutePath());
+                    printInfo_ln("select folder: " + database_information_folder);
+                    break;
+
+                default:
+                    printError_ln("FileDialog Error");
+                    return 0;
+            }
+        }
+        else {
+            database_information_folder = new File("C:\\Users\\Utente\\Desktop\\Dataset Progetto\\Output");
         }
 
 
@@ -264,6 +333,7 @@ public class Terminal extends JFrame implements Runnable {
                 } 
                 else {
                     foldersPath.put(cartella, subFolder);
+                    printSucces_ln(cartella + " folder found");
                 }
             }
 
@@ -272,7 +342,7 @@ public class Terminal extends JFrame implements Runnable {
                 return 0;
             }
             else {
-                printSucces_ln("All folder found");
+                printSucces_ln("All folders found");
             }
         }
         else {
@@ -280,9 +350,132 @@ public class Terminal extends JFrame implements Runnable {
             return 0;
         }
 
+        //lista di tutti i file presenti nella cartella Artists
+        File[] Artistfiles = foldersPath.get(ARTIST).listFiles();
+
+
+        if (Artistfiles == null) {
+            printError_ln("the folder "+ foldersPath.get(ARTIST) + " does not contain any files");
+            return 0;
+        }
         
+        
+        //creo le tabelle
+        buildTables(true);
+
+        ArrayList<File> files = new ArrayList<File>();
+        HashMap<String, Object> songGeners_found = new HashMap<String, Object>();
+        long artistsID_found = 0;
+
+        ProgressBar artists = null;
+        ProgressBar generes = null;
+        ProgressBar images = null;
+
+        //conto gli elementi
+        for (File file : Artistfiles) {
+            if (file.isFile() && file.getName().endsWith(".json")) 
+            { 
+                files.add(file);
+                Object[] data_for_Queries = JsonParser.parseArtists(new String(Files.readAllBytes(Paths.get(file.getAbsolutePath()))));
+                HashMap<String, Object> ArtistsInf = (HashMap<String, Object>) data_for_Queries[0];
+                HashMap<String, Object> ArtistsGenres = (HashMap<String, Object>) data_for_Queries[2];
+        
+                artistsID_found += ArtistsInf.keySet().size();
+
+                for (String key : ArtistsGenres.keySet()) {
+                    for (String genre : (ArrayList<String>) ArtistsGenres.get(key)) {
+                        if(songGeners_found.get(genre) == null) {
+                            songGeners_found.put(genre, 0);
+                        }
+                    }
+                }
+            }
+        }
+
+        System.out.println("Found " + artistsID_found + " artists");
+        System.out.println("Found " + songGeners_found.keySet().size() + " music genres");
+
+        artists = new ProgressBar("Loading Artist", artistsID_found, ProgressBarStyle.ASCII);
+        generes = new ProgressBar("Loading Genres", songGeners_found.keySet().size(), ProgressBarStyle.ASCII);
+        generes.start();
+        generes.stepTo(0);
+
+        try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+
+        //carico i generi musicali
+        for (String genre : songGeners_found.keySet()) {
+            String query = QueryBuilder.insert_query_creator(PredefinedSQLCode.Tabelle.GENERI_MUSICALI, genre);
+            try {this.main.database.submitQuery(query);} catch (SQLException e) {}
+            artists.stepTo(0);
+            generes.step();
+            try {Thread.sleep(1);} catch (InterruptedException e) {e.printStackTrace();}
+        }
+
+        generes.stop();
+        artists.start();
+        artists.stepTo(0);
+        try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+        
+        
+        for (File file : files) 
+        {
+            Object[] data_for_Queries = JsonParser.parseArtists(new String(Files.readAllBytes(Paths.get(file.getAbsolutePath()))));
+            HashMap<String, Object> ArtistsInf = (HashMap<String, Object>) data_for_Queries[0];
+            HashMap<String, Object> ArtistsImgs = (HashMap<String, Object>) data_for_Queries[1];
+            HashMap<String, Object> ArtistsGenres = (HashMap<String, Object>) data_for_Queries[2];
+            
+            //itero tutti gli ID che ci sono nel FIle           
+            for (String key : ArtistsInf.keySet()) 
+            {
+                //ottengo l'HashTable che rappresenta l'artista di quell'ID
+                HashMap<String, Object> artist = (HashMap<String, Object>)ArtistsInf.get(key);
+                Tabelle tabella = PredefinedSQLCode.Tabelle.ARTIST;
+
+                //riordino gli attributi
+                Object[] data = new Object[artist.keySet().size()];
+                
+                for (int i = 0; i < data.length; i++) {    
+                    String nomeCol_i = PredefinedSQLCode.tablesAttributes.get(tabella)[i].getName();
+                    data[i] = artist.get(nomeCol_i);
+                }
+
+                try {
+                    artists.step();
+                    this.main.database.submitQuery(QueryBuilder.insert_query_creator(tabella, data));
+
+                    for (String genre : (ArrayList<String>) ArtistsGenres.get(key)) {
+                        this.main.database.submitQuery(QueryBuilder.insert_query_creator(PredefinedSQLCode.Tabelle.GENERI_ARTISTA, new Object[]{genre, artist.get(PredefinedSQLCode.Colonne.ID.getName())}));
+                    } 
+                } 
+                //Elemento duplicato
+                catch (SQLException e) {
+                }
+                
+            }
+        } 
+        artists.stop();
         return 0;
-    
+    }
+
+    public static void recursivePrint(Object obj) {
+        if (obj instanceof HashMap) {
+            HashMap<String, Object> map = (HashMap<String, Object>) obj;
+            for (String key : map.keySet()) {
+                System.out.print(key + ": ");
+                recursivePrint(map.get(key));
+            }
+        } else if (obj instanceof List) {
+            List<String> list = (List<String>) obj;
+            for (String item : list) {
+                recursivePrint(item);
+            }
+        } else if (obj instanceof Integer) {
+            int number = (Integer) obj;
+            System.out.println(number);
+        } else if (obj instanceof String) {
+            String text = (String) obj;
+            System.out.println(text);
+        }
     }
 
     private void dumpCommands() {
@@ -291,6 +484,12 @@ public class Terminal extends JFrame implements Runnable {
             System.out.println(commad);
         } 
         System.out.println();
+    }
+
+    public static void printList(List<String> list) {
+        for (String item : list) {
+            System.out.println("- " + item);
+        }
     }
 
 

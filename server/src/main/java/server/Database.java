@@ -57,14 +57,4 @@ public class Database {
         }
         return null;
     }
-
-
-    public void createTable() throws SQLException {
-        String studenti = "CREATE TABLE IF NOT EXISTS Canzoni ("
-                + "Nome NUMERIC PRIMARY KEY"
-                + ");";
-
-        getStatement();
-        statement.execute(studenti);
-    }
 }

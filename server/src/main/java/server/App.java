@@ -3,13 +3,15 @@ package server;
 import java.sql.SQLException;
 import java.text.ParseException;
 
+import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import database.PredefinedSQLCode;
 import server.Terminal;
 
 
-public class App
+public class App extends JFrame
 {
     Database database = null;
     boolean databaseConnected = false;
@@ -19,13 +21,13 @@ public class App
 
 
     public static void main( String[] args ) throws InterruptedException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
-        
         UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         new App(args);
     }
 
     public App (String[] args) throws InterruptedException {
-
+        super();
+        
         //Class.forName("org.postgresql.Driver");
         int attemptCount = 0;
         int attemptMAX = 10;

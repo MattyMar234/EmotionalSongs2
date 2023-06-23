@@ -27,6 +27,24 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>me.tongfei</groupId>
+      <artifactId>progressbar</artifactId>
+      <version>0.5.5</version>
+    </dependency>
+
+    <dependency>  
+      <groupId>org.javatuples</groupId>  
+      <artifactId>javatuples</artifactId>  
+      <version>1.2</version>  
+    </dependency>   
+
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>2.12.4</version>
+    </dependency>
+
     <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
     <dependency>
         <groupId>org.postgresql</groupId>
