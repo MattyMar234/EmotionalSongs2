@@ -5,6 +5,7 @@ import database.QueryBuilder;
 import database.PredefinedSQLCode.Tabelle;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarStyle;
+import utility.PathFormatter;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,7 +17,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Scanner;
 
 import javax.swing.JFileChooser;
@@ -111,10 +114,11 @@ enum Color {
 }
 
 
-public class Terminal implements Runnable {
+public class Terminal extends Thread {
 
     private static final int LINE_ELEMENT = 100;
     private static final char LINE_CHAR = '-';
+    private static Terminal instance = null;
     
     private boolean running;
     private App main;
@@ -163,12 +167,26 @@ public class Terminal implements Runnable {
         }
     }
 
-
-
-    public Terminal(App main)  {
+    
+    private Terminal(App main) {
+        super("Server-Terminal");
         this.main = main;
         this.running = true;
     }    
+
+    public static Terminal getInstance(App main) 
+    {
+        if (Terminal.instance == null) {
+            Terminal.instance = new Terminal(main);
+        }
+
+        return Terminal.instance;
+    }
+
+    public static Terminal getInstance() {
+        return Terminal.instance;
+    }
+
 
     @Override
     public void run() 
@@ -187,13 +205,12 @@ public class Terminal implements Runnable {
                     dumpCommands();
                 }
                 else if(command.equalsIgnoreCase(Command.START.value)) {
-                    printInfo_ln("server starting...");
                     main.runServer();
                     in.readLine();
                     main.StopServer();
                 }
                 else if(command.equalsIgnoreCase(Command.CLOSE.value)) {
-                    System.exit(1);
+                    main.exit();
                 }
                 else if(command.equalsIgnoreCase(Command.BUILD_SERVER.value)) {
                     initializeDatabase();
@@ -292,6 +309,7 @@ public class Terminal implements Runnable {
 
         printInfo_ln("start database configuration...");
         
+        //==================================== SELEZIONE DEI FILE ====================================//
         if(!test) {
 
             final JFileChooser fileChooser = new JFileChooser(PathFormatter.formatPath(System.getProperty("user.home") + "/Desktop"));
@@ -318,9 +336,9 @@ public class Terminal implements Runnable {
         else {
             database_information_folder = new File("C:\\Users\\Utente\\Desktop\\Dataset Progetto\\Output");
         }
-
-
+        //==================================== VALIDITA' FILE ====================================//
         //verifico la validità della cartella
+        
         if (database_information_folder.isDirectory()) {
             boolean tuttePresenti = true;
 
@@ -350,14 +368,44 @@ public class Terminal implements Runnable {
             return 0;
         }
 
-        //lista di tutti i file presenti nella cartella Artists
-        File[] Artistfiles = foldersPath.get(ARTIST).listFiles();
+        //==================================== VERFICA ELEMENTI ====================================//
+        //verifico ci sono èresenti dei file
+        
+        File[] Artistfiles;
+        File[] Tracksfiles;
+        //File[] Albumfiles;
 
+        Queue<File> Albumfiles = new LinkedList<File>();
+        long albumCount = 0;
 
-        if (Artistfiles == null) {
+        /*if (Artistfiles == null) {
             printError_ln("the folder "+ foldersPath.get(ARTIST) + " does not contain any files");
             return 0;
+        }*/
+        
+        Artistfiles = foldersPath.get(ARTIST).listFiles();
+
+        for (File folder : foldersPath.get(ALBUM).listFiles()) {
+            for (File file : folder.listFiles()) {
+                if (file.isFile() && file.getName().endsWith(".json")) 
+                { 
+                    Albumfiles.add(file);
+                    albumCount += JsonParser.getAlbumsFile_element_count(file.getAbsolutePath());
+                }
+            }
+            System.out.println(albumCount);
         }
+
+        System.out.println(albumCount);
+        
+        if(true) {
+            return 0;
+        }
+
+        
+
+
+        
         
         
         //creo le tabelle

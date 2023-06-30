@@ -1,0 +1,8 @@
+{
+  "Port_server" : 8090,
+  "IP_database" : "localhost",
+  "Port_database" : 5432,
+  "Pw_database" : "admin",
+  "User_database" : "postgres",
+  "Name_database" : "EmotionalSongs"
+}
