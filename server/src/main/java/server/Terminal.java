@@ -2,10 +2,13 @@ package server;
 
 import database.PredefinedSQLCode;
 import database.QueryBuilder;
+import database.PredefinedSQLCode.SQLKeyword;
 import database.PredefinedSQLCode.Tabelle;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarStyle;
+import utility.FileElementCounter;
 import utility.PathFormatter;
+import utility.WaithingAnimationThread;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -241,10 +244,21 @@ public class Terminal extends Thread {
 
         for (Hashtable<Tabelle, String> queries : PredefinedSQLCode.elenco_QuerySQL) {
             boolean verificaTipologia = true;
+            
    
             
             for (Tabelle key : queries.keySet()) {
                 String sql = queries.get(key);
+
+                for (SQLKeyword keyword : SQLKeyword.values()) {
+                    String keywordString = keyword.getKeyword();
+
+                    if(sql.contains(keyword + "\t") || sql.contains(keyword + " ") || sql.contains(keyword + "(") || sql.contains(keyword + ",") || sql.contains(keyword + ";") || sql.contains(keyword + "\n"))
+                        sql = sql.replace(keywordString, Color.MAGENTA_BOLD_BRIGHT + keywordString + Color.RESET);
+                    //System.out.println(keywordString);
+                }
+
+
 
                 //sql = sql.replace("(", "(\n\t").replace(",  ", ",\n\t");
 
@@ -286,8 +300,8 @@ public class Terminal extends Thread {
                 if(clear)
                     this.main.database.submitQuery(PredefinedSQLCode.deleteTable_Queries.get(table));
 
+                System.out.println("Creating table: " + table);
                 this.main.database.submitQuery(PredefinedSQLCode.createTable_Queries.get(table)); 
-                System.out.println("Table " + table + " created");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -296,7 +310,7 @@ public class Terminal extends Thread {
     }
 
 
-    private int initializeDatabase() throws IOException 
+    private int initializeDatabase() throws IOException, SQLException 
     {
         final boolean test = true;
         final String ARTIST = "Artists";
@@ -356,153 +370,200 @@ public class Terminal extends Thread {
             }
 
             if(!tuttePresenti) {
-                printInfo_ln("database configuration ended");
+                printInfo_ln("database configuration ended\n");
                 return 0;
             }
             else {
-                printSucces_ln("All folders found");
+                printSucces_ln("All folders found\n");
             }
         }
         else {
-            printError_ln("invalid path");
+            printError_ln("invalid path\n");
             return 0;
         }
 
         //==================================== VERFICA ELEMENTI ====================================//
-        //verifico ci sono èresenti dei file
         
-        File[] Artistfiles;
-        File[] Tracksfiles;
-        //File[] Albumfiles;
-
-        Queue<File> Albumfiles = new LinkedList<File>();
-        long albumCount = 0;
-
-        /*if (Artistfiles == null) {
-            printError_ln("the folder "+ foldersPath.get(ARTIST) + " does not contain any files");
-            return 0;
-        }*/
-        
-        Artistfiles = foldersPath.get(ARTIST).listFiles();
-
-        for (File folder : foldersPath.get(ALBUM).listFiles()) {
-            for (File file : folder.listFiles()) {
-                if (file.isFile() && file.getName().endsWith(".json")) 
-                { 
-                    Albumfiles.add(file);
-                    albumCount += JsonParser.getAlbumsFile_element_count(file.getAbsolutePath());
-                }
-            }
-            System.out.println(albumCount);
-        }
-
-        System.out.println(albumCount);
-        
-        if(true) {
-            return 0;
-        }
-
-        
-
-
-        
-        
-        
-        //creo le tabelle
-        buildTables(true);
-
-        ArrayList<File> files = new ArrayList<File>();
         HashMap<String, Object> songGeners_found = new HashMap<String, Object>();
-        long artistsID_found = 0;
+        Queue<File> artistsQueue = new LinkedList<File>();
+        Queue<File> albumsQueue  = new LinkedList<File>();
+        Queue<File> traksQueue   = new LinkedList<File>();
 
-        ProgressBar artists = null;
-        ProgressBar generes = null;
-        ProgressBar images = null;
+        HashMap<String, Queue<File>> queues = new HashMap<String, Queue<File>>();
+        queues.put(TRACKS, traksQueue);
+        queues.put(ALBUM,  albumsQueue);
 
-        //conto gli elementi
-        for (File file : Artistfiles) {
-            if (file.isFile() && file.getName().endsWith(".json")) 
-            { 
-                files.add(file);
-                Object[] data_for_Queries = JsonParser.parseArtists(new String(Files.readAllBytes(Paths.get(file.getAbsolutePath()))));
-                HashMap<String, Object> ArtistsInf = (HashMap<String, Object>) data_for_Queries[0];
-                HashMap<String, Object> ArtistsGenres = (HashMap<String, Object>) data_for_Queries[2];
-        
-                artistsID_found += ArtistsInf.keySet().size();
+        long artistsCount = 0L;
+        long albumCount   = 0L;
+        long traksCount   = 0L;
 
-                for (String key : ArtistsGenres.keySet()) {
-                    for (String genre : (ArrayList<String>) ArtistsGenres.get(key)) {
-                        if(songGeners_found.get(genre) == null) {
-                            songGeners_found.put(genre, 0);
-                        }
+
+        for(int k = 1; k < 2; k++) 
+        {
+            WaithingAnimationThread t = new WaithingAnimationThread("Retrieving " + folders[k] + " files");
+    
+            
+            
+            if(folders[k] == TRACKS || folders[k] == ALBUM) {
+
+                //creo l'array gli contenenti i thread per la ricerca
+                FileElementCounter[] threads = new FileElementCounter[foldersPath.get(folders[k]).listFiles().length];
+                FileElementCounter.resetCounter();
+                int index = 0;
+
+                //conto gli album e salvo i file
+                System.out.println("Folder:" + foldersPath.get(folders[k]).listFiles().length);
+                System.out.flush();
+                t.start();
+
+                for (File folder : foldersPath.get(folders[k]).listFiles())  { 
+                    threads[index++] = new FileElementCounter(folder, queues.get(folders[k]),(path) -> {
+                        return JsonParser.getFile_element_count(path);
+                    });
+                }
+                
+                for (int i = 0; i < threads.length; i++) {
+                    try {
+                        threads[i].join();
+                    } 
+                    catch (InterruptedException e){
+                        e.printStackTrace();
                     }
                 }
+
+                    
+                try {t.interrupt(); t.join();} catch (InterruptedException e) {}
+                System.out.println("Files found: " + queues.get(folders[k]).size());
+
+                if(folders[k] == ALBUM) {
+                    albumCount = FileElementCounter.getCounterValue();
+                    printInfo_ln("Album found: " + albumCount);
+                }
+                else if(folders[k] == TRACKS) {
+                    traksCount = FileElementCounter.getCounterValue();
+                    printInfo_ln("tracks found: " + traksCount);
+                } 
+            }
+            else if(folders[k] == ARTIST) {
+                System.out.flush();
+                t.start();
+                for (File file : foldersPath.get(ARTIST).listFiles()) {
+                    if (file.isFile() && file.getName().endsWith(".json")) { 
+
+                        artistsCount += JsonParser.getFile_element_count(file.getAbsolutePath());
+                        artistsQueue.add(file);
+                    }
+                }
+
+                t.interrupt();
+                try {t.join();} catch (InterruptedException e) {}
+                printInfo_ln("artists found: " + artistsCount);
             }
         }
 
-        System.out.println("Found " + artistsID_found + " artists");
-        System.out.println("Found " + songGeners_found.keySet().size() + " music genres");
+        //===================================== CARICO I DATI =====================================//
+        ProgressBar artistsBar = null;
+        ProgressBar albumsBar = null;
+        ProgressBar tracksBar = null;
+        File file;
 
-        artists = new ProgressBar("Loading Artist", artistsID_found, ProgressBarStyle.ASCII);
-        generes = new ProgressBar("Loading Genres", songGeners_found.keySet().size(), ProgressBarStyle.ASCII);
-        generes.start();
-        generes.stepTo(0);
+        //creo le tabelle
+        buildTables(true);
+        
+        artistsBar = new ProgressBar("["+ Color.BLUE_BOLD + "INFO" + Color.RESET + "] Loading Artists", artistsCount, ProgressBarStyle.ASCII);
+        //generes = new ProgressBar("Loading Genres", songGeners_found.keySet().size(), ProgressBarStyle.ASCII);
+        artistsBar.start();
+        artistsBar.stepTo(0);
 
+        //do il tempo di caricare la barra
         try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 
-        //carico i generi musicali
-        for (String genre : songGeners_found.keySet()) {
-            String query = QueryBuilder.insert_query_creator(PredefinedSQLCode.Tabelle.GENERI_MUSICALI, genre);
-            try {this.main.database.submitQuery(query);} catch (SQLException e) {}
-            artists.stepTo(0);
-            generes.step();
-            try {Thread.sleep(1);} catch (InterruptedException e) {e.printStackTrace();}
-        }
-
-        generes.stop();
-        artists.start();
-        artists.stepTo(0);
-        try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
         
-        
-        for (File file : files) 
+        while (artistsQueue.size() > 0) 
         {
-            Object[] data_for_Queries = JsonParser.parseArtists(new String(Files.readAllBytes(Paths.get(file.getAbsolutePath()))));
-            HashMap<String, Object> ArtistsInf = (HashMap<String, Object>) data_for_Queries[0];
-            HashMap<String, Object> ArtistsImgs = (HashMap<String, Object>) data_for_Queries[1];
+            file = artistsQueue.poll();
+            Object[] data_for_Queries = JsonParser.parseArtists(file.getAbsolutePath());
+            HashMap<String, Object> ArtistsInform = (HashMap<String, Object>) data_for_Queries[0];
+            HashMap<String, Object> ArtistsImgs   = (HashMap<String, Object>) data_for_Queries[1];
             HashMap<String, Object> ArtistsGenres = (HashMap<String, Object>) data_for_Queries[2];
             
-            //itero tutti gli ID che ci sono nel FIle           
-            for (String key : ArtistsInf.keySet()) 
+            //itero tutti gli ID che ci sono nel File           
+            for (String artist_ID : ArtistsInform.keySet()) 
             {
-                //ottengo l'HashTable che rappresenta l'artista di quell'ID
-                HashMap<String, Object> artist = (HashMap<String, Object>)ArtistsInf.get(key);
-                Tabelle tabella = PredefinedSQLCode.Tabelle.ARTIST;
+                HashMap<String, Object> artist  = (HashMap<String, Object>) ArtistsInform.get(artist_ID);   //ottengo l'HashTable che rappresenta l'artista di quell'ID
+                ArrayList<Object>       images  = (ArrayList<Object>)       ArtistsImgs.get(artist_ID);     //ottengo l'HashTable che rappresenta le immagini di quell'ID
+                ArrayList<String>       generes = (ArrayList<String>)       ArtistsGenres.get(artist_ID);   //ottengo la lista dei generi              
 
-                //riordino gli attributi
-                Object[] data = new Object[artist.keySet().size()];
-                
-                for (int i = 0; i < data.length; i++) {    
-                    String nomeCol_i = PredefinedSQLCode.tablesAttributes.get(tabella)[i].getName();
-                    data[i] = artist.get(nomeCol_i);
+                //ARTIST data
+                PredefinedSQLCode.crea_INSER_query_ed_esegui(artist, PredefinedSQLCode.Tabelle.ARTIST, this.main); 
+
+                //ARTIST Images
+                for(Object o : images) {
+                   PredefinedSQLCode.crea_INSER_query_ed_esegui((HashMap<String, Object>) o, PredefinedSQLCode.Tabelle.ARTIST_IMAGES, this.main);
                 }
 
-                try {
-                    artists.step();
-                    this.main.database.submitQuery(QueryBuilder.insert_query_creator(tabella, data));
+                //GENRES e Artist Genres
+                for(String o : generes) {
 
-                    for (String genre : (ArrayList<String>) ArtistsGenres.get(key)) {
-                        this.main.database.submitQuery(QueryBuilder.insert_query_creator(PredefinedSQLCode.Tabelle.GENERI_ARTISTA, new Object[]{genre, artist.get(PredefinedSQLCode.Colonne.ID.getName())}));
-                    } 
-                } 
-                //Elemento duplicato
-                catch (SQLException e) {
+                    HashMap<String, Object> table1 = new HashMap<String, Object>();
+                    table1.put(PredefinedSQLCode.Colonne.GENERE_MUSICALE.getName(), o);
+
+                    HashMap<String, Object> table2 = new HashMap<String, Object>();
+                    table2.put(PredefinedSQLCode.Colonne.GENERE_MUSICALE.getName(), o);
+                    table2.put(PredefinedSQLCode.Colonne.ID.getName(), artist_ID);
+
+                    PredefinedSQLCode.crea_INSER_query_ed_esegui(table1, PredefinedSQLCode.Tabelle.GENERI_MUSICALI, this.main);
+                    PredefinedSQLCode.crea_INSER_query_ed_esegui(table2, PredefinedSQLCode.Tabelle.GENERI_ARTISTA, this.main);
+                    
                 }
                 
+                artistsBar.step();
             }
         } 
-        artists.stop();
-        return 0;
+        artistsBar.stop();
+
+        albumsBar = new ProgressBar("["+ Color.BLUE_BOLD + "INFO" + Color.RESET + "] Loading Albums", albumCount, ProgressBarStyle.ASCII);
+        //generes = new ProgressBar("Loading Genres", songGeners_found.keySet().size(), ProgressBarStyle.ASCII);
+        albumsBar.start();
+        albumsBar.stepTo(0);
+        try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+
+        while (albumsQueue.size() > 0) 
+        {
+            file = albumsQueue.poll();
+            //System.out.println("FILE:" + file.getAbsolutePath());
+            Object[] data_for_Queries = JsonParser.parseAlbums(file.getAbsolutePath());
+            HashMap<String, Object> AlbumsData   = (HashMap<String, Object>) data_for_Queries[0];
+            HashMap<String, Object> AlbumsImages = (HashMap<String, Object>) data_for_Queries[1];
+            HashMap<String, Object> AlbumsArtists = (HashMap<String, Object>) data_for_Queries[2];
+          
+            //itero tutti gli ID che ci sono nel File           
+            for (String album_ID : AlbumsData.keySet()) 
+            {
+                //System.out.println("ID: " + album_ID);
+                HashMap<String, Object> album   = (HashMap<String, Object>) AlbumsData.get(album_ID);       //ottengo l'HashTable che rappresenta l'artista di quell'ID
+                ArrayList<Object> images       = (ArrayList<Object>)       AlbumsImages.get(album_ID);     //ottengo l'HashTable che rappresenta le immagini di quell'ID
+                ArrayList<String> albumArtists  = (ArrayList<String>)       AlbumsArtists.get(album_ID);   //ottengo la lista dei generi              
+
+                //ALBUM data
+                PredefinedSQLCode.crea_INSER_query_ed_esegui(album, PredefinedSQLCode.Tabelle.ALBUM, this.main); 
+
+                //ALBUM Images
+                for(Object o : images) {
+                    PredefinedSQLCode.crea_INSER_query_ed_esegui((HashMap<String, Object>) o, PredefinedSQLCode.Tabelle.ALBUM_IMAGES, this.main);
+                }
+
+                /*//GENRES e Artist Genres
+                for(String o : albumArtists) { 
+                    Solo se ggiungo una tabella che contiene le inform,azioni di chi sono gli aristi che hanno creato qull'album.
+                }*/
+                
+                albumsBar.step();
+            }
+        }
+        albumsBar.stop();
+
+        return 0;  
     }
 
     public static void recursivePrint(Object obj) {

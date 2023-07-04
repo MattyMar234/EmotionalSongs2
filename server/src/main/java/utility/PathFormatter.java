@@ -27,6 +27,17 @@ public final class PathFormatter
     } 
 
     public static String getPathSeparator() {
-        return pathSeparator;
+        if (OS.contains("win")) {
+            return "\\";
+        }
+        else if (OS.contains("nux")) {
+            return "/";
+        }
+        else if (OS.contains("mac")) {
+            return "/";
+        }
+        else {
+            return null;
+        }
     }
 }

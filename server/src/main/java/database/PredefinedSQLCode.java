@@ -3,10 +3,15 @@ package database;
 import java.math.BigDecimal;
 import java.security.Timestamp;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import org.javatuples.Triplet;
+
+import server.App;
+
 import javax.imageio.spi.RegisterableService;
 
 
@@ -26,6 +31,123 @@ public class PredefinedSQLCode
     private static final String ID_SIZE = "(22)";
     private static final String ACCOUNT_ID_SIZE = "(120)";
     
+    public static enum ImageType {
+        ARTIST("artist"),
+        ALBUM("album"),
+        SONG("album");
+
+        private String type;
+
+        private ImageType(String type) {
+            this.type = type;
+        }
+
+        @Override
+        public String toString() {
+            return this.type;
+        }
+    }
+
+
+    public enum SQLKeyword {
+        NUMERIC("NUMERIC"),
+        DECIMAL("DECIMAL"),
+        SMALLINT("SMALLINT"),
+        INTEGER("INTEGER"),
+        TIMESTAMP("TIMESTAMP"),
+        VARCHAR("VARCHAR"),
+        NVARCHAR("NVARCHAR"),
+        VARBINARY("VARBINARY"),
+        DOUBLE("DOUBLE"),
+        BOOLEAN("BOOLEAN"),
+        FLOAT("FLOAT"),
+        CHAR("CHAR"),
+        BLOB("BLOB"),
+        CLOB("CLOB"),
+        DATE("DATE"),
+        TIME("TIME"),
+        TEXT("TEXT"),
+        BIT("BIT"),
+        JOIN("JOIN"),
+        LEFT("LEFT"),
+        RIGHT("RIGHT"),
+        OUTER("OUTER"),
+        INNER("INNER"),
+        EXISTS("EXISTS"),
+        HAVING("HAVING"),
+        SELECT("SELECT"),
+        WHERE("WHERE"),
+        UPDATE("UPDATE"),
+        DELETE("DELETE"),
+        INSERT("INSERT"),
+        ALTER("ALTER"),
+        CREATE("CREATE"),
+        DROP("DROP"),
+        INDEX("INDEX"),
+        CONSTRAINT("CONSTRAINT"),
+        PRIMARY("PRIMARY"),
+        FOREIGN("FOREIGN"),
+        REFERENCES("REFERENCES"),
+        TABLE("TABLE"),
+        VIEW("VIEW"),
+        PROCEDURE("PROCEDURE"),
+        FUNCTION("FUNCTION"),
+        DECLARE("DECLARE"),
+        SET("SET"),
+        BEGIN("BEGIN"),
+        COMMIT("COMMIT"),
+        ROLLBACK("ROLLBACK"),
+        GRANT("GRANT"),
+        REVOKE("REVOKE"),
+        USER("USER"),
+        DATABASE("DATABASE"),
+        CURSOR("CURSOR"),
+        SHOW("SHOW"),
+        MAX("MAX"),
+        MIN("MIN"),
+        AVG("AVG"),
+        COUNT("COUNT"),
+        SUM("SUM"),
+        DISTINCT("DISTINCT"),
+        ORDER("ORDER"),
+        BIGINT("BIGINT"),
+        BY("BY"),
+        GROUP("GROUP"),
+        ASC("ASC"),
+        DESC("DESC"),
+        FOR("FOR"),
+        IF("IF"),
+        KEY("KEY"),
+        WHEN("WHEN"),
+        THEN("THEN"),
+        ELSE("ELSE"),
+        END("END"),
+        ALL("ALL"),
+        AS("AS"),
+        ON("ON"),
+        AND("AND"),
+        OR("OR"),
+        NOT("NOT"),
+        IN("IN"),
+        BETWEEN("BETWEEN"),
+        LIKE("LIKE"),
+        IS("IS"),
+        CASCADE("CASCADE"),
+        NULL("NULL");
+
+    private final String keyword;
+
+    SQLKeyword(String keyword) {
+        this.keyword = keyword;
+    }
+
+    public String getKeyword() {
+        return keyword;
+    }
+}
+
+
+
 
     
     
@@ -33,16 +155,17 @@ public class PredefinedSQLCode
     {
         ID("ID",                      "VARCHAR",  ID_SIZE,         "NOT NULL"),
         SONG_ID_REF("ID_Song",        "VARCHAR",  ID_SIZE,         "NOT NULL"),
+        ARTIST_ID_REF("ID_Artist",    "VARCHAR",  ID_SIZE,         "NOT NULL"),
         PLAYLIST_ID_REF("playli_ref", "VARCHAR",  "(260)",    "NOT NULL"),
         IMAGE_ID_REF("ID_Image",      "VARCHAR",  ID_SIZE,         "NOT NULL"),
         ALBUM_ID_REF("ID_Album",      "VARCHAR",  ID_SIZE,         "NOT NULL"),
         ACCOUNT_ID_REF("Account_id",  "VARCHAR",  ACCOUNT_ID_SIZE, "NOT NULL"),
         RESIDENCE_ID_REF("Residen_id","VARCHAR",  ID_SIZE,         "NOT NULL"),
-        URL("Spotify_URL",            "VARCHAR",  "(60)",     "NOT NULL"),
+        URL("Spotify_URL",            "VARCHAR",  "(120)",     "NOT NULL"),
         IMAGE_SIZE("Image_size",      "VARCHAR",  "(12)",     "NOT NULL"),
         NAME("name",                  "VARCHAR",  "(260)",    "NOT NULL"),
-        SURNAME("name",               "VARCHAR",  "(120)",    "NOT NULL"),
-        FISCAL_CODE("name",           "VARCHAR",  "(16)",     "NOT NULL"),
+        SURNAME("surname",            "VARCHAR",  "(120)",    "NOT NULL"),
+        FISCAL_CODE("FiscalCode",     "VARCHAR",  "(16)",     "NOT NULL"),
         TITLE("title",                "VARCHAR",  "(200)",    "NOT NULL"),
         POPULARITY("popularity",      "SMALLINT", "",         "NOT NULL"),
         YEAR("Year",                  "INTEGER",  "",         "NOT NULL"),
@@ -53,7 +176,7 @@ public class PredefinedSQLCode
         CREATION_DATE("Creation_date","DATE",     "",         "NOT NULL"),
         TYPE("Type",                  "VARCHAR",  "(32)",     "NOT NULL"),
         ELEMENT("Element",            "INTEGER",  "",         "NOT NULL"),
-        GENERE_MUSICALE("genre",      "VARCHAR",  "(32)",     "NOT NULL"),
+        GENERE_MUSICALE("genre",      "VARCHAR",  "(64)",     "NOT NULL"),
         COMMENTO("genre",             "VARCHAR",  "(256)",    ""),
         NICKNAME("nickname",          "VARCHAR",  "(120)",    "NOT NULL"),
         VIA_PIAZZA("Via_Piazza",      "VARCHAR",  "(120)",    "NOT NULL"),
@@ -90,21 +213,22 @@ public class PredefinedSQLCode
 
     public static enum Tabelle 
     {
-        //l'ordine dipende dal "DROP TABLE"
+        //!! l'ordine dipende dal "DROP TABLE" e dal "CREATE TABLE"
         GENERI_ARTISTA  ("GeneriArtista"), 
         GENERI_MUSICALI ("GeneriMusicali"), 
-        SONG            ("Canzone"), 
-        ARTIST          ("Artista"), 
         ALBUM           ("Album"), 
+        ALBUM_IMAGES    ("ImmaginiAlbums"),
+        ARTIST_IMAGES   ("ImmaginiArtisti"), 
+        ARTIST          ("Artista"), 
+        SONG            ("Canzone"), 
+        SONG_AUTORS     ("AutoriCanzone"), 
+        RESIDENZA       ("Residenza"), 
+        ACCOUNT         ("Account"), 
         COMMENTO        ("Commento"), 
         EMOZIONE        ("Emozione"), 
         PLAYLIST        ("Playlist"), 
-        ACCOUNT         ("Account"), 
         //PROVINCIA       ("Provincia"), 
         //COMUNE          ("Comune"), 
-        RESIDENZA       ("Residenza"), 
-        IMAGES          ("Immagine"), 
-        SONG_ARTIST     ("CanzoneArtista"), 
         PLAYLIST_SONGS   ("canzoni_playlist");
         
         
@@ -155,11 +279,11 @@ public class PredefinedSQLCode
 
 
         //Lista delle colonne
-        tablesAttributes.put(Tabelle.ARTIST,            new Colonne[] {Colonne.ID, Colonne.NAME, Colonne.URL, Colonne.FOLLOWERS, Colonne.POPULARITY, Colonne.IMAGE_ID_REF});
-        tablesAttributes.put(Tabelle.SONG,              new Colonne[] {Colonne.ID,Colonne.TITLE,Colonne.URL, Colonne.DURATION, Colonne.POPULARITY, Colonne.YEAR, Colonne.ALBUM_ID_REF, Colonne.IMAGE_ID_REF});
+        tablesAttributes.put(Tabelle.ARTIST,            new Colonne[] {Colonne.ID, Colonne.NAME, Colonne.URL, Colonne.FOLLOWERS, Colonne.POPULARITY/*, Colonne.IMAGE_ID_REF*/});
+        tablesAttributes.put(Tabelle.SONG,              new Colonne[] {Colonne.ID,Colonne.TITLE,Colonne.URL, Colonne.DURATION, Colonne.POPULARITY, Colonne.YEAR, Colonne.ALBUM_ID_REF});
         tablesAttributes.put(Tabelle.GENERI_MUSICALI,   new Colonne[] {Colonne.GENERE_MUSICALE});
         tablesAttributes.put(Tabelle.GENERI_ARTISTA,    new Colonne[] {Colonne.GENERE_MUSICALE, Colonne.ID});
-        tablesAttributes.put(Tabelle.ALBUM,             new Colonne[] {Colonne.ID, Colonne.NAME, Colonne.RELEASE_DATE, Colonne.URL, Colonne.TYPE, Colonne.ELEMENT, Colonne.IMAGE_ID_REF});
+        tablesAttributes.put(Tabelle.ALBUM,             new Colonne[] {Colonne.ID, Colonne.NAME, Colonne.RELEASE_DATE, Colonne.URL, Colonne.TYPE, Colonne.ELEMENT, Colonne.ARTIST_ID_REF});
         tablesAttributes.put(Tabelle.COMMENTO,          new Colonne[] {Colonne.ID, Colonne.COMMENTO, Colonne.ACCOUNT_ID_REF});
         tablesAttributes.put(Tabelle.EMOZIONE,          new Colonne[] {Colonne.ID, Colonne.TYPE, Colonne.VALUE, Colonne.SONG_ID_REF});
         tablesAttributes.put(Tabelle.PLAYLIST,          new Colonne[] {Colonne.ID, Colonne.NAME, Colonne.CREATION_DATE, Colonne.ACCOUNT_ID_REF});
@@ -167,8 +291,12 @@ public class PredefinedSQLCode
         //tablesAttributes.put(Tabelle.COMUNE,            new Colonne[] {Colonne.NAME, Colonne.CAP});
         //tablesAttributes.put(Tabelle.PROVINCIA,         new Colonne[] {Colonne.NAME});
         tablesAttributes.put(Tabelle.RESIDENZA,         new Colonne[] {Colonne.ID, Colonne.VIA_PIAZZA, Colonne.CIVIC_NUMER, Colonne.PROVINCE_NAME, Colonne.COUNCIL_NAME});
-        tablesAttributes.put(Tabelle.IMAGES,            new Colonne[] {Colonne.ID, Colonne.URL, Colonne.TYPE, Colonne.IMAGE_SIZE});
+        tablesAttributes.put(Tabelle.ALBUM_IMAGES,      new Colonne[] {Colonne.ID, Colonne.URL, Colonne.IMAGE_SIZE});
+        tablesAttributes.put(Tabelle.ARTIST_IMAGES,     new Colonne[] {Colonne.ID, Colonne.URL, Colonne.IMAGE_SIZE});
         tablesAttributes.put(Tabelle.PLAYLIST_SONGS,    new Colonne[] {Colonne.PLAYLIST_ID_REF, Colonne.SONG_ID_REF});
+        tablesAttributes.put(Tabelle.SONG_AUTORS,       new Colonne[] {Colonne.ARTIST_ID_REF, Colonne.SONG_ID_REF});
+
+        
 
         
         
@@ -185,18 +313,37 @@ public class PredefinedSQLCode
         //tablesPrimaryKey.put(Tabelle.COMUNE,            new Colonne[] {Colonne.NAME});
         //tablesPrimaryKey.put(Tabelle.PROVINCIA,         new Colonne[] {Colonne.NAME});
         tablesPrimaryKey.put(Tabelle.RESIDENZA,         new Colonne[] {Colonne.ID});
-        tablesPrimaryKey.put(Tabelle.IMAGES,            new Colonne[] {Colonne.ID, Colonne.TYPE});
+        tablesPrimaryKey.put(Tabelle.ALBUM_IMAGES,      new Colonne[] {Colonne.ID, Colonne.IMAGE_SIZE});
+        tablesPrimaryKey.put(Tabelle.ARTIST_IMAGES,     new Colonne[] {Colonne.ID, Colonne.IMAGE_SIZE});
         tablesPrimaryKey.put(Tabelle.PLAYLIST_SONGS,    new Colonne[] {Colonne.PLAYLIST_ID_REF, Colonne.SONG_ID_REF});
+        tablesPrimaryKey.put(Tabelle.SONG_AUTORS,       new Colonne[] {Colonne.ARTIST_ID_REF, Colonne.SONG_ID_REF});
 
 
         //lista colonne chiave esterna
-        tablesForeignKey.put(Tabelle.GENERI_ARTISTA,    new Object[] {new Triplet<Colonne, Tabelle, Colonne> (Colonne.ID, Tabelle.ARTIST, Colonne.ID), new Triplet<Colonne, Tabelle, Colonne> (Colonne.GENERE_MUSICALE, Tabelle.GENERI_MUSICALI, Colonne.GENERE_MUSICALE)});
-        tablesForeignKey.put(Tabelle.SONG,              new Object[] {new Triplet<Colonne, Tabelle, Colonne> (Colonne.ALBUM_ID_REF, Tabelle.ALBUM, Colonne.ID)});
-        tablesForeignKey.put(Tabelle.COMMENTO,          new Object[] {new Triplet<Colonne, Tabelle, Colonne> (Colonne.ACCOUNT_ID_REF, Tabelle.ACCOUNT, Colonne.NICKNAME)});
-        tablesForeignKey.put(Tabelle.EMOZIONE,          new Object[] {new Triplet<Colonne, Tabelle, Colonne> (Colonne.SONG_ID_REF, Tabelle.SONG, Colonne.ID)});
-        tablesForeignKey.put(Tabelle.PLAYLIST,          new Object[] {new Triplet<Colonne, Tabelle, Colonne> (Colonne.ACCOUNT_ID_REF, Tabelle.ACCOUNT, Colonne.NICKNAME)});
-        tablesForeignKey.put(Tabelle.ACCOUNT,           new Object[] {new Triplet<Colonne, Tabelle, Colonne> (Colonne.RESIDENCE_ID_REF, Tabelle.RESIDENZA, Colonne.ID)});
-        tablesForeignKey.put(Tabelle.PLAYLIST_SONGS,    new Object[] {new Triplet<Colonne, Tabelle, Colonne> (Colonne.PLAYLIST_ID_REF, Tabelle.PLAYLIST, Colonne.ID), new Triplet<Colonne, Tabelle, Colonne> (Colonne.SONG_ID_REF, Tabelle.SONG, Colonne.ID)});
+        tablesForeignKey.put(Tabelle.GENERI_ARTISTA, new Object[] {
+            new Triplet<Colonne, Tabelle, Colonne> (Colonne.ID, Tabelle.ARTIST, Colonne.ID), 
+            new Triplet<Colonne, Tabelle, Colonne> (Colonne.GENERE_MUSICALE, Tabelle.GENERI_MUSICALI, Colonne.GENERE_MUSICALE)
+        });
+
+        tablesForeignKey.put(Tabelle.PLAYLIST_SONGS, new Object[] {
+            new Triplet<Colonne, Tabelle, Colonne> (Colonne.PLAYLIST_ID_REF, Tabelle.PLAYLIST, Colonne.ID), 
+            new Triplet<Colonne, Tabelle, Colonne> (Colonne.SONG_ID_REF, Tabelle.SONG, Colonne.ID)
+        });
+
+        tablesForeignKey.put(Tabelle.SONG_AUTORS, new Object[] {
+            new Triplet<Colonne, Tabelle, Colonne> (Colonne.ARTIST_ID_REF, Tabelle.ARTIST, Colonne.ID), 
+            new Triplet<Colonne, Tabelle, Colonne> (Colonne.SONG_ID_REF, Tabelle.SONG, Colonne.ID)
+        });
+
+        tablesForeignKey.put(Tabelle.ALBUM_IMAGES,  new Object[] { new Triplet<Colonne, Tabelle, Colonne> (Colonne.ID, Tabelle.ALBUM, Colonne.ID)});
+        tablesForeignKey.put(Tabelle.ARTIST_IMAGES, new Object[] { new Triplet<Colonne, Tabelle, Colonne> (Colonne.ID, Tabelle.ARTIST, Colonne.ID)});
+        tablesForeignKey.put(Tabelle.SONG,          new Object[] { new Triplet<Colonne, Tabelle, Colonne> (Colonne.ALBUM_ID_REF, Tabelle.ALBUM, Colonne.ID)});
+        tablesForeignKey.put(Tabelle.COMMENTO,      new Object[] { new Triplet<Colonne, Tabelle, Colonne> (Colonne.ACCOUNT_ID_REF, Tabelle.ACCOUNT, Colonne.NICKNAME)});
+        tablesForeignKey.put(Tabelle.EMOZIONE,      new Object[] { new Triplet<Colonne, Tabelle, Colonne> (Colonne.SONG_ID_REF, Tabelle.SONG, Colonne.ID)});
+        tablesForeignKey.put(Tabelle.PLAYLIST,      new Object[] { new Triplet<Colonne, Tabelle, Colonne> (Colonne.ACCOUNT_ID_REF, Tabelle.ACCOUNT, Colonne.NICKNAME)});
+        tablesForeignKey.put(Tabelle.ACCOUNT,       new Object[] { new Triplet<Colonne, Tabelle, Colonne> (Colonne.RESIDENCE_ID_REF, Tabelle.RESIDENZA, Colonne.ID)});
+        tablesForeignKey.put(Tabelle.ALBUM,         new Object[] { new Triplet<Colonne, Tabelle, Colonne> (Colonne.ARTIST_ID_REF, Tabelle.ARTIST, Colonne.ID)});
+        
 
 
         //Triplet<NomiColonne, NomiTabelle,NomiColonne> s = new Triplet<NomiColonne, NomiTabelle,NomiColonne>
@@ -213,38 +360,46 @@ public class PredefinedSQLCode
         elenco_QuerySQL.add(deleteTable_Queries);
     }
 
-    
-    
 
-    /*protected static final Hashtable<NomiTabelle, String> insert_hashtable_query = new Hashtable<NomiTabelle, String>()  
-    {
+    public static Object[] disponiElementiColonne(Object[] array, HashMap<String, Object> valori, Tabelle t) {
         
+        Object[] output = new Object[array.length];
+        
+        for (int i = 0; i < array.length; i++) {    
+            String nomeCol_i = PredefinedSQLCode.tablesAttributes.get(t)[i].getName();
+            output[i] = valori.get(nomeCol_i);
 
-
-        {
-        insert_hashtable_query.put(
-            NomiTabelle.SONG_PLAYLIST,
-            "INSERT INTO" + NomiTabelle.SONG_PLAYLIST.toString() + " ("
-                    + "ID_Playlist, "    
-                    + "Id_Song, "             
-            );
+            if(output[i] == null) {
+                throw new NullPointerException("Colonna " + PredefinedSQLCode.tablesAttributes.get(t)[i].name() + " non trovata, nome sbagliato.");
+            }
         }
+        return output;
+    }
 
-    };*/
+    public static void crea_INSER_query_ed_esegui(HashMap<String, Object> data, Tabelle t, App main) 
+    {
+        try 
+        {
+            //preparo gli elementi per generare la query
+            Object[] array = new Object[data.keySet().size()];                              //array contenenti i valori delle colonne del record         
+            Object[] element = PredefinedSQLCode.disponiElementiColonne(array, data, t);    //riordino gli attributi
+            
+
+            String query = QueryBuilder.insert_query_creator(t, element);
+            //System.out.println(query);
+            main.database.submitQuery(query);
+        } 
+        catch (SQLException e) 
+        {
+            if(e.getMessage().toLowerCase().contains("duplicate") || e.getMessage().toLowerCase().contains("duplicato")) {
+            
+            }
+            else {
+                e.printStackTrace();
+                System.out.println(e);
+                System.exit(0);
+            }
+        }
         
-    /**
-     * @param city the city on which you want to create a view
-     * @return the string of the SQL query
-     */
-    /*protected static String create_view_expression(String city) {
-        return create_view_query[0] + city + "_users" + create_view_query[1] + "'" + city + "'";
-    }*/
-
-    /**
-     * @param city the city for which you want to know the number of users
-     * @return the string of the SQL query
-     */
-    protected static String create_num_users_query(String city) {
-        return "SELECT suburb, count(*) FROM " + city + "_users GROUP BY suburb";
     }
 }

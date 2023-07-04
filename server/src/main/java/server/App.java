@@ -57,7 +57,7 @@ public class App extends JFrame
     private String DB_user;
     private String DB_name;
     
-    protected Database database = null;
+    public Database database = null;
     protected Terminal terminal = null;
     private boolean databaseConnected = false;
     private Server server = null;
@@ -65,6 +65,10 @@ public class App extends JFrame
 
     public static void main( String[] args ) throws Exception {
         UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+        
+        //clear console
+        System.out.print("\033\143");  
+        System.out.flush();
         new App(args);
     }
 
