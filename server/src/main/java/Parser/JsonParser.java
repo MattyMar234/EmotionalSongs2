@@ -216,12 +216,13 @@ public class JsonParser
 
 
     public static Object[] parseTracks(String path) {
-        Object[] data = new Object[2];
+        Object[] data = new Object[3];
         HashMap<String, Object> tracksData = new HashMap<>();
         HashMap<String, Object> tracksArtists = new HashMap<>();
 
         data[0] = tracksData;
-        data[1] = tracksArtists;
+        data[1] = null;
+        data[2] = tracksArtists;
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -239,12 +240,12 @@ public class JsonParser
                 int popularity = trackNode.get("popularity").asInt();
                 JsonNode artistsNode = trackNode.get("artists_ID");
 
-                trackInfo.put(PredefinedSQLCode.Colonne.NAME.getName(), trackName);
+                trackInfo.put(PredefinedSQLCode.Colonne.TITLE.getName(), trackName);
                 trackInfo.put(PredefinedSQLCode.Colonne.DURATION.getName(), durationMs);
                 trackInfo.put(PredefinedSQLCode.Colonne.POPULARITY.getName(), popularity);
                 trackInfo.put(PredefinedSQLCode.Colonne.URL.getName(), spotifyUrl);
                 trackInfo.put(PredefinedSQLCode.Colonne.ID.getName(), trackId);
-                trackInfo.put("album_ID", albumId);
+                trackInfo.put(PredefinedSQLCode.Colonne.ALBUM_ID_REF.getName(), albumId);
 
                 tracksData.put(trackId, trackInfo);
 

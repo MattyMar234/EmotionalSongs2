@@ -156,17 +156,17 @@ public class PredefinedSQLCode
         ID("ID",                      "VARCHAR",  ID_SIZE,         "NOT NULL"),
         SONG_ID_REF("ID_Song",        "VARCHAR",  ID_SIZE,         "NOT NULL"),
         ARTIST_ID_REF("ID_Artist",    "VARCHAR",  ID_SIZE,         "NOT NULL"),
-        PLAYLIST_ID_REF("playli_ref", "VARCHAR",  "(260)",    "NOT NULL"),
+        PLAYLIST_ID_REF("playli_ref", "VARCHAR",  ID_SIZE,         "NOT NULL"),
         IMAGE_ID_REF("ID_Image",      "VARCHAR",  ID_SIZE,         "NOT NULL"),
         ALBUM_ID_REF("ID_Album",      "VARCHAR",  ID_SIZE,         "NOT NULL"),
         ACCOUNT_ID_REF("Account_id",  "VARCHAR",  ACCOUNT_ID_SIZE, "NOT NULL"),
         RESIDENCE_ID_REF("Residen_id","VARCHAR",  ID_SIZE,         "NOT NULL"),
         URL("Spotify_URL",            "VARCHAR",  "(120)",     "NOT NULL"),
         IMAGE_SIZE("Image_size",      "VARCHAR",  "(12)",     "NOT NULL"),
-        NAME("name",                  "VARCHAR",  "(260)",    "NOT NULL"),
+        NAME("name",                  "VARCHAR",  "(320)",    "NOT NULL"),
         SURNAME("surname",            "VARCHAR",  "(120)",    "NOT NULL"),
         FISCAL_CODE("FiscalCode",     "VARCHAR",  "(16)",     "NOT NULL"),
-        TITLE("title",                "VARCHAR",  "(200)",    "NOT NULL"),
+        TITLE("title",                "VARCHAR",  "(320)",    "NOT NULL"),
         POPULARITY("popularity",      "SMALLINT", "",         "NOT NULL"),
         YEAR("Year",                  "INTEGER",  "",         "NOT NULL"),
         VALUE("Year",                 "INTEGER",  "",         "NOT NULL"),
@@ -181,9 +181,9 @@ public class PredefinedSQLCode
         NICKNAME("nickname",          "VARCHAR",  "(120)",    "NOT NULL"),
         VIA_PIAZZA("Via_Piazza",      "VARCHAR",  "(120)",    "NOT NULL"),
         CIVIC_NUMER("civicNumber",    "INTEGER",  "",         "NOT NULL"),
-        COUNCIL_NAME("council_name",  "VARCHAR",  "(80)",    "NOT NULL"),
-        PROVINCE_NAME("province_name","VARCHAR",  "(80)",    "NOT NULL"),
-        CAP("cap",                    "VARCHAR",  "(88)",     "NOT NULL");
+        COUNCIL_NAME("council_name",  "VARCHAR",  "(80)",     "NOT NULL"),
+        PROVINCE_NAME("province_name","VARCHAR",  "(80)",     "NOT NULL"),
+        CAP("cap",                    "VARCHAR",  "(10)",     "NOT NULL");
         
         
         private String name;
@@ -280,7 +280,7 @@ public class PredefinedSQLCode
 
         //Lista delle colonne
         tablesAttributes.put(Tabelle.ARTIST,            new Colonne[] {Colonne.ID, Colonne.NAME, Colonne.URL, Colonne.FOLLOWERS, Colonne.POPULARITY/*, Colonne.IMAGE_ID_REF*/});
-        tablesAttributes.put(Tabelle.SONG,              new Colonne[] {Colonne.ID,Colonne.TITLE,Colonne.URL, Colonne.DURATION, Colonne.POPULARITY, Colonne.YEAR, Colonne.ALBUM_ID_REF});
+        tablesAttributes.put(Tabelle.SONG,              new Colonne[] {Colonne.ID,Colonne.TITLE,Colonne.URL, Colonne.DURATION, Colonne.POPULARITY, Colonne.ALBUM_ID_REF});
         tablesAttributes.put(Tabelle.GENERI_MUSICALI,   new Colonne[] {Colonne.GENERE_MUSICALE});
         tablesAttributes.put(Tabelle.GENERI_ARTISTA,    new Colonne[] {Colonne.GENERE_MUSICALE, Colonne.ID});
         tablesAttributes.put(Tabelle.ALBUM,             new Colonne[] {Colonne.ID, Colonne.NAME, Colonne.RELEASE_DATE, Colonne.URL, Colonne.TYPE, Colonne.ELEMENT, Colonne.ARTIST_ID_REF});
@@ -370,7 +370,7 @@ public class PredefinedSQLCode
             output[i] = valori.get(nomeCol_i);
 
             if(output[i] == null) {
-                throw new NullPointerException("Colonna " + PredefinedSQLCode.tablesAttributes.get(t)[i].name() + " non trovata, nome sbagliato.");
+                throw new NoSuchFieldError("Table: " + t.name + ", colum " + PredefinedSQLCode.tablesAttributes.get(t)[i].name() + " not found.");
             }
         }
         return output;
@@ -378,6 +378,7 @@ public class PredefinedSQLCode
 
     public static void crea_INSER_query_ed_esegui(HashMap<String, Object> data, Tabelle t, App main) 
     {
+        String query = "";
         try 
         {
             //preparo gli elementi per generare la query
@@ -385,19 +386,23 @@ public class PredefinedSQLCode
             Object[] element = PredefinedSQLCode.disponiElementiColonne(array, data, t);    //riordino gli attributi
             
 
-            String query = QueryBuilder.insert_query_creator(t, element);
-            //System.out.println(query);
-            main.database.submitQuery(query);
+            query = QueryBuilder.insert_query_creator(t, element);
+            //main.database.submitQuery(query);
+            main.database.submitInsertQuery(query);
         } 
         catch (SQLException e) 
         {
             if(e.getMessage().toLowerCase().contains("duplicate") || e.getMessage().toLowerCase().contains("duplicato")) {
-            
+                //System.out.println("hereee");
+            }
+            else if( e.getMessage().toLowerCase().contains(" vincolo di chiave esterna")) {
+
             }
             else {
                 e.printStackTrace();
                 System.out.println(e);
-                System.exit(0);
+                System.out.println("Query: " + query);
+                //System.exit(0);
             }
         }
         

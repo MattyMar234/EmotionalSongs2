@@ -16,7 +16,7 @@ public class WaithingAnimationThread extends Thread
         int step = 0;
 
         while(true) {
-            try {Thread.sleep(95);}catch (InterruptedException e) {for (int i = 0; i < str.length(); i++)System.out.print("\b");System.out.flush();return;}
+            try {Thread.sleep(95);}catch (InterruptedException e) {for (int i = 0; i < (int)str.length()*1.6; i++)System.out.print("\b");System.out.flush();return;}
             System.out.flush();
             System.out.print(animation[(step = (++step % 6))]);
         }

@@ -2,15 +2,18 @@ package server;
 
 import database.PredefinedSQLCode;
 import database.QueryBuilder;
+import database.PredefinedSQLCode.Colonne;
 import database.PredefinedSQLCode.SQLKeyword;
 import database.PredefinedSQLCode.Tabelle;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarStyle;
 import utility.FileElementCounter;
+import utility.GenericThread;
 import utility.PathFormatter;
 import utility.WaithingAnimationThread;
 
 import java.io.BufferedReader;
+import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,6 +27,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Scanner;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -175,6 +181,10 @@ public class Terminal extends Thread {
         super("Server-Terminal");
         this.main = main;
         this.running = true;
+
+
+        Console console = System.console();
+        
     }    
 
     public static Terminal getInstance(App main) 
@@ -297,19 +307,20 @@ public class Terminal extends Thread {
         try {
             for (Tabelle table : PredefinedSQLCode.Tabelle.values()) 
             {
-                if(clear)
+                if(clear)// || table== Tabelle.SONG)
                     this.main.database.submitQuery(PredefinedSQLCode.deleteTable_Queries.get(table));
 
-                System.out.println("Creating table: " + table);
+                printInfo_ln("Creating table: " + table);
                 this.main.database.submitQuery(PredefinedSQLCode.createTable_Queries.get(table)); 
             }
         } catch (SQLException e) {
+            printError_ln(e.toString());
             e.printStackTrace();
             System.exit(0);
         }
     }
 
-
+    @SuppressWarnings({"rawtypes","unchecked"})
     private int initializeDatabase() throws IOException, SQLException 
     {
         final boolean test = true;
@@ -317,6 +328,7 @@ public class Terminal extends Thread {
         final String ALBUM = "Album";
         final String TRACKS = "Tracks";
         final String[] folders = {ARTIST, ALBUM, TRACKS};
+
         HashMap<String, File> foldersPath = new HashMap<String, File>();
         File database_information_folder;
 
@@ -383,27 +395,25 @@ public class Terminal extends Thread {
         }
 
         //==================================== VERFICA ELEMENTI ====================================//
-        
-        HashMap<String, Object> songGeners_found = new HashMap<String, Object>();
-        Queue<File> artistsQueue = new LinkedList<File>();
-        Queue<File> albumsQueue  = new LinkedList<File>();
-        Queue<File> traksQueue   = new LinkedList<File>();
+        HashMap<String, BlockingQueue<File>> queues = new HashMap<String, BlockingQueue<File>>();
+        BlockingQueue<File> artistsQueue = new LinkedBlockingDeque<File>();
+        BlockingQueue<File> albumsQueue  = new LinkedBlockingDeque<File>();
+        BlockingQueue<File> traksQueue   = new LinkedBlockingDeque<File>();
 
-        HashMap<String, Queue<File>> queues = new HashMap<String, Queue<File>>();
+        queues.put(ARTIST, artistsQueue);
         queues.put(TRACKS, traksQueue);
         queues.put(ALBUM,  albumsQueue);
 
+        HashMap<String, Long> elementCount = new HashMap<String, Long>();
         long artistsCount = 0L;
         long albumCount   = 0L;
         long traksCount   = 0L;
 
 
-        for(int k = 1; k < 2; k++) 
+        for(int k = 2; k < 3; k++) 
         {
             WaithingAnimationThread t = new WaithingAnimationThread("Retrieving " + folders[k] + " files");
-    
-            
-            
+            printInfo_ln("analyzing " + foldersPath.get(folders[k]).getAbsolutePath());
             if(folders[k] == TRACKS || folders[k] == ALBUM) {
 
                 //creo l'array gli contenenti i thread per la ricerca
@@ -412,7 +422,8 @@ public class Terminal extends Thread {
                 int index = 0;
 
                 //conto gli album e salvo i file
-                System.out.println("Folder:" + foldersPath.get(folders[k]).listFiles().length);
+                
+                printInfo_ln("Folders found:" + foldersPath.get(folders[k]).listFiles().length);
                 System.out.flush();
                 t.start();
 
@@ -433,7 +444,7 @@ public class Terminal extends Thread {
 
                     
                 try {t.interrupt(); t.join();} catch (InterruptedException e) {}
-                System.out.println("Files found: " + queues.get(folders[k]).size());
+                printInfo_ln("Files found: " + queues.get(folders[k]).size());
 
                 if(folders[k] == ALBUM) {
                     albumCount = FileElementCounter.getCounterValue();
@@ -445,6 +456,7 @@ public class Terminal extends Thread {
                 } 
             }
             else if(folders[k] == ARTIST) {
+                printInfo_ln("Files found:" + foldersPath.get(folders[k]).listFiles().length);
                 System.out.flush();
                 t.start();
                 for (File file : foldersPath.get(ARTIST).listFiles()) {
@@ -457,112 +469,150 @@ public class Terminal extends Thread {
 
                 t.interrupt();
                 try {t.join();} catch (InterruptedException e) {}
+                try {Thread.sleep(200);} catch (InterruptedException e) {e.printStackTrace();}
+                System.out.flush();
                 printInfo_ln("artists found: " + artistsCount);
             }
         }
 
+        elementCount.put(ARTIST, artistsCount);
+        elementCount.put(ALBUM, albumCount);
+        elementCount.put(TRACKS, traksCount);
+        printSucces_ln("All file collected\n--------------------------------");
+
         //===================================== CARICO I DATI =====================================//
-        ProgressBar artistsBar = null;
-        ProgressBar albumsBar = null;
-        ProgressBar tracksBar = null;
-        File file;
-
         //creo le tabelle
-        buildTables(true);
+        buildTables(false);
         
-        artistsBar = new ProgressBar("["+ Color.BLUE_BOLD + "INFO" + Color.RESET + "] Loading Artists", artistsCount, ProgressBarStyle.ASCII);
-        //generes = new ProgressBar("Loading Genres", songGeners_found.keySet().size(), ProgressBarStyle.ASCII);
-        artistsBar.start();
-        artistsBar.stepTo(0);
+        for(String key : folders) {
+            ProgressBar progressBar = new ProgressBar(MessageType.INFO.toString() +  " Loading " + key, elementCount.get(key), ProgressBarStyle.ASCII);
+            BlockingQueue<File> current_queue = queues.get(key);
+            //File file;
 
-        //do il tempo di caricare la barra
-        try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+            progressBar.start();
+            progressBar.stepTo(0);
 
-        
-        while (artistsQueue.size() > 0) 
-        {
-            file = artistsQueue.poll();
-            Object[] data_for_Queries = JsonParser.parseArtists(file.getAbsolutePath());
-            HashMap<String, Object> ArtistsInform = (HashMap<String, Object>) data_for_Queries[0];
-            HashMap<String, Object> ArtistsImgs   = (HashMap<String, Object>) data_for_Queries[1];
-            HashMap<String, Object> ArtistsGenres = (HashMap<String, Object>) data_for_Queries[2];
+            //do il tempo di caricare la barra
+            try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+            GenericThread[] thraedList = new GenericThread[128];
+
+            for(int i = 0; i < thraedList.length; i++) 
+                thraedList[i]  = new GenericThread((data) -> {
+                BlockingQueue<File> fileQueue = (BlockingQueue<File>) data[0];
+
+                while(fileQueue.size() > 0) 
+                {
+                    Object[] data_for_Queries = null;
+                    File file = current_queue.poll();
+
+
+                    switch(key) {
+                        case ARTIST: data_for_Queries = JsonParser.parseArtists(file.getAbsolutePath()); break;
+                        case ALBUM:  data_for_Queries = JsonParser.parseAlbums(file.getAbsolutePath());  break;
+                        case TRACKS: data_for_Queries = JsonParser.parseTracks(file.getAbsolutePath());  break;
+                    }
+
+                    HashMap<String, Object> ElementsData1  = (HashMap<String, Object>) data_for_Queries[0];
+                    HashMap<String, Object> ElementsImgaes = (HashMap<String, Object>) data_for_Queries[1];
+                    HashMap<String, Object> ElementsData2  = (HashMap<String, Object>) data_for_Queries[2];
+
+                    switch(key) 
+                    {
+                        case ARTIST -> {
+                            //itero tutti gli ID che ci sono nel File           
+                            for (String artist_ID : ElementsData1.keySet()) 
+                            {
+                                HashMap<String, Object> artist  = (HashMap<String, Object>) ElementsData1.get(artist_ID);       //ottengo l'HashTable che rappresenta l'artista di quell'ID
+                                ArrayList<Object>       images  = (ArrayList<Object>)       ElementsImgaes.get(artist_ID);      //ottengo l'HashTable che rappresenta le immagini di quell'ID
+                                ArrayList<String>       generes = (ArrayList<String>)       ElementsData2.get(artist_ID);       //ottengo la lista dei generi              
+
+                                //ARTIST data
+                                PredefinedSQLCode.crea_INSER_query_ed_esegui(artist, PredefinedSQLCode.Tabelle.ARTIST, this.main); 
+
+                                //ARTIST Images
+                                for(Object o : images) {
+                                    PredefinedSQLCode.crea_INSER_query_ed_esegui((HashMap<String, Object>) o, PredefinedSQLCode.Tabelle.ARTIST_IMAGES, this.main);
+                                }
+
+                                //GENRES e Artist Genres
+                                for(String o : generes) {
+
+                                    HashMap<String, Object> table1 = new HashMap<String, Object>();
+                                    table1.put(PredefinedSQLCode.Colonne.GENERE_MUSICALE.getName(), o);
+
+                                    HashMap<String, Object> table2 = new HashMap<String, Object>();
+                                    table2.put(PredefinedSQLCode.Colonne.GENERE_MUSICALE.getName(), o);
+                                    table2.put(PredefinedSQLCode.Colonne.ID.getName(), artist_ID);
+
+                                    PredefinedSQLCode.crea_INSER_query_ed_esegui(table1, PredefinedSQLCode.Tabelle.GENERI_MUSICALI, this.main);
+                                    PredefinedSQLCode.crea_INSER_query_ed_esegui(table2, PredefinedSQLCode.Tabelle.GENERI_ARTISTA, this.main);
+                                    
+                                }
+                                progressBar.step();
+                            }
+                        }
+
+                        case ALBUM -> {
+                        
+                            //itero tutti gli ID che ci sono nel File           
+                            for (String album_ID : ElementsData1.keySet()) 
+                            {
+                                //System.out.println("ID: " + album_ID);
+                                HashMap<String, Object> album   = (HashMap<String, Object>) ElementsData1.get(album_ID);        //ottengo l'HashTable che rappresenta l'artista di quell'ID
+                                ArrayList<Object> images        = (ArrayList<Object>)       ElementsImgaes.get(album_ID);       //ottengo l'HashTable che rappresenta le immagini di quell'ID
+                                ArrayList<String> albumArtists  = (ArrayList<String>)       ElementsData2.get(album_ID);        //ottengo la lista dei generi              
+
+                                //ALBUM data
+                                PredefinedSQLCode.crea_INSER_query_ed_esegui(album, PredefinedSQLCode.Tabelle.ALBUM, this.main); 
+
+                                //ALBUM Images
+                                for(Object o : images) {
+                                    PredefinedSQLCode.crea_INSER_query_ed_esegui((HashMap<String, Object>) o, PredefinedSQLCode.Tabelle.ALBUM_IMAGES, this.main);
+                                }
+
+                                //GENRES e Artist Genres
+                                //for(String o : albumArtists) { 
+                                //    Solo se ggiungo una tabella che contiene le inform,azioni di chi sono gli aristi che hanno creato qull'album.
+                                //}
+                                
+                                progressBar.step();
+                            }
+                        }
+
+                        case TRACKS -> {
+
+                            //itero tutti gli ID che ci sono nel File           
+                            for (String trackID : ElementsData1.keySet()) 
+                            {
+                                //System.out.println("ID: " + album_ID);
+                                HashMap<String, Object> track   = (HashMap<String, Object>) ElementsData1.get(trackID);        //ottengo l'HashTable che rappresenta l'artista di quell'ID
+                                ArrayList<String> autors_id     = (ArrayList<String>)       ElementsData2.get(trackID);        //ottengo la lista dei generi              
+
+                                //TRACK data
+                                PredefinedSQLCode.crea_INSER_query_ed_esegui(track, PredefinedSQLCode.Tabelle.SONG, this.main); 
+
+                                //AUTORI canzone
+                                for(Object id : autors_id) {
+
+                                    HashMap<String, Object> table1 = new HashMap<String, Object>();
+                                    table1.put(Colonne.ARTIST_ID_REF.getName(), id);
+                                    table1.put(Colonne.SONG_ID_REF.getName(), trackID);
+
+                                    PredefinedSQLCode.crea_INSER_query_ed_esegui(table1, PredefinedSQLCode.Tabelle.SONG_AUTORS, this.main);
+                                }
+                                progressBar.step();
+                            }
+                        }
+                    }
+                }   
+            }, current_queue, 50);
             
-            //itero tutti gli ID che ci sono nel File           
-            for (String artist_ID : ArtistsInform.keySet()) 
-            {
-                HashMap<String, Object> artist  = (HashMap<String, Object>) ArtistsInform.get(artist_ID);   //ottengo l'HashTable che rappresenta l'artista di quell'ID
-                ArrayList<Object>       images  = (ArrayList<Object>)       ArtistsImgs.get(artist_ID);     //ottengo l'HashTable che rappresenta le immagini di quell'ID
-                ArrayList<String>       generes = (ArrayList<String>)       ArtistsGenres.get(artist_ID);   //ottengo la lista dei generi              
-
-                //ARTIST data
-                PredefinedSQLCode.crea_INSER_query_ed_esegui(artist, PredefinedSQLCode.Tabelle.ARTIST, this.main); 
-
-                //ARTIST Images
-                for(Object o : images) {
-                   PredefinedSQLCode.crea_INSER_query_ed_esegui((HashMap<String, Object>) o, PredefinedSQLCode.Tabelle.ARTIST_IMAGES, this.main);
-                }
-
-                //GENRES e Artist Genres
-                for(String o : generes) {
-
-                    HashMap<String, Object> table1 = new HashMap<String, Object>();
-                    table1.put(PredefinedSQLCode.Colonne.GENERE_MUSICALE.getName(), o);
-
-                    HashMap<String, Object> table2 = new HashMap<String, Object>();
-                    table2.put(PredefinedSQLCode.Colonne.GENERE_MUSICALE.getName(), o);
-                    table2.put(PredefinedSQLCode.Colonne.ID.getName(), artist_ID);
-
-                    PredefinedSQLCode.crea_INSER_query_ed_esegui(table1, PredefinedSQLCode.Tabelle.GENERI_MUSICALI, this.main);
-                    PredefinedSQLCode.crea_INSER_query_ed_esegui(table2, PredefinedSQLCode.Tabelle.GENERI_ARTISTA, this.main);
-                    
-                }
-                
-                artistsBar.step();
-            }
-        } 
-        artistsBar.stop();
-
-        albumsBar = new ProgressBar("["+ Color.BLUE_BOLD + "INFO" + Color.RESET + "] Loading Albums", albumCount, ProgressBarStyle.ASCII);
-        //generes = new ProgressBar("Loading Genres", songGeners_found.keySet().size(), ProgressBarStyle.ASCII);
-        albumsBar.start();
-        albumsBar.stepTo(0);
-        try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
-
-        while (albumsQueue.size() > 0) 
-        {
-            file = albumsQueue.poll();
-            //System.out.println("FILE:" + file.getAbsolutePath());
-            Object[] data_for_Queries = JsonParser.parseAlbums(file.getAbsolutePath());
-            HashMap<String, Object> AlbumsData   = (HashMap<String, Object>) data_for_Queries[0];
-            HashMap<String, Object> AlbumsImages = (HashMap<String, Object>) data_for_Queries[1];
-            HashMap<String, Object> AlbumsArtists = (HashMap<String, Object>) data_for_Queries[2];
-          
-            //itero tutti gli ID che ci sono nel File           
-            for (String album_ID : AlbumsData.keySet()) 
-            {
-                //System.out.println("ID: " + album_ID);
-                HashMap<String, Object> album   = (HashMap<String, Object>) AlbumsData.get(album_ID);       //ottengo l'HashTable che rappresenta l'artista di quell'ID
-                ArrayList<Object> images       = (ArrayList<Object>)       AlbumsImages.get(album_ID);     //ottengo l'HashTable che rappresenta le immagini di quell'ID
-                ArrayList<String> albumArtists  = (ArrayList<String>)       AlbumsArtists.get(album_ID);   //ottengo la lista dei generi              
-
-                //ALBUM data
-                PredefinedSQLCode.crea_INSER_query_ed_esegui(album, PredefinedSQLCode.Tabelle.ALBUM, this.main); 
-
-                //ALBUM Images
-                for(Object o : images) {
-                    PredefinedSQLCode.crea_INSER_query_ed_esegui((HashMap<String, Object>) o, PredefinedSQLCode.Tabelle.ALBUM_IMAGES, this.main);
-                }
-
-                /*//GENRES e Artist Genres
-                for(String o : albumArtists) { 
-                    Solo se ggiungo una tabella che contiene le inform,azioni di chi sono gli aristi che hanno creato qull'album.
-                }*/
-                
-                albumsBar.step();
-            }
+            for(int i = 0; i < thraedList.length; i++) 
+                try {thraedList[i].join();} catch (InterruptedException e) {e.printStackTrace();}
+            
+            
+            progressBar.stop();
         }
-        albumsBar.stop();
-
         return 0;  
     }
 

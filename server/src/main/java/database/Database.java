@@ -63,4 +63,8 @@ public class Database {
         }
         return null;
     }
+
+    public void submitInsertQuery(String sql) throws SQLException {
+        statement.execute(sql);
+    }
 }

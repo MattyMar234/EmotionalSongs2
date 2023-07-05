@@ -68,7 +68,9 @@ public class App extends JFrame
         
         //clear console
         System.out.print("\033\143");  
+        System.out.print("\033[H\033[2J");  
         System.out.flush();
+        new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();  
         new App(args);
     }
 
