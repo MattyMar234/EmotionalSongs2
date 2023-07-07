@@ -1,17 +1,14 @@
 package server;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
-import java.text.ParseException;
 
 import javax.swing.JFrame;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,8 +16,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import Parser.JsonParser;
 import database.Database;
-import database.PredefinedSQLCode;
-import server.Terminal;
 import utility.PathFormatter;
 
 

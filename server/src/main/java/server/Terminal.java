@@ -1,7 +1,6 @@
 package server;
 
 import database.PredefinedSQLCode;
-import database.QueryBuilder;
 import database.PredefinedSQLCode.Colonne;
 import database.PredefinedSQLCode.SQLKeyword;
 import database.PredefinedSQLCode.Tabelle;
@@ -17,22 +16,15 @@ import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
-import java.util.Scanner;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 
 import Parser.JsonParser;
 
