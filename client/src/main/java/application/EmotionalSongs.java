@@ -62,6 +62,10 @@ public class EmotionalSongs extends Application
         this.stage.setTitle("EmotionalSongs");
         WindowContainerController temp = (WindowContainerController) setStageScene("ApplicationBase");
         temp.setAccessPage();
+
+        ConnectionManager connectionManager = ConnectionManager.getConnectionManager();
+        connectionManager.testCustomConnection("192.168.1.128",8090);
+    
     }
 
     public void logout() {

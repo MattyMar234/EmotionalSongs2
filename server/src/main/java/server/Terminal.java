@@ -123,15 +123,16 @@ public class Terminal extends Thread {
     
     private boolean running;
     private App main;
+    private WaithingAnimationThread waithingThread = null;
     
 
-    private enum MessageType 
+    public enum MessageType 
     {
         NONE(""),
-        INFO("[" + Color.BLUE_BOLD + "INFO" + Color.RESET + "]"),
-        ERROR("[" + Color.RED_BOLD + "ERROR" + Color.RESET + "]"),
-        REQUEST("[" + Color.YELLOW_BOLD + "REQUEST" + Color.RESET + "]"),
-        SUCCES("[" + Color.GREEN_BOLD + "SUCCES" + Color.RESET + "]");
+        INFO("[" + Color.BLUE_BOLD + "INFO" + Color.RESET + "]:"),
+        ERROR("[" + Color.RED_BOLD + "ERROR" + Color.RESET + "]:"),
+        REQUEST("[" + Color.YELLOW_BOLD + "REQUEST" + Color.RESET + "]:"),
+        SUCCES("[" + Color.GREEN_BOLD + "SUCCES" + Color.RESET + "]:");
         
         private final String message;
 
@@ -204,6 +205,7 @@ public class Terminal extends Thread {
             try {
                 printArrow();
                 String command = in.readLine();
+                System.out.println();
                 
        
                 if(command.equalsIgnoreCase(Command.HELP.value)) {
@@ -211,7 +213,8 @@ public class Terminal extends Thread {
                 }
                 else if(command.equalsIgnoreCase(Command.START.value)) {
                     main.runServer();
-                    in.readLine();
+                    //in.readLine();
+                    System.console().readPassword();
                     main.StopServer();
                 }
                 else if(command.equalsIgnoreCase(Command.CLOSE.value)) {
@@ -225,10 +228,7 @@ public class Terminal extends Thread {
                 }
                 else if(command.equalsIgnoreCase(Command.PRINT_SQL.value)) {
                     printSQL();
-                }
-
-                
-                
+                } 
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -241,13 +241,27 @@ public class Terminal extends Thread {
         }
     }
 
+    public synchronized void startWaithing(String text) {
+        if(this.waithingThread == null) {
+            this.waithingThread = new WaithingAnimationThread(text);
+            this.waithingThread.start();
+        }
+    }
+
+    public synchronized void stopWaithing() {
+        if(this.waithingThread != null) {
+            this.waithingThread.terminate();
+            while(this.waithingThread.isAlive());
+            this.waithingThread = null;
+        }
+    }
+    
+
 
     private void printSQL() {
 
         for (Hashtable<Tabelle, String> queries : PredefinedSQLCode.elenco_QuerySQL) {
             boolean verificaTipologia = true;
-            
-   
             
             for (Tabelle key : queries.keySet()) {
                 String sql = queries.get(key);
@@ -257,35 +271,27 @@ public class Terminal extends Thread {
 
                     if(sql.contains(keyword + "\t") || sql.contains(keyword + " ") || sql.contains(keyword + "(") || sql.contains(keyword + ",") || sql.contains(keyword + ";") || sql.contains(keyword + "\n"))
                         sql = sql.replace(keywordString, Color.MAGENTA_BOLD_BRIGHT + keywordString + Color.RESET);
-                    //System.out.println(keywordString);
                 }
-
-
-
-                //sql = sql.replace("(", "(\n\t").replace(",  ", ",\n\t");
 
                 if(verificaTipologia) {
                     verificaTipologia = false;
 
                     for(int i = 0; i < 64; i++) System.out.print("-");
-                    if (sql.contains(PredefinedSQLCode.Operazioni_SQL.CREATE.toString())) {
+                    if (sql.toUpperCase().contains("CREATE") && sql.toUpperCase().contains("TABLE")) {
                         System.out.print(" [TABLE CREATION] ");
-                    
                     }
-                    else if (sql.contains(PredefinedSQLCode.Operazioni_SQL.DELETE.toString())) {
+                    else if (sql.toUpperCase().contains("DROP") && sql.toUpperCase().contains("TABLE")) {
                         System.out.print(" [TABLE DROPPING] ");
                     }
-                    else if (sql.contains(PredefinedSQLCode.Operazioni_SQL.INSERT.toString())) {
+                    else if (sql.toUpperCase().contains("INSERT")) {
                         System.out.print(" [TABLE INSERTION] ");
                     }
                     for(int i = 0; i < 64; i++) System.out.print("-");
                     System.out.println("\n");
-
                 }
                 System.out.println(sql);
             }
         }
-
     }
 
     private int clearDatabase(BufferedReader in) throws IOException 
@@ -434,8 +440,7 @@ public class Terminal extends Thread {
                     }
                 }
 
-                    
-                try {t.interrupt(); t.join();} catch (InterruptedException e) {}
+                try {t.terminate(); t.join();} catch (InterruptedException e) {}
                 printInfo_ln("Files found: " + queues.get(folders[k]).size());
 
                 if(folders[k] == ALBUM) {
@@ -643,6 +648,10 @@ public class Terminal extends Thread {
         }
     }
 
+    public synchronized void printSeparator() {
+        System.out.println("----------------------------------------------------------------------------------------------------");
+    }
+
 
     public synchronized void printArrow () {
         System.out.print("> ");
@@ -654,10 +663,22 @@ public class Terminal extends Thread {
         //System.out.print("\033[100D");
         //System.out.print("\n");
         //System.out.print("\033[3A");
+
+        if(this.waithingThread != null) {
+            this.waithingThread.pause();
+            while(!this.waithingThread.isInPause());
+
+            System.out.print(type + message);
+
+            this.waithingThread.restart();
+        }
+        else {
+            System.out.print(type + message);
+        }
         
 
         //if(MessageColor == null)
-        System.out.print(type + message);   
+        
         //System.out.print("\033[100D");
         //System.out.print("\033[3B");
         
@@ -684,7 +705,7 @@ public class Terminal extends Thread {
     }
 
     public void printConnection_ln(String message) {
-        printOnTerminal(MessageType.ERROR, " " + message + "\n", null);
+        printOnTerminal(MessageType.REQUEST, " " + message + "\n", null);
     }
 
     public void printLine() {

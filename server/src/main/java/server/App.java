@@ -192,7 +192,7 @@ public class App extends JFrame
     public void StopServer() {
         
         if(server != null && server.isAlive()) {
-            server.interrupt();
+            server.terminate();
             
             while(server.isAlive());
             server = null;
