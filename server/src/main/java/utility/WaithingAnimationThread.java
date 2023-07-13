@@ -2,7 +2,20 @@ package utility;
 
 public class WaithingAnimationThread extends Thread
 {
-    private final String[] animation = {"\b|", "\b/", "\b/", "\b-", "\b\\", "\b\\"};
+    public enum Animation {
+        SPIN(new String[]{"\b|", "\b/", "\b-", "\b\\"}, 150),
+        DOTS(new String[]{".", "..", "...", ""}, 800);
+
+        private final String[] frames;
+        private int delay;
+
+        private Animation(String[] frames, int delay) {
+            this.frames = frames;
+            this.delay = delay;
+        }
+    }
+    
+    private Animation animation;
     private int step = 0;
     private boolean pause = false;
     private String clearingString = "";
@@ -11,20 +24,21 @@ public class WaithingAnimationThread extends Thread
     private boolean inPause = false;
 
     public WaithingAnimationThread(String text) {
-        this.text = (text.endsWith("...") ? text : text + "...");
-        
-        for (int i = 0; i < (int)text.length() + 1; i++)
-            clearingString += "\b";
-        for (int i = 0; i < (int)text.length() + 1; i++)
-            clearingString += " ";
-        for (int i = 0; i < (int)text.length() + 1; i++)
-            clearingString += "\b";    
+        //this.text = (text.endsWith("...") ? text : text + "...");
+        this.text = text;
+        animation = Animation.SPIN;    
+    }
+
+    public WaithingAnimationThread(String text, Animation animation) {
+        //this.text = (text.endsWith("...") ? text : text + "...");
+        this.text = text;
+        this.animation = animation;    
     }
     
     public void run() 
     {
         while(true) {
-            try {Thread.sleep(95);}catch (InterruptedException e) {}
+            try {Thread.sleep(animation.delay);}catch (InterruptedException e) {}
 
             if(end) {
                 clear();
@@ -45,7 +59,7 @@ public class WaithingAnimationThread extends Thread
         } else {
 
             clear();
-            System.out.print(text + animation[(step = (++step % 6))]);
+            System.out.print(text + animation.frames[(step = (++step % animation.frames.length))]);
             System.out.flush();
         }
     }
@@ -56,7 +70,10 @@ public class WaithingAnimationThread extends Thread
     }
 
     public synchronized void clear() {
-        System.out.print(clearingString);
+        for(int k = 0; k < 3; k++ ) {
+            for (int i = 0; i < (int) text.length() + animation.frames.length; i++)
+                System.out.print((k==1) ? " " : "\b"); 
+        } 
         System.out.flush();
     }
 

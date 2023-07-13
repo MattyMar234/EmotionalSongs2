@@ -1,0 +1,72 @@
+#backPane, #back {
+    -fx-background-color: #494949;
+}
+
+#LabelName, #labelPassword {
+    -fx-text-fill: #a50303;
+    -fx-font-size: 14px;
+
+}
+
+#title {
+    /*Effetto oro*/
+    -fx-text-fill: linear-gradient(to right, 
+        #cb9b51 10%, 	
+        #f6e27a 22%,
+        #f6e27a 40%,
+        #f6f2c0 45%,
+        #f6f2c0 55%,
+        #f6e27a 60%,
+        #f6e27a 86%,
+        #cb9b51 94%
+	);
+    -fx-position: absolute;
+    -fx-text-align: center;
+    -fx-letter-spacing: 5px;
+    -fx-font-size: 45px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Times New Roman',serif;
+    /*-fx-background-color: red;*/
+}
+
+#inputPane {
+    -fx-background-color: white;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-border-color: #333333;
+    -fx-border-width: 3px;
+    -fx-color:transparent;
+}
+
+.button {
+    -fx-background-color: linear-gradient(to right, #ee8700, #f14804);
+    /*-fx-background-color: linear-gradient(to right, #ee8700, #3bf104);*/
+    -fx-font-size: 15;
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to right, #eeea00, #f18a04);
+    -fx-font-size: 15;
+    -fx-cursor: hand;
+}
+
+#NewAccountLabel {
+    -fx-text-align: center;
+    -fx-font-size: 15px;
+    /*-fx-font-family: 'Courier New', Courier, monospace;*/
+}
+
+#NewAccountLabel:hover {
+    -fx-text-align: center;
+    -fx-cursor: hand;
+    -fx-font-size: 15px;
+    -fx-text-fill: #b11515;
+    /*-fx-font-family: 'Courier New', Courier, monospace;*/
+}
+
+.text-field {
+    -fx-background-color: rgb(238, 238, 238);
+    -fx-font-size: 17;
+    -fx-border-color: #a50303;
+}
+

@@ -16,7 +16,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import Parser.JsonParser;
 import database.Database;
+import utility.AsciiArtGenerator;
 import utility.PathFormatter;
+import utility.AsciiArtGenerator.ASCII_STYLE;
 
 
 public class App extends JFrame
@@ -24,6 +26,8 @@ public class App extends JFrame
     public final static String WORKING_DIRECTORY  = PathFormatter.formatPath(System.getProperty("user.dir"));
     public final static String SETTINGS_DIRECTORY = PathFormatter.formatPath(WORKING_DIRECTORY + "/data");
     public final static String FILE_SETTINGS_PATH = PathFormatter.formatPath(SETTINGS_DIRECTORY + "/settings.json");
+
+    private static App instance;
 
     private static enum jsonDataName {
 
@@ -58,21 +62,31 @@ public class App extends JFrame
     private Server server = null;
 
 
-    public static void main( String[] args ) throws Exception {
-        UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-        
-        //clear console
-        System.out.print("\033\143");  
-        System.out.print("\033[H\033[2J");  
-        System.out.flush();
-        new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();  
-        new App(args);
+    public static App getInstance() {
+        return instance;
     }
 
-    public App (String[] args) throws InterruptedException, IOException 
+
+    public static void main( String[] args ) throws Exception 
+    {
+        UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+        new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor(); 
+        new App(args);
+
+        /*
+         *  "\u001b[s"             // save cursor position
+            "\u001b[5000;5000H"    // move to col 5000 row 5000
+            "\u001b[6n"            // request cursor position
+            "\u001b[u"             // restore cursor position 
+         */
+    }
+
+    private App(String[] args) throws InterruptedException, IOException 
     {
         super();
-        this.terminal = Terminal.getInstance(this);
+        this.terminal = Terminal.getInstance();
+        terminal.printLogo();
+        Thread.sleep(4000);
         terminal.printInfo_ln("Application Running...");
 
         loadSettings();
@@ -100,8 +114,13 @@ public class App extends JFrame
             terminal.printError_ln("Database not available");
         }
 
-        terminal.printLine();
+        
+        terminal.printSeparator();
         terminal.start();
+
+        /*while(true) {
+            System.out.println(System.in.read());
+        }*/
   
     }
 

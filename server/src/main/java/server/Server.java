@@ -23,6 +23,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import interfaces.ClientServices;
 import interfaces.ServerServices;
+import utility.WaithingAnimationThread;
 
 public class Server extends Thread implements ServerServices
 {
@@ -91,7 +92,7 @@ public class Server extends Thread implements ServerServices
 			terminal.printInfo_ln("Server listening on "+ Color.MAGENTA + IP + ":" + port + Color.RESET);
 			terminal.printInfo_ln("press ENTER to end the communication");
 
-			terminal.startWaithing(Terminal.MessageType.INFO + " Server Running...");
+			terminal.startWaithing(Terminal.MessageType.INFO + " Server Running", WaithingAnimationThread.Animation.DOTS);
 
 			int index = 0;
 			while (!exit) 
@@ -104,7 +105,7 @@ public class Server extends Thread implements ServerServices
 						clientServices.testConnection();
 					}
 					catch (Exception e) {
-						terminal.printConnection_ln("Connection lost with: " + IPs.get(clientServices));
+						terminal.printError_ln("Connection lost with: " + Color.MAGENTA + IPs.get(clientServices) + Color.RESET);
 						IPs.remove(clientServices);
 						clients.remove(clientServices);
 
@@ -122,7 +123,7 @@ public class Server extends Thread implements ServerServices
     
 		} 
 		catch (RemoteException e) {
-			terminal.printError_ln("Server initialization fallied");
+			terminal.printError_ln("Server fallied");
 			e.printStackTrace();
 			return;
 		}
@@ -144,7 +145,6 @@ public class Server extends Thread implements ServerServices
 	{
 		clients.add(client);
 		
-
 		try {
 			//String clientHost = RemoteServer.getClientHost();
 
@@ -157,7 +157,7 @@ public class Server extends Thread implements ServerServices
                         clientHost = interfaceAddress.getAddress().getHostAddress();
 			}
 
-			Terminal.getInstance().printConnection_ln("New host connected : " + Color.MAGENTA + clientHost + Color.RESET);
+			Terminal.getInstance().printInfo_ln("Host connected: " + Color.MAGENTA + clientHost + Color.RESET);
 			IPs.put(client, clientHost);
 		} 
 		catch (Exception e) {
@@ -173,11 +173,23 @@ public class Server extends Thread implements ServerServices
 	
 		try {
 			String clientHost = RemoteServer.getClientHost();
-			Terminal.getInstance().printConnection_ln("Host disconnected : " + Color.MAGENTA + clientHost + Color.RESET);
+			Terminal.getInstance().printInfo_ln("Host disconnected : " + Color.MAGENTA + clientHost + Color.RESET);
 			IPs.remove(client);
 		} 
 		catch (ServerNotActiveException e) {
 			e.printStackTrace();
 		}
+	}
+
+
+	@Override
+	public Object getAccount(String Email, String Password) throws RemoteException {
+		try {
+			String clientHost = RemoteServer.getClientHost();
+			Terminal.getInstance().printInfo_ln("Host " + Color.MAGENTA + clientHost + Color.RESET + " requested account");
+		} catch (Exception e) {
+
+		}
+		return null;
 	}
 }

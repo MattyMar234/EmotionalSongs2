@@ -19,6 +19,11 @@ public class ConnectionManager extends UnicastRemoteObject implements ClientServ
     private String hostAddress;
     private int hostPort;
     private Registry registry;
+	private ServerServices server;
+
+	public ServerServices getService() {
+		return server;
+	}
 
     private ConnectionManager() throws RemoteException {
 		super();
@@ -83,8 +88,8 @@ public class ConnectionManager extends UnicastRemoteObject implements ClientServ
 
 		try {
 			Registry registry = LocateRegistry.getRegistry(host, port);
-			ServerServices test = (ServerServices) registry.lookup("EmotionalSongs_services");
-			test.addClient(this);
+			server = (ServerServices) registry.lookup("EmotionalSongs_services");
+			server.addClient(this);
 			
 		} catch (RemoteException | NotBoundException e) {
 		

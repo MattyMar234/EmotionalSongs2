@@ -21,6 +21,7 @@ public class EmotionalSongs extends Application
     //================================[Variabili di classe]================================//
     public static final String ApplicationDirectory = System.getProperty("user.dir");
     public static final String FXML_folder_path = PathFormatter.formatPath("page-fxml"); //main\\resources\\pages-fxml
+    public static final String CSS_file_folder = PathFormatter.formatPath(ApplicationDirectory + "\\main\\css"); //main\\resources\\pages-fxml
 
     public static int applicationLanguage = 0;
 
@@ -97,6 +98,7 @@ public class EmotionalSongs extends Application
 
     private FXMLLoader getSceneLoader(String name) throws IOException  {
         FXMLLoader loader = new FXMLLoader();
+        System.out.println(EmotionalSongs.class.getResource(name + ((!name.endsWith(".fxml")) ? ".fxml" : "")));
         loader.setLocation(EmotionalSongs.class.getResource(name + ((!name.endsWith(".fxml")) ? ".fxml" : "")));
         return loader;
     }

@@ -3,6 +3,7 @@ module application.client {
     requires transitive javafx.controls;
     requires transitive javafx.base;
     requires transitive javafx.graphics;
+    
     requires java.rmi;
     
 
