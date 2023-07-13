@@ -239,7 +239,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
         //verifico validità del campo
         if(password == null || password.getText().length() == 0) {
             this.labelPassword.setText(EmotionalSongs.applicationLanguage == 0 ? "dati mancanti" : "missing data");
-            this.password.setStyle("-fx-border-color: #a50303;");mj
+            this.password.setStyle("-fx-border-color: #a50303;");
             this.labelPassword.setVisible(true);
             error = true;
         }

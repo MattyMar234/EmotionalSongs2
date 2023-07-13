@@ -85,8 +85,9 @@ public class App extends JFrame
     {
         super();
         this.terminal = Terminal.getInstance();
+        instance = this;
         terminal.printLogo();
-        Thread.sleep(4000);
+        Thread.sleep(1000);
         terminal.printInfo_ln("Application Running...");
 
         loadSettings();

@@ -52,11 +52,14 @@ public class Server extends Thread implements ServerServices
 
 			terminal.printInfo_ln("Creating registry on port " + port);
 			Registry registry = null;
+			
 			try {
 				registry = LocateRegistry.createRegistry(port);
 			} catch (Exception e) {
 				registry = LocateRegistry.getRegistry(port);
 			}
+
+			
 			
 
 
@@ -78,6 +81,7 @@ public class Server extends Thread implements ServerServices
 			//String IP = socket.getLocalAddress().getHostAddress();
 			String IP = "";
 
+			//stampa L'IP del server
 			Enumeration<NetworkInterface> networkInterfaceEnumeration = NetworkInterface.getNetworkInterfaces();
             while( networkInterfaceEnumeration.hasMoreElements()){
                 for ( InterfaceAddress interfaceAddress : networkInterfaceEnumeration.nextElement().getInterfaceAddresses())
@@ -112,8 +116,7 @@ public class Server extends Thread implements ServerServices
 					}
 				}
 
-				try {sleep((int)1000/clients.size());} catch (Exception e) {}
-				
+				try {sleep((int)1000/(clients.size() == 0 ? 1 : clients.size()));} catch (Exception e) {}
 			}
 			
 			UnicastRemoteObject.unexportObject(this, true);
@@ -146,16 +149,16 @@ public class Server extends Thread implements ServerServices
 		clients.add(client);
 		
 		try {
-			//String clientHost = RemoteServer.getClientHost();
+			String clientHost = RemoteServer.getClientHost();
 
-			String clientHost = "";
+			/*String clientHost = "";
 
 			Enumeration<NetworkInterface> networkInterfaceEnumeration = NetworkInterface.getNetworkInterfaces();
             while( networkInterfaceEnumeration.hasMoreElements()){
                 for ( InterfaceAddress interfaceAddress : networkInterfaceEnumeration.nextElement().getInterfaceAddresses())
                     if ( interfaceAddress.getAddress().isSiteLocalAddress())
                         clientHost = interfaceAddress.getAddress().getHostAddress();
-			}
+			}*/
 
 			Terminal.getInstance().printInfo_ln("Host connected: " + Color.MAGENTA + clientHost + Color.RESET);
 			IPs.put(client, clientHost);
@@ -187,6 +190,8 @@ public class Server extends Thread implements ServerServices
 		try {
 			String clientHost = RemoteServer.getClientHost();
 			Terminal.getInstance().printInfo_ln("Host " + Color.MAGENTA + clientHost + Color.RESET + " requested account");
+		
+		
 		} catch (Exception e) {
 
 		}

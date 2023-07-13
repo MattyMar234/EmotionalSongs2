@@ -210,15 +210,15 @@ public class Terminal extends Thread {
                 String command = in.readLine();
                 System.out.println();
                 
-                /*/
+                
                 if(command.equalsIgnoreCase(Command.HELP.value)) {
                     dumpCommands();
                 }
                 else if(command.equalsIgnoreCase(Command.START.value)) {
-                    main.runServer();
+                    App.getInstance().runServer();
                     //in.readLine();
                     System.console().readLine();
-                    main.StopServer();
+                    App.getInstance().StopServer();
                 }
                 else if(command.equalsIgnoreCase(Command.CLOSE.value)) {
                     main.exit();
@@ -231,7 +231,7 @@ public class Terminal extends Thread {
                 }
                 else if(command.equalsIgnoreCase(Command.PRINT_SQL.value)) {
                     printSQL();
-                }*/ 
+                }
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -382,12 +382,10 @@ public class Terminal extends Thread {
     public synchronized void printSeparator() {
 
         jline.Terminal t = jline.TerminalFactory.get();
+        t.setEchoEnabled(true);
      
-        
         int terminalWidth = t.getWidth();
         
-
-        System.out.println(terminalWidth);
 
         if(this.waithingThread != null) {
             this.waithingThread.pause();
