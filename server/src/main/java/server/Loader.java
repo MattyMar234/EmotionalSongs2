@@ -225,9 +225,6 @@ public class Loader {
 
         //===================================== CARICO I DATI =====================================//
 
-        if(true) {
-            return 0;
-        }
 
         //creo le tabelle
         buildTables(false);
