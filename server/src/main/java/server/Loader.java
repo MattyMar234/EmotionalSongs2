@@ -151,7 +151,7 @@ public class Loader {
         long traksCount   = 0L;
 
 
-        for(int k = 2; k < 3; k++) 
+        for(int k = 0; k < 3; k++) 
         {
             WaithingAnimationThread t = new WaithingAnimationThread("Retrieving " + folders[k] + " files");
             terminal.printInfo_ln("analyzing " + foldersPath.get(folders[k]).getAbsolutePath());

@@ -214,12 +214,12 @@ public class PredefinedSQLCode
     public static enum Tabelle 
     {
         //!! l'ordine dipende dal "DROP TABLE" e dal "CREATE TABLE"
+        ARTIST          ("Artista"), 
         GENERI_ARTISTA  ("GeneriArtista"), 
         GENERI_MUSICALI ("GeneriMusicali"), 
         ALBUM           ("Album"), 
         ALBUM_IMAGES    ("ImmaginiAlbums"),
         ARTIST_IMAGES   ("ImmaginiArtisti"), 
-        ARTIST          ("Artista"), 
         SONG            ("Canzone"), 
         SONG_AUTORS     ("AutoriCanzone"), 
         RESIDENZA       ("Residenza"), 
