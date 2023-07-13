@@ -155,6 +155,7 @@ public class Loader {
         {
             WaithingAnimationThread t = new WaithingAnimationThread("Retrieving " + folders[k] + " files");
             terminal.printInfo_ln("analyzing " + foldersPath.get(folders[k]).getAbsolutePath());
+            
             if(folders[k] == TRACKS || folders[k] == ALBUM) {
 
                 //creo l'array gli contenenti i thread per la ricerca
@@ -199,6 +200,8 @@ public class Loader {
                 terminal.printInfo_ln("Files found:" + foldersPath.get(folders[k]).listFiles().length);
                 System.out.flush();
                 t.start();
+                
+                
                 for (File file : foldersPath.get(ARTIST).listFiles()) {
                     if (file.isFile() && file.getName().endsWith(".json")) { 
 
@@ -207,7 +210,7 @@ public class Loader {
                     }
                 }
 
-                t.interrupt();
+                t.terminate();
                 try {t.join();} catch (InterruptedException e) {}
                 try {Thread.sleep(200);} catch (InterruptedException e) {e.printStackTrace();}
                 System.out.flush();
@@ -221,6 +224,11 @@ public class Loader {
         terminal.printSucces_ln("All file collected\n--------------------------------");
 
         //===================================== CARICO I DATI =====================================//
+
+        if(true) {
+            return 0;
+        }
+
         //creo le tabelle
         buildTables(false);
         
