@@ -21,6 +21,8 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.concurrent.ThreadLocalRandom;
 
+import Exceptions.InvalidPasswordException;
+import Exceptions.InvalidUserNameException;
 import interfaces.ClientServices;
 import interfaces.ServerServices;
 import utility.WaithingAnimationThread;
@@ -186,15 +188,15 @@ public class Server extends Thread implements ServerServices
 
 
 	@Override
-	public Object getAccount(String Email, String Password) throws RemoteException {
+	public Object getAccount(String Email, String Password) throws RemoteException, InvalidPasswordException, InvalidUserNameException {
 		try {
 			String clientHost = RemoteServer.getClientHost();
 			Terminal.getInstance().printInfo_ln("Host " + Color.MAGENTA + clientHost + Color.RESET + " requested account");
-		
-		
 		} catch (Exception e) {
 
 		}
-		return null;
+
+		throw new InvalidPasswordException();
+		//return null;
 	}
 }

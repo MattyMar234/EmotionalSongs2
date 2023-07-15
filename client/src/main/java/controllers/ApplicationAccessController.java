@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.ResourceBundle;
 
+import Exceptions.InvalidPasswordException;
+import Exceptions.InvalidUserNameException;
 import application.ConnectionManager;
 import application.EmotionalSongs;
 import javafx.collections.FXCollections;
@@ -17,6 +19,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -32,89 +35,57 @@ import javafx.util.Callback;
 /**
  * Questa classe gestisce l'accesso all'applicazione
  */
-public class ApplicationAccessController extends ControllerBase implements Initializable {
+public class ApplicationAccessController extends ControllerBase implements Initializable 
+{
 
-    @FXML public Button LoginButton;
-    @FXML public ImageView IMG;
-    @FXML public Label NewAccount;
-    @FXML public Button NoAccountButton;
-    @FXML public AnchorPane labelButton;
-    @FXML public AnchorPane pane1;
-    @FXML public PasswordField password;
-    @FXML public TextField userName;
-
-    @FXML public ComboBox<ImageView> flags;
+    private static ApplicationAccessController reference;
+    
     private ObservableList<ImageView> imgs = FXCollections.observableArrayList();
 
-    @FXML public Label LabelName;
-    @FXML public Label labelPassword;
+    
+    @FXML public Label LabeErrorlField1;
+    @FXML public Label LabeErrorlField2;
+    @FXML public Label LabelField1;
+    @FXML public Label LabelField2;
+    @FXML public Label NewAccount;
+    
+    @FXML public ImageView LabelError_IMG1;
+    @FXML public ImageView LabelError_IMG2;
 
+    @FXML public TextField userName;
+    @FXML public PasswordField password;
 
-    private final static String [][] matrice = {
-        {"Accedi all'Account", "Login"},     //LoginButton
-        {"Continua senza Account", "Continue without account"}, //  //NoAccountButton
-        {"Crea un Account", "Create Account"}           //NewAccount
-    };
+    @FXML public Button LoginButton;
+    @FXML public Button NoAccountButton;
 
+    @FXML public AnchorPane pane1;
+    @FXML public CheckBox rememberCheckBox;
+    @FXML public ComboBox<ImageView> flags;
+
+    
 
     public ApplicationAccessController() {
         super();
+        reference = this;
     }
-    
+
+    public static ApplicationAccessController getActiveInstance() {
+        return reference;
+    }
     
     @Override
     public void initialize(URL location, ResourceBundle resources) 
     {
-        //super.setImage(IMG);
-        //updatePageText();
+        super.addObjectText_Translations(LabelField1, new String[] {"Nome utente o indirizzo e-mail", "User name or e-mail address"});
+        super.addObjectText_Translations(LabelField2, new String[] {"Password", "Password"});
+        super.addObjectText_Translations(NewAccount, new String[] {"Crea un Account", "Create Account"});
+        super.addObjectText_Translations(LoginButton, new String[] {"Accedi all'Account", "Login"});
+        super.addObjectText_Translations(NoAccountButton, new String[] {"Continua senza Account", "Continue without account"});
+        super.setTextsLanguage();
+        
+        
 
-        /*File folder = new File(EmotionalSongs.flagFolder);
-        File[] listOfFiles = folder.listFiles();
-
-        Queue<File> queue = new LinkedList<File>();
-        for(File f : listOfFiles) queue.add(f);
-
-        int index = 1;
-        while(queue.size() > 0) 
-        {
-            File f = queue.poll(); //ottengo e rimuovo
-
-            //se non è un file, viene comunque rimosso
-            if(f.isFile()) 
-            {   
-                //se l'immagine cossiponde a quella che cerco
-                int number = Integer.parseInt(f.getName().split("_")[0]);
-                
-                if(number == index) 
-                {
-                    //creo la nuova immagine e l'aggiungo
-                    try {
-                        ImageView img = new ImageView(SwingFXUtils.toFXImage(ImageIO.read(f), null));
-
-                        img.setFitHeight(36);
-                        img.setFitWidth(36);
-
-                        imgs.add(img);
-
-                        flags.getItems().add(img);
-                        index++;
-                    } 
-                    catch (IOException e) 
-                    {
-                        System.out.println("=========================================");
-                        System.out.println(e);
-                        System.out.println("=========================================");
-                        e.printStackTrace();
-                        return;
-                    }
-           
-                }
-                else {
-                    queue.add(f);
-                }
-            }
-        }
-
+        /*
         flags.setCellFactory(new Callback<ListView<ImageView>, ListCell<ImageView>>() {
 
             @Override public ListCell<ImageView> call(ListView<ImageView> p) {
@@ -138,10 +109,10 @@ public class ApplicationAccessController extends ControllerBase implements Initi
         });*/
 
         //flags.getSelectionModel().select(EmotionalSongs.language);
-            
         clearError();
     }
-
+          
+    
     public class StatusListCell extends ListCell<ImageView> 
     {
         protected void updateItem(ImageView item, boolean empty) {
@@ -173,13 +144,17 @@ public class ApplicationAccessController extends ControllerBase implements Initi
     }
 
     
+    @FXML
+    public void handleLoginButtonAction() {
+        // Gestisci l'azione del pulsante di accesso
+    }
 
-    
     
 
     @FXML
-    public void changeLanguage(ActionEvent event) {
-
+    public void changeLanguage(ActionEvent event) 
+    {
+        
         //EmotionalSongs.language = flags.getSelectionModel().getSelectedIndex();
         //flags.getSelectionModel().select(EmotionalSongs.language);
 
@@ -199,18 +174,15 @@ public class ApplicationAccessController extends ControllerBase implements Initi
             flags.getItems().get(0).setImage(imgs.get(i));
         }*/
 
-
+        super.setTextsLanguage();
     }
 
-    /*private void updatePageText() {
-        LoginButton.setText(AccessController.matrice[0][EmotionalSongs.language]);
-        NoAccountButton.setText(AccessController.matrice[1][EmotionalSongs.language]);
-        NewAccount.setText(AccessController.matrice[2][EmotionalSongs.language]);
-    }*/
 
     @FXML
     public void NoAccount(ActionEvent event) throws IOException {
 
+        clearError();
+        WindowContainerController.getActiveInstance().setMainPage_home();
         /*this.application.ConnectedAccount = new UnregisteredAccount();
         Stage Window = (Stage) NoAccountButton.getScene().getWindow();
         super.SwitchScene("MainPage");*/
@@ -218,95 +190,98 @@ public class ApplicationAccessController extends ControllerBase implements Initi
 
     @FXML
     public void CreateNewAccount(MouseEvent event) throws IOException {
+
+        clearError();
+        WindowContainerController.getActiveInstance().setRegistrationPage();
+        //super.setApplicationPage("UserRegistration", );
         //Stage Window = (Stage) NoAccountButton.getScene().getWindow();
         //super.SwitchScene("UserRegistration");
     }
 
     @FXML
-    public void searchAccount(ActionEvent event) throws IOException 
+    public void accedi_Account(ActionEvent event) throws IOException 
     {
         boolean error = false;
         clearError();
 
         //verifico validità del campo
         if(userName == null || userName.getText().length() == 0) {
-            this.LabelName.setText(EmotionalSongs.applicationLanguage == 0 ? "dati mancanti" : "missing data");
-            this.userName.setStyle("-fx-border-color: #a50303;");
-            this.LabelName.setVisible(true);
+            this.LabeErrorlField1.setText(EmotionalSongs.applicationLanguage == 0 ? "Inserisci il tuo nome utente o il tuo indirizzo e-mail." : "Enter your username or e-mail address.");
+            this.LabeErrorlField1.setVisible(true);
+            userName.setId("text-field_error");
             error = true;
         }
 
         //verifico validità del campo
         if(password == null || password.getText().length() == 0) {
-            this.labelPassword.setText(EmotionalSongs.applicationLanguage == 0 ? "dati mancanti" : "missing data");
-            this.password.setStyle("-fx-border-color: #a50303;");
-            this.labelPassword.setVisible(true);
+            this.LabeErrorlField2.setText(EmotionalSongs.applicationLanguage == 0 ? "Inserisci la tua password." : "Please enter your password.");
+            this.LabeErrorlField2.setVisible(true);
+            password.setId("text-field_error");
             error = true;
         }
-
-
-        ConnectionManager connection = ConnectionManager.getConnectionManager();
-        
-
-        try {
-            Object response = connection.getService().getAccount(userName.getText(), password.getText());
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
-
-
-        
-            /*//verifica email
-            if(.contains("@")) {
-                TempAccount = application.AccountsManager.SearchByEmail(userName.getText());
-                this.LabelName.setText(EmotionalSongs.language == 0 ? "email non valida" : "invalid email");
-            }
-            //verifica userID
-            else {
-                TempAccount = application.AccountsManager.SearchByID(userName.getText());
-                this.LabelName.setText(EmotionalSongs.language == 0 ? "ID utente non valido" : "invalid user ID");
-            }
-
-            if(TempAccount == null) {
-                this.userName.setStyle("-fx-border-color: #a50303;");
-                this.LabelName.setVisible(true);
-                error = true;
-            }
-        }*/
-
-        
-
 
         if(error) {
             return;
         }
 
-        /*if(!TempAccount.getPassword().equals(password.getText())) {
-            this.labelPassword.setText(EmotionalSongs.language == 0 ? "password non valida" : "wrong password");
-            this.password.setStyle("-fx-border-color: #a50303;");
-            this.password.clear();
-            this.labelPassword.setVisible(true);
-            return;
-        }*/
+
+        ConnectionManager connection = ConnectionManager.getConnectionManager();
+        Object response = null;
+
+        try {
+            response = connection.getService().getAccount(userName.getText(), password.getText());
+        } 
+        catch (InvalidUserNameException e) {
+            this.LabeErrorlField1.setVisible(true);
+            userName.setId("text-field_error");
+            String target = e.getMessage().split(" not found")[0];
             
-
-        
-
-       
-
-        //Stage Window = (Stage) NoAccountButton.getScene().getWindow();
-        //super.SwitchScene("MainPage");
-        
-
+            this.LabeErrorlField1.setText(EmotionalSongs.applicationLanguage == 0 ? target + " non trovato." : e.getMessage()+".");
+        }
+        catch (InvalidPasswordException e) {
+            this.LabeErrorlField2.setVisible(true);
+            password.setId("text-field_error");
+            this.LabeErrorlField2.setText(EmotionalSongs.applicationLanguage == 0 ? "Password errata" : e.getMessage()+".");
+        }
+        catch (Exception e) {
+            // TODO: handle exception
+        }
+        finally {
+            if(response == null) {
+                return;
+            }
+        }
     }  
 
-
-
     private void clearError() {
-        this.LabelName.setVisible(false);
-        this.labelPassword.setVisible(false);
-        this.userName.setStyle("-fx-border-color: transparent;");
-        this.password.setStyle("-fx-border-color: transparent;");
+        this.LabeErrorlField1.setVisible(false);
+        this.LabeErrorlField2.setVisible(false);
+
+        userName.setId("");
+        password.setId("");
+
+
+    }
+
+
+    private class checker extends Thread {
+
+        public checker() {
+            super();
+            setDaemon(true);
+            start();
+        }
+
+        public void run() {
+
+            while(true) {
+                if(userName.getLength() >= 0) {
+                    
+                }
+            }
+
+        }
+
     }
 
 

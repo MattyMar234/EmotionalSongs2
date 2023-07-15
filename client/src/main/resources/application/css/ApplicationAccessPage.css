@@ -1,12 +1,27 @@
+
+
+#ElementContainer {
+    -fx-background-color: #0e0e0e;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+}
+
+#divider {
+    -fx-border-color: #303030;
+    -fx-border-width: 1.1px 0 0 0;
+}
+
 #backPane, #back {
     -fx-background-color: #494949;
 }
 
 #LabelName, #labelPassword {
-    -fx-text-fill: #a50303;
+    -fx-text-fill: #ffffff;
     -fx-font-size: 14px;
 
 }
+
+
 
 #title {
     /*Effetto oro*/
@@ -38,17 +53,7 @@
     -fx-color:transparent;
 }
 
-.button {
-    -fx-background-color: linear-gradient(to right, #ee8700, #f14804);
-    /*-fx-background-color: linear-gradient(to right, #ee8700, #3bf104);*/
-    -fx-font-size: 15;
-}
 
-.button:hover {
-    -fx-background-color: linear-gradient(to right, #eeea00, #f18a04);
-    -fx-font-size: 15;
-    -fx-cursor: hand;
-}
 
 #NewAccountLabel {
     -fx-text-align: center;
@@ -64,9 +69,5 @@
     /*-fx-font-family: 'Courier New', Courier, monospace;*/
 }
 
-.text-field {
-    -fx-background-color: rgb(238, 238, 238);
-    -fx-font-size: 17;
-    -fx-border-color: #a50303;
-}
+
 

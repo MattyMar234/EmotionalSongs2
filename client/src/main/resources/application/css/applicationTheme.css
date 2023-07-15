@@ -1,0 +1,107 @@
+
+/*======================== BUTTONS =====================*/
+.button {
+    -fx-font-weight: lighter;
+    -fx-font-size: 14px;
+}
+
+.button:hover {
+    -fx-cursor: hand;
+    
+}
+
+#GreenButton {
+    -fx-background-color: #1ED760;
+    -fx-text-fill: #000000;
+    -fx-background-radius: 14px;
+    -fx-border-radius: 14px;
+    
+    
+}
+
+#GreenButton2 {
+    /*-fx-background-color: #1db954;*/
+    -fx-background-color: linear-gradient(to right, #1db985, #1ed737);
+    -fx-text-fill: white;
+
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+}
+
+#GreenButton:hover {
+    /*-fx-background-color: #1ed737;*/
+    -fx-background-color: linear-gradient(to right, #1db985, #1ed784);
+}
+
+#GreenButton2:hover {
+
+}
+
+
+#OrangeButton {
+    -fx-background-color: linear-gradient(to right, #ee8700, #f14804);
+    /*-fx-background-color: linear-gradient(to right, #ee8700, #3bf104);*/
+    -fx-font-size: 15;
+}
+
+#OrangeButton:hover {
+    -fx-background-color: linear-gradient(to right, #eeea00, #f18a04);
+    -fx-font-size: 15;
+    
+}
+
+
+/*======================== LABELS =====================*/
+
+.label {
+    -fx-font-weight: Bold;
+    -fx-font-size: 15;
+}
+
+#error_label {
+    -fx-text-fill:  #F14934;
+    -fx-font-weight: lighter;
+    -fx-font-size: 13.5;
+   
+}
+
+
+/*======================== FIELDS =====================*/
+
+.text-field, .password-field {
+    -fx-font-weight: bolder;
+    -fx-background-color: #1f1f1fd6;
+    -fx-font-size: 14.5;
+
+    -fx-text-fill: #727272;
+
+    -fx-border-color: #727272;
+    -fx-border-radius: 5px;
+    -fx-border-width: 1px;
+
+}
+
+#text-field_error {
+    -fx-border-color: #E91429;
+}
+
+
+
+
+
+
+/*======================== ELEMENT COLOR =====================*/
+
+#Border_BackGround {
+    -fx-background-color: #171717;
+}
+
+#BackGround {
+    -fx-background-color: #000000;
+}
+
+#NavColor {
+    -fx-background-color: #000000;
+}
+
+
