@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.ResourceBundle;
 
+import application.EmotionalSongs;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -22,6 +23,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import utility.Common;
+import utility.LocationsLoader;
+import utility.Province;
+import utility.Region;
 import javafx.scene.image.ImageView;
 
 /**
@@ -48,29 +53,29 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
     @FXML public Button BackButton;
 
     @FXML public Label testoNome;
-    @FXML public TextField name;
     @FXML public Label testoCognome;
-    @FXML public TextField surname;
     @FXML public Label titoloNomeUtente;
-    @FXML public TextField userID;
-    @FXML public TextField email;
-    @FXML public PasswordField password;
     @FXML public Label testoConfermaPassword;
-    @FXML public PasswordField password2;
     @FXML public Label testoNumeroCivico;
-    @FXML public TextField civicNumber;
     @FXML public Label testoComune;
     @FXML public Label testoProvince;
     @FXML public Label testoCodiceFiscale;
-    @FXML public TextField codiceFiscale;
     @FXML public Label testoViaPiazza;
-    @FXML public TextField viaPiazza;
-    
-
     @FXML public Label labelID;
     @FXML public Label labelSing;
     @FXML public Label LabelEmail;
     @FXML public Label LabelPassword2;
+    
+    @FXML public TextField name;
+    @FXML public TextField surname;
+    @FXML public TextField userID;
+    @FXML public TextField email;
+    @FXML public TextField civicNumber;
+    @FXML public TextField codiceFiscale;
+    @FXML public TextField viaPiazza;
+    @FXML public PasswordField password;
+    @FXML public PasswordField password2;
+
 
 
     @FXML public ComboBox<String> cap;
@@ -80,6 +85,9 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
     public AutoCompleteComboBoxListener<String> c1;
     public AutoCompleteComboBoxListener<String> c2;
     public AutoCompleteComboBoxListener<String> c3;
+
+
+    private LocationsLoader loader;
 
 
 
@@ -301,33 +309,31 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void initialize(URL location, ResourceBundle resources) 
     {
-        /*super.setImage(IMG1,IMG2,IMG3,IMG4,IMG5,IMG6,IMG7,IMG8,IMG9,IMG10,IMG11,IMG12,IMG13);
-        UserRegistration.setText(EmotionalSongs.language == 0 ? "Registrazione Utente" : "User Registration");
+        //super.setImage(IMG1,IMG2,IMG3,IMG4,IMG5,IMG6,IMG7,IMG8,IMG9,IMG10,IMG11,IMG12,IMG13);
+        super.addObjectText_Translations(testoNome,             new String[] {"Nome", "Name"});
+        super.addObjectText_Translations(name,                  new String[] {"Nome", "First Name"});
+        super.addObjectText_Translations(testoCognome,          new String[] {"Cognome", "Surname"});
+        super.addObjectText_Translations(surname,               new String[] {"Cognome", "Last Name"});
+        super.addObjectText_Translations(titoloNomeUtente,      new String[] {"Nome Utente", "NickName"});
+        super.addObjectText_Translations(userID,                new String[] {"ID utente", "User ID"});
+        super.addObjectText_Translations(testoConfermaPassword, new String[] {"Conferma Password", "Confirm Password"});
+        super.addObjectText_Translations(testoNumeroCivico,     new String[] {"Numero Civico", "Civic Number"});
+        super.addObjectText_Translations(civicNumber,           new String[] {"Numero", "Number"});
+        super.addObjectText_Translations(testoComune,           new String[] {"Comune", "Municipality"});
+        super.addObjectText_Translations(testoProvince,         new String[] {"Provincia", "Province"});
+        super.addObjectText_Translations(testoCodiceFiscale,    new String[] {"Codice Fiscale", "Fiscal Code"});
+        super.addObjectText_Translations(codiceFiscale,         new String[] {"Codice", "Code"});
+        super.addObjectText_Translations(testoViaPiazza,        new String[] {"Via/Piazza", "Street/Square"});
+        super.addObjectText_Translations(viaPiazza,             new String[] {"Via/Piazza", "Street/Square"});
+        
+        super.addObjectText_Translations(BackButton, new String[] {"Torna indietro", "Turn Back"});
+        super.addObjectText_Translations(confirmButton, new String[] {"Registrati", "Sig In"});
+    
+        super.setTextsLanguage();
 
-        testoNome.setText(EmotionalSongs.language == 0 ? "Nome" : "Name");
-        name.setPromptText(EmotionalSongs.language == 0 ? "Nome" : "First Name");
-        testoCognome.setText(EmotionalSongs.language == 0 ? "Cognome" : "Surname");
-        surname.setPromptText(EmotionalSongs.language == 0 ? "Cognome" : "Last Name");
-        titoloNomeUtente.setText(EmotionalSongs.language == 0 ? "Nome Utente" : "NickName");
-        userID.setPromptText(EmotionalSongs.language == 0 ? "ID utente" : "userd ID");
-        testoConfermaPassword.setText(EmotionalSongs.language == 0 ? "Conferma Password" : "Confirm Password");
-        testoNumeroCivico.setText(EmotionalSongs.language == 0 ? "Numero Civico" : "Civic Number");
-        civicNumber.setPromptText(EmotionalSongs.language == 0 ? "Numero" : "Number");
-        testoComune.setText(EmotionalSongs.language == 0 ? "Comune " : "Municipality");
-        testoProvince.setText(EmotionalSongs.language == 0 ? "Provincia" : "Province");
-        testoCodiceFiscale.setText(EmotionalSongs.language == 0 ? "Codice Fiscale" : "Fiscal Code");
-        codiceFiscale.setPromptText(EmotionalSongs.language == 0 ? "Codice" : "Code");
-        testoViaPiazza.setText(EmotionalSongs.language == 0 ? "Via/Piazza" : "Street/Square");
-        viaPiazza.setPromptText(EmotionalSongs.language == 0 ? "Via/Piazza" : "Street/Square");
-
-
-        BackButton.setText(EmotionalSongs.language == 0 ? "Torna indietro" : "Turn Back");
-
-
-        EmotionalSongs main = EmotionalSongs.classReference;
-        ArrayList<Region> regions = main.locationsManager.getList();
 
         c1 = new AutoCompleteComboBoxListener<>(cap);
         c2 = new AutoCompleteComboBoxListener<>(common);
@@ -338,59 +344,55 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
         ClearLabelError(LabelEmail);
         ClearLabelError(LabelPassword2);
 
+        
+        this.loader = new LocationsLoader((args) -> {
 
-        final int minSize = 5;
+            final int minSize = 5;
+            Queue<String> q;
+            ArrayList<Region> regions = (ArrayList<Region>) args[0];
 
-        for(Region r : regions) { 
-            for(Province p : r.getProvincesList()) {
-                while(p.getName().length() < minSize) {
-                    p.setName(p.getName() + " ");
-                }
-                province.getItems().add(p.getName());
-
-                for(Common c : p.getCommonsList()) {
-                    while(c.getName().length() < minSize) {
-                        c.setName(p.getName() + " ");
+            for(Region r : regions) { 
+                for(Province p : r.getProvincesList()) {
+                    while(p.getName().length() < minSize) {
+                        p.setName(p.getName() + " ");
                     }
-                    common.getItems().add(c.getName());
+                    province.getItems().add(p.getName());
 
-                    for(int i = 0; i < c.cap.length; i++) {
-                        cap.getItems().add(c.cap[i] + " : " + c.getName());
+                    for(Common c : p.getCommonsList()) {
+                        while(c.getName().length() < minSize) {
+                            c.setName(p.getName() + " ");
+                        }
+                        common.getItems().add(c.getName());
+
+                        for(int i = 0; i < c.cap.length; i++) {
+                            cap.getItems().add(c.cap[i] + " : " + c.getName());
+                        }
                     }
                 }
             }
-        }
 
-        Queue<String> q;
-
-        try {
-        
-            q = new LinkedList<>(province.getItems());
-            //System.out.println(q.size());
-            province.getItems().clear();
-            province.getItems().addAll(BucketSort(q,3,256, 0));
-            //System.out.println(province.getItems().size());
-        
-            q = new LinkedList<>(common.getItems());
-            common.getItems().clear();
-            common.getItems().addAll(BucketSort(q,3,256 - (int)' ', (int)' '));
-        
-            q = new LinkedList<>(cap.getItems());
-            cap.getItems().clear();
-            cap.getItems().addAll(BucketSort(q,5,10, (int)'0')); 
-
-        } catch (Exception e) {
-            System.out.println("======================================================================");
-            System.out.println(e);
-            System.out.println("======================================================================");
-            e.printStackTrace();
+            try {
+                q = new LinkedList<>(province.getItems());
+                //System.out.println(q.size());
+                province.getItems().clear();
+                province.getItems().addAll(BucketSort(q,3,256, 0));
+                //System.out.println(province.getItems().size());
             
-        }        confirmButton.setText(EmotionalSongs.language == 0 ? "Registrati" : "Sig In");*/
+                q = new LinkedList<>(common.getItems());
+                common.getItems().clear();
+                common.getItems().addAll(BucketSort(q,3,256 - (int)' ', (int)' '));
+            
+                q = new LinkedList<>(cap.getItems());
+                cap.getItems().clear();
+                cap.getItems().addAll(BucketSort(q,5,10, (int)'0')); 
 
-        
-        
-
+            } catch (Exception e) {
+                System.out.println(e);;
+                e.printStackTrace();
                 
+            }
+        });
+
         contenitori.add(new ElementsContainer(name          , null));
         contenitori.add(new ElementsContainer(surname       , null));
         contenitori.add(new ElementsContainer(userID        , null));
@@ -404,17 +406,12 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
         contenitori.add(new ElementsContainer(cap     ));
         contenitori.add(new ElementsContainer(common     ));
         contenitori.add(new ElementsContainer(province));
-  
-
     }
 
 
     @SuppressWarnings("unchecked")
     public void validateNewUser() throws IOException 
     {
-        
-        //JSONObject UserCostructor = new JSONObject();
-        //RegisteredAccount testAccount;
         boolean error = false;
 
         ClearLabelError(labelID);
@@ -448,11 +445,12 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
 
         if(error) {
             SetLabelError(labelSing);
-            //labelSing.setText(EmotionalSongs.language == 0 ? "Campi non compilati" : "Fields not filled in");
+            labelSing.setText(EmotionalSongs.applicationLanguage == 0 ? "Campi non compilati" : "Fields not filled in");
             return;
-        }
-        
-        
+        }  
+
+
+
     }
 
     
@@ -465,23 +463,23 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
     }
 
     @FXML
-    public void TurnBack() throws IOException 
-    {
-       
+    public void TurnBack() throws IOException {
+       WindowContainerController.getActiveInstance().setAccessPage();
     }
 
     @FXML
     public void selectCap(ActionEvent event) {
         
-        /*try {
+        while(this.loader.isAlive());
+
+        try {
             if(common.getSelectionModel().getSelectedItem() == null && province.getSelectionModel().getSelectedItem() == null || true) {
                 String com = cap.getSelectionModel().getSelectedItem().split(" : ")[1];
     
                 //metto il comune
                 common.getSelectionModel().select(common.getItems().indexOf(com));
     
-                EmotionalSongs main = EmotionalSongs.classReference;
-                ArrayList<Region> regions = main.locationsManager.getList();
+                ArrayList<Region> regions = this.loader.getLocations();
                 boolean finded = false;
     
                 for(Region r : regions) { 
@@ -504,15 +502,15 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
         }
         catch (ArrayIndexOutOfBoundsException e){
             
-        }*/
+        }
         
     }
 
     @FXML
     public void selectCommon(ActionEvent event) 
     {
-        /*EmotionalSongs main = EmotionalSongs.classReference;
-        ArrayList<Region> regions = main.locationsManager.getList();
+        while(this.loader.isAlive());
+        ArrayList<Region> regions = this.loader.getLocations();
         String com = common.getSelectionModel().getSelectedItem();
 
         boolean finded = false;
@@ -556,7 +554,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
                     }
                 }
             }
-        }*/
+        }
     }
 
     @FXML

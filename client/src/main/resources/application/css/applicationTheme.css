@@ -55,6 +55,7 @@
 
 .label {
     -fx-font-weight: Bold;
+    -fx-text-fill: white;
     -fx-font-size: 15;
 }
 
@@ -65,6 +66,11 @@
    
 }
 
+/*======================== IMAGES =====================*/
+
+#image_error > .glyph-icon {
+    -fx-fill:  #F14934;
+}
 
 /*======================== FIELDS =====================*/
 

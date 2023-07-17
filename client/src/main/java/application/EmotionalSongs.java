@@ -21,7 +21,9 @@ public class EmotionalSongs extends Application
     //================================[Variabili di classe]================================//
     public static final String ApplicationDirectory = System.getProperty("user.dir");
     public static final String FXML_folder_path = PathFormatter.formatPath("page-fxml"); //main\\resources\\pages-fxml
-    public static final String CSS_file_folder = PathFormatter.formatPath(ApplicationDirectory + "\\main\\css"); //main\\resources\\pages-fxml
+    public static final String CSS_file_folder = PathFormatter.formatPath(ApplicationDirectory + "\\src\\main\\css"); //main\\resources\\pages-fxml
+    public static final String flagsFolder = PathFormatter.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\image\\flags");
+    public static final String LocationsPath = PathFormatter.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\data\\comuni.json");
 
     public static int applicationLanguage = 0;
 

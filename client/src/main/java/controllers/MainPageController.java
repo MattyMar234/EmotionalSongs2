@@ -33,6 +33,8 @@ public class MainPageController extends ControllerBase implements Initializable
     @FXML public AnchorPane SceneContainer;
     @FXML public BorderPane borderPane;
 
+    @FXML public BorderPane anchor;
+
 
     // ========================= Buttons ========================= //
     @FXML public Button profileButton;
@@ -71,6 +73,7 @@ public class MainPageController extends ControllerBase implements Initializable
     @Override
     public void initialize(URL arg0, ResourceBundle arg1)
     {
+        setHomePage();
         //super.setImage(IMG1,IMG2,IMG3,IMG6,IMG5);
         //optionsButton.setText(MainPageController.matrice[0][EmotionalSongs.language]);
         //CambioButton.setText(MainPageController.matrice[1][EmotionalSongs.language]);
@@ -140,6 +143,12 @@ public class MainPageController extends ControllerBase implements Initializable
         catch (IOException e) {
             e.printStackTrace();
         }*/
+    }
+
+
+    public void setHomePage() {
+        this.anchor.getChildren().clear();
+        super.setApplicationPage("MainPage_Home.fxml", this.anchor); //ApplicationAccessPage
     }
 
     private void ClearActiveButtons() {
