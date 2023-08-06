@@ -12,6 +12,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
@@ -46,6 +47,7 @@ public abstract class ControllerBase {
 
     protected void addObjectText_Translations(Object object, String[] texts) {
         windowObjectsTexts.put(object, texts);
+        //System.out.println(object.getClass());
     }
 
     protected void setTextsLanguage() {
@@ -55,8 +57,10 @@ public abstract class ControllerBase {
             if(object instanceof javafx.scene.control.Label)
                 ((javafx.scene.control.Label) object).setText(windowObjectsTexts.get(object)[EmotionalSongs.applicationLanguage]);
             
-            else if(object instanceof javafx.scene.control.Button)
+            else if(object instanceof Button) {
                 ((javafx.scene.control.Button) object).setText(windowObjectsTexts.get(object)[EmotionalSongs.applicationLanguage]);   
+                System.out.println("heree");
+            }
 
             else if(object instanceof javafx.scene.control.TextField)
                 ((javafx.scene.control.TextField) object).setPromptText(windowObjectsTexts.get(object)[EmotionalSongs.applicationLanguage]);

@@ -211,7 +211,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
     {
         
         EmotionalSongs.applicationLanguage = flags.getSelectionModel().getSelectedIndex();
-        System.out.println(EmotionalSongs.applicationLanguage);
+        //System.out.println(EmotionalSongs.applicationLanguage);
         
     
         flags.getSelectionModel().select(EmotionalSongs.applicationLanguage);

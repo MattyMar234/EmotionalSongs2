@@ -38,7 +38,8 @@ public class WindowContainerController extends ControllerBase implements Initial
 
     public void setMainPage() {
         this.anchor.getChildren().clear();
-        super.setApplicationPage("MainPage.fxml", this.anchor); //ApplicationAccessPage
+        //super.setApplicationPage("MainPage.fxml", this.anchor); //ApplicationAccessPage
+        super.setApplicationPage("Homepage.fxml", this.anchor); 
     }
 
 

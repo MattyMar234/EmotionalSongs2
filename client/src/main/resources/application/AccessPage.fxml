@@ -7,6 +7,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
@@ -37,18 +38,18 @@
                               <Insets top="40.0" />
                            </HBox.margin>
                            <children>
-                              <AnchorPane id="ElementContainer" prefHeight="655.0" prefWidth="596.0">
+                              <AnchorPane id="ElementContainer_" prefHeight="655.0" prefWidth="596.0">
                                  <children>
                                     <VBox alignment="TOP_CENTER" layoutX="-11.0" prefHeight="200.0" prefWidth="384.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0">
                                        <children>
-                                          <Label id="title" prefHeight="50.0" prefWidth="329.0" text="Emotional Songs" textFill="#e4e4e4">
-                                             <font>
-                                                <Font size="18.0" />
-                                             </font>
+                                          <ImageView fitHeight="73.0" fitWidth="360.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@image/generic/Logo.png" />
+                                             </image>
                                              <VBox.margin>
-                                                <Insets top="33.0" />
+                                                <Insets />
                                              </VBox.margin>
-                                          </Label>
+                                          </ImageView>
                                           <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="562.0" prefWidth="464.0">
                                              <children>
                                                 <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -97,10 +98,10 @@
                                                          </children>
                                                       </AnchorPane>
                                                    </children></VBox>
-                                                <Button id="GreenButton" fx:id="LoginButton1" layoutX="80.0" layoutY="279.0" mnemonicParsing="false" onAction="#accedi_Account" prefHeight="42.0" prefWidth="313.0" text="Accedi all'Account" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0" AnchorPane.topAnchor="272.0" />
-                                                <Button id="GreenButton" fx:id="NoAccountButton1" layoutX="80.0" layoutY="347.0" mnemonicParsing="false" onAction="#NoAccount" prefHeight="42.0" prefWidth="313.0" text="Continua senza account" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0" AnchorPane.topAnchor="342.0" />
+                                                <Button id="GreenButton" fx:id="LoginButton" layoutX="80.0" layoutY="279.0" mnemonicParsing="false" onAction="#accedi_Account" prefHeight="42.0" prefWidth="313.0" text="Accedi all'Account" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0" AnchorPane.topAnchor="272.0" />
+                                                <Button id="GreenButton" fx:id="NoAccountButton" layoutX="80.0" layoutY="347.0" mnemonicParsing="false" onAction="#NoAccount" prefHeight="42.0" prefWidth="313.0" text="Continua senza account" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0" AnchorPane.topAnchor="342.0" />
                                                 <AnchorPane id="divider" layoutY="235.0" prefHeight="13.0" prefWidth="419.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="422.0" />
-                                                <Label id="NewAccountLabel" fx:id="NewAccount1" layoutX="175.0" layoutY="411.0" onMouseClicked="#CreateNewAccount" prefHeight="19.0" prefWidth="149.0" text="Crea un Account" textAlignment="CENTER" textOverrun="WORD_ELLIPSIS" underline="true" AnchorPane.topAnchor="462.0">
+                                                <Label id="NewAccountLabel" fx:id="NewAccount" layoutX="175.0" layoutY="411.0" onMouseClicked="#CreateNewAccount" prefHeight="19.0" prefWidth="149.0" text="Crea un Account" textAlignment="CENTER" textOverrun="WORD_ELLIPSIS" underline="true" AnchorPane.topAnchor="462.0">
                                                    <font>
                                                       <Font size="13.0" />
                                                    </font>

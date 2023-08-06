@@ -3,13 +3,12 @@
 <?import java.net.URL?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
 <AnchorPane id="BackGround" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
    <stylesheets>
       <URL value="@css/ApplicationTheme.css" />
       <URL value="@css/MainPage.css" />
    </stylesheets>
    <children>
-      <AnchorPane id="elementContainer" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+      <AnchorPane id="elementContainer" layoutX="20.0" layoutY="-8.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="28.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-8.0" />
    </children>
 </AnchorPane>

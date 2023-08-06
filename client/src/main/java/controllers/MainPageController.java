@@ -7,10 +7,16 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -18,7 +24,14 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import utility.PathFormatter;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 /**
@@ -51,6 +64,25 @@ public class MainPageController extends ControllerBase implements Initializable
     @FXML public ImageView IMG6;
     @FXML public ImageView IMG5;
 
+
+    @FXML
+    public StackPane mainloader;
+
+    @FXML
+    public ImageView logo;
+
+    @FXML
+    public VBox lsidebar;
+    @FXML
+    public StackPane stackPane;
+    
+    public void setLogo() {
+        Image image = new Image(getClass().getResource("image/generic/Logo.png").toExternalForm(), 500, 500, true, true);
+        logo.setImage(image);
+    }
+
+
+
     ArrayList<Button> buttons = new ArrayList<Button>();
     //private final String ButtonColor = "-fx-background-color: #0bb813;" + "-fx-text-fill:#ffffff;";
     private final String ButtonColor = "-fx-background-color: #f18100f6;" + "-fx-text-fill:#ffffff;";
@@ -74,6 +106,8 @@ public class MainPageController extends ControllerBase implements Initializable
     public void initialize(URL arg0, ResourceBundle arg1)
     {
         setHomePage();
+        //setLogo();
+        isLogged.set(false);
         //super.setImage(IMG1,IMG2,IMG3,IMG6,IMG5);
         //optionsButton.setText(MainPageController.matrice[0][EmotionalSongs.language]);
         //CambioButton.setText(MainPageController.matrice[1][EmotionalSongs.language]);
@@ -147,8 +181,8 @@ public class MainPageController extends ControllerBase implements Initializable
 
 
     public void setHomePage() {
-        this.anchor.getChildren().clear();
-        super.setApplicationPage("MainPage_Home.fxml", this.anchor); //ApplicationAccessPage
+        //this.anchor.getChildren().clear();
+        //super.setApplicationPage("MainPage_Home.fxml", this.anchor); //ApplicationAccessPage
     }
 
     private void ClearActiveButtons() {
@@ -406,4 +440,80 @@ public class MainPageController extends ControllerBase implements Initializable
         borderPane.getChildren().removeAll();
         borderPane.setCenter(view);
     }*/
+
+
+
+
+    public static BooleanProperty isLogged = new SimpleBooleanProperty(false);
+    //viene modificato da login quando si effettua login
+
+    public boolean isIsLogged() {
+        return isLogged.get();
+    }
+
+    public BooleanProperty isLoggedProperty() {
+        return isLogged;
+    }
+
+    public void setIsLogged(boolean isLogged) {
+        this.isLogged.set(isLogged);
+    }
+
+
+    private void loadPage(String btn){
+        try {
+            System.out.println(btn);
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(btn+".fxml"));
+            Parent page = loader.load();
+
+            mainloader.getChildren().clear();
+            mainloader.getChildren().add(page);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void sidebtnClick(ActionEvent event) {
+
+        Button clickedButton = (Button) event.getSource();
+
+        // Rimuovi la classe 'selected' da tutti i bottoni della sidebar
+        for (Node node : lsidebar.getChildren()) {
+            if (node instanceof Button) {
+                node.getStyleClass().remove("selected");
+            }
+        }
+        clickedButton.getStyleClass().add("selected");
+        // Ottieni l'id del button cliccato
+        String buttonId = clickedButton.getId();
+
+        System.out.println("Button cliccato!" + buttonId);
+            loadPage(buttonId);
+
+    }
+    private final String ACCESSCONTROL = "/com/example/demo1/hello-view.fxml"; //from source root
+
+    public void accesscontrolbtnClick(ActionEvent event) {
+        Parent root = null;
+        try {
+            root = FXMLLoader.load(getClass().getResource(ACCESSCONTROL));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // New window (secondary stage)
+        Stage newStage = new Stage();
+        //openStages.add(newStage);
+
+        newStage.setTitle("New Window");
+        Scene scene = new Scene(root);
+        scene.setFill(Color.TRANSPARENT);
+        newStage.initStyle(StageStyle.TRANSPARENT);
+        newStage.setScene(scene);
+        newStage.show();
+
+        System.out.println("Button cliccato!" );
+
+    }
+
 }

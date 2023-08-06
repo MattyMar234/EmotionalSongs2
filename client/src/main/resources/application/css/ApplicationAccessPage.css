@@ -1,9 +1,10 @@
 
 
 #ElementContainer {
-    -fx-background-color: #0e0e0e;
-    -fx-background-radius: 10px;
-    -fx-border-radius: 10px;
+    /*-fx-background-color: #0e0e0e;*/
+    -fx-background-color: #3c254e;
+    -fx-background-radius: 15px;
+    -fx-border-radius: 15px;
 }
 
 #divider {
@@ -13,6 +14,7 @@
 
 #backPane, #back {
     -fx-background-color: #494949;
+    
 }
 
 #LabelName, #labelPassword {

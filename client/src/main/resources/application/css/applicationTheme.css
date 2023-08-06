@@ -79,11 +79,20 @@
     -fx-background-color: #1f1f1fd6;
     -fx-font-size: 14.5;
 
-    -fx-text-fill: #727272;
+    /*-fx-text-fill: #727272; old*/
+    -fx-text-fill: #ffffff;
 
     -fx-border-color: #727272;
     -fx-border-radius: 5px;
     -fx-border-width: 1px;
+
+
+    /*  NEW  */
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 15;
+    -fx-text-fill: #ADADAD;
+    -fx-font-size: 16;
+    -fx-highlight-fill: #ADADAD;
 
 }
 
@@ -99,7 +108,9 @@
 /*======================== ELEMENT COLOR =====================*/
 
 #Border_BackGround {
-    -fx-background-color: #171717;
+    /*-fx-background-color: #171717;*/
+    -fx-background-color: linear-gradient(to bottom, #121212, #332336, #121212);
+    /*-fx-background-radius: 15 15 15 15;*/
 }
 
 #BackGround {

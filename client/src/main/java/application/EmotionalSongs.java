@@ -75,14 +75,26 @@ public class EmotionalSongs extends Application
         stage.close();
     }
 
-    public Object SetScene(String sceneName, BorderPane anchor) throws IOException {
+    public Object SetScene(String sceneName, Object anchor) throws IOException {
 
         FXMLLoader loader = getSceneLoader(sceneName);
-        AnchorPane view = loader.load();
+        Object view = loader.load();
 
-        anchor.getChildren().removeAll();
-        anchor.setCenter(view);
+        if(anchor instanceof BorderPane) {
+            BorderPane temp = (BorderPane)anchor;
 
+            if(view instanceof AnchorPane) {
+            temp.getChildren().removeAll();
+            temp.setCenter((AnchorPane)view);
+            }
+            else if(view instanceof BorderPane) {
+                temp.getChildren().removeAll();
+                temp.setCenter((BorderPane)view);
+            }
+        }
+        else if(anchor instanceof AnchorPane) {
+            AnchorPane temp = (AnchorPane)anchor;  
+        }
         return loader.getController();
     }
 
@@ -113,6 +125,7 @@ public class EmotionalSongs extends Application
 
         try {
             FXMLLoader loader = getSceneLoader(name);
+            System.out.println(loader);
             //AnchorPane view = loader.load();
             Scene scene = new Scene(loader.load());
             this.stage.setScene(scene);

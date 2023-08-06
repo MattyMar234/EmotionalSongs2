@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.text.Text?>
+<VBox id="maincontainer"
+      alignment="TOP_CENTER"
+      xmlns="http://javafx.com/javafx/18"
+      xmlns:fx="http://javafx.com/fxml/1"
+      stylesheets="@styles/about.css"  >
+    <VBox       alignment="CENTER"
+                id="textcontent" >
+        <Text text="Emotional Songs 2.0"/>
+        <Text text="Aggiungere descrizione..."/>
+
+
+    </VBox>
+
+
+</VBox>
