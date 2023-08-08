@@ -160,7 +160,7 @@ public class SceneManager {
     //show access-page.fxml
     public void showHomePage() {
         
-        Pair<Scene,FXMLLoader> result = setStageScene("Homepage.fxml");
+        Pair<Scene,FXMLLoader> result = setStageScene("homepage.fxml");
         Scene scene = result.getValue0();
         FXMLLoader loader = result.getValue1();
 

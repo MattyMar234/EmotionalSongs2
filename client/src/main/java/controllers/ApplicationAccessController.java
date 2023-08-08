@@ -102,7 +102,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
         System.out.println(folder.getAbsolutePath());
         File[] listOfFiles = folder.listFiles();
 
-        Queue<File> queue = new LinkedList<File>();
+        /*Queue<File> queue = new LinkedList<File>();
         for(File f : listOfFiles) queue.add(f);
 
         int index = 1;
@@ -137,7 +137,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
                     queue.add(f);
                 }
             }
-        }
+        }*/
 
 
         //definisco come caricare le immagini nella combox
