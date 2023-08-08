@@ -23,7 +23,7 @@ public class Region
         return Provinces.get(name);
     }
 
-    public Common findCommons(String name1, String name2) {
+    public Commune findCommons(String name1, String name2) {
 
         Province p = Provinces.get(name1);
        

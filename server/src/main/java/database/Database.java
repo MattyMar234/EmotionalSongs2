@@ -9,21 +9,24 @@ import java.sql.Statement;
 public class Database {
 
     private final String PROTOCOL = "jdbc:postgresql://";
-    private String DB_NAME;
-    private String HOST;
-    private String PORT;
-    private String user;
-    private String password;
+    private String DB_NAME  = null;
+    private String HOST     = null;
+    private String PORT     = null;
+    private String user     = null;
+    private String password = null;
     
     /*Variabili connessione DB  */
     private static Database database;
-    private static Connection connection;
-    private static Statement statement;
+    private static Connection connection = null;
+    private static Statement statement   = null;
     
     private String URL;
     
-    private Database(String db_name, String host, int port, String user, String password) throws SQLException {
-        
+    private Database(){
+
+    }
+
+    public void setConnection(String db_name, String host, int port, String user, String password) throws SQLException {
         this.DB_NAME = db_name;
         this.HOST = host;
         this.PORT = Integer.toString(port);
@@ -36,15 +39,18 @@ public class Database {
     }
 
     /*Metodo statico per Pattern Singleton */
-    public static Database getInstance(String db_name, String host, int port, String user, String password) throws SQLException 
+    public static Database getInstance() 
     {
         if (database == null)
-            database = new Database(db_name, host, port, user, password);
+            database = new Database();
 
         return database;
     }
 
     public boolean testconnection() throws SQLException {
+        if(connection == null) 
+            return false;
+
         return Database.connection.isValid(2); //timeout
     }
 

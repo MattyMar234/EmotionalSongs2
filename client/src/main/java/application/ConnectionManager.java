@@ -1,33 +1,65 @@
 package application;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
+import applicationEvents.ConnectionEvent;
 import interfaces.ClientServices;
 import interfaces.ServerServices;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Alert.AlertType;
+import javafx.util.Duration;
 
+import java.beans.EventHandler;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
+
 public class ConnectionManager extends UnicastRemoteObject implements ClientServices {
 
     //Singleton pattern
     private static ConnectionManager manager;
 
+
+	private String defaultHostAddress = "localhost";
+	private int defaultHostPort = 8090; 
+
     private String hostAddress;
     private int hostPort;
     private Registry registry;
-	private ServerServices server;
+	private ServerServices stub;
+
+
+	Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+		if(!testServerConnection()) {
+			EmotionalSongs.getInstance().stage.fireEvent(new ConnectionEvent(ConnectionEvent.DISCONNECTED));
+			disconnect();
+		}
+	}));
+
 
 	public ServerServices getService() {
-		return server;
+		return stub;
+		
 	}
 
     private ConnectionManager() throws RemoteException {
 		super();
+
+		hostAddress = defaultHostAddress;
+		hostPort = defaultHostPort;
     }
+
+	
 
     /**
      * Class implemented with a Singleton pattern, this method is necessary to get
@@ -46,18 +78,34 @@ public class ConnectionManager extends UnicastRemoteObject implements ClientServ
         return manager;
     }
 
+
     /**
-	 * Tests a connection to the actual server
+	 * Tests a custom connection to a EmotionalSongs server
+	 * @param host server's address
+	 * @param port server's port
 	 * @return success of the connection
 	 */
-	public boolean validConnection() 
-	{
+	public boolean testCustomConnection(String host, int port) {
+		String backupHost = hostAddress;
+		int backupPort = hostPort;
+		
+		setConnectionData(host, port);
+		boolean success = testServerConnection();
+		setConnectionData(backupHost, backupPort);
+		
+		return success;
+	}
+
+	/**
+	 * Tests a connection to the EmotionalSong server
+	 * @return success of the connection
+	 */
+	public boolean testServerConnection() {
 		boolean success = true;
 		
 		try {
 			Registry registry = LocateRegistry.getRegistry(hostAddress, hostPort);
 			ServerServices test = (ServerServices) registry.lookup("EmotionalSongs_services");
-			test.addClient(this);
 			success = (test != null);
 		} catch (RemoteException | NotBoundException e) {
 			success = false;
@@ -65,45 +113,111 @@ public class ConnectionManager extends UnicastRemoteObject implements ClientServ
 			success = false;
 			e.printStackTrace();
 		}
-		
-		return true;
+		return success;
 	}
 
-    /**
-	 * Tests a custom connection to a Watchneighbours server
-	 * @param host server's address
-	 * @param port server's port
-	 * @return success of the connection
+	/**
+	 * Sets new connection data to find EmotionalSong server
+	 * @param host the new server's host
+	 * @param port the new server's port
 	 */
-	public boolean testCustomConnection(String host, int port) {
-		/*String backupHost = hostAddress;
-		int backupPort = hostPort;
-		
-		//setConnectionData(host, port);
-		boolean success = validConnection();
-
-		//setConnectionData(backupHost, backupPort);
-		
-		return success;*/
-
-		try {
-			Registry registry = LocateRegistry.getRegistry(host, port);
-			server = (ServerServices) registry.lookup("EmotionalSongs_services");
-			server.addClient(this);
-			
-		} catch (RemoteException | NotBoundException e) {
-		
-		} catch (ClassCastException e) {
-		
-			e.printStackTrace();
-		}
-
-		return true;
+	public void setConnectionData(String host, int port) {
+		hostAddress = host;
+		hostPort = port;
 	}
+
+	/**
+	 * Connects the client to server's instance of ConnectionBalancer
+	 * @return success of the operation
+	 */
+	public boolean connect() {
+		boolean connectionAvailable = testServerConnection();
+		
+		if(connectionAvailable) {
+			try {
+				registry = LocateRegistry.getRegistry(hostAddress, hostPort);
+				stub = (ServerServices) registry.lookup("EmotionalSongs_services");
+				stub.addClient(this);
+
+			} catch (RemoteException | NotBoundException e) {
+				disconnect();
+				EmotionalSongs.getInstance().showConnectionAlert();
+				return false;
+			}
+			System.out.println("ConnectionManager - connected to EmotionalSongs_services");
+		} 
+				
+		else {
+			EmotionalSongs.getInstance().showConnectionAlert();
+		}	
+
+		timeline.setCycleCount(Timeline.INDEFINITE); // Imposta il conteggio ciclico infinito
+        timeline.play();
+		
+		
+		/*new Thread(new Runnable() {
+			@Override public void run() {
+				while(testServerConnection()) {
+					System.out.println("herreee");
+					try {Thread.sleep(1000);} catch (InterruptedException e) {}
+				}
+				
+				EmotionalSongs.getInstance().stage.fireEvent(new ConnectionEvent(ConnectionEvent.DISCONNECTED));
+			}}).start();*/
+		
+		return connectionAvailable;
+	}
+
+
+	/**
+	 * Disconnects the client from Watchneighbours server
+	 */
+	public void disconnect() {
+			timeline.stop();
+	}
+	
+	/**
+	 * Gets default host address 
+	 * @return address default host address
+	 */
+	public String getDefaultHost() {
+		return defaultHostAddress;
+	}
+	
+	/**
+	 * Gets default host port
+	 * @return port default host port
+	 */
+	public int getDefaultPort() {
+		return defaultHostPort;
+	}
+	
+	/**
+	 * Gets actual host address
+	 * @return address actual host address
+	 */
+	public String getHost() {
+		return hostAddress;
+	}
+	
+	/**
+	 * Gets actual host port
+	 * @return port actual host port
+	 */
+	public int getPort() {
+		return hostPort;
+	}
+
+	/* ========================== RMI methods ==========================  */
 
 	@Override
 	public void testConnection() throws RemoteException {
 		System.out.println("server request");
+	}
+
+	@Override
+	public void setLastUsedAccount(Object account) throws RemoteException {
+		throw new UnsupportedOperationException("Unimplemented method 'setLastUsedAccount'");
 	}
 
 }

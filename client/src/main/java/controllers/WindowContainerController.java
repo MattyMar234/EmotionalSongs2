@@ -26,7 +26,7 @@ public class WindowContainerController extends ControllerBase implements Initial
         anchor.setMinHeight(900);
     }
 
-    public void setAccessPage() {
+    /*public void setAccessPage() {
         this.anchor.getChildren().clear();
         super.setApplicationPage("AccessPage.fxml", this.anchor); //ApplicationAccessPage
     }
@@ -40,7 +40,7 @@ public class WindowContainerController extends ControllerBase implements Initial
         this.anchor.getChildren().clear();
         //super.setApplicationPage("MainPage.fxml", this.anchor); //ApplicationAccessPage
         super.setApplicationPage("Homepage.fxml", this.anchor); 
-    }
+    }*/
 
 
 }

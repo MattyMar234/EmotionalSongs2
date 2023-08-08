@@ -1,17 +1,32 @@
 package application;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
+import objects.Song;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.rmi.UnknownHostException;
 import java.util.HashMap;
+import java.util.Optional;
 
+import applicationEvents.ConnectionEvent;
 import controllers.WindowContainerController;
 import utility.PathFormatter;
 
@@ -26,13 +41,13 @@ public class EmotionalSongs extends Application
     public static final String LocationsPath = PathFormatter.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\data\\comuni.json");
 
     public static int applicationLanguage = 0;
-
     private static EmotionalSongs instance = null;
 
 
     //================================[Variabili]================================//
 
-    private Stage stage;
+    private ConnectionManager connectionManager;
+    public Stage stage;
 
 
     static {
@@ -52,96 +67,134 @@ public class EmotionalSongs extends Application
     public void start(Stage stage) throws IOException
     {
         EmotionalSongs.instance = this;
-        this.stage = stage;
-        /*System.out.println(EmotionalSongs.class.getResource("hello-view.fxml"));
-        FXMLLoader fxmlLoader = new FXMLLoader(EmotionalSongs.class.getResource("hello-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);*/
 
-        stage.setOnCloseRequest(event -> {
-            event.consume();
+        SceneManager sceneManager = SceneManager.getInstance();
+        sceneManager.setStage(stage);
+        this.stage = stage;
+
+        //stage.initStyle(StageStyle.UTILITY);
+
+        this.connectionManager = ConnectionManager.getConnectionManager();
+        
+        /*if(connectionManager.testCustomConnection("192.168.1.128",8090)) {
+            System.out.println("Server found on 192.168.1.128:8090" );
+            connectionManager.setConnectionData("192.168.1.128",8090);
+            connectionManager.connect();
+        }
+        else {
+            System.out.println("server not found on 192.168.1.128:8090");
             logout();
+        }*/
+
+        
+
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            
+            @Override
+			public void handle(WindowEvent event) {
+				Alert alert = new Alert(AlertType.CONFIRMATION);
+				alert.setTitle("Conferma");
+				alert.setHeaderText("");
+				alert.setContentText("Sei sicuro di voler uscire dal programma?");
+				Optional<ButtonType> result = alert.showAndWait();
+				
+				if(result.get() == ButtonType.OK) {
+					System.out.println("Closing application..");
+                    event.consume();
+					logout();
+				}
+				else
+					event.consume();
+            } 
         });
 
-        this.stage.setTitle("EmotionalSongs");
-        WindowContainerController temp = (WindowContainerController) setStageScene("ApplicationBase");
-        temp.setAccessPage();
+        stage.addEventFilter(ConnectionEvent.DISCONNECTED, this::handleConnectionLostEvent);
 
-        ConnectionManager connectionManager = ConnectionManager.getConnectionManager();
-        connectionManager.testCustomConnection("192.168.1.128",8090);
-    
+        
+        
+        sceneManager.showAccess();
+        //WindowContainerController controller = (WindowContainerController) setStageScene("ApplicationBase");
+        //controller.setAccessPage();
+
+        /*for (Song s : this.connectionManager.getService().getMostPopularSongs(10,0)) {
+           System.out.println(s); 
+
+           try {
+                openLink(s.getSpotifyUrl());
+            } catch (IOException | URISyntaxException e) {
+                e.printStackTrace();
+            }
+            break;
+        }*/
+
+
+    }
+
+    public void handleConnectionLostEvent(ConnectionEvent event) {
+        System.out.println("Connection lost");
+        this.showConnectionAlert();
     }
 
     public void logout() {
+        //connectionManager.disconnect();
         stage.close();
-    }
-
-    public Object SetScene(String sceneName, Object anchor) throws IOException {
-
-        FXMLLoader loader = getSceneLoader(sceneName);
-        Object view = loader.load();
-
-        if(anchor instanceof BorderPane) {
-            BorderPane temp = (BorderPane)anchor;
-
-            if(view instanceof AnchorPane) {
-            temp.getChildren().removeAll();
-            temp.setCenter((AnchorPane)view);
-            }
-            else if(view instanceof BorderPane) {
-                temp.getChildren().removeAll();
-                temp.setCenter((BorderPane)view);
-            }
-        }
-        else if(anchor instanceof AnchorPane) {
-            AnchorPane temp = (AnchorPane)anchor;  
-        }
-        return loader.getController();
-    }
-
-    public Object SetSceneOnAnchor(String sceneName, BorderPane anchor, Callback<Class<?>, Object> controllerFactory) throws IOException {
-
-        FXMLLoader loader = getSceneLoader(sceneName);
-        AnchorPane view = loader.load();
-
-        loader.setControllerFactory(controllerFactory);
-        anchor.getChildren().removeAll();
-        anchor.setCenter(view);
-
-        return loader.getController();
-    }
-
-    private FXMLLoader getSceneLoader(String name) throws IOException  {
-        FXMLLoader loader = new FXMLLoader();
-        System.out.println(EmotionalSongs.class.getResource(name + ((!name.endsWith(".fxml")) ? ".fxml" : "")));
-        loader.setLocation(EmotionalSongs.class.getResource(name + ((!name.endsWith(".fxml")) ? ".fxml" : "")));
-        return loader;
+        System.exit(0);
     }
 
 
-    public Object setStageScene(String name)
+
+    /**
+	 * Shows a connection alert dialog
+	 */
+	public void showConnectionAlert() 
     {
-        //String path = PathFormatter.formatPath(EmotionalSongs.FXML_folder_path + "\\" + name + ((!name.endsWith(".fxml")) ? ".fxml" : ""));
-        Object output = null;
+        Platform.runLater(() -> {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Errore connessione");
+            alert.setHeaderText("Verifica la tua connessione a internet," + "\n" + "o prova a modificare le impostazioni di" + 
+                    "\n" + "connessione");
+            alert.setContentText("Impossibile connettersi al server");
 
-        try {
-            FXMLLoader loader = getSceneLoader(name);
-            System.out.println(loader);
-            //AnchorPane view = loader.load();
-            Scene scene = new Scene(loader.load());
-            this.stage.setScene(scene);
-            this.stage.show();
+            // Aggiungi un pulsante "OK" per chiudere l'alert
+            alert.getButtonTypes().setAll(ButtonType.OK);
 
-            output = loader.getController();
+            // Mostra l'alert e attendi la chiusura prima di procedere con la Timeline
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                // Puoi gestire l'azione quando l'utente preme "OK" qui, se necessario
+            }
+        });
+	}
+
+
+
+
+    
+
+    private static void openLink(String link) throws IOException, URISyntaxException {
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            Desktop.getDesktop().browse(new URI(link));
+        } else {
+            // Se il desktop non è supportato o l'azione di apertura del browser non è supportata,
+            // puoi gestire l'apertura del link in modo diverso qui (ad esempio, visualizzando il link in un terminale).
+            System.out.println("Desktop o l'azione di apertura del browser non sono supportati.");
         }
-        catch (IOException e) {
-            System.out.println("File loading error");
-            System.out.println(e);
-            e.printStackTrace();
-        }
-        catch (Exception e) {
-            System.out.println(e);
-            e.printStackTrace();
-        }
-        return output;
     }
+
+    /*private void applyModification(Stage primaryStage, StackPane root) {
+        Undecorator undecorator = new Undecorator(primaryStage, root);
+        undecorator.getStylesheets().add("/skin/undecorator.css");
+        Scene scene = new Scene(undecorator, 300, 250);
+        primaryStage.setScene(scene);
+        scene.setFill(null);
+        Node stageMenu = undecorator.lookup("#StageMenu");
+        stageMenu.setVisible(false);
+        Node maximize = undecorator.lookup(".decoration-button-maximize");
+        maximize.setVisible(false);
+        Node manimize = undecorator.lookup(".decoration-button-minimize");
+        manimize.setVisible(false);
+        Node restore = undecorator.lookup(".decoration-button-fullscreen");
+        restore.setVisible(false);
+
+    }*/
 }

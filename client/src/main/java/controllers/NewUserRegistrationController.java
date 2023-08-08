@@ -9,12 +9,14 @@ import java.util.Queue;
 import java.util.ResourceBundle;
 
 import application.EmotionalSongs;
+import application.SceneManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -23,7 +25,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
-import utility.Common;
+import utility.Commune;
 import utility.LocationsLoader;
 import utility.Province;
 import utility.Region;
@@ -358,7 +360,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
                     }
                     province.getItems().add(p.getName());
 
-                    for(Common c : p.getCommonsList()) {
+                    for(Commune c : p.getCommonsList()) {
                         while(c.getName().length() < minSize) {
                             c.setName(p.getName() + " ");
                         }
@@ -464,7 +466,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
 
     @FXML
     public void TurnBack() throws IOException {
-       WindowContainerController.getActiveInstance().setAccessPage();
+       SceneManager.getInstance().showAccess();
     }
 
     @FXML
@@ -488,7 +490,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
                     for(Province p : r.getProvincesList()) {
                         if(finded) break;
                         
-                        for(Common c : p.getCommonsList()) 
+                        for(Commune c : p.getCommonsList()) 
                         {
                             if(c.getName().equals(com)) {
                                 province.getSelectionModel().select(province.getItems().indexOf(p.getName()));
@@ -523,7 +525,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
                 for(Province p : r.getProvincesList()) {
                     if(finded) break;
 
-                    for(Common c : p.getCommonsList()) 
+                    for(Commune c : p.getCommonsList()) 
                     {
                         if(c.getName().equals(com)) 
                         {
@@ -544,7 +546,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
         {
             for(Region r : regions) { 
                 for(Province p : r.getProvincesList()) {
-                    for(Common c : p.getCommonsList()) 
+                    for(Commune c : p.getCommonsList()) 
                     {
                         if(c.getName().equals(com)) {
                             province.getSelectionModel().select(province.getItems().indexOf(p.getName()));

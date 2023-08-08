@@ -8,7 +8,7 @@ import java.util.HashMap;
  */
 public class Province {
 
-    protected HashMap<String, Common> commons = new HashMap<String, Common>();
+    protected HashMap<String, Commune> commons = new HashMap<String, Commune>();
     protected String name;
 
     public Province(String name) {
@@ -20,7 +20,7 @@ public class Province {
         return new String("provincia: " + name);
     }
 
-    public Common findCommons(String name) {
+    public Commune findCommons(String name) {
         return commons.get(name);
     }
 
@@ -31,15 +31,15 @@ public class Province {
         this.name = name;
     }
 
-    public void add(Common common) {
+    public void add(Commune common) {
         commons.put(common.getName(), common);
     }
 
-    public ArrayList<Common> getCommonsList() {
-        ArrayList<Common> c = new ArrayList<>();
+    public ArrayList<Commune> getCommonsList() {
+        ArrayList<Commune> c = new ArrayList<>();
 
         for(String name : commons.keySet()) {
-            c.add((Common)commons.get(name));
+            c.add((Commune)commons.get(name));
         }
 
         return c;

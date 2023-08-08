@@ -131,10 +131,10 @@ public class Terminal extends Thread {
     public enum MessageType 
     {
         NONE(""),
-        INFO("[" + Color.BLUE_BOLD + "INFO" + Color.RESET + "]:"),
-        ERROR("[" + Color.RED_BOLD + "ERROR" + Color.RESET + "]:"),
+        INFO(   "[" + Color.BLUE_BOLD   + "INFO" + Color.RESET + "]   :"),
+        ERROR(  "[" + Color.RED_BOLD    + "ERROR" + Color.RESET + "]  :"),
         REQUEST("[" + Color.YELLOW_BOLD + "REQUEST" + Color.RESET + "]:"),
-        SUCCES("[" + Color.GREEN_BOLD + "SUCCES" + Color.RESET + "]:");
+        SUCCES( "[" + Color.GREEN_BOLD  + "SUCCES" + Color.RESET + "] :");
         
         private final String message;
 
@@ -148,14 +148,19 @@ public class Terminal extends Thread {
         }
     }
 
+
     private enum Command 
     {
-        HELP("help", "Elenco dei comandi"),
-        START("start", "Avvia il Server"),
-        CLOSE("exit", "Termina l'applicazione"),
-        BUILD_SERVER("init", "inizilizza il database dell'applicazione"),
-        CLEAR_DB("clear", "cancella tutte le informazioni del database"),
-        PRINT_SQL("sql", "mostra i codici SQL statici creati");
+        HELP(           "help", " Elenco dei comandi"),
+        START(          "start", "Avvia il Server"),
+        CLOSE(          "exit", " Termina l'applicazione"),
+        BUILD_SERVER(   "init", " Inizilizza il database dell'applicazione"),
+        CLEAR_DB(       "clear", "Cancella tutte le informazioni del database"),
+        PRINT_SQL(      "sql", "  Mostra i codici SQL statici creati"),
+        SAVE(           "save", " Salva i settaggi della connessione con il DB"),
+        LOAD(           "load", " Carica i settaggi per connessione con il DB"),
+        EDIT(           "edit", " Modifica i parametri di connessione con il DB");
+
 
         public final String value;
         private final String descrizione;
@@ -177,13 +182,15 @@ public class Terminal extends Thread {
         this.main = App.getInstance();
         this.running = true;
 
-         //clear console
-         System.out.print("\033\143");  
-         System.out.print("\033[H\033[2J");  
-         System.out.flush();
+        //clear console
+        System.out.print("\033\143");  
+        System.out.print("\033[H\033[2J");
+        System.out.print("\033[8;86;140t");  
+        System.out.flush();
 
+     
 
-        //Console console = System.console();
+        
     }    
 
     public static Terminal getInstance() 
@@ -195,14 +202,13 @@ public class Terminal extends Thread {
     }
 
    
-
-
     @Override
     public void run() 
     {
+        App main = App.getInstance();
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("type \"help\" to see available commands");
-        
+
         while(this.running) 
         {
             try {
@@ -214,11 +220,14 @@ public class Terminal extends Thread {
                 if(command.equalsIgnoreCase(Command.HELP.value)) {
                     dumpCommands();
                 }
-                else if(command.equalsIgnoreCase(Command.START.value)) {
-                    App.getInstance().runServer();
-                    //in.readLine();
-                    System.console().readLine();
-                    App.getInstance().StopServer();
+                else if(command.equalsIgnoreCase(Command.START.value)) { 
+
+                    printSeparator();
+                    if(main.testDataBaseConnection()) {
+                        main.runServer();
+                        System.console().readLine();
+                        main.StopServer();
+                    }   
                 }
                 else if(command.equalsIgnoreCase(Command.CLOSE.value)) {
                     main.exit();
@@ -232,6 +241,12 @@ public class Terminal extends Thread {
                 else if(command.equalsIgnoreCase(Command.PRINT_SQL.value)) {
                     printSQL();
                 }
+                else if(command.equalsIgnoreCase(Command.SAVE.value)) {
+                    App.getInstance().saveSettings();
+                }
+                else if(command.equalsIgnoreCase(Command.LOAD.value)) {
+                    App.getInstance().loadSettings();
+                }
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -244,9 +259,12 @@ public class Terminal extends Thread {
         }
     }
 
-    public synchronized void startWaithing(String text, Object... args) {
-        if(this.waithingThread == null) {
+    public synchronized void startWaithing(String text, Object... args) 
+    {
+        jline.Terminal t = jline.TerminalFactory.get();
+        t.setEchoEnabled(false);
 
+        if(this.waithingThread == null) {
             if(args.length == 1) {
                 this.waithingThread = new WaithingAnimationThread(text, (WaithingAnimationThread.Animation)args[0]);
             }
@@ -257,7 +275,11 @@ public class Terminal extends Thread {
         }
     }
 
-    public synchronized void stopWaithing() {
+    public synchronized void stopWaithing() 
+    {
+        jline.Terminal t = jline.TerminalFactory.get();
+        t.setEchoEnabled(true);
+
         if(this.waithingThread != null) {
             this.waithingThread.terminate();
             while(this.waithingThread.isAlive());
@@ -303,6 +325,7 @@ public class Terminal extends Thread {
         }
     }
 
+
     private int clearDatabase(BufferedReader in) throws IOException 
     {
         //System.out.println(PredefinedSQLCode.NomiTabelle.ARTIST);
@@ -335,7 +358,6 @@ public class Terminal extends Thread {
 
     public int getTerminalColumns() 
     {
-         System.out.println("hetee");
         int read = -1;
         String[] signals = new String[] {
             "\u001b[s",            // save cursor position
@@ -359,7 +381,6 @@ public class Terminal extends Thread {
                     break;
                 }
             }
-             System.out.println("hetee");
 
             String size = sb.toString();
             //int rows = Integer.parseInt(size.substring(size.indexOf("\u001b[") + 2, size.indexOf(';')));
@@ -367,13 +388,12 @@ public class Terminal extends Thread {
             //System.err.printf("rows = %s, cols = %s%n", rows, cols);
 
             int cols = Integer.parseInt(size.split(";")[1].split("R")[0]);
-            System.out.println("hetee");
+            
         
             return cols;
            
 
         } catch (Exception e) {
-             System.out.println("hetee");
             return 0;
         }
 
@@ -419,11 +439,6 @@ public class Terminal extends Thread {
 
     private synchronized void printOnTerminal(MessageType type, String message, Color MessageColor) {
 
-        //System.out.print("\033[s");
-        //System.out.print("\033[100D");
-        //System.out.print("\n");
-        //System.out.print("\033[3A");
-
         if(this.waithingThread != null) {
             this.waithingThread.pause();
             while(!this.waithingThread.isInPause());
@@ -434,23 +449,12 @@ public class Terminal extends Thread {
         }
         else {
             System.out.print(type + message);
-        }
-        
-
-        //if(MessageColor == null)
-        
-        //System.out.print("\033[100D");
-        //System.out.print("\033[3B");
-        
-
-        //System.out.print("\033[u");
-       
+        }   
     }
 
     public void print_ln(String message) {
         printOnTerminal(MessageType.NONE, message + "\n", null);
     }
-
 
     public void printInfo_ln(String message) {
         printOnTerminal(MessageType.INFO, " " + message + "\n", null);

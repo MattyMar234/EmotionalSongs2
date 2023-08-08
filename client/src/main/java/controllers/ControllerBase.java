@@ -5,6 +5,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import application.EmotionalSongs;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -19,7 +21,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 
 import java.util.HashMap;
-
 import javax.imageio.ImageIO;
 
 public abstract class ControllerBase {
@@ -35,14 +36,30 @@ public abstract class ControllerBase {
         this.MainClassReference = EmotionalSongs.getInstance();
     }
 
-    public void setApplicationPage(String sceneName, BorderPane anchor) {
+    protected Image download_Image_From_Internet(String imageUrl) throws IOException 
+    {
+        URL url = new URL(imageUrl);
+        HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+        int responseCode = httpURLConnection.getResponseCode();
+
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            try (InputStream inputStream = httpURLConnection.getInputStream()) {
+                return new Image(new ByteArrayInputStream(inputStream.readAllBytes()));
+            }
+        } else {
+            throw new IOException("Errore durante il download. Codice di risposta: " + responseCode);
+        }
+    }
+
+
+    /*public void setApplicationPage(String sceneName, BorderPane anchor) {
         try {
             MainClassReference.SetScene(sceneName, anchor);
         } catch (IOException e) {
             System.out.println(e);
             e.printStackTrace();
         }
-    }
+    }*/
     
 
     protected void addObjectText_Translations(Object object, String[] texts) {
@@ -59,7 +76,6 @@ public abstract class ControllerBase {
             
             else if(object instanceof Button) {
                 ((javafx.scene.control.Button) object).setText(windowObjectsTexts.get(object)[EmotionalSongs.applicationLanguage]);   
-                System.out.println("heree");
             }
 
             else if(object instanceof javafx.scene.control.TextField)

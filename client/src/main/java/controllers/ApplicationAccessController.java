@@ -15,6 +15,7 @@ import Exceptions.InvalidPasswordException;
 import Exceptions.InvalidUserNameException;
 import application.ConnectionManager;
 import application.EmotionalSongs;
+import application.SceneManager;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.collections.FXCollections;
@@ -233,20 +234,17 @@ public class ApplicationAccessController extends ControllerBase implements Initi
     public void NoAccount(ActionEvent event) throws IOException {
 
         clearError();
-        WindowContainerController.getActiveInstance().setMainPage();
-        /*this.application.ConnectedAccount = new UnregisteredAccount();
-        Stage Window = (Stage) NoAccountButton.getScene().getWindow();
-        super.SwitchScene("MainPage");*/
+        //WindowContainerController.getActiveInstance().setMainPage();
+        SceneManager.getInstance().showHomePage();
     }
 
     @FXML
     public void CreateNewAccount(MouseEvent event) throws IOException {
 
         clearError();
-        WindowContainerController.getActiveInstance().setRegistrationPage();
-        //super.setApplicationPage("UserRegistration", );
-        //Stage Window = (Stage) NoAccountButton.getScene().getWindow();
-        //super.SwitchScene("UserRegistration");
+        SceneManager.getInstance().showRegistrationPage();
+        //WindowContainerController.getActiveInstance().setRegistrationPage();
+        
     }
 
     @FXML

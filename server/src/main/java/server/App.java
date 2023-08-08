@@ -57,7 +57,6 @@ public class App extends JFrame
     private String DB_name;
     
     public Database database = null;
-    protected Terminal terminal = null;
     private boolean databaseConnected = false;
     private Server server = null;
 
@@ -72,57 +71,58 @@ public class App extends JFrame
         UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor(); 
         new App(args);
-
-        /*
-         *  "\u001b[s"             // save cursor position
-            "\u001b[5000;5000H"    // move to col 5000 row 5000
-            "\u001b[6n"            // request cursor position
-            "\u001b[u"             // restore cursor position 
-         */
     }
 
     private App(String[] args) throws InterruptedException, IOException 
     {
         super();
-        this.terminal = Terminal.getInstance();
-        instance = this;
-        terminal.printLogo();
-        Thread.sleep(1000);
-        terminal.printInfo_ln("Application Running...");
 
+        //singleton pattern
+        instance = this; 
+
+        startingLogo();
         loadSettings();
 
-        //Class.forName("org.postgresql.Driver");
-        int attemptCount = 0;
-        int attemptMAX = 1;
 
-        terminal.printInfo_ln("Establishing database connection ");
-
-        while ((attemptCount++ < attemptMAX) && !databaseConnected) {
-            try {
-                database = Database.getInstance(this.DB_name, this.DB_IP, this.DB_port, this.DB_user, DB_password);
-                databaseConnected = database.testconnection();
-
-            } catch (SQLException e) {
-                terminal.printError_ln("connection attempt: failed");
-                Thread.sleep(2000);
-            }
-        }
-
-        if(databaseConnected) {
-            terminal.printSucces_ln("connection established");
-        } else {
-            terminal.printError_ln("Database not available");
-        }
-
+        Terminal terminal = Terminal.getInstance();
         
+        try {
+            database = Database.getInstance();
+            database.setConnection(this.DB_name, this.DB_IP, this.DB_port, this.DB_user, DB_password);
+        } 
+        catch (Exception e) {
+            terminal.printError_ln("DB initialization error: " + e);
+    
+            e.printStackTrace();
+            System.exit(0);
+        }
+        
+        terminal.printInfo_ln("Establishing database connection ");
+        testDataBaseConnection();
+        
+
         terminal.printSeparator();
         terminal.start();
+    }
 
-        /*while(true) {
-            System.out.println(System.in.read());
-        }*/
-  
+    public boolean testDataBaseConnection() {
+
+        Terminal terminal = Terminal.getInstance();
+        try {
+            if(!database.testconnection()) {
+                terminal.printError_ln("DB connection parametre not set");
+                return false;
+            }
+            else {
+                terminal.printSucces_ln("DB connection established");
+                return true;
+            }  
+        } 
+        catch (SQLException e) {
+            terminal.printError_ln("connection attempt: failed");
+            terminal.printError_ln("Database not available");
+            return false;
+        }
     }
 
 
@@ -135,14 +135,19 @@ public class App extends JFrame
     //check data 
     private boolean checkSettings() 
     {
+        Terminal terminal = Terminal.getInstance();
+        
+        
         Path folder = Paths.get(App.SETTINGS_DIRECTORY);
         Path file = Paths.get(App.FILE_SETTINGS_PATH);
 
         try {
             if(!Files.exists(folder)) {
+                
                 Files.createDirectory(folder);
             } 
             if(!Files.exists(file)) {
+                terminal.printError_ln("settings file not found");
                 initializeSettings();
             }
            
@@ -154,7 +159,10 @@ public class App extends JFrame
         }
     }
 
-    private void loadSettings() throws IOException {
+    protected void loadSettings() throws IOException {
+
+        Terminal terminal = Terminal.getInstance();
+        terminal.printInfo_ln("Loading settings");
 
         if(!checkSettings())
             return;
@@ -168,9 +176,14 @@ public class App extends JFrame
         this.DB_user = node.get(jsonDataName.DATABASE_USER.toString()).asText();
         this.DB_name = node.get(jsonDataName.DATABASE_NAME.toString()).asText();
 
+        terminal.printSucces_ln("Loading completed");
+
     }
 
-    private void initializeSettings() throws IOException {
+    private void initializeSettings() throws IOException 
+    {
+        Terminal terminal = Terminal.getInstance();
+        terminal.printInfo_ln("setup default settings");
 
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode data = objectMapper.createObjectNode();
@@ -187,7 +200,7 @@ public class App extends JFrame
         saveSettings();
     }
 
-    private void saveSettings() {
+    protected void saveSettings() {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode data = objectMapper.createObjectNode();
 
@@ -221,6 +234,17 @@ public class App extends JFrame
             server = null;
         }
         
+    }
+
+
+
+    //utility
+
+    private void startingLogo() throws InterruptedException {
+        Terminal terminal = Terminal.getInstance();
+        terminal.printLogo();
+        Thread.sleep(1000);
+        terminal.printInfo_ln("Application Running...");
     }
     
 }

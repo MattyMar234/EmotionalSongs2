@@ -16,6 +16,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.RemoteServer;
 import java.rmi.server.ServerNotActiveException;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -23,8 +24,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import Exceptions.InvalidPasswordException;
 import Exceptions.InvalidUserNameException;
+import database.QueryExecutor;
 import interfaces.ClientServices;
 import interfaces.ServerServices;
+import objects.Song;
 import utility.WaithingAnimationThread;
 
 public class Server extends Thread implements ServerServices
@@ -198,5 +201,22 @@ public class Server extends Thread implements ServerServices
 
 		throw new InvalidPasswordException();
 		//return null;
+	}
+
+
+	@Override
+	public ArrayList<Song> getMostPopularSongs(long limit, long offset) throws RemoteException {
+		
+		String clientHost = "";
+		
+		try {
+			clientHost = RemoteServer.getClientHost();
+			Terminal.getInstance().printInfo_ln("Host " + Color.MAGENTA + clientHost + Color.RESET + " requested function: MostPopularSongs");
+			return QueryExecutor.getTopPopularSongs(limit, offset);
+		} 
+		catch (Exception e) {
+			Terminal.getInstance().printError_ln("Host " + Color.MAGENTA + clientHost + Color.RESET + " error: " + e);
+			return null;
+		}
 	}
 }

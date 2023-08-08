@@ -1,11 +1,11 @@
 package utility;
 
-public class Common {
+public class Commune {
 
     protected String name;
     public String [] cap ;
 
-    public Common(String name, String [] cap) {
+    public Commune(String name, String [] cap) {
         this.name = name;
         this.cap = cap;
     }

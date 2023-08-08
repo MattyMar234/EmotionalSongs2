@@ -1,5 +1,5 @@
 module application.client {
-    requires javafx.fxml;
+    requires transitive javafx.fxml;
     requires transitive javafx.controls;
     requires transitive javafx.base;
     requires transitive javafx.graphics;
@@ -13,7 +13,8 @@ module application.client {
     requires de.jensd.fx.glyphs.materialdesignicons;
     requires de.jensd.fx.glyphs.fontawesome;
 
-    requires json.simple;
+    requires transitive json.simple;
+    requires transitive javatuples;
 
     opens application to javafx.fxml;
 
@@ -21,4 +22,5 @@ module application.client {
     exports controllers;
     exports utility;
     exports interfaces;
+    exports applicationEvents;
 }

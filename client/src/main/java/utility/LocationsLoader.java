@@ -73,7 +73,7 @@ public class LocationsLoader extends Thread {
                     cap[i] = (String) caps.get(i);
                 }
                 
-                Common common = new Common(name, cap);
+                Commune common = new Commune(name, cap);
                 Region region = null;
                 Province province = null;
 
