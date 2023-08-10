@@ -12,12 +12,12 @@
 
 <!--          -->
 
-<BorderPane id="main" fx:id="anchor" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="400" minWidth="900" prefHeight="1000.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainPageController">
+<BorderPane id="main" fx:id="anchor" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="400" minWidth="900" prefHeight="1000.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainPage_SideBar_Controller">
    <left>
-      <VBox id="lsidebar" fx:id="lsidebar" prefHeight="1000.0" prefWidth="371.0" spacing="20.0" BorderPane.alignment="CENTER">
+      <VBox id="lsidebar" fx:id="lsidebar" prefHeight="1000.0" prefWidth="263.0" spacing="20.0" BorderPane.alignment="CENTER">
 
             <HBox id="logocontainer" prefHeight="95.0" prefWidth="311.0">
-            <ImageView fitHeight="94.0" fitWidth="299.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="65.0" fitWidth="268.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@image/generic/Logo.png" />
                </image></ImageView>

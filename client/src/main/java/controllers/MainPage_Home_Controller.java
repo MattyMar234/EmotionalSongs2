@@ -1,22 +1,97 @@
 package controllers;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
+import application.ConnectionManager;
+import application.SceneManager;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
+import javafx.util.Callback;
+import objects.Song;
+import java.util.ArrayList;
 
-public class MainPage_Home_Controller extends ControllerBase implements Initializable{
+public class MainPage_Home_Controller extends ControllerBase implements Initializable
+{
+    @FXML public Button buttonBackward;
+    @FXML public Button buttonForward;
+    @FXML public TextField searchField;
 
+    @FXML public ScrollPane scrollPane;
+    @FXML public VBox scrollPaneVBox;
+
+    private SceneManager sceneManager;
+    private ArrayList<RowContainerController> rowControllers = new ArrayList<RowContainerController>();
 
     public MainPage_Home_Controller() {
         super();
+        sceneManager = SceneManager.getInstance();
     }
-
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void initialize(URL location, ResourceBundle resources) 
+    {
         
+        try {
+            for(int i = 0; i < 7; i++) {
+                ArrayList<Song> songs = ConnectionManager.getConnectionManager().getService().getMostPopularSongs(10, 10*i);
+                RowContainerController controller = (RowContainerController) sceneManager.injectScene("RowContainer.fxml", scrollPaneVBox, new RowContainerController()/*new RowContainerController(songs)*/);
+                controller.InjectData(songs, "Top 10 song");
+
+                rowControllers.add(controller);
+            }
+            
+        
+        } 
+        catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //???
+        scrollPane.widthProperty().addListener((observable, oldValue, newValue) -> {
+            double ds = newValue.doubleValue() - oldValue.doubleValue();
+            
+            System.out.println(ds);
+            
+            for (RowContainerController controller : rowControllers) {
+                controller.Hbox.prefWidthProperty().bind(scrollPane.prefWidthProperty());
+            }
+        });
+
+        double currentVal = scrollPane.widthProperty().get();
+
+        for (RowContainerController controller : rowControllers) {
+            double ds = currentVal - controller.Hbox.widthProperty().get();
+            controller.Hbox.widthProperty().add(ds);
+        }
     }
+    
+
+
+    @FXML
+    public void BackwardAction(MouseEvent event) {
+
+    }
+
+    @FXML
+    public void ForwardAction(MouseEvent event) {
+
+    }
+
+
 
    
     

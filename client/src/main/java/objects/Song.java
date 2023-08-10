@@ -13,6 +13,8 @@ public class Song implements Serializable
     private int popularity;
     private String albumId;
 
+    private HashMap <String, MyImage> images = new HashMap <String, MyImage>();
+
     // Costruttore
     public Song(String id, String title, String spotifyUrl, long durationMs, int popularity, String albumId) {
         this.id = id;
@@ -21,6 +23,10 @@ public class Song implements Serializable
         this.durationMs = durationMs;
         this.popularity = popularity;
         this.albumId = albumId;
+    }
+
+    public MyImage getImage(String size) {
+        return images.get(size);
     }
 
     // Metodi getter e setter per gli attributi della canzone

@@ -9,6 +9,7 @@ import java.util.Queue;
 
 import database.PredefinedSQLCode.Colonne;
 import database.PredefinedSQLCode.Tabelle;
+import objects.MyImage;
 import objects.Song;
 
 public class QueryExecutor {
@@ -37,7 +38,36 @@ public class QueryExecutor {
         ResultSet resultSet = database.submitQuery(sb.toString());
 
         while (resultSet.next()) { 
-            result.add(new Song(getObjectData(resultSet, Tabelle.SONG)));
+            Song song = new Song(getObjectData(resultSet, Tabelle.SONG));
+            result.add(song);    
+        }
+
+        resultSet.close();
+
+        for (Song song : result) {
+            song.addImages(getAlbumImages_by_ID(song.getAlbumId()));
+        }
+
+        
+        
+
+        return result; 
+    }
+
+    public static ArrayList<MyImage> getAlbumImages_by_ID(String ID) throws SQLException {
+
+        ArrayList<MyImage> result = new ArrayList<MyImage>();
+        Database database = Database.getInstance();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM " + PredefinedSQLCode.Tabelle.ALBUM_IMAGES.toString());
+        sb.append(" WHERE " + PredefinedSQLCode.Colonne.ID.getName() + " = '" + ID +"';");
+
+        System.out.println(sb.toString());
+        ResultSet resultSet = database.submitQuery(sb.toString());
+
+        while (resultSet.next()) { 
+            result.add(new MyImage(getObjectData(resultSet, Tabelle.ALBUM_IMAGES)));
         }
 
         return result; 

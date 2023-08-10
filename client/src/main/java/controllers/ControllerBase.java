@@ -1,11 +1,14 @@
 package controllers;
 
+import java.awt.Desktop;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import application.EmotionalSongs;
@@ -36,9 +39,10 @@ public abstract class ControllerBase {
         this.MainClassReference = EmotionalSongs.getInstance();
     }
 
-    protected Image download_Image_From_Internet(String imageUrl) throws IOException 
+    protected Image download_Image_From_Internet(String imageURL) throws IOException 
     {
-        URL url = new URL(imageUrl);
+        //return new Image(imageURL);
+        URL url = new URL(imageURL);
         HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
         int responseCode = httpURLConnection.getResponseCode();
 
@@ -100,6 +104,16 @@ public abstract class ControllerBase {
         Image img = SwingFXUtils.toFXImage(SwingFXUtils.fromFXImage(writableImg, null), null);
 
         return img;
+    }
+
+    protected static void openLink(String link) throws IOException, URISyntaxException {
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            Desktop.getDesktop().browse(new URI(link));
+        } else {
+            // Se il desktop non è supportato o l'azione di apertura del browser non è supportata,
+            // puoi gestire l'apertura del link in modo diverso qui (ad esempio, visualizzando il link in un terminale).
+            System.out.println("Desktop o l'azione di apertura del browser non sono supportati.");
+        }
     }
 
     

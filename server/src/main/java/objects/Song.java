@@ -2,6 +2,7 @@ package objects;
 
 import java.io.Serializable;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import database.PredefinedSQLCode.Colonne;
@@ -15,6 +16,8 @@ public class Song implements Serializable
     private long durationMs;
     private int popularity;
     private String albumId;
+
+    private HashMap <String, MyImage> images = new HashMap <String, MyImage>();
 
     // Costruttore
     public Song(String id, String title, String spotifyUrl, long durationMs, int popularity, String albumId) {
@@ -33,7 +36,17 @@ public class Song implements Serializable
         this.durationMs = (long)table.get(Colonne.DURATION);
         this.popularity = (int)table.get(Colonne.POPULARITY);
         this.albumId = (String)table.get(Colonne.ALBUM_ID_REF);
+
+        
     }
+
+    public void addImages(ArrayList<MyImage> imgs) {
+        for (MyImage myImage : imgs) {
+            images.put(myImage.getSize(), myImage);
+        }
+    }
+
+    
 
     // Metodi getter e setter per gli attributi della canzone
     public String getId() {

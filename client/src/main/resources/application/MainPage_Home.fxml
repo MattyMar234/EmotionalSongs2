@@ -1,14 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<AnchorPane id="BackGround" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="BackGround" prefHeight="636.0" prefWidth="780.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainPage_Home_Controller">
    <stylesheets>
       <URL value="@css/ApplicationTheme.css" />
       <URL value="@css/MainPage.css" />
    </stylesheets>
    <children>
-      <AnchorPane id="elementContainer" layoutX="20.0" layoutY="-8.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="28.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-8.0" />
+      <BorderPane id="elementContainer" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <top>
+            <VBox alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="56.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="56.0" prefWidth="32.0" />
+                        <HBox alignment="CENTER_LEFT" prefHeight="56.0" prefWidth="25.0">
+                           <children>
+                              <Button fx:id="buttonBackward" minWidth="26.0" mnemonicParsing="false" onMouseClicked="#BackwardAction" prefHeight="24.0" prefWidth="26.0" style="-fx-background-color: trasparent;">
+                                 <graphic>
+                                    <FontIcon iconColor="#fffbfb" iconLiteral="mdi2l-less-than" iconSize="24" wrappingWidth="26.0" />
+                                 </graphic>
+                              </Button>
+                              <Button fx:id="buttonForward" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="36.0" mnemonicParsing="false" onMouseClicked="#ForwardAction" prefHeight="24.0" prefWidth="36.0" style="-fx-background-color: trasparent;">
+                                 <graphic>
+                                    <FontIcon iconColor="WHITE" iconLiteral="mdi2g-greater-than" iconSize="24" wrappingWidth="24.0" />
+                                 </graphic>
+                              </Button>
+                           </children>
+                        </HBox>
+                        <AnchorPane maxHeight="1.7976931348623157E308" prefHeight="56.0" prefWidth="280.0">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" prefHeight="23.0" prefWidth="215.0" styleClass="search-container" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="12.0">
+                                 <children>
+                                    <FontIcon iconColor="#8d8d8d" iconLiteral="mdi2m-magnify" iconSize="24" wrappingWidth="28.0">
+                                       <HBox.margin>
+                                          <Insets left="8.0" />
+                                       </HBox.margin>
+                                    </FontIcon>
+                                    <VBox prefHeight="32.0" prefWidth="230.0">
+                                       <children>
+                                          <TextField fx:id="searchField" prefHeight="30.0" prefWidth="228.0" promptText="se" styleClass="search-text-field" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </AnchorPane>
+                        <FontIcon />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </top>
+         <center>
+            <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" prefHeight="398.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+               <content>
+                  <VBox fx:id="scrollPaneVBox" fillWidth="false" maxHeight="5000.0" maxWidth="5000.0" prefHeight="400.0" prefWidth="5000.0" />
+               </content>
+            </ScrollPane>
+         </center>
+      </BorderPane>
    </children>
 </AnchorPane>

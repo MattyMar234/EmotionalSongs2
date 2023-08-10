@@ -1,3 +1,14 @@
+* {
+    -primary: #121212;
+    -secondary: #1a1919;
+    -tertiary: #8259e3;
+    -container1: #181818;
+    -container1_H: #282828;
+
+}
+
+
+
 
 /*======================== BUTTONS =====================*/
 .button {
@@ -73,8 +84,22 @@
 }
 
 /*======================== FIELDS =====================*/
-
 .text-field, .password-field {
+    
+
+}
+
+.search-container {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 100;
+}
+
+.search-text-field {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 100;
+}
+
+.login-text-field, .login-password-field{
     -fx-font-weight: bolder;
     -fx-background-color: #1f1f1fd6;
     -fx-font-size: 14.5;
@@ -93,8 +118,12 @@
     -fx-text-fill: #ADADAD;
     -fx-font-size: 16;
     -fx-highlight-fill: #ADADAD;
-
 }
+
+
+
+
+
 
 #text-field_error {
     -fx-border-color: #E91429;
@@ -105,7 +134,7 @@
 
 
 
-/*======================== ELEMENT COLOR =====================*/
+/*======================== Anchors =====================*/
 
 #Border_BackGround {
     /*-fx-background-color: #171717;*/
@@ -119,6 +148,19 @@
 
 #NavColor {
     -fx-background-color: #000000;
+}
+
+.RowContainer-Background {
+    -fx-background-color: #242424;
+}
+
+.ElementContainer-Background {
+    -fx-background-color: #181818;
+    -fx-background-radius: 12;
+}
+
+.ElementContainer-Background:hover {
+    -fx-background-color: #282828;
 }
 
 

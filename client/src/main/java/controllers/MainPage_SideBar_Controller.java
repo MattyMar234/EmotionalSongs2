@@ -37,7 +37,7 @@ import javafx.scene.image.ImageView;
 /**
  * Questa classe grafica gestisce il menù laterale della pagina principale dell'applicazione
  */
-public class MainPageController extends ControllerBase implements Initializable
+public class MainPage_SideBar_Controller extends ControllerBase implements Initializable
 {
     // ========================= Label ========================= //
 
@@ -97,7 +97,7 @@ public class MainPageController extends ControllerBase implements Initializable
     };
 
 
-    public MainPageController() throws IOException {
+    public MainPage_SideBar_Controller() throws IOException {
         super();
     }
 

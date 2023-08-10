@@ -76,7 +76,7 @@ public class EmotionalSongs extends Application
 
         this.connectionManager = ConnectionManager.getConnectionManager();
         
-        /*if(connectionManager.testCustomConnection("192.168.1.128",8090)) {
+        if(connectionManager.testCustomConnection("192.168.1.128",8090)) {
             System.out.println("Server found on 192.168.1.128:8090" );
             connectionManager.setConnectionData("192.168.1.128",8090);
             connectionManager.connect();
@@ -84,7 +84,7 @@ public class EmotionalSongs extends Application
         else {
             System.out.println("server not found on 192.168.1.128:8090");
             logout();
-        }*/
+        }
 
         
 
@@ -171,15 +171,7 @@ public class EmotionalSongs extends Application
 
     
 
-    private static void openLink(String link) throws IOException, URISyntaxException {
-        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-            Desktop.getDesktop().browse(new URI(link));
-        } else {
-            // Se il desktop non è supportato o l'azione di apertura del browser non è supportata,
-            // puoi gestire l'apertura del link in modo diverso qui (ad esempio, visualizzando il link in un terminale).
-            System.out.println("Desktop o l'azione di apertura del browser non sono supportati.");
-        }
-    }
+    
 
     /*private void applyModification(Stage primaryStage, StackPane root) {
         Undecorator undecorator = new Undecorator(primaryStage, root);
