@@ -3,31 +3,16 @@ package application;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
-import javafx.util.Callback;
-import objects.Song;
-
-import java.awt.Desktop;
-import java.io.File;
+import objects.UserActions;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.rmi.UnknownHostException;
-import java.util.HashMap;
 import java.util.Optional;
-
+import application.SceneManager.SceneName;
 import applicationEvents.ConnectionEvent;
-import controllers.WindowContainerController;
 import utility.PathFormatter;
 
 
@@ -39,13 +24,12 @@ public class EmotionalSongs extends Application
     public static final String CSS_file_folder = PathFormatter.formatPath(ApplicationDirectory + "\\src\\main\\css"); //main\\resources\\pages-fxml
     public static final String flagsFolder = PathFormatter.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\image\\flags");
     public static final String LocationsPath = PathFormatter.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\data\\comuni.json");
-
-    public static int applicationLanguage = 0;
     private static EmotionalSongs instance = null;
-
-
+    
+    
     //================================[Variabili]================================//
-
+    public static int applicationLanguage = 0;
+    public UserActions userActions = new UserActions();
     private ConnectionManager connectionManager;
     public Stage stage;
 
@@ -68,26 +52,14 @@ public class EmotionalSongs extends Application
     {
         EmotionalSongs.instance = this;
 
+        connectionManager = ConnectionManager.getConnectionManager();
         SceneManager sceneManager = SceneManager.getInstance();
         sceneManager.setStage(stage);
         this.stage = stage;
 
         //stage.initStyle(StageStyle.UTILITY);
 
-        this.connectionManager = ConnectionManager.getConnectionManager();
         
-        if(connectionManager.testCustomConnection("192.168.1.128",8090)) {
-            System.out.println("Server found on 192.168.1.128:8090" );
-            connectionManager.setConnectionData("192.168.1.128",8090);
-            connectionManager.connect();
-        }
-        else {
-            System.out.println("server not found on 192.168.1.128:8090");
-            logout();
-        }
-
-        
-
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             
             @Override
@@ -109,12 +81,11 @@ public class EmotionalSongs extends Application
         });
 
         stage.addEventFilter(ConnectionEvent.DISCONNECTED, this::handleConnectionLostEvent);
+        stage.addEventFilter(ConnectionEvent.SERVER_NOT_FOUND, this::handleInvalidConnectionEvent);
 
+    
+        sceneManager.showScene(SceneName.ACCESS_PAGE);
         
-        
-        sceneManager.showAccess();
-        //WindowContainerController controller = (WindowContainerController) setStageScene("ApplicationBase");
-        //controller.setAccessPage();
 
         /*for (Song s : this.connectionManager.getService().getMostPopularSongs(10,0)) {
            System.out.println(s); 
@@ -135,6 +106,11 @@ public class EmotionalSongs extends Application
         this.showConnectionAlert();
     }
 
+    public void handleInvalidConnectionEvent(ConnectionEvent event) {
+        System.out.println("invalid parameter");
+        this.showInvalidConnectionAlert();
+    }
+
     public void logout() {
         //connectionManager.disconnect();
         stage.close();
@@ -150,16 +126,50 @@ public class EmotionalSongs extends Application
     {
         Platform.runLater(() -> {
             Alert alert = new Alert(AlertType.ERROR);
-            alert.setTitle("Errore connessione");
-            alert.setHeaderText("Verifica la tua connessione a internet," + "\n" + "o prova a modificare le impostazioni di" + 
-                    "\n" + "connessione");
-            alert.setContentText("Impossibile connettersi al server");
+            alert.setTitle(EmotionalSongs.applicationLanguage == 0 ? "Errore di connessione" : "Connection Error");
 
+            if(EmotionalSongs.applicationLanguage == 0) {
+                alert.setHeaderText("Verifica la tua connessione a internet,\n o prova a modificare le impostazioni di\nconnessione");
+                alert.setContentText("Impossibile connettersi al server");
+            }
+            else if(EmotionalSongs.applicationLanguage == 1) {
+                alert.setHeaderText("Check your Internet connection,\nor try changing your connection settings");
+                alert.setContentText("Unable to connect to the server");
+            }
+            
             // Aggiungi un pulsante "OK" per chiudere l'alert
             alert.getButtonTypes().setAll(ButtonType.OK);
 
             // Mostra l'alert e attendi la chiusura prima di procedere con la Timeline
             Optional<ButtonType> result = alert.showAndWait();
+
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                // Puoi gestire l'azione quando l'utente preme "OK" qui, se necessario
+            }
+        });
+	}
+
+    public void showInvalidConnectionAlert() 
+    {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle(EmotionalSongs.applicationLanguage == 0 ? "Errore di connessione" : "Connection Error");
+
+            if(EmotionalSongs.applicationLanguage == 0) {
+                alert.setHeaderText("parametri di connessione non corretti");
+                alert.setContentText("Impossibile connettersi al server");
+            }
+            else if(EmotionalSongs.applicationLanguage == 1) {
+                alert.setHeaderText("incorrect connection parameters");
+                alert.setContentText("Unable to connect to the server");
+            }
+            
+            // Aggiungi un pulsante "OK" per chiudere l'alert
+            alert.getButtonTypes().setAll(ButtonType.OK);
+
+            // Mostra l'alert e attendi la chiusura prima di procedere con la Timeline
+            Optional<ButtonType> result = alert.showAndWait();
+
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 // Puoi gestire l'azione quando l'utente preme "OK" qui, se necessario
             }

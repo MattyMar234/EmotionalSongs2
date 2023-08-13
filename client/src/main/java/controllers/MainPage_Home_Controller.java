@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 
 import application.ConnectionManager;
 import application.SceneManager;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -42,23 +43,31 @@ public class MainPage_Home_Controller extends ControllerBase implements Initiali
     public void initialize(URL location, ResourceBundle resources) 
     {
         
-        try {
-            for(int i = 0; i < 7; i++) {
-                ArrayList<Song> songs = ConnectionManager.getConnectionManager().getService().getMostPopularSongs(10, 10*i);
-                RowContainerController controller = (RowContainerController) sceneManager.injectScene("RowContainer.fxml", scrollPaneVBox, new RowContainerController()/*new RowContainerController(songs)*/);
-                controller.InjectData(songs, "Top 10 song");
-
-                rowControllers.add(controller);
-            }
+        /*new Thread(() -> { // Lambda Expression
+            for(int j = 0; j < 7; j++) {
+            final int i = j;
             
+            Platform.runLater(() -> { // Lambda Expression
+                try {
+
+                    ArrayList<Song> songs = ConnectionManager.getConnectionManager().getService().getMostPopularSongs(10, 10*i);
+                    RowContainerController controller = (RowContainerController) sceneManager.injectScene("RowContainer.fxml", scrollPaneVBox, new RowContainerController());
+                    controller.InjectData(songs, "Top 10 song");
+
+                    rowControllers.add(controller);
+                
+                } 
+                catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }  
+            });
+        }  
+        }).start();*/
         
-        } 
-        catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        
 
         //???
         scrollPane.widthProperty().addListener((observable, oldValue, newValue) -> {
@@ -83,12 +92,13 @@ public class MainPage_Home_Controller extends ControllerBase implements Initiali
 
     @FXML
     public void BackwardAction(MouseEvent event) {
-
+        System.out.println("herre");
+        emotionalSongs.userActions.undo();
     }
 
     @FXML
     public void ForwardAction(MouseEvent event) {
-
+        emotionalSongs.userActions.redo();
     }
 
 

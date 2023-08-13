@@ -99,12 +99,12 @@
     -fx-background-radius: 100;
 }
 
-.login-text-field, .login-password-field{
+/*.login-text-field, .login-password-field{
     -fx-font-weight: bolder;
     -fx-background-color: #1f1f1fd6;
     -fx-font-size: 14.5;
 
-    /*-fx-text-fill: #727272; old*/
+  
     -fx-text-fill: #ffffff;
 
     -fx-border-color: #727272;
@@ -112,13 +112,13 @@
     -fx-border-width: 1px;
 
 
-    /*  NEW  */
+
     -fx-background-color: #FFFFFF;
     -fx-background-radius: 15;
     -fx-text-fill: #ADADAD;
     -fx-font-size: 16;
     -fx-highlight-fill: #ADADAD;
-}
+}*/
 
 
 

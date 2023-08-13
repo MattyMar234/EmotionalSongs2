@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import application.SceneManager;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -48,16 +49,20 @@ public class RowContainerController extends ControllerBase implements Initializa
 
         for(final Object o : castedList)
         {
-            try {
+            Platform.runLater(() -> { // Lambda Expression
+                try {
                 ElementContainer controller = (ElementContainer) sceneManager.injectScene("ElementContainer.fxml", Hbox, new ElementContainer(o));
                 controller.InjectData(o);
-            } 
-            catch (RemoteException e) {
-                e.printStackTrace();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
+                } 
+                catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+            
+            
         }
     }
 

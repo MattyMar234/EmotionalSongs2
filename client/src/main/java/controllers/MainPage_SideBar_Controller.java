@@ -108,6 +108,7 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
         setHomePage();
         //setLogo();
         isLogged.set(false);
+        anchor_for_injectScene = anchor;
         //super.setImage(IMG1,IMG2,IMG3,IMG6,IMG5);
         //optionsButton.setText(MainPageController.matrice[0][EmotionalSongs.language]);
         //CambioButton.setText(MainPageController.matrice[1][EmotionalSongs.language]);

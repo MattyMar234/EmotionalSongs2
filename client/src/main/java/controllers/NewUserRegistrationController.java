@@ -10,6 +10,7 @@ import java.util.ResourceBundle;
 
 import application.EmotionalSongs;
 import application.SceneManager;
+import application.SceneManager.SceneName;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -466,7 +467,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
 
     @FXML
     public void TurnBack() throws IOException {
-       SceneManager.getInstance().showAccess();
+       SceneManager.getInstance().showScene(SceneName.ACCESS_PAGE);
     }
 
     @FXML

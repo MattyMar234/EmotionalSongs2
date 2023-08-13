@@ -215,8 +215,8 @@ public class PredefinedSQLCode
     {
         //!! l'ordine dipende dal "DROP TABLE" e dal "CREATE TABLE"
         ARTIST          ("Artista"), 
-        GENERI_ARTISTA  ("GeneriArtista"), 
         GENERI_MUSICALI ("GeneriMusicali"), 
+        GENERI_ARTISTA  ("GeneriArtista"), 
         ALBUM           ("Album"), 
         ALBUM_IMAGES    ("ImmaginiAlbums"),
         ARTIST_IMAGES   ("ImmaginiArtisti"), 

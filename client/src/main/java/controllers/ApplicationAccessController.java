@@ -11,11 +11,15 @@ import java.util.ResourceBundle;
 
 import javax.imageio.ImageIO;
 
+import org.kordamp.ikonli.javafx.FontIcon;
+
 import Exceptions.InvalidPasswordException;
 import Exceptions.InvalidUserNameException;
 import application.ConnectionManager;
 import application.EmotionalSongs;
 import application.SceneManager;
+import application.SceneManager.SceneName;
+import applicationEvents.ConnectionEvent;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.collections.FXCollections;
@@ -35,8 +39,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.embed.swing.SwingFXUtils;
@@ -49,7 +55,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
 {
     private static ApplicationAccessController reference;
     private ObservableList<ImageView> imgs = FXCollections.observableArrayList();
-
+    private SceneManager sceneManager = SceneManager.getInstance();
     
     @FXML public Label LabeErrorlField1;
     @FXML public Label LabeErrorlField2;
@@ -63,12 +69,19 @@ public class ApplicationAccessController extends ControllerBase implements Initi
     @FXML public TextField userName;
     @FXML public PasswordField password;
 
+    @FXML public TextField IP;
+    @FXML public TextField PORT;
+
+
     @FXML public Button LoginButton;
     @FXML public Button NoAccountButton;
 
     @FXML public AnchorPane pane1;
     @FXML public CheckBox rememberCheckBox;
     @FXML public ComboBox<ImageView> flags;
+ 
+    @FXML public Label connectionStatus;
+    @FXML public FontIcon connectionIcon;
 
     
 
@@ -92,9 +105,12 @@ public class ApplicationAccessController extends ControllerBase implements Initi
         super.addObjectText_Translations(userName, new String[] {"L'email oppure l'userID", "Email or userID"});
         super.setTextsLanguage();
 
+        EmotionalSongs.getInstance().stage.addEventFilter(ConnectionEvent.DISCONNECTED, this::handleConnectionLostEvent);
+
 
         this.LabelError_IMG1.setImage(super.AwesomeIcon_to_Image(FontAwesomeIcon.EXCLAMATION_CIRCLE, 80));
         this.LabelError_IMG2.setImage(super.AwesomeIcon_to_Image(FontAwesomeIcon.EXCLAMATION_CIRCLE, 20));
+
 
     
         //carico tutte le immagini delle lingue
@@ -163,7 +179,19 @@ public class ApplicationAccessController extends ControllerBase implements Initi
           }
         });
 
+
         flags.getSelectionModel().select(EmotionalSongs.applicationLanguage);
+
+        if(connectionManager.isConnected()) {
+            testServerConnectionParams(connectionManager.getHost(), connectionManager.getPort());
+            PORT.setText(Integer.toString(connectionManager.getPort()));
+            IP.setText(connectionManager.getHost());
+        } 
+        else {
+            testServerConnectionParams("", 0);
+        }
+
+        
         clearError();
     }
           
@@ -199,6 +227,12 @@ public class ApplicationAccessController extends ControllerBase implements Initi
         }
     }
 
+
+
+    public void handleConnectionLostEvent(ConnectionEvent event) {
+        
+    }
+
     
     @FXML
     public void handleLoginButtonAction() {
@@ -232,17 +266,26 @@ public class ApplicationAccessController extends ControllerBase implements Initi
 
     @FXML
     public void NoAccount(ActionEvent event) throws IOException {
+        if (!connectionManager.isConnected()) {
+            emotionalSongs.stage.fireEvent(new ConnectionEvent(ConnectionEvent.SERVER_NOT_FOUND));
+            return;
+        }
 
         clearError();
         //WindowContainerController.getActiveInstance().setMainPage();
-        SceneManager.getInstance().showHomePage();
+        sceneManager.showScene(SceneName.HOME_PAGE);
+      
     }
 
     @FXML
     public void CreateNewAccount(MouseEvent event) throws IOException {
+        if (!connectionManager.isConnected()) {
+            emotionalSongs.stage.fireEvent(new ConnectionEvent(ConnectionEvent.SERVER_NOT_FOUND));
+            return;
+        }
 
         clearError();
-        SceneManager.getInstance().showRegistrationPage();
+        sceneManager.showScene(SceneName.REGISTRATION_PAGE);
         //WindowContainerController.getActiveInstance().setRegistrationPage();
         
     }
@@ -250,6 +293,12 @@ public class ApplicationAccessController extends ControllerBase implements Initi
     @FXML
     public void accedi_Account(ActionEvent event) throws IOException 
     {
+        if (!connectionManager.isConnected()) {
+            emotionalSongs.stage.fireEvent(new ConnectionEvent(ConnectionEvent.SERVER_NOT_FOUND));
+            return;
+        }
+            
+
         boolean error = false;
         clearError();
 
@@ -281,6 +330,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
 
         try {
             response = connection.getService().getAccount(userName.getText(), password.getText());
+            sceneManager.showScene(SceneName.HOME_PAGE);
         } 
         catch (InvalidUserNameException e) {
             this.LabeErrorlField1.setVisible(true);
@@ -304,7 +354,49 @@ public class ApplicationAccessController extends ControllerBase implements Initi
                 return;
             }
         }
-    }  
+    } 
+    
+    
+    @FXML
+    public void checkConnection(KeyEvent event) {
+
+        if(IP == null || PORT == null || IP.getText().length() == 0 || PORT.getText().length() == 0 || IP.getText().split(".").length == 4) {
+            return;
+        }
+
+        if(testServerConnectionParams(IP.getText(), Integer.parseInt(PORT.getText()))) {
+            connectionManager.setConnectionData(IP.getText(), Integer.parseInt(PORT.getText()));
+            connectionManager.connect();
+        }
+        else {
+            if(connectionManager.isConnected()) {
+                connectionManager.disconnect();
+            }
+            //connectionManager.setConnectionData(IP.getText(), Integer.parseInt(PORT.getText()));
+        }
+    }
+
+    private boolean testServerConnectionParams(String IP, int PORT) 
+    {
+        if(connectionManager.testCustomConnection(IP,PORT)) {
+            connectionStatus.setText(EmotionalSongs.applicationLanguage == 0 ? "Server trovato" : "Server found");
+            connectionStatus.setStyle("-fx-text-fill: #1ED760;");
+            connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #1ED760;");
+            return true;
+            
+        }
+        else {
+            connectionStatus.setText(EmotionalSongs.applicationLanguage == 0 ? "Server non trovato" : "Server not found");
+            connectionStatus.setStyle("-fx-text-fill: #F14934;");
+            connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #F14934;");
+            return false;
+            //connectionIcon.getStyle()
+
+            //.add("-fx-fill: #F14934");
+
+        }
+    }
+    
 
     private void clearError() {
         this.LabeErrorlField1.setVisible(false);

@@ -30,13 +30,14 @@ public class ConnectionManager extends UnicastRemoteObject implements ClientServ
     private static ConnectionManager manager;
 
 
-	private String defaultHostAddress = "localhost";
+	private String defaultHostAddress = "127.0.0.1";
 	private int defaultHostPort = 8090; 
 
     private String hostAddress;
     private int hostPort;
     private Registry registry;
 	private ServerServices stub;
+	private boolean connected = false;
 
 
 	Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
@@ -47,20 +48,19 @@ public class ConnectionManager extends UnicastRemoteObject implements ClientServ
 	}));
 
 
-	public ServerServices getService() {
-		return stub;
-		
-	}
 
     private ConnectionManager() throws RemoteException {
 		super();
 
 		hostAddress = defaultHostAddress;
 		hostPort = defaultHostPort;
+
+		if(testCustomConnection(hostAddress, hostPort)) {
+            connect();
+        }
     }
 
 	
-
     /**
      * Class implemented with a Singleton pattern, this method is necessary to get
      * the ConnectionManager instance
@@ -96,11 +96,12 @@ public class ConnectionManager extends UnicastRemoteObject implements ClientServ
 		return success;
 	}
 
+	//qundo sono collegato
 	/**
 	 * Tests a connection to the EmotionalSong server
 	 * @return success of the connection
 	 */
-	public boolean testServerConnection() {
+	private boolean testServerConnection() {
 		boolean success = true;
 		
 		try {
@@ -138,6 +139,7 @@ public class ConnectionManager extends UnicastRemoteObject implements ClientServ
 				registry = LocateRegistry.getRegistry(hostAddress, hostPort);
 				stub = (ServerServices) registry.lookup("EmotionalSongs_services");
 				stub.addClient(this);
+				connected = true;
 
 			} catch (RemoteException | NotBoundException e) {
 				disconnect();
@@ -154,18 +156,21 @@ public class ConnectionManager extends UnicastRemoteObject implements ClientServ
 		timeline.setCycleCount(Timeline.INDEFINITE); // Imposta il conteggio ciclico infinito
         timeline.play();
 		
-		
-		/*new Thread(new Runnable() {
-			@Override public void run() {
-				while(testServerConnection()) {
-					System.out.println("herreee");
-					try {Thread.sleep(1000);} catch (InterruptedException e) {}
-				}
-				
-				EmotionalSongs.getInstance().stage.fireEvent(new ConnectionEvent(ConnectionEvent.DISCONNECTED));
-			}}).start();*/
-		
+	
 		return connectionAvailable;
+	}
+
+
+
+	public ServerServices getService() {
+		if(isConnected())
+			return stub;
+		else
+			return null;
+	}
+
+	public boolean isConnected() {
+		return connected;
 	}
 
 
@@ -173,7 +178,18 @@ public class ConnectionManager extends UnicastRemoteObject implements ClientServ
 	 * Disconnects the client from Watchneighbours server
 	 */
 	public void disconnect() {
-			timeline.stop();
+		timeline.stop();
+
+		if(connected) {
+			try {
+				stub.disconnect(this);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			connected = false;
+		}
+
+		
 	}
 	
 	/**

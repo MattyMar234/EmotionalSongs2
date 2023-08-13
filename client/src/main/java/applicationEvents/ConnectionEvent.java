@@ -8,6 +8,7 @@ public class ConnectionEvent extends Event {
 
     public static final EventType<ConnectionEvent> CONNECTED = new EventType<ConnectionEvent>(Event.ANY, "CONNECTED");
     public static final EventType<ConnectionEvent> DISCONNECTED = new EventType<ConnectionEvent>(Event.ANY, "DISCONNECTED");
+    public static final EventType<ConnectionEvent> SERVER_NOT_FOUND = new EventType<ConnectionEvent>(Event.ANY, "SERVER_NOT_FOUND");
 
 
     public ConnectionEvent(EventType<? extends Event> eventType) {

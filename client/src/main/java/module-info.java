@@ -15,6 +15,7 @@ module application.client {
 
     requires transitive json.simple;
     requires transitive javatuples;
+    requires transitive org.kordamp.ikonli.javafx;
 
     opens application to javafx.fxml;
 
@@ -23,4 +24,5 @@ module application.client {
     exports utility;
     exports interfaces;
     exports applicationEvents;
+    exports objects;
 }

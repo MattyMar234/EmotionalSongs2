@@ -16,6 +16,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import Parser.JsonParser;
 import database.Database;
+import database.PredefinedSQLCode;
+import database.PredefinedSQLCode.Tabelle;
 import utility.AsciiArtGenerator;
 import utility.PathFormatter;
 import utility.AsciiArtGenerator.ASCII_STYLE;
@@ -77,11 +79,20 @@ public class App extends JFrame
     {
         super();
 
+        
+
         //singleton pattern
         instance = this; 
 
         startingLogo();
         loadSettings();
+
+        
+
+        for (Tabelle s : PredefinedSQLCode.Tabelle.values()) {
+            System.out.println(s);
+        }
+
 
 
         Terminal terminal = Terminal.getInstance();

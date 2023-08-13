@@ -11,19 +11,70 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import objects.SceneAction;
+import objects.UserActions;
+
 import org.javatuples.*;
 
+import applicationEvents.ConnectionEvent;
+import controllers.ControllerBase;
 import controllers.MainPage_SideBar_Controller;
 import controllers.WindowContainerController;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class SceneManager {
 
-    private static final String ACCESSPAGE = "/fxml/access-page.fxml";
-    private Stage stage;
+    private static final String AccessPage_path = "AccessPage.fxml";
+    private static final String MainPage_SideBar_path = "MainPage_SideBar.fxml";
+    private static final String MainPage_home_path = "MainPage_Home.fxml";
+    private static final String RegistrationPage_path = "MainPage_Home.fxml";
+
+    private int theme = 0;
+    private ArrayList<ControllerBase> loadedControllers = new ArrayList<>();
+    private ApplicationState applicationState = null;
+    
     private static SceneManager instance;
-    private WindowContainerController sceneBase;
+    private Stage stage;
+    
+
+
+    public enum SceneName {
+
+        ACCESS_PAGE(ApplicationState.ACCESS_PAGE,AccessPage_path),
+        REGISTRATION_PAGE(ApplicationState.REGISTRATION_PAGE ,RegistrationPage_path),
+        HOME_PAGE(ApplicationState.MAIN_PAGE, MainPage_SideBar_path, MainPage_home_path),
+        PLAYLISTS_PAGE(ApplicationState.MAIN_PAGE,""),
+        ACCOUNT_PAGE(ApplicationState.MAIN_PAGE,""),
+        COMMENT_PAGE(ApplicationState.MAIN_PAGE,"");
+
+
+        private String[] file_array;
+        private ApplicationState state;
+
+    
+        private SceneName(ApplicationState state, String... file) {
+            this.file_array = file;
+            this.state = state;
+        }
+
+        public String[] getFilePath() {
+            return file_array;
+        }
+
+        public ApplicationState getCorrespondentState() {
+            return state;
+        }
+    }
+
+    private enum ApplicationState {
+        ACCESS_PAGE,
+        REGISTRATION_PAGE,
+        MAIN_PAGE
+    }
+
+    
 
     
 
@@ -57,6 +108,7 @@ public class SceneManager {
         FXMLLoader loader = new FXMLLoader();
         System.out.println(EmotionalSongs.class.getResource(name + ((!name.endsWith(".fxml")) ? ".fxml" : "")));
         loader.setLocation(EmotionalSongs.class.getResource(name + ((!name.endsWith(".fxml")) ? ".fxml" : "")));
+        System.out.println();
         return loader;
     }
 
@@ -168,58 +220,90 @@ public class SceneManager {
         Pair<Scene,FXMLLoader> result = setStageScene("ApplicationBase.fxml");
         FXMLLoader loader = result.getValue1();
 
-        this.sceneBase = loader.getController();
+        //this.sceneBase = loader.getController();
     }
 
-
-    //set application
-    public void showAccess() 
+    /**
+    * 
+    * @param sceneName Identificativo della scena
+    * @param args Parametri per i controllers
+    */
+    public void showScene(SceneName sceneName, Object... args) 
     {
-        Pair<Scene,FXMLLoader> result = setStageScene("AccessPage.fxml");
-        //SetScene("MainPage_Home.fxml", this.sceneBase.anchor);
+        SceneAction action = new SceneAction(sceneName, args);
+        EmotionalSongs.getInstance().userActions.addAction(action);
+        executeShowScene(sceneName, args);
+    } 
 
-        
 
-
-        //scene.setFill(Color.TRANSPARENT);
-        //scene.getStylesheets().add(SceneManager.class.getResource("/styles/dark-theme.css").toExternalForm());
+    public void showScene(SceneAction sceneAction) {
+        executeShowScene(sceneAction.scenaName, sceneAction.args);
     }
 
 
-    //show access-page.fxml
-    public void showHomePage() {
+    private void executeShowScene(SceneName sceneName, Object[] args) {
+        //offset del file
+        int fileOffset = 0;
         
-        Pair<Scene,FXMLLoader> result = setStageScene("MainPage_SideBar.fxml");
-        Scene scene = result.getValue0();
-        FXMLLoader loader = result.getValue1();
-
-        MainPage_SideBar_Controller mainPageController = loader.getController();
-
-        injectScene("MainPage_Home.fxml", mainPageController.anchor);
         
-
-        //scene.getStylesheets().add(SceneManager.class.getResource("/styles/dark-theme.css").toExternalForm());
-
-        
-    }
-
-    public void showRegistrationPage (){
-        
-        Pair<Scene,FXMLLoader> result = setStageScene("UserRegistration.fxml");
-        Scene scene = result.getValue0();
-
-        //scene.getStylesheets().add(SceneManager.class.getResource("/styles/dark-theme.css").toExternalForm());
-
-    }
-
-
-    /*private static Parent loadFXML(String page){
-        Parent root= null;
-        try {
-            root = FXMLLoader.load(SceneManager.class.getResource(page));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        //se non ho ancora uno stato oppure devo caricare uno stato differente
+        if(applicationState == null || applicationState != sceneName.getCorrespondentState()) {
+            applicationState = sceneName.getCorrespondentState(); //ottengo lo stato a cui appartiene la scena
+            loadedControllers.clear();
         }
-        return  root;
-    }*/
+        //se devo modificare la scena di uno stesso stato
+        else if(applicationState == ApplicationState.MAIN_PAGE && applicationState == sceneName.getCorrespondentState()) {
+            applicationState = sceneName.getCorrespondentState();
+            ControllerBase c = (ControllerBase)loadedControllers.get(0);
+            loadedControllers.clear();
+            loadedControllers.add(c);
+            fileOffset = 1;
+        }
+        
+
+        for (int i = fileOffset; i < sceneName.getFilePath().length; i++) {
+            String file = sceneName.getFilePath()[i];
+
+            //se sono la scena di base
+            if(loadedControllers.size() == 0) 
+            {
+                Pair<Scene,FXMLLoader> result = setStageScene(file);
+                Scene scene = result.getValue0();
+                FXMLLoader loader = result.getValue1();
+
+                //se voglio un tema da applicare all'applicazione
+                /*if(theme == 0) {
+                    scene.getStylesheets().add(SceneManager.class.getResource("/styles/dark-theme.css").toExternalForm());
+                }
+                else if (theme == 1) {
+                    scene.getStylesheets().add(SceneManager.class.getResource("/styles/dark-theme.css").toExternalForm());
+                }*/
+
+                loadedControllers.add(loader.getController());
+            }
+            //se sono una scena da inserire in un altra scena
+            else {
+                //accedo all'anchor dell'untimo controller della lista controller e inserisco il codice della nuova scena
+                loadedControllers.add((ControllerBase)injectScene(MainPage_home_path, loadedControllers.get(loadedControllers.size() - 1).anchor_for_injectScene));
+            }
+        }
+        
+        //se voglio fare delle operazioni aggiuntive per ogni scena
+        //per accedere a un specifico controller uso: "loadedControllers.get(index)"
+        switch (sceneName) 
+        {
+            case ACCESS_PAGE -> {
+
+            }
+            case REGISTRATION_PAGE -> {
+
+            }
+            case HOME_PAGE -> {
+                
+            }
+            default -> {
+                throw new IllegalArgumentException("Unexpected value: " + sceneName);
+            }
+        }
+    }
 }

@@ -11,6 +11,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import application.ConnectionManager;
 import application.EmotionalSongs;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -31,7 +32,11 @@ public abstract class ControllerBase {
     private EmotionalSongs MainClassReference;
     private HashMap<Object, String[]> windowObjectsTexts = new HashMap<Object, String[]>();
     private HashMap<Object, String[]> ObjectsErrorVisualization = new HashMap<Object, String[]>();
+    
+    protected ConnectionManager connectionManager = ConnectionManager.getConnectionManager();
+    protected EmotionalSongs emotionalSongs = EmotionalSongs.getInstance();
 
+    public Object anchor_for_injectScene;
 
 
 
@@ -53,6 +58,10 @@ public abstract class ControllerBase {
         } else {
             throw new IOException("Errore durante il download. Codice di risposta: " + responseCode);
         }
+    }
+
+    protected boolean imConnected() {
+        return connectionManager.isConnected();
     }
 
 
