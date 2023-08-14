@@ -61,6 +61,7 @@ public class App extends JFrame
     public Database database = null;
     private boolean databaseConnected = false;
     private Server server = null;
+    private Terminal terminal;
 
 
     public static App getInstance() {
@@ -78,25 +79,16 @@ public class App extends JFrame
     private App(String[] args) throws InterruptedException, IOException 
     {
         super();
-
+        App.instance = this;
+        this.terminal = Terminal.getInstance();
         
-
-        //singleton pattern
-        instance = this; 
-
-        startingLogo();
         loadSettings();
 
         
-
         for (Tabelle s : PredefinedSQLCode.Tabelle.values()) {
-            System.out.println(s);
+            terminal.printInfo_ln(s.toString());
         }
 
-
-
-        Terminal terminal = Terminal.getInstance();
-        
         try {
             database = Database.getInstance();
             database.setConnection(this.DB_name, this.DB_IP, this.DB_port, this.DB_user, DB_password);
@@ -113,7 +105,7 @@ public class App extends JFrame
         
 
         terminal.printSeparator();
-        terminal.start();
+        this.terminal.start();
     }
 
     public boolean testDataBaseConnection() {
@@ -249,13 +241,7 @@ public class App extends JFrame
 
 
 
-    //utility
 
-    private void startingLogo() throws InterruptedException {
-        Terminal terminal = Terminal.getInstance();
-        terminal.printLogo();
-        Thread.sleep(1000);
-        terminal.printInfo_ln("Application Running...");
-    }
+    
     
 }

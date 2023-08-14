@@ -8,6 +8,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import objects.Account;
 import objects.UserActions;
 import java.io.IOException;
 import java.util.Optional;
@@ -30,8 +31,10 @@ public class EmotionalSongs extends Application
     //================================[Variabili]================================//
     public static int applicationLanguage = 0;
     public UserActions userActions = new UserActions();
-    private ConnectionManager connectionManager;
     public Stage stage;
+    public Account account;
+    
+    private ConnectionManager connectionManager;
 
 
     static {

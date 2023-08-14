@@ -34,6 +34,12 @@ public class WaithingAnimationThread extends Thread
         this.text = text;
         this.animation = animation;    
     }
+
+    public WaithingAnimationThread(String text, Animation animation, String operation) {
+        //this.text = (text.endsWith("...") ? text : text + "...");
+        this.text = text;
+        this.animation = animation;    
+    }
     
     public void run() 
     {

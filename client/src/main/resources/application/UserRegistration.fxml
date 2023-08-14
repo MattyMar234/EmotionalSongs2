@@ -435,7 +435,7 @@
                                                                                              <children>
                                                                                                 <VBox id="FildsVbox2" alignment="BASELINE_LEFT" prefHeight="200.0" prefWidth="100.0">
                                                                                                    <children>
-                                                                                                      <Label id="fildsLabel" fx:id="testoComune" text="Common">
+                                                                                                      <Label id="fildsLabel" fx:id="testoComune" text="Commune">
                                                                                                          <VBox.margin>
                                                                                                             <Insets bottom="2.0" />
                                                                                                          </VBox.margin>
@@ -450,7 +450,7 @@
                                                                                                 </VBox>
                                                                                                 <VBox prefHeight="200.0" prefWidth="100.0">
                                                                                                    <children>
-                                                                                                      <ComboBox fx:id="common" onAction="#selectCommon" prefHeight="34.0" prefWidth="209.0">
+                                                                                                      <ComboBox fx:id="commune" onAction="#selectCommon" prefHeight="34.0" prefWidth="209.0">
                                                                                                          <VBox.margin>
                                                                                                             <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                                                                                                          </VBox.margin>

@@ -22,11 +22,13 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.concurrent.ThreadLocalRandom;
 
+import Exceptions.InvalidEmailException;
 import Exceptions.InvalidPasswordException;
 import Exceptions.InvalidUserNameException;
 import database.QueryExecutor;
 import interfaces.ClientServices;
 import interfaces.ServerServices;
+import objects.Account;
 import objects.Song;
 import utility.WaithingAnimationThread;
 
@@ -191,7 +193,7 @@ public class Server extends Thread implements ServerServices
 
 
 	@Override
-	public Object getAccount(String Email, String Password) throws RemoteException, InvalidPasswordException, InvalidUserNameException {
+	public Account getAccount(String Email, String Password) throws RemoteException, InvalidPasswordException, InvalidUserNameException {
 		try {
 			String clientHost = RemoteServer.getClientHost();
 			Terminal.getInstance().printInfo_ln("Host " + Color.MAGENTA + clientHost + Color.RESET + " requested account");
@@ -211,12 +213,21 @@ public class Server extends Thread implements ServerServices
 		
 		try {
 			clientHost = RemoteServer.getClientHost();
-			Terminal.getInstance().printInfo_ln("Host " + Color.MAGENTA + clientHost + Color.RESET + " requested function: MostPopularSongs");
+			Terminal.getInstance().printInfo_ln("Host " + Color.MAGENTA + clientHost + Color.RESET + " requested function: MostPopularSongs("+limit+ ", " + offset +")");
 			return QueryExecutor.getTopPopularSongs(limit, offset);
 		} 
 		catch (Exception e) {
 			Terminal.getInstance().printError_ln("Host " + Color.MAGENTA + clientHost + Color.RESET + " error: " + e);
 			return null;
 		}
+	}
+
+
+	@Override
+	public Account addAccount(String name, String username, String userID, String codiceFiscale, String Email,
+			String password, String civicNumber, String viaPiazza, String cap, String commune, String province)
+			throws RemoteException, InvalidUserNameException, InvalidEmailException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'addAccount'");
 	}
 }

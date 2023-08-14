@@ -7,10 +7,16 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import Exceptions.InvalidEmailException;
+import Exceptions.InvalidUserNameException;
+import application.ConnectionManager;
 import application.EmotionalSongs;
 import application.SceneManager;
 import application.SceneManager.SceneName;
+import interfaces.ServerServices;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -26,6 +32,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import objects.Account;
 import utility.Commune;
 import utility.LocationsLoader;
 import utility.Province;
@@ -82,7 +89,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
 
 
     @FXML public ComboBox<String> cap;
-    @FXML public ComboBox<String> common;
+    @FXML public ComboBox<String> commune;
     @FXML public ComboBox<String> province;
 
     public AutoCompleteComboBoxListener<String> c1;
@@ -315,7 +322,6 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
     @SuppressWarnings("unchecked")
     public void initialize(URL location, ResourceBundle resources) 
     {
-        //super.setImage(IMG1,IMG2,IMG3,IMG4,IMG5,IMG6,IMG7,IMG8,IMG9,IMG10,IMG11,IMG12,IMG13);
         super.addObjectText_Translations(testoNome,             new String[] {"Nome", "Name"});
         super.addObjectText_Translations(name,                  new String[] {"Nome", "First Name"});
         super.addObjectText_Translations(testoCognome,          new String[] {"Cognome", "Surname"});
@@ -339,7 +345,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
 
 
         c1 = new AutoCompleteComboBoxListener<>(cap);
-        c2 = new AutoCompleteComboBoxListener<>(common);
+        c2 = new AutoCompleteComboBoxListener<>(commune);
         c3 = new AutoCompleteComboBoxListener<>(province);
 
         ClearLabelError(labelID);
@@ -365,7 +371,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
                         while(c.getName().length() < minSize) {
                             c.setName(p.getName() + " ");
                         }
-                        common.getItems().add(c.getName());
+                        commune.getItems().add(c.getName());
 
                         for(int i = 0; i < c.cap.length; i++) {
                             cap.getItems().add(c.cap[i] + " : " + c.getName());
@@ -381,9 +387,9 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
                 province.getItems().addAll(BucketSort(q,3,256, 0));
                 //System.out.println(province.getItems().size());
             
-                q = new LinkedList<>(common.getItems());
-                common.getItems().clear();
-                common.getItems().addAll(BucketSort(q,3,256 - (int)' ', (int)' '));
+                q = new LinkedList<>(commune.getItems());
+                commune.getItems().clear();
+                commune.getItems().addAll(BucketSort(q,3,256 - (int)' ', (int)' '));
             
                 q = new LinkedList<>(cap.getItems());
                 cap.getItems().clear();
@@ -407,7 +413,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
         contenitori.add(new ElementsContainer(viaPiazza     , null));
         
         contenitori.add(new ElementsContainer(cap     ));
-        contenitori.add(new ElementsContainer(common     ));
+        contenitori.add(new ElementsContainer(commune     ));
         contenitori.add(new ElementsContainer(province));
     }
 
@@ -424,7 +430,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
 
 
         // ================================= 1° verifica ================================= //
-        //Verifico se tutti i campi sono stati compilati
+        //Verifico se tutti i campi sono stati compilati e che siano corretti
 
         for(int i = 0; i < contenitori.size() - 3; i++) 
         {
@@ -432,25 +438,69 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
             String data = container.text.getText();
 
             if(data == null || data.equals("")) {
-                error = true;
+                SetLabelError(labelSing);
+                labelSing.setText(EmotionalSongs.applicationLanguage == 0 ? "Campi non compilati" : "Fields not filled in");
+                return;
             }
         }
 
+        //test combox
         for(int i = contenitori.size() - 3; i < contenitori.size(); i++) 
         {
             ElementsContainer container = contenitori.get(i);
             String data = container.comb.getSelectionModel().getSelectedItem();
 
             if(data == null) {
-                error = true;
+                SetLabelError(labelSing);
+                labelSing.setText(EmotionalSongs.applicationLanguage == 0 ? "Valori non selezionati" : "Values not selected");
+                return;
             }
         }
 
-        if(error) {
+        
+
+        //passwords
+        if(!password.getText().equals(password2.getText())) {
             SetLabelError(labelSing);
-            labelSing.setText(EmotionalSongs.applicationLanguage == 0 ? "Campi non compilati" : "Fields not filled in");
+            labelSing.setText(EmotionalSongs.applicationLanguage == 0 ? "Le password non coincidono" : "Passwords do not match");
             return;
-        }  
+        }
+
+       
+
+        String regex = "^[A-Z]{6}\\d{2}[A-Z]\\d{2}[A-Z]\\d{3}[A-Z]$";
+        String fiscalCode = this.codiceFiscale.getText(); // Replace with the fiscal code you want to validate //utilizzare getText()
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(fiscalCode);
+
+        //MRARSS13S08H501H
+        if(!matcher.matches()) {
+            SetLabelError(labelSing);
+            labelSing.setText(EmotionalSongs.applicationLanguage == 0 ? "Codice fiscale non valido" : "Invalid fiscal code");
+            return;
+        }
+
+       
+
+        ServerServices service = ConnectionManager.getConnectionManager().getService();
+        
+        try {
+            Account account = service.addAccount(name.getText(), surname.getText(), userID.getText(), codiceFiscale.getText(), email.getText(), password.getText(), civicNumber.getText(), viaPiazza.getText(), cap.getSelectionModel().getSelectedItem(), commune.getSelectionModel().getSelectedItem(), province.getSelectionModel().getSelectedItem());
+            EmotionalSongs.getInstance().account = account;
+            SceneManager.getInstance().showScene(SceneName.HOME_PAGE);
+        
+        } 
+        catch (InvalidUserNameException e) {
+            e.printStackTrace();
+        }
+        catch (InvalidEmailException e) {
+            e.printStackTrace();
+        }
+        
+
+        
+        
+
 
 
 
@@ -476,11 +526,11 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
         while(this.loader.isAlive());
 
         try {
-            if(common.getSelectionModel().getSelectedItem() == null && province.getSelectionModel().getSelectedItem() == null || true) {
+            if(commune.getSelectionModel().getSelectedItem() == null && province.getSelectionModel().getSelectedItem() == null || true) {
                 String com = cap.getSelectionModel().getSelectedItem().split(" : ")[1];
     
                 //metto il comune
-                common.getSelectionModel().select(common.getItems().indexOf(com));
+                commune.getSelectionModel().select(commune.getItems().indexOf(com));
     
                 ArrayList<Region> regions = this.loader.getLocations();
                 boolean finded = false;
@@ -514,7 +564,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
     {
         while(this.loader.isAlive());
         ArrayList<Region> regions = this.loader.getLocations();
-        String com = common.getSelectionModel().getSelectedItem();
+        String com = commune.getSelectionModel().getSelectedItem();
 
         boolean finded = false;
 

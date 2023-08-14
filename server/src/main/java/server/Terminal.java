@@ -29,6 +29,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import javax.swing.JFileChooser;
 
 import Parser.JsonParser;
+import java.awt.Desktop;
 
 enum Color {
     //Color end string, color reset
@@ -117,13 +118,13 @@ enum Color {
 }
 
 
-public class Terminal extends Thread {
-
-    private static final int LINE_ELEMENT = 100;
-    private static final char LINE_CHAR = '-';
+public class Terminal extends Thread
+{
+    //patter sigleton
     private static Terminal instance = null;
     
-    private boolean running;
+    private boolean fechUserInputs;
+    private boolean ready;
     private App main;
     private WaithingAnimationThread waithingThread = null;
     
@@ -180,25 +181,32 @@ public class Terminal extends Thread {
     private Terminal() {
         super("Server-Terminal");
         this.main = App.getInstance();
-        this.running = true;
+        this.fechUserInputs = true;
+        this.ready = false;
 
         //clear console
         System.out.print("\033\143");  
         System.out.print("\033[H\033[2J");
-        System.out.print("\033[8;86;140t");  
-        System.out.flush();
-
-     
-
-        
+        //System.out.print("\033[8;86;140t");  
+        System.out.flush();   
     }    
 
     public static Terminal getInstance() 
     {
         if (Terminal.instance == null) {
             Terminal.instance = new Terminal();
+            Terminal.instance.printLogo();
+
+            try {Thread.sleep(1000);} catch (InterruptedException e) {}
+            
+            Terminal.instance.printInfo_ln("Application Running...");
+            Terminal.instance.ready = true;
         }
         return Terminal.instance;
+    }
+
+    public boolean isReady() {
+        return ready;
     }
 
    
@@ -209,12 +217,13 @@ public class Terminal extends Thread {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("type \"help\" to see available commands");
 
-        while(this.running) 
+        while(this.fechUserInputs) 
         {
             try {
                 printArrow();
                 String command = in.readLine();
                 System.out.println();
+                System.out.flush();
                 
                 
                 if(command.equalsIgnoreCase(Command.HELP.value)) {
@@ -236,7 +245,7 @@ public class Terminal extends Thread {
                     initializeDatabase();
                 }
                 else if(command.equalsIgnoreCase(Command.CLEAR_DB.value)) {
-                    clearDatabase(in);
+                    clearDatabase();
                 }
                 else if(command.equalsIgnoreCase(Command.PRINT_SQL.value)) {
                     printSQL();
@@ -247,6 +256,12 @@ public class Terminal extends Thread {
                 else if(command.equalsIgnoreCase(Command.LOAD.value)) {
                     App.getInstance().loadSettings();
                 }
+                else if(command.equalsIgnoreCase(Command.EDIT.value)) {
+                    editSettings();
+                }
+                printSeparator();
+                System.out.println("type \"help\" to see available commands");
+                
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -256,6 +271,17 @@ public class Terminal extends Thread {
                 e.printStackTrace();
                 System.out.println(e);
             }
+        }
+    }
+
+    public void editSettings() 
+    {
+        printInfo_ln("opening file " + App.FILE_SETTINGS_PATH);
+        Desktop desktop = Desktop.getDesktop();
+        try {
+            desktop.open(new File(App.FILE_SETTINGS_PATH));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -326,10 +352,19 @@ public class Terminal extends Thread {
     }
 
 
-    private int clearDatabase(BufferedReader in) throws IOException 
+    private int clearDatabase() throws IOException 
     {
-        //System.out.println(PredefinedSQLCode.NomiTabelle.ARTIST);
-        System.out.println(PredefinedSQLCode.createTable_Queries.get(PredefinedSQLCode.Tabelle.ARTIST));
+        for (Tabelle table : PredefinedSQLCode.Tabelle.values()) {
+            try {
+                this.main.database.submitQuery(PredefinedSQLCode.deleteTable_Queries.get(table));
+                printInfo_ln("Table " + table + " removed");
+            
+            } 
+            catch (SQLException e) {
+                e.printStackTrace();
+            }   
+        }
+        printSucces_ln("all tables removed\n");
         return 0;
     }
 
@@ -470,14 +505,5 @@ public class Terminal extends Thread {
 
     public void printConnection_ln(String message) {
         printOnTerminal(MessageType.REQUEST, " " + message + "\n", null);
-    }
-
-    public void printLine() {
-        
-        String line = "";
-        for(int i = 0; i < Terminal.LINE_ELEMENT; i++) {
-            line += LINE_CHAR;
-        }
-        print_ln(line);
     }
 }

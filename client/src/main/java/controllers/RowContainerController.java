@@ -41,26 +41,28 @@ public class RowContainerController extends ControllerBase implements Initializa
     @SuppressWarnings("unchecked")
     public void InjectData(Object list, String str) 
     {
+        System.out.println("heree");
         ArrayList<Object> castedList = (ArrayList<Object>) list;
         this.elementsTitle = str;
         this.list = list;
 
         title.setText(this.elementsTitle);
 
+        System.out.println(castedList.size());
         for(final Object o : castedList)
         {
-            Platform.runLater(() -> { // Lambda Expression
-                try {
+            
+            try {
+                System.out.println("heree");
                 ElementContainer controller = (ElementContainer) sceneManager.injectScene("ElementContainer.fxml", Hbox, new ElementContainer(o));
                 controller.InjectData(o);
-                } 
-                catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+            } 
+            catch (RemoteException e) {
+                e.printStackTrace();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
             
             
         }

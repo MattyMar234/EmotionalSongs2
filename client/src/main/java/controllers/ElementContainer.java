@@ -47,12 +47,7 @@ public class ElementContainer extends ControllerBase implements Initializable{
             
             new Thread(() -> { // Lambda Expression
                 System.out.println(s.getImage("300x300").getUrl());
-                try {
-                    Thread.sleep(8000);
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+                
             try {
                 image.setImage(download_Image_From_Internet(s.getImage("300x300").getUrl()));
             } catch (IOException e) {

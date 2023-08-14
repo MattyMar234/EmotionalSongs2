@@ -27,6 +27,13 @@ public class QueryExecutor {
 
     public static ArrayList<Song> getTopPopularSongs(long limit, long offset) throws SQLException {
 
+        /*
+         * SELECT * FROM Canzone c JOIN immaginialbums on immaginialbums.id = c.id_album  
+            WHERE immaginialbums.image_size = '300x300' ORDER BY c.popularity DESC limit 10;
+         * 
+         */
+        
+        
         ArrayList<Song> result = new ArrayList<Song>();
         Database database = Database.getInstance();
 

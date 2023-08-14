@@ -64,17 +64,19 @@ public class Loader {
     @SuppressWarnings({"rawtypes","unchecked"})
     public int loadApplicationData() throws IOException, SQLException
     {
+        HashMap<String, File> foldersPath = new HashMap<String, File>();
+        File database__data_folder;
+        
         final boolean test = false;
         final String ARTIST = "Artists";
         final String ALBUM = "Album";
         final String TRACKS = "Tracks";
         final String[] folders = {ARTIST, ALBUM, TRACKS};
 
-        HashMap<String, File> foldersPath = new HashMap<String, File>();
-        File database_information_folder;
 
 
-        terminal.printInfo_ln("start database configuration...");
+        terminal.printInfo_ln("start database configuration");
+        
         
         //==================================== SELEZIONE DEI FILE ====================================//
         if(!test) {
@@ -91,8 +93,8 @@ public class Loader {
                     return 0;
 
                 case JFileChooser.APPROVE_OPTION:
-                    database_information_folder = new File(fileChooser.getSelectedFile().getAbsolutePath());
-                    terminal.printInfo_ln("select folder: " + database_information_folder);
+                    database__data_folder = new File(fileChooser.getSelectedFile().getAbsolutePath());
+                    terminal.printInfo_ln("select folder: " + database__data_folder);
                     break;
 
                 default:
@@ -101,16 +103,17 @@ public class Loader {
             }
         }
         else {
-            database_information_folder = new File("C:\\Users\\Utente\\Desktop\\Dataset Progetto\\Output");
+            database__data_folder = new File("C:\\Users\\Utente\\Desktop\\Dataset Progetto\\Output");
         }
+        
         //==================================== VALIDITA' FILE ====================================//
         //verifico la validità della cartella
         
-        if (database_information_folder.isDirectory()) {
+        if (database__data_folder.isDirectory()) {
             boolean tuttePresenti = true;
 
             for (String cartella : folders) {
-                File subFolder = new File(database_information_folder, cartella);
+                File subFolder = new File(database__data_folder, cartella);
 
                 if (!subFolder.exists() || !subFolder.isDirectory()) {
                     tuttePresenti = false;
@@ -123,7 +126,8 @@ public class Loader {
             }
 
             if(!tuttePresenti) {
-                terminal.printInfo_ln("database configuration ended\n");
+                terminal.printError_ln(Color.RED_BOLD_BRIGHT + "FILE MISSING" + Color.RESET);
+                terminal.printInfo_ln("Database configuration ended\n");
                 return 0;
             }
             else {
@@ -131,115 +135,56 @@ public class Loader {
             }
         }
         else {
-            terminal.printError_ln("invalid path\n");
+            terminal.printError_ln(Color.RED_BOLD_BRIGHT + "INVALID PATH" + Color.RESET);
+            terminal.printInfo_ln("Database configuration ended\n");
             return 0;
         }
 
-        //==================================== VERFICA ELEMENTI ====================================//
-        HashMap<String, BlockingQueue<File>> queues = new HashMap<String, BlockingQueue<File>>();
-        BlockingQueue<File> artistsQueue = new LinkedBlockingDeque<File>();
-        BlockingQueue<File> albumsQueue  = new LinkedBlockingDeque<File>();
-        BlockingQueue<File> traksQueue   = new LinkedBlockingDeque<File>();
-
-        queues.put(ARTIST, artistsQueue);
-        queues.put(TRACKS, traksQueue);
-        queues.put(ALBUM,  albumsQueue);
-
-        HashMap<String, Long> elementCount = new HashMap<String, Long>();
-        long artistsCount = 0L;
-        long albumCount   = 0L;
-        long traksCount   = 0L;
-
-
-        for(int k = 0; k < 3; k++) 
-        {
-            WaithingAnimationThread t = new WaithingAnimationThread("Retrieving " + folders[k] + " files");
-            terminal.printInfo_ln("analyzing " + foldersPath.get(folders[k]).getAbsolutePath());
-            
-            if(folders[k] == TRACKS || folders[k] == ALBUM) {
-
-                //creo l'array gli contenenti i thread per la ricerca
-                FileElementCounter[] threads = new FileElementCounter[foldersPath.get(folders[k]).listFiles().length];
-                FileElementCounter.resetCounter();
-                int index = 0;
-
-                //conto gli album e salvo i file
-                
-                terminal.printInfo_ln("Folders found:" + foldersPath.get(folders[k]).listFiles().length);
-                System.out.flush();
-                t.start();
-
-                for (File folder : foldersPath.get(folders[k]).listFiles())  { 
-                    threads[index++] = new FileElementCounter(folder, queues.get(folders[k]),(path) -> {
-                        return JsonParser.getFile_element_count(path);
-                    });
-                }
-                
-                for (int i = 0; i < threads.length; i++) {
-                    try {
-                        threads[i].join();
-                    } 
-                    catch (InterruptedException e){
-                        e.printStackTrace();
-                    }
-                }
-
-                try {t.terminate(); t.join();} catch (InterruptedException e) {}
-                terminal.printInfo_ln("Files found: " + queues.get(folders[k]).size());
-
-                if(folders[k] == ALBUM) {
-                    albumCount = FileElementCounter.getCounterValue();
-                    terminal.printInfo_ln("Album found: " + albumCount);
-                }
-                else if(folders[k] == TRACKS) {
-                    traksCount = FileElementCounter.getCounterValue();
-                    terminal.printInfo_ln("tracks found: " + traksCount);
-                } 
-            }
-            else if(folders[k] == ARTIST) {
-                terminal.printInfo_ln("Files found:" + foldersPath.get(folders[k]).listFiles().length);
-                System.out.flush();
-                t.start();
-                
-                
-                for (File file : foldersPath.get(ARTIST).listFiles()) {
-                    if (file.isFile() && file.getName().endsWith(".json")) { 
-
-                        artistsCount += JsonParser.getFile_element_count(file.getAbsolutePath());
-                        artistsQueue.add(file);
-                    }
-                }
-
-                t.terminate();
-                try {t.join();} catch (InterruptedException e) {}
-                try {Thread.sleep(200);} catch (InterruptedException e) {e.printStackTrace();}
-                System.out.flush();
-                terminal.printInfo_ln("artists found: " + artistsCount);
-            }
-        }
-
-        elementCount.put(ARTIST, artistsCount);
-        elementCount.put(ALBUM, albumCount);
-        elementCount.put(TRACKS, traksCount);
-        terminal.printSucces_ln("All file collected\n--------------------------------");
-
         //===================================== CARICO I DATI =====================================//
-
-
+        
         //creo le tabelle
         buildTables(false);
         
-        for(String key : folders) {
-            ProgressBar progressBar = new ProgressBar(MessageType.INFO.toString() +  " Loading " + key, elementCount.get(key), ProgressBarStyle.ASCII);
-            BlockingQueue<File> current_queue = queues.get(key);
-            //File file;
+        for(String key : folders) 
+        {
+            BlockingQueue<File> filesQueue = new LinkedBlockingDeque<File>();
+            long fileCount = 0L;
 
+            System.out.println("-----------------------------------------------------------------------------------------");
+            terminal.printInfo_ln("analyzing " + foldersPath.get(key).getAbsolutePath());
+            terminal.startWaithing(MessageType.INFO + " reading files...");
+            
+            if(key == TRACKS || key == ALBUM) 
+            {
+                for (File folder : foldersPath.get(key).listFiles())  {   
+                    for (File file : folder.listFiles())  {
+                        if (file.isFile() && file.getName().endsWith(".json")) { 
+                            fileCount += 1;
+                            filesQueue.add(file);
+                        }  
+                    }
+                }
+            }
+            else if(key == ARTIST) {
+                //fileCount = foldersPath.get(key).listFiles().length; 
+                for (File file : foldersPath.get(ARTIST).listFiles()) {
+                    if (file.isFile() && file.getName().endsWith(".json")) { 
+                        fileCount += 1;
+                        filesQueue.add(file);
+                    }
+                }
+            }
+
+            terminal.stopWaithing();
+            terminal.printInfo_ln("Files found: " + fileCount);
+
+            ProgressBar progressBar = new ProgressBar(MessageType.INFO.toString() +  " Loading " + key, fileCount, ProgressBarStyle.ASCII);
             progressBar.start();
             progressBar.stepTo(0);
 
             //do il tempo di caricare la barra
             try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
-            GenericThread[] thraedList = new GenericThread[128];
+            GenericThread[] thraedList = new GenericThread[6];
 
             for(int i = 0; i < thraedList.length; i++) 
                 thraedList[i]  = new GenericThread((data) -> {
@@ -248,7 +193,7 @@ public class Loader {
                 while(fileQueue.size() > 0) 
                 {
                     Object[] data_for_Queries = null;
-                    File file = current_queue.poll();
+                    File file = filesQueue.poll();
 
 
                     switch(key) {
@@ -264,6 +209,7 @@ public class Loader {
                     switch(key) 
                     {
                         case ARTIST -> {
+
                             //itero tutti gli ID che ci sono nel File           
                             for (String artist_ID : ElementsData1.keySet()) 
                             {
@@ -293,7 +239,7 @@ public class Loader {
                                     PredefinedSQLCode.crea_INSER_query_ed_esegui(table2, PredefinedSQLCode.Tabelle.GENERI_ARTISTA, this.main);
                                     
                                 }
-                                progressBar.step();
+                                
                             }
                         }
 
@@ -320,7 +266,7 @@ public class Loader {
                                 //    Solo se ggiungo una tabella che contiene le inform,azioni di chi sono gli aristi che hanno creato qull'album.
                                 //}
                                 
-                                progressBar.step();
+                                
                             }
                         }
 
@@ -345,19 +291,20 @@ public class Loader {
 
                                     PredefinedSQLCode.crea_INSER_query_ed_esegui(table1, PredefinedSQLCode.Tabelle.SONG_AUTORS, this.main);
                                 }
-                                progressBar.step();
+                                ;
                             }
                         }
                     }
+                    progressBar.step();
                 }   
-            }, current_queue, 50);
+            }, filesQueue, 50);
             
             for(int i = 0; i < thraedList.length; i++) 
                 try {thraedList[i].join();} catch (InterruptedException e) {e.printStackTrace();}
             
-            
             progressBar.stop();
         }
+        //System.out.println("-----------------------------------------------------------------------------------------\n");
         return 0;  
     }
 

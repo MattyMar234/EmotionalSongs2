@@ -29,7 +29,7 @@ public class SceneManager {
     private static final String AccessPage_path = "AccessPage.fxml";
     private static final String MainPage_SideBar_path = "MainPage_SideBar.fxml";
     private static final String MainPage_home_path = "MainPage_Home.fxml";
-    private static final String RegistrationPage_path = "MainPage_Home.fxml";
+    private static final String RegistrationPage_path = "UserRegistration.fxml";
 
     private int theme = 0;
     private ArrayList<ControllerBase> loadedControllers = new ArrayList<>();
@@ -108,7 +108,9 @@ public class SceneManager {
         FXMLLoader loader = new FXMLLoader();
         System.out.println(EmotionalSongs.class.getResource(name + ((!name.endsWith(".fxml")) ? ".fxml" : "")));
         loader.setLocation(EmotionalSongs.class.getResource(name + ((!name.endsWith(".fxml")) ? ".fxml" : "")));
+        //print hereee
         System.out.println();
+
         return loader;
     }
 
@@ -191,10 +193,11 @@ public class SceneManager {
         Pair<Scene,FXMLLoader> output = null;
 
         //String path = PathFormatter.formatPath(EmotionalSongs.FXML_folder_path + "\\" + name + ((!name.endsWith(".fxml")) ? ".fxml" : ""));
-        System.out.println("file requested: " + name);
-        System.out.println();
+        //System.out.println("file requested: " + name);
+    
 
         try {
+            
             Scene scene = null;
             FXMLLoader loader = getSceneLoader(name);
            
@@ -205,7 +208,12 @@ public class SceneManager {
             output = new Pair<Scene,FXMLLoader>(scene, loader);
         }
         catch (IOException e) {
-            System.out.println("File loading error" + e);
+            System.out.println("File loading error: " + e);
+
+            if(e.toString().contains("javafx.fxml.LoadException:")) {
+                System.out.println("Error in Controller class");
+            }
+
             e.printStackTrace();
             
         }
@@ -284,7 +292,7 @@ public class SceneManager {
             //se sono una scena da inserire in un altra scena
             else {
                 //accedo all'anchor dell'untimo controller della lista controller e inserisco il codice della nuova scena
-                loadedControllers.add((ControllerBase)injectScene(MainPage_home_path, loadedControllers.get(loadedControllers.size() - 1).anchor_for_injectScene));
+                loadedControllers.add((ControllerBase)injectScene(file, loadedControllers.get(loadedControllers.size() - 1).anchor_for_injectScene));
             }
         }
         
