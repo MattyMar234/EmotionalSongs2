@@ -21,6 +21,7 @@ public class RowContainerController extends ControllerBase implements Initializa
     @FXML public HBox Hbox;
     @FXML public Label title;
 
+    private ArrayList<ElementContainer> displayElementContainerList = new ArrayList<ElementContainer>();
     private SceneManager sceneManager;
     private Object list;
     private String elementsTitle;
@@ -38,34 +39,37 @@ public class RowContainerController extends ControllerBase implements Initializa
         sceneManager = SceneManager.getInstance();
     }
 
-    @SuppressWarnings("unchecked")
-    public void InjectData(Object list, String str) 
-    {
-        System.out.println("heree");
-        ArrayList<Object> castedList = (ArrayList<Object>) list;
-        this.elementsTitle = str;
-        this.list = list;
 
-        title.setText(this.elementsTitle);
+    public void init(String str, int elementNumber) {
 
-        System.out.println(castedList.size());
-        for(final Object o : castedList)
-        {
-            
-            try {
-                System.out.println("heree");
-                ElementContainer controller = (ElementContainer) sceneManager.injectScene("ElementContainer.fxml", Hbox, new ElementContainer(o));
-                controller.InjectData(o);
+        for(int i = 0; i < elementNumber; i++) {
+           try {
+                ElementContainer controller = (ElementContainer) sceneManager.injectScene("ElementContainer.fxml", Hbox, new ElementContainer());
+                displayElementContainerList.add(controller);
             } 
             catch (RemoteException e) {
                 e.printStackTrace();
             }
             catch (IOException e) {
                 e.printStackTrace();
-            }
-            
-            
+            }    
         }
+        
+    }
+
+    @SuppressWarnings("unchecked")
+    public void InjectData(Object list, String str) 
+    {
+        ArrayList<Object> castedList = (ArrayList<Object>) list;
+        this.elementsTitle = str;
+        this.list = list;
+
+        int i = 0;
+        Platform.runLater(() -> {title.setText(this.elementsTitle);});
+
+        for(final Object o : castedList) {
+            displayElementContainerList.get(i++).InjectData(o);
+        }  
     }
 
     

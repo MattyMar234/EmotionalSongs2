@@ -11,6 +11,7 @@ import java.util.Hashtable;
 import org.javatuples.Triplet;
 
 import server.App;
+import server.Terminal;
 
 import javax.imageio.spi.RegisterableService;
 
@@ -155,18 +156,20 @@ public class PredefinedSQLCode
     {
         ID("ID",                      "VARCHAR",  ID_SIZE,         "NOT NULL"),
         SONG_ID_REF("ID_Song",        "VARCHAR",  ID_SIZE,         "NOT NULL"),
+        EMAIL("email",                "VARCHAR",  "(120)",    "NOT NULL"),
+        PASSWORD("password",          "VARCHAR",  "(120)",    "NOT NULL"),
         ARTIST_ID_REF("ID_Artist",    "VARCHAR",  ID_SIZE,         "NOT NULL"),
         PLAYLIST_ID_REF("playli_ref", "VARCHAR",  ID_SIZE,         "NOT NULL"),
         IMAGE_ID_REF("ID_Image",      "VARCHAR",  ID_SIZE,         "NOT NULL"),
         ALBUM_ID_REF("ID_Album",      "VARCHAR",  ID_SIZE,         "NOT NULL"),
         ACCOUNT_ID_REF("Account_id",  "VARCHAR",  ACCOUNT_ID_SIZE, "NOT NULL"),
         RESIDENCE_ID_REF("Residen_id","VARCHAR",  ID_SIZE,         "NOT NULL"),
-        URL("Spotify_URL",            "VARCHAR",  "(120)",     "NOT NULL"),
+        URL("Spotify_URL",            "VARCHAR",  "(120)",    "NOT NULL"),
         IMAGE_SIZE("Image_size",      "VARCHAR",  "(12)",     "NOT NULL"),
         NAME("name",                  "VARCHAR",  "(320)",    "NOT NULL"),
         SURNAME("surname",            "VARCHAR",  "(120)",    "NOT NULL"),
         FISCAL_CODE("FiscalCode",     "VARCHAR",  "(16)",     "NOT NULL"),
-        TITLE("title",                "VARCHAR",  "(320)",    "NOT NULL"),
+        TITLE("title",                "VARCHAR",  "(340)",    "NOT NULL"),
         POPULARITY("popularity",      "SMALLINT", "",         "NOT NULL"),
         YEAR("Year",                  "INTEGER",  "",         "NOT NULL"),
         VALUE("Year",                 "INTEGER",  "",         "NOT NULL"),
@@ -278,7 +281,7 @@ public class PredefinedSQLCode
         tablesForeignKey = new Hashtable<Tabelle, Object  []>(); 
 
 
-        //Lista delle colonne
+        //======================= [Lista delle colonne] =======================//
         tablesAttributes.put(Tabelle.ARTIST,            new Colonne[] {Colonne.ID, Colonne.NAME, Colonne.URL, Colonne.FOLLOWERS, Colonne.POPULARITY/*, Colonne.IMAGE_ID_REF*/});
         tablesAttributes.put(Tabelle.SONG,              new Colonne[] {Colonne.ID,Colonne.TITLE,Colonne.URL, Colonne.DURATION, Colonne.POPULARITY, Colonne.ALBUM_ID_REF});
         tablesAttributes.put(Tabelle.GENERI_MUSICALI,   new Colonne[] {Colonne.GENERE_MUSICALE});
@@ -287,7 +290,7 @@ public class PredefinedSQLCode
         tablesAttributes.put(Tabelle.COMMENTO,          new Colonne[] {Colonne.ID, Colonne.COMMENTO, Colonne.ACCOUNT_ID_REF});
         tablesAttributes.put(Tabelle.EMOZIONE,          new Colonne[] {Colonne.ID, Colonne.TYPE, Colonne.VALUE, Colonne.SONG_ID_REF});
         tablesAttributes.put(Tabelle.PLAYLIST,          new Colonne[] {Colonne.ID, Colonne.NAME, Colonne.CREATION_DATE, Colonne.ACCOUNT_ID_REF});
-        tablesAttributes.put(Tabelle.ACCOUNT,           new Colonne[] {Colonne.NAME, Colonne.NICKNAME, Colonne.SURNAME, Colonne.FISCAL_CODE, Colonne.RESIDENCE_ID_REF});
+        tablesAttributes.put(Tabelle.ACCOUNT,           new Colonne[] {Colonne.NAME, Colonne.NICKNAME, Colonne.SURNAME, Colonne.FISCAL_CODE, Colonne.EMAIL, Colonne.PASSWORD,Colonne.RESIDENCE_ID_REF});
         //tablesAttributes.put(Tabelle.COMUNE,            new Colonne[] {Colonne.NAME, Colonne.CAP});
         //tablesAttributes.put(Tabelle.PROVINCIA,         new Colonne[] {Colonne.NAME});
         tablesAttributes.put(Tabelle.RESIDENZA,         new Colonne[] {Colonne.ID, Colonne.VIA_PIAZZA, Colonne.CIVIC_NUMER, Colonne.PROVINCE_NAME, Colonne.COUNCIL_NAME});
@@ -300,7 +303,7 @@ public class PredefinedSQLCode
 
         
         
-        //lista colonne chiave primaria
+        //======================= [Lista delle chiavi primarie] =======================//
         tablesPrimaryKey.put(Tabelle.ARTIST,            new Colonne[] {Colonne.ID});
         tablesPrimaryKey.put(Tabelle.SONG,              new Colonne[] {Colonne.ID});
         tablesPrimaryKey.put(Tabelle.GENERI_MUSICALI,   new Colonne[] {Colonne.GENERE_MUSICALE});
@@ -309,7 +312,7 @@ public class PredefinedSQLCode
         tablesPrimaryKey.put(Tabelle.COMMENTO,          new Colonne[] {Colonne.ID});
         tablesPrimaryKey.put(Tabelle.EMOZIONE,          new Colonne[] {Colonne.ID});
         tablesPrimaryKey.put(Tabelle.PLAYLIST,          new Colonne[] {Colonne.ID});
-        tablesPrimaryKey.put(Tabelle.ACCOUNT,           new Colonne[] {Colonne.NICKNAME});
+        tablesPrimaryKey.put(Tabelle.ACCOUNT,           new Colonne[] {Colonne.NICKNAME, Colonne.EMAIL});
         //tablesPrimaryKey.put(Tabelle.COMUNE,            new Colonne[] {Colonne.NAME});
         //tablesPrimaryKey.put(Tabelle.PROVINCIA,         new Colonne[] {Colonne.NAME});
         tablesPrimaryKey.put(Tabelle.RESIDENZA,         new Colonne[] {Colonne.ID});
@@ -319,7 +322,7 @@ public class PredefinedSQLCode
         tablesPrimaryKey.put(Tabelle.SONG_AUTORS,       new Colonne[] {Colonne.ARTIST_ID_REF, Colonne.SONG_ID_REF});
 
 
-        //lista colonne chiave esterna
+        //======================= [Lista delle chiavi esterne] =======================//
         tablesForeignKey.put(Tabelle.GENERI_ARTISTA, new Object[] {
             new Triplet<Colonne, Tabelle, Colonne> (Colonne.ID, Tabelle.ARTIST, Colonne.ID), 
             new Triplet<Colonne, Tabelle, Colonne> (Colonne.GENERE_MUSICALE, Tabelle.GENERI_MUSICALI, Colonne.GENERE_MUSICALE)
@@ -399,9 +402,9 @@ public class PredefinedSQLCode
 
             }
             else {
-                e.printStackTrace();
-                System.out.println(e);
-                System.out.println("Query: " + query);
+                //e.printStackTrace();
+                System.out.println("error: " + Terminal.Color.RED_BOLD_BRIGHT + e.getMessage() + Terminal.Color.RESET);
+                System.out.println("Query: " + Terminal.Color.CYAN_BOLD_BRIGHT + query + Terminal.Color.RESET);
                 //System.exit(0);
             }
         }

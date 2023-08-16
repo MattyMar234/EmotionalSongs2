@@ -68,7 +68,7 @@ public class SceneManager {
         }
     }
 
-    private enum ApplicationState {
+    public enum ApplicationState {
         ACCESS_PAGE,
         REGISTRATION_PAGE,
         MAIN_PAGE
@@ -84,6 +84,10 @@ public class SceneManager {
             instance = new SceneManager();
         }
         return instance;
+    }
+
+    public ApplicationState getApplicationState() {
+        return applicationState;
     }
 
 
@@ -104,9 +108,11 @@ public class SceneManager {
     * @return Il loader del file FXML
     * @throws IOException Eccezione generata nel caso il file FXML non sia trovato
     */
-    public FXMLLoader getSceneLoader(String name) throws IOException  {
+    public FXMLLoader getSceneLoader(String name) throws IOException  
+    {
         FXMLLoader loader = new FXMLLoader();
-        System.out.println(EmotionalSongs.class.getResource(name + ((!name.endsWith(".fxml")) ? ".fxml" : "")));
+        
+        //System.out.println(EmotionalSongs.class.getResource(name + ((!name.endsWith(".fxml")) ? ".fxml" : "")));
         loader.setLocation(EmotionalSongs.class.getResource(name + ((!name.endsWith(".fxml")) ? ".fxml" : "")));
         //print hereee
         System.out.println();
@@ -125,7 +131,7 @@ public class SceneManager {
         else if(anchor instanceof AnchorPane) {
             AnchorPane temp = (AnchorPane)anchor; 
             temp.getChildren().removeAll(); 
-            temp.getChildren().add(temp);
+            temp.getChildren().add((AnchorPane)view);
         }
         else if(anchor instanceof VBox) {
             VBox temp = (VBox)anchor;  
@@ -213,10 +219,13 @@ public class SceneManager {
             if(e.toString().contains("javafx.fxml.LoadException:")) {
                 System.out.println("Error in Controller class");
             }
-
             e.printStackTrace();
-            
         }
+        catch (IllegalStateException e) {
+            if(e.toString().toLowerCase().contains("Location is not set")) {
+                System.out.println("file " + name + "not found");
+            }
+        }  
         catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();

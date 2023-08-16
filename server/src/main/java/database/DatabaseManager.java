@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class Database {
+public class DatabaseManager {
 
     private final String PROTOCOL = "jdbc:postgresql://";
     private String DB_NAME  = null;
@@ -16,50 +16,80 @@ public class Database {
     private String password = null;
     
     /*Variabili connessione DB  */
-    private static Database database;
+    private static DatabaseManager database;
     private static Connection connection = null;
     private static Statement statement   = null;
     
     private String URL;
     
-    private Database(){
+    private DatabaseManager(){
 
     }
+    
+    /*Metodo statico per Pattern Singleton */
+    public static DatabaseManager getInstance() 
+    {
+        if (database == null)
+            database = new DatabaseManager();
 
-    public void setConnection(String db_name, String host, int port, String user, String password) throws SQLException {
+        return database;
+    }
+
+    public void setConnectionParametre(String db_name, String host, int port, String user, String password) {
         this.DB_NAME = db_name;
         this.HOST = host;
         this.PORT = Integer.toString(port);
         this.user = user;
         this.password = password;
-        this.URL = PROTOCOL + HOST +":"+ PORT +"/"+ DB_NAME;
-        
+        this.URL = PROTOCOL + HOST +":"+ PORT +"/"+ DB_NAME;  
+    }
+
+    public boolean connect() throws SQLException {
         connection = DriverManager.getConnection(URL, user, password);
         statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        return true;
     }
 
-    /*Metodo statico per Pattern Singleton */
-    public static Database getInstance() 
-    {
-        if (database == null)
-            database = new Database();
+    public void close() throws SQLException {
+        if(connection == null) 
+            return;
 
-        return database;
+        connection.close();
     }
 
-    public boolean testconnection() throws SQLException {
+
+    public boolean testConnection() throws SQLException {
         if(connection == null) 
             return false;
-
-        return Database.connection.isValid(2); //timeout
+        return connection.isValid(2); //timeout
     }
 
 
-    public static Statement getStatement() {
+    public String getURL() {
+        return URL;
+    }
+
+    public String getDB_NAME() {
+        return DB_NAME;
+    }
+
+    public String getHOST() {
+        return HOST;
+    }
+
+    public String getPORT() {
+        return PORT;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public Statement getStatement() {
         return statement;
     }
 
-    public static Connection getConnection(){
+    public Connection getConnection(){
         return connection;
     }
 

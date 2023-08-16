@@ -1,11 +1,16 @@
 package server;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.rmi.RemoteException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.UIManager;
@@ -15,8 +20,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import Parser.JsonParser;
-import database.Database;
+import database.DatabaseManager;
 import database.PredefinedSQLCode;
+import database.PredefinedSQLCode.Colonne;
 import database.PredefinedSQLCode.Tabelle;
 import utility.AsciiArtGenerator;
 import utility.PathFormatter;
@@ -58,9 +64,9 @@ public class App extends JFrame
     private String DB_user;
     private String DB_name;
     
-    public Database database = null;
+    public DatabaseManager database = null;
     private boolean databaseConnected = false;
-    private Server server = null;
+    private ComunicationManager server = null;
     private Terminal terminal;
 
 
@@ -76,66 +82,79 @@ public class App extends JFrame
         new App(args);
     }
 
-    private App(String[] args) throws InterruptedException, IOException 
+    private App(String[] args) throws InterruptedException, IOException, ClassNotFoundException 
     {
         super();
         App.instance = this;
         this.terminal = Terminal.getInstance();
+        Class.forName("org.postgresql.Driver");
         
         loadSettings();
-
+        setDatabaseConnection();
         
-        for (Tabelle s : PredefinedSQLCode.Tabelle.values()) {
+        /*for (Tabelle s : PredefinedSQLCode.Tabelle.values()) {
             terminal.printInfo_ln(s.toString());
-        }
+        }*/
 
-        try {
-            database = Database.getInstance();
-            database.setConnection(this.DB_name, this.DB_IP, this.DB_port, this.DB_user, DB_password);
-        } 
-        catch (Exception e) {
-            terminal.printError_ln("DB initialization error: " + e);
-    
-            e.printStackTrace();
-            System.exit(0);
-        }
-        
-        terminal.printInfo_ln("Establishing database connection ");
-        testDataBaseConnection();
+
         
 
+        
+        
+        
         terminal.printSeparator();
         this.terminal.start();
     }
 
-    public boolean testDataBaseConnection() {
-
-        Terminal terminal = Terminal.getInstance();
-        try {
-            if(!database.testconnection()) {
-                terminal.printError_ln("DB connection parametre not set");
-                return false;
-            }
-            else {
-                terminal.printSucces_ln("DB connection established");
-                return true;
-            }  
-        } 
-        catch (SQLException e) {
-            terminal.printError_ln("connection attempt: failed");
-            terminal.printError_ln("Database not available");
-            return false;
-        }
-    }
-
-
+    /**
+     * function that performs operations to close the programme
+    */
     public void exit() {
         StopServer();
         saveSettings();
         System.exit(0);
     }
 
-    //check data 
+    /**
+     * this function sets up the connection with the database
+     */
+    protected void setDatabaseConnection() 
+    {
+        database = DatabaseManager.getInstance();
+        database.setConnectionParametre(this.DB_name, this.DB_IP, this.DB_port, this.DB_user, DB_password);
+
+        
+        terminal.printInfo_ln("Database connection attempt on URL: " + Terminal.Color.CYAN_BOLD_BRIGHT + database.getURL() + Terminal.Color.RESET);
+
+        try {
+            database.connect();
+            if(database.testConnection() && database.connect()) {
+                terminal.printSucces_ln("Database found and connection established");
+                databaseConnected = true;
+            }
+            else {
+                terminal.printError_ln(Terminal.Color.RED_BOLD_BRIGHT + "Database not responding" + Terminal.Color.RESET);
+                databaseConnected = false;
+            } 
+        } 
+        catch (Exception e) {
+            terminal.printError_ln("Connection failed. Error: " + Terminal.Color.RED_BOLD_BRIGHT + e.getMessage() + Terminal.Color.RESET);   
+            databaseConnected = false;
+        }
+    }
+
+    /**
+     * this function returns the connection status 
+     * @return
+     */
+    public boolean isDatabaseConnected() {
+        return databaseConnected;
+    }
+
+    /**
+     * this function verifies the existence of the setting files
+     * @return outcome of control
+     */
     private boolean checkSettings() 
     {
         Terminal terminal = Terminal.getInstance();
@@ -146,10 +165,10 @@ public class App extends JFrame
 
         try {
             if(!Files.exists(folder)) {
-                
                 Files.createDirectory(folder);
             } 
-            if(!Files.exists(file)) {
+            if(!Files.exists(file) || Files.size(file) <= 12) {
+                
                 terminal.printError_ln("settings file not found");
                 initializeSettings();
             }
@@ -162,6 +181,10 @@ public class App extends JFrame
         }
     }
 
+    /**
+     * this function is called up when you want to load data from setting files into the programme
+     * @throws IOException
+     */
     protected void loadSettings() throws IOException {
 
         Terminal terminal = Terminal.getInstance();
@@ -183,6 +206,10 @@ public class App extends JFrame
 
     }
 
+    /**
+     * this function initialises the setting files with the default parameters
+     * @throws IOException
+     */
     private void initializeSettings() throws IOException 
     {
         Terminal terminal = Terminal.getInstance();
@@ -203,6 +230,9 @@ public class App extends JFrame
         saveSettings();
     }
 
+    /**
+     * this function saves the programme parameters in the setting files
+     */
     protected void saveSettings() {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode data = objectMapper.createObjectNode();
@@ -217,14 +247,21 @@ public class App extends JFrame
         JsonParser.writeJsonFile(FILE_SETTINGS_PATH, data);
     }
 
+    /**
+     * this function starts the server
+     * @throws RemoteException
+     */
     public void runServer() throws RemoteException {
 
         if(server == null) {
-           server = new Server(this.port);
+           server = new ComunicationManager(this.port);
            server.start();
         }
     }
 
+    /**
+     * this function terminates server
+     */
     public void StopServer() {
         
         if(server != null && server.isAlive()) {
@@ -235,13 +272,93 @@ public class App extends JFrame
         }
         else if(server != null) {
             server = null;
-        }
+        } 
+    }  
+
+
+    public void DatabaseIntegrityTest() throws IOException, SQLException 
+    {
+        DatabaseManager db = DatabaseManager.getInstance();
+        HashMap<String, Boolean> existingColumns = new HashMap<>();
+        HashMap<Tabelle, ArrayList<Colonne>> missingColumns = new HashMap<>();
+        ResultSet resultSet = null;
+
+
+        int maxNameLenght = 0;
+        for (Tabelle table : PredefinedSQLCode.Tabelle.values())
+            for (Colonne coll : PredefinedSQLCode.tablesAttributes.get(table)) 
+                if(coll.getName().length() > maxNameLenght) maxNameLenght = coll.getName().length();
+
         
+        for (Tabelle table : PredefinedSQLCode.Tabelle.values()) 
+        {
+            terminal.printInfo_ln("---------------------------------------------------------------------------------------------------");
+            terminal.printInfo_ln("Testing table \"" + Terminal.Color.CYAN_BOLD_BRIGHT + table + Terminal.Color.RESET + "\":");
+            Colonne[] colls = PredefinedSQLCode.tablesAttributes.get(table);
+            
+            
+            try {
+                resultSet = db.getConnection().getMetaData().getColumns(null, null, table.toString().toLowerCase(), null);
+                
+                //ottengo le colonne che ho nel database
+                existingColumns.clear();
+
+                while (resultSet.next()) {
+                    String columnName = resultSet.getString("COLUMN_NAME");
+                    existingColumns.put(columnName.toLowerCase(), true);
+                }
+
+
+                //verifico che sono le stesse
+                for (Colonne coll : colls) 
+                {
+                    terminal.printInfo("check for column \"" + Terminal.Color.CYAN_BOLD_BRIGHT + coll.getName() + Terminal.Color.RESET + "\"");
+                    
+                    for(int i = coll.getName().length(); i < maxNameLenght; i++) terminal.print(" ");
+                        terminal.print(" ");
+                    terminal.print(": ");
+                   
+                   
+                    if(existingColumns.get(coll.getName().toLowerCase()) == null) {
+                        terminal.print_ln(Terminal.Color.RED_BOLD_BRIGHT + "Column \"" + coll.getName() + "\" Not Found"  + Terminal.Color.RESET);
+                        //terminal.print_ln(Terminal.Color.RED_BOLD_BRIGHT + "not found"  + Terminal.Color.RESET);
+                        if(missingColumns.get(table) == null)
+                            missingColumns.put(table,  new ArrayList<Colonne>());
+                        
+                        missingColumns.get(table).add(coll);
+                    }
+                    else {
+                        terminal.print_ln(Terminal.Color.GREEN_BOLD_BRIGHT + "Column \"" + coll.getName() + "\" Found"  + Terminal.Color.RESET);
+                        //terminal.print_ln(Terminal.Color.GREEN_BOLD_BRIGHT + "found" + Terminal.Color.RESET);
+
+                        
+                    } 
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return;
+            }
+            finally {
+                try {
+                    if (resultSet != null) resultSet.close();
+                    //if (connection != null) connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        if(missingColumns.size() > 0 && terminal.askYesNo("add missing colums ?")) 
+        {
+            Loader loader = Loader.getInstance();
+
+            for(Tabelle tabella : missingColumns.keySet()) {
+                for(Colonne colonna : missingColumns.get(tabella)) {
+                    loader.addColum(tabella, colonna);
+                } 
+            }
+        }
     }
-
-
-
-
-    
     
 }

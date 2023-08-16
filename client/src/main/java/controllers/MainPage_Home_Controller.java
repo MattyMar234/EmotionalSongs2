@@ -42,33 +42,44 @@ public class MainPage_Home_Controller extends ControllerBase implements Initiali
     @Override
     public void initialize(URL location, ResourceBundle resources) 
     {
-        
+        for(int j = 0; j < 7; j++) 
+        {
+            try {
+                RowContainerController controller = (RowContainerController) sceneManager.injectScene("RowContainer.fxml", scrollPaneVBox, new RowContainerController());
+                rowControllers.add(controller);
+                controller.init("Top 10 song", 10);
+            } 
+            catch (RemoteException e) {
+                e.printStackTrace();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+    
+        } 
+
         new Thread(() -> { // Lambda Expression
-             Platform.runLater(() -> { // Lambda Expression
-                for(int j = 0; j < 7; j++) {
-                    final int i = j;
+            //Platform.runLater(() -> { // Lambda Expression
 
-                    try {
+                for(int i = 0; i < rowControllers.size(); i++) {
+                    try 
+                    {
                         ArrayList<Song> songs = ConnectionManager.getConnectionManager().getService().getMostPopularSongs(10, 10*i);
-                        System.out.println(songs.size());
-                        RowContainerController controller = (RowContainerController) sceneManager.injectScene("RowContainer.fxml", scrollPaneVBox, new RowContainerController());
+                        //System.out.println(songs.size());//RowContainerController controller = (RowContainerController) sceneManager.injectScene("RowContainer.fxml", scrollPaneVBox, new RowContainerController());
+                        
+                        RowContainerController controller = rowControllers.get(i);
                         controller.InjectData(songs, "Top 10 song");
-                        System.out.println("heree");
-
-                        rowControllers.add(controller);
+                        
                         
                     } 
-                    catch (RemoteException e) {
+                    catch (Exception e) {
                         e.printStackTrace();
                     }
-                    catch (IOException e) {
-                        e.printStackTrace();
-                    }  
-                    
-                    
-                }
-            }); 
+                }  
+            //}); 
         }).start();
+        
+        
 
         
         
@@ -95,15 +106,7 @@ public class MainPage_Home_Controller extends ControllerBase implements Initiali
     
 
 
-    @FXML
-    public void BackwardAction(MouseEvent event) {
-        emotionalSongs.userActions.undo();
-    }
-
-    @FXML
-    public void ForwardAction(MouseEvent event) {
-        emotionalSongs.userActions.redo();
-    }
+    
 
 
 

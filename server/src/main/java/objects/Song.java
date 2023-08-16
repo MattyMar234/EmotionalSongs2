@@ -35,9 +35,7 @@ public class Song implements Serializable
         this.spotifyUrl = (String)table.get(Colonne.URL);
         this.durationMs = (long)table.get(Colonne.DURATION);
         this.popularity = (int)table.get(Colonne.POPULARITY);
-        this.albumId = (String)table.get(Colonne.ALBUM_ID_REF);
-
-        
+        this.albumId = (String)table.get(Colonne.ALBUM_ID_REF);   
     }
 
     public void addImages(ArrayList<MyImage> imgs) {

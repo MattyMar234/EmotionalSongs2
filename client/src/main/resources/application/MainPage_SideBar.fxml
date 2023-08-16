@@ -1,77 +1,159 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.net.URL?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <!--          -->
 
-<BorderPane id="main" fx:id="anchor" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="400" minWidth="900" prefHeight="1000.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainPage_SideBar_Controller">
-   <left>
-      <VBox id="lsidebar" fx:id="lsidebar" prefHeight="1000.0" prefWidth="263.0" spacing="20.0" BorderPane.alignment="CENTER">
-
-            <HBox id="logocontainer" prefHeight="95.0" prefWidth="311.0">
-            <ImageView fitHeight="65.0" fitWidth="268.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@image/generic/Logo.png" />
-               </image></ImageView>
-            </HBox>
-
-         <!--Home-->
-         <Button id="home" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#sidebtnClick" styleClass="selected" text="Home">
-            <graphic>
-               <FontIcon iconLiteral="mdi2h-home" />
-            </graphic>
-         </Button>
-
-         <!-- Esplora -->
-         <Button id="explore" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#sidebtnClick" text="Esplora">
-            <graphic>
-               <FontIcon iconLiteral="mdi2c-compass" />
-            </graphic>
-         </Button>
-
-         <!-- Playlist -->
-         <Button id="playlist" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#sidebtnClick" text="Playlist" visible="${controller.isLogged}">
-         <graphic>
-               <FontIcon iconLiteral="mdi2p-playlist-music" />
-            </graphic>
-         </Button>
-
-
-         <!-- Region per dividere i bottoni -->
-         <Region prefHeight="535.0" prefWidth="426.0" VBox.vgrow="ALWAYS" />
-
-         <Button id="settings" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#sidebtnClick" text="Settings">
-         <graphic>
-               <FontIcon iconLiteral="mdi2c-cog" />
-            </graphic>
-         </Button>
-         <Button id="about" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#sidebtnClick" text="About">
-
-         <graphic>
-               <FontIcon iconLiteral="mdi2i-information" />
-            </graphic>
-         </Button>
-
-      </VBox>
-
-   </left>
+<BorderPane id="main" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="400" minWidth="900" prefHeight="1000.0" prefWidth="1117.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainPage_SideBar_Controller">
    <stylesheets>
       <URL value="@css/homepage.css" />
       <URL value="@css/MainPage.css" />
+      <URL value="@css/ApplicationTheme.css" />
    </stylesheets>
-   <center>
-      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+   <left>
+      <AnchorPane prefHeight="1000.0" prefWidth="280.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: violet;" />
+            <VBox id="lsidebar" fx:id="lsidebar" prefHeight="1000.0" prefWidth="263.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      
+                  <HBox id="logocontainer" prefHeight="95.0" prefWidth="311.0">
+                  <ImageView fitHeight="65.0" fitWidth="268.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@image/generic/Logo.png" />
+                     </image>
+                  </ImageView>
+                  </HBox>
+      
+               <!--Home-->
+               <Button id="home" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#sidebtnClick" styleClass="selected" text="Home">
+                  <graphic>
+                     <FontIcon iconLiteral="mdi2h-home" />
+                  </graphic>
+               </Button>
+      
+               <!-- Esplora -->
+               <Button id="explore" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#sidebtnClick" text="Esplora">
+                  <graphic>
+                     <FontIcon iconLiteral="mdi2c-compass" />
+                  </graphic>
+               </Button>
+      
+               <!-- Playlist -->
+               <Button id="playlist" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#sidebtnClick" text="Playlist" visible="${controller.isLogged}">
+               <graphic>
+                     <FontIcon iconLiteral="mdi2p-playlist-music" />
+                  </graphic>
+               </Button>
+      
+      
+               <!-- Region per dividere i bottoni -->
+               <Region prefHeight="535.0" prefWidth="426.0" VBox.vgrow="ALWAYS" />
+      
+               <Button id="settings" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#sidebtnClick" text="Settings">
+               <graphic>
+                     <FontIcon iconLiteral="mdi2c-cog" />
+                  </graphic>
+               </Button>
+               <Button id="about" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#sidebtnClick" text="About">
+      
+               <graphic>
+                     <FontIcon iconLiteral="mdi2i-information" />
+                  </graphic>
+               </Button>
+      
+            </VBox>
          </children>
-      </VBox>
+      </AnchorPane>
+   </left>
+   <center>
+      <BorderPane fx:id="anchor" prefHeight="1000.0" prefWidth="750.0" BorderPane.alignment="CENTER">
+         <top>
+            <AnchorPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="70.0" prefWidth="712.0" BorderPane.alignment="CENTER">
+               <children>
+                  <VBox id="elementContainer" alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="56.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="56.0" prefWidth="32.0" />
+                              <HBox alignment="CENTER_LEFT" prefHeight="56.0" prefWidth="25.0">
+                                 <children>
+                                    <Button fx:id="buttonBackward" minWidth="26.0" mnemonicParsing="false" onMouseClicked="#BackwardAction" prefHeight="24.0" prefWidth="26.0" style="-fx-background-color: trasparent;">
+                                       <graphic>
+                                          <FontIcon iconColor="#fffbfb" iconLiteral="mdi2l-less-than" iconSize="24" wrappingWidth="26.0" />
+                                       </graphic>
+                                    </Button>
+                                    <Button fx:id="buttonForward" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="36.0" mnemonicParsing="false" onMouseClicked="#ForwardAction" prefHeight="24.0" prefWidth="36.0" style="-fx-background-color: trasparent;">
+                                       <graphic>
+                                          <FontIcon iconColor="WHITE" iconLiteral="mdi2g-greater-than" iconSize="24" wrappingWidth="24.0" />
+                                       </graphic>
+                                    </Button>
+                                 </children>
+                              </HBox>
+                              <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="56.0" prefWidth="12.0" />
+                              <VBox alignment="CENTER" prefHeight="70.0" prefWidth="330.0">
+                                 <children>
+                                    <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" prefHeight="35.0" prefWidth="300.0" styleClass="search-container">
+                                       <children>
+                                          <FontIcon iconColor="#8d8d8d" iconLiteral="mdi2m-magnify" iconSize="24" wrappingWidth="24.0">
+                                             <HBox.margin>
+                                                <Insets left="8.0" />
+                                             </HBox.margin>
+                                          </FontIcon>
+                                          <VBox prefHeight="32.0" prefWidth="230.0">
+                                             <children>
+                                                <TextField fx:id="searchField" maxHeight="-Infinity" onKeyTyped="#search" prefHeight="30.0" prefWidth="228.0" promptText="Serach..." styleClass="search-text-field" />
+                                             </children>
+                                          </VBox>
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <AnchorPane prefHeight="60.0" prefWidth="265.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="-0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+                                 <children>
+                                    <Label fx:id="userName" alignment="CENTER_RIGHT" onMouseClicked="#tryLogin" prefHeight="26.0" prefWidth="150.0" text="Label" textAlignment="RIGHT">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                       <HBox.margin>
+                                          <Insets right="10.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <FontIcon fx:id="userImage" iconColor="#c3c3c3" iconLiteral="mdi2a-account-circle" iconSize="46" onMouseClicked="#viewUserInformation" selectionFill="#bcbcbc" wrappingWidth="48.0">
+                                       <HBox.margin>
+                                          <Insets right="10.0" />
+                                       </HBox.margin>
+                                    </FontIcon>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </AnchorPane>
+         </top>
+      </BorderPane>
+      
    </center>
 </BorderPane>

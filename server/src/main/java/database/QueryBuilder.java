@@ -5,11 +5,13 @@ import java.security.Timestamp;
 import java.sql.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 
 import org.javatuples.Triplet;
 
 import database.PredefinedSQLCode.Colonne;
 import database.PredefinedSQLCode.Tabelle;
+import server.Terminal;
 import database.PredefinedSQLCode.Operazioni_SQL;
 
 /**
@@ -91,6 +93,22 @@ public class QueryBuilder {
 
         sb.append("\n);\n");
         return sb.toString();
+    }
+
+
+    public static String insert_query_creator(final Tabelle tableName, HashMap<Colonne, Object> colonne) {
+
+        Colonne[] TableColonne = PredefinedSQLCode.tablesAttributes.get(tableName);
+        Object[] data = new Object[colonne.size()];
+        int i = 0;
+
+        //devo disporre gli elementi in ordine
+        for (Colonne coll : TableColonne) {
+            data[i++] = colonne.get(coll);
+            //System.out.println("coll: " + coll.getName() + " -> " + colonne.get(coll));
+        }
+
+        return insert_query_creator(tableName, data);
     }
 
     /**
@@ -211,6 +229,97 @@ public class QueryBuilder {
         return "SELECT "+ (artistInformation ? '*' : PredefinedSQLCode.Colonne.GENERE_MUSICALE) + " FROM " + PredefinedSQLCode.Tabelle.GENERI_ARTISTA + " NATURAL JOIN "
         + "WHERE " + PredefinedSQLCode.Tabelle.GENERI_ARTISTA + "."+PredefinedSQLCode.Colonne.ID + " = " + id;
     //select * from generiartista NATURAL JOIN artista WHERE generiartista.id = '66CXWjxzNUsdJxJ2JdwvnR';
+    }
+
+
+    public static String addColumn(Tabelle tabella, Colonne colonna) 
+    {
+        StringBuilder sb = new StringBuilder();
+        Colonne[] colls = PredefinedSQLCode.tablesPrimaryKey.get(tabella);
+        boolean found = false;
+
+        //cerco se è tra le chiavi primarie
+        for (Colonne c : colls) {
+            if (c.equals(colonna)) {
+                found = true;
+                break;
+            }
+        }
+
+        sb.append("ALTER TABLE ");
+        sb.append(tabella.toString());
+        sb.append(" ADD COLUMN ");
+        sb.append(colonna.toString());
+
+        if(found) {
+
+
+            sb.append(", ADD CONSTRAINT ");
+            sb.append(colonna.name());
+            sb.append(" UNIQUE (");
+            sb.append(colonna.name());
+            sb.append(");");
+
+            
+        }
+        
+        return sb.toString();
+    }
+
+
+    public static String dropColumn(Tabelle tabella, Colonne colonna) {
+        
+        //alter table account DROP COLUMN element
+        return "";
+    }
+
+    public static String getResidenceId_Query(String via, int numero, String comune, String provincia) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT ");
+        sb.append(PredefinedSQLCode.Colonne.ID.getName());
+        sb.append(" FROM  ");
+        sb.append(PredefinedSQLCode.Tabelle.RESIDENZA);
+        sb.append(" WHERE  ");
+        sb.append(PredefinedSQLCode.Colonne.VIA_PIAZZA.getName() + " = '" + via + "'");
+        sb.append(" AND ");
+        sb.append(PredefinedSQLCode.Colonne.CIVIC_NUMER.getName() + " = '" + numero + "'");
+        sb.append(" AND ");
+        sb.append(PredefinedSQLCode.Colonne.COUNCIL_NAME.getName() + " = '" + comune + "'");
+        sb.append(" AND ");
+        sb.append(PredefinedSQLCode.Colonne.PROVINCE_NAME.getName() + " = '" + provincia + "'");
+    
+        System.out.println(sb.toString());
+        return sb.toString();
+    }
+
+    public static String getAccountByEmail_query(String Email) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM ");
+        sb.append(Tabelle.ACCOUNT);
+        sb.append(" a JOIN ");
+        sb.append(Tabelle.RESIDENZA);
+        sb.append(" r ON a." + Colonne.RESIDENCE_ID_REF.getName() + " = r." + Colonne.ID.getName());
+        sb.append(" WHERE ");
+        sb.append(Colonne.EMAIL.getName() + " = '" + Email + "';");
+
+        Terminal.getInstance().printQuery_ln(sb.toString());
+        return sb.toString();
+
+    }
+
+    public static String getAccountByNickname_query(String nickname) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM ");
+        sb.append(Tabelle.ACCOUNT);
+        sb.append(" a JOIN ");
+        sb.append(Tabelle.RESIDENZA);
+        sb.append(" r ON a." + Colonne.RESIDENCE_ID_REF.getName() + " = r." + Colonne.ID.getName());
+        sb.append(" WHERE ");
+        sb.append(Colonne.NICKNAME.getName() + " = '" + nickname + "';");
+
+        Terminal.getInstance().printQuery_ln(sb.toString());
+        return sb.toString();
+
     }
     
 }

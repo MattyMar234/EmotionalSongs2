@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.Optional;
 import application.SceneManager.SceneName;
 import applicationEvents.ConnectionEvent;
+import utility.ImageDownloader;
 import utility.PathFormatter;
 
 
@@ -25,6 +26,9 @@ public class EmotionalSongs extends Application
     public static final String CSS_file_folder = PathFormatter.formatPath(ApplicationDirectory + "\\src\\main\\css"); //main\\resources\\pages-fxml
     public static final String flagsFolder = PathFormatter.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\image\\flags");
     public static final String LocationsPath = PathFormatter.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\data\\comuni.json");
+    public static final String ImageFolder = PathFormatter.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\image");
+    
+    public static final ImageDownloader imageDownloader = new ImageDownloader();
     private static EmotionalSongs instance = null;
     
     
@@ -107,6 +111,7 @@ public class EmotionalSongs extends Application
     public void handleConnectionLostEvent(ConnectionEvent event) {
         System.out.println("Connection lost");
         this.showConnectionAlert();
+        SceneManager.getInstance().showScene(SceneName.ACCESS_PAGE);
     }
 
     public void handleInvalidConnectionEvent(ConnectionEvent event) {

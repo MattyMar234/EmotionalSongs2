@@ -35,7 +35,7 @@
                                     <Font name="System Bold" size="12.0" />
                                  </font>
                               </Label>
-                              <TextField id="text-field_error_" fx:id="IP" onKeyReleased="#checkConnection" prefHeight="30.0" prefWidth="110.0" promptText="192.333.333.333">
+                              <TextField id="text-field_error_" fx:id="IP" onKeyReleased="#checkConnection" prefHeight="30.0" prefWidth="110.0" promptText="server IP">
                                  <font>
                                     <Font size="13.0" />
                                  </font>
@@ -45,7 +45,7 @@
                                     <Insets left="10.0" />
                                  </HBox.margin>
                               </Label>
-                              <TextField id="text-field_error_" fx:id="PORT" onKeyReleased="#checkConnection" prefHeight="20.0" prefWidth="47.0" promptText="6060">
+                              <TextField id="text-field_error_" fx:id="PORT" onKeyReleased="#checkConnection" prefHeight="20.0" prefWidth="47.0" promptText="port">
                                  <font>
                                     <Font size="13.0" />
                                  </font>

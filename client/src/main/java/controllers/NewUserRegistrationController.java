@@ -474,11 +474,11 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
         Matcher matcher = pattern.matcher(fiscalCode);
 
         //MRARSS13S08H501H
-        if(!matcher.matches()) {
+        /*if(!matcher.matches()) {
             SetLabelError(labelSing);
             labelSing.setText(EmotionalSongs.applicationLanguage == 0 ? "Codice fiscale non valido" : "Invalid fiscal code");
             return;
-        }
+        }*/
 
        
 

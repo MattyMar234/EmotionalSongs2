@@ -184,6 +184,7 @@ public class ConnectionManager extends UnicastRemoteObject implements ClientServ
 			try {
 				stub.disconnect(this);
 			} catch (RemoteException e) {
+				System.out.println(e);
 				e.printStackTrace();
 			}
 			connected = false;
@@ -212,7 +213,7 @@ public class ConnectionManager extends UnicastRemoteObject implements ClientServ
 	 * Gets actual host address
 	 * @return address actual host address
 	 */
-	public String getHost() {
+	public String getAddress() {
 		return hostAddress;
 	}
 	

@@ -18,10 +18,12 @@ import Exceptions.InvalidUserNameException;
 import application.ConnectionManager;
 import application.EmotionalSongs;
 import application.SceneManager;
+import application.SceneManager.ApplicationState;
 import application.SceneManager.SceneName;
 import applicationEvents.ConnectionEvent;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -45,6 +47,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import objects.Account;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
@@ -56,6 +59,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
     private static ApplicationAccessController reference;
     private ObservableList<ImageView> imgs = FXCollections.observableArrayList();
     private SceneManager sceneManager = SceneManager.getInstance();
+    private volatile boolean connectionParamsEvent = false;
     
     @FXML public Label LabeErrorlField1;
     @FXML public Label LabeErrorlField2;
@@ -110,6 +114,56 @@ public class ApplicationAccessController extends ControllerBase implements Initi
 
         this.LabelError_IMG1.setImage(super.AwesomeIcon_to_Image(FontAwesomeIcon.EXCLAMATION_CIRCLE, 80));
         this.LabelError_IMG2.setImage(super.AwesomeIcon_to_Image(FontAwesomeIcon.EXCLAMATION_CIRCLE, 20));
+
+        PORT.setText(Integer.toString(connectionManager.getPort()));
+        IP.setText(connectionManager.getAddress());
+
+        new Thread(() -> {
+
+            SceneManager sceneManager = SceneManager.getInstance();
+            Thread th = Thread.currentThread();
+            th.setPriority(Thread.MIN_PRIORITY);
+
+            while(sceneManager.getApplicationState() == ApplicationState.ACCESS_PAGE) 
+            {
+                //verifico se ho scritto qualcosa
+                if(IP == null || PORT == null || IP.getText().length() == 0 || PORT.getText().length() == 0) {
+                    
+                    //se non collegato e ho rimosso i dati
+                    if(connectionManager.isConnected()) {
+                        connectionManager.disconnect();
+                    }
+
+                    //aspetto
+                    try {Thread.sleep(800);} catch (InterruptedException e) {}
+                    continue;
+                }
+
+                //se sono collegato e non si è verificato alcun evento allora mi metto in pausa.
+                
+                try {Thread.sleep(1000);} catch (InterruptedException e) {}
+                
+                Platform.runLater(() -> {
+
+                    
+                    //verifico lo stato della connessione
+                    if(testServerConnectionParams(IP.getText(), Integer.parseInt(PORT.getText()))) {
+                        
+                        //verifico se sono già collegato a quell'host
+                        if(!connectionManager.isConnected() || (connectionManager.getAddress() != IP.getText() && connectionManager.getPort() != Integer.parseInt(PORT.getText()))) {
+                            connectionManager.setConnectionData(IP.getText(), Integer.parseInt(PORT.getText()));
+                            connectionManager.connect();
+                        }
+                    }
+                    else {
+                        if(connectionManager.isConnected()) {
+                            connectionManager.disconnect();
+                        }
+                    }
+                });
+            }
+            
+        }).start();
 
 
     
@@ -181,17 +235,6 @@ public class ApplicationAccessController extends ControllerBase implements Initi
 
 
         flags.getSelectionModel().select(EmotionalSongs.applicationLanguage);
-
-        if(connectionManager.isConnected()) {
-            testServerConnectionParams(connectionManager.getHost(), connectionManager.getPort());
-            PORT.setText(Integer.toString(connectionManager.getPort()));
-            IP.setText(connectionManager.getHost());
-        } 
-        else {
-            testServerConnectionParams("", 0);
-        }
-
-        
         clearError();
     }
           
@@ -325,12 +368,16 @@ public class ApplicationAccessController extends ControllerBase implements Initi
         }
 
 
-        ConnectionManager connection = ConnectionManager.getConnectionManager();
-        Object response = null;
+       
 
         try {
-            response = connection.getService().getAccount(userName.getText(), password.getText());
-            sceneManager.showScene(SceneName.HOME_PAGE);
+            ConnectionManager connection = ConnectionManager.getConnectionManager();
+            Account response = connection.getService().getAccount(userName.getText(), password.getText());
+
+            if(response != null) {
+                EmotionalSongs.getInstance().account = response;
+                sceneManager.showScene(SceneName.HOME_PAGE);
+            }
         } 
         catch (InvalidUserNameException e) {
             this.LabeErrorlField1.setVisible(true);
@@ -347,12 +394,10 @@ public class ApplicationAccessController extends ControllerBase implements Initi
             this.LabeErrorlField2.setText(EmotionalSongs.applicationLanguage == 0 ? "Password errata" : e.getMessage()+".");
         }
         catch (Exception e) {
-            // TODO: handle exception
+            
         }
         finally {
-            if(response == null) {
-                return;
-            }
+            
         }
     } 
     
@@ -360,7 +405,8 @@ public class ApplicationAccessController extends ControllerBase implements Initi
     @FXML
     public void checkConnection(KeyEvent event) {
 
-        if(IP == null || PORT == null || IP.getText().length() == 0 || PORT.getText().length() == 0 || IP.getText().split(".").length == 4) {
+        connectionParamsEvent = true;
+        /*if(IP == null || PORT == null || IP.getText().length() == 0 || PORT.getText().length() == 0 || IP.getText().split(".").length == 4) {
             return;
         }
 
@@ -372,8 +418,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
             if(connectionManager.isConnected()) {
                 connectionManager.disconnect();
             }
-            //connectionManager.setConnectionData(IP.getText(), Integer.parseInt(PORT.getText()));
-        }
+        }*/
     }
 
     private boolean testServerConnectionParams(String IP, int PORT) 
@@ -390,10 +435,6 @@ public class ApplicationAccessController extends ControllerBase implements Initi
             connectionStatus.setStyle("-fx-text-fill: #F14934;");
             connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #F14934;");
             return false;
-            //connectionIcon.getStyle()
-
-            //.add("-fx-fill: #F14934");
-
         }
     }
     
@@ -409,29 +450,4 @@ public class ApplicationAccessController extends ControllerBase implements Initi
 
 
     }
-
-
-    private class checker extends Thread {
-
-        public checker() {
-            super();
-            setDaemon(true);
-            start();
-        }
-
-        public void run() {
-
-            while(true) {
-                if(userName.getLength() >= 0) {
-                    
-                }
-            }
-
-        }
-
-    }
-
-
-
-
 }

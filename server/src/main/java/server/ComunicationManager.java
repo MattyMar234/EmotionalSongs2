@@ -18,38 +18,45 @@ import java.rmi.server.ServerNotActiveException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.concurrent.ThreadLocalRandom;
 
 import Exceptions.InvalidEmailException;
 import Exceptions.InvalidPasswordException;
 import Exceptions.InvalidUserNameException;
-import database.QueryExecutor;
+import database.DatabaseManager;
+import database.QueryBuilder;
+import database.QueriesManager;
+import database.PredefinedSQLCode.Colonne;
+import database.PredefinedSQLCode.Tabelle;
 import interfaces.ClientServices;
 import interfaces.ServerServices;
 import objects.Account;
 import objects.Song;
 import utility.WaithingAnimationThread;
 
-public class Server extends Thread implements ServerServices
+public class ComunicationManager extends Thread implements ServerServices
 {
 	private ArrayList<ClientServices> clients = new ArrayList<ClientServices>();
 	private Hashtable<ClientServices,String> IPs = new Hashtable<ClientServices,String>();
-	private int port;
+	
+	private Terminal terminal;
 	private boolean exit = false;
+	private int port;
 
 	private static final String SERVICE_NAME = "EmotionalSongs_services";
 
-	public Server(int port) throws RemoteException {
+	public ComunicationManager(int port) throws RemoteException {
 		this.port = port;
 	}
 
 	
 	public void run() 
 	{
-		Terminal terminal = Terminal.getInstance();
-
+		this.terminal = Terminal.getInstance();
 		terminal.printInfo_ln("Start comunication inizilization");
 		terminal.startWaithing(Terminal.MessageType.INFO + " Starting server...");
 		
@@ -75,7 +82,7 @@ public class Server extends Thread implements ServerServices
 
 			terminal.printInfo_ln("Exporting objects");
 			ServerServices services = (ServerServices) UnicastRemoteObject.exportObject(this, 0);
-			registry.rebind(Server.SERVICE_NAME, services);
+			registry.rebind(ComunicationManager.SERVICE_NAME, services);
 			
 			try {Thread.sleep(ThreadLocalRandom.current().nextInt(400, 1000));} catch (Exception e) {}
 		
@@ -98,11 +105,12 @@ public class Server extends Thread implements ServerServices
 
 			terminal.stopWaithing();
 			terminal.printSeparator();
-			terminal.printSucces_ln(Color.GREEN_BOLD_BRIGHT + "Server initialization complete" + Color.RESET);
+			terminal.printSucces_ln(Terminal.Color.GREEN_BOLD_BRIGHT + "Server initialization complete" + Terminal.Color.RESET);
 			terminal.printSeparator();
-			terminal.printInfo_ln("Server listening on "+ Color.MAGENTA + IP + ":" + port + Color.RESET);
+			terminal.printInfo_ln("Server listening on "+ Terminal.Color.MAGENTA + IP + ":" + port + Terminal.Color.RESET);
 			terminal.printInfo_ln("press ENTER to end the communication");
 
+			terminal.setAddTime(true);
 			terminal.startWaithing(Terminal.MessageType.INFO + " Server Running", WaithingAnimationThread.Animation.DOTS);
 
 			int index = 0;
@@ -116,7 +124,7 @@ public class Server extends Thread implements ServerServices
 						clientServices.testConnection();
 					}
 					catch (Exception e) {
-						terminal.printError_ln("Connection lost with: " + Color.MAGENTA + IPs.get(clientServices) + Color.RESET);
+						terminal.printError_ln("Connection lost with: " + Terminal.Color.MAGENTA + IPs.get(clientServices) + Terminal.Color.RESET);
 						IPs.remove(clientServices);
 						clients.remove(clientServices);
 
@@ -127,9 +135,10 @@ public class Server extends Thread implements ServerServices
 			}
 			
 			UnicastRemoteObject.unexportObject(this, true);
-			registry.unbind(Server.SERVICE_NAME);
+			registry.unbind(ComunicationManager.SERVICE_NAME);
 			terminal.stopWaithing();
 			terminal.printInfo_ln("Closing Server...");
+			terminal.setAddTime(false);
     
 		} 
 		catch (RemoteException e) {
@@ -149,6 +158,8 @@ public class Server extends Thread implements ServerServices
 		this.exit = true;
 	}
 
+	
+
 
 	@Override
 	public synchronized void addClient(ClientServices client) throws RemoteException 
@@ -167,7 +178,7 @@ public class Server extends Thread implements ServerServices
                         clientHost = interfaceAddress.getAddress().getHostAddress();
 			}*/
 
-			Terminal.getInstance().printInfo_ln("Host connected: " + Color.MAGENTA + clientHost + Color.RESET);
+			Terminal.getInstance().printInfo_ln("Host connected: " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET);
 			IPs.put(client, clientHost);
 		} 
 		catch (Exception e) {
@@ -183,7 +194,7 @@ public class Server extends Thread implements ServerServices
 	
 		try {
 			String clientHost = RemoteServer.getClientHost();
-			Terminal.getInstance().printInfo_ln("Host disconnected : " + Color.MAGENTA + clientHost + Color.RESET);
+			Terminal.getInstance().printInfo_ln("Host disconnected : " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET);
 			IPs.remove(client);
 		} 
 		catch (ServerNotActiveException e) {
@@ -192,13 +203,31 @@ public class Server extends Thread implements ServerServices
 	}
 
 
+	private String formatFunctionRequest(String function) throws ServerNotActiveException {
+		String clientHost = RemoteServer.getClientHost();
+		return "Host " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET + " requested function:" + Terminal.Color.CYAN_BOLD_BRIGHT + "\"" + function + "\"" + Terminal.Color.RESET;
+	}
+
+
 	@Override
 	public Account getAccount(String Email, String Password) throws RemoteException, InvalidPasswordException, InvalidUserNameException {
 		try {
-			String clientHost = RemoteServer.getClientHost();
-			Terminal.getInstance().printInfo_ln("Host " + Color.MAGENTA + clientHost + Color.RESET + " requested account");
-		} catch (Exception e) {
+			terminal.printRequest_ln(formatFunctionRequest("getAccount() with email " + Email));
+			Account account = QueriesManager.getAccountByEmail(Email);
+			System.out.println(account);
 
+			if(account == null)
+				throw new InvalidEmailException();
+
+			if(!account.getPassword().equals(Password))
+				throw new InvalidPasswordException();
+				
+			return account;
+		}
+		 
+		catch (Exception e) {
+			System.out.println(e);
+			e.printStackTrace();
 		}
 
 		throw new InvalidPasswordException();
@@ -213,11 +242,11 @@ public class Server extends Thread implements ServerServices
 		
 		try {
 			clientHost = RemoteServer.getClientHost();
-			Terminal.getInstance().printInfo_ln("Host " + Color.MAGENTA + clientHost + Color.RESET + " requested function: MostPopularSongs("+limit+ ", " + offset +")");
-			return QueryExecutor.getTopPopularSongs(limit, offset);
+			Terminal.getInstance().printInfo_ln("Host " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET + " requested function: MostPopularSongs("+limit+ ", " + offset +")");
+			return QueriesManager.getTopPopularSongs(limit, offset);
 		} 
 		catch (Exception e) {
-			Terminal.getInstance().printError_ln("Host " + Color.MAGENTA + clientHost + Color.RESET + " error: " + e);
+			Terminal.getInstance().printError_ln("Host " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET + " error: " + e);
 			return null;
 		}
 	}
@@ -226,8 +255,49 @@ public class Server extends Thread implements ServerServices
 	@Override
 	public Account addAccount(String name, String username, String userID, String codiceFiscale, String Email,
 			String password, String civicNumber, String viaPiazza, String cap, String commune, String province)
-			throws RemoteException, InvalidUserNameException, InvalidEmailException {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'addAccount'");
+			throws RemoteException, InvalidUserNameException, InvalidEmailException 
+	{
+		HashMap<Colonne, Object> colonne_account   = new HashMap<Colonne, Object>();
+		HashMap<Colonne, Object> colonne_residenza = new HashMap<Colonne, Object>();
+		Account account = null;
+		String clientHost = "";
+		
+		try {
+			clientHost = RemoteServer.getClientHost();
+			Terminal.getInstance().printInfo_ln(formatFunctionRequest("addAccount()"));
+
+
+			colonne_account.put(Colonne.NAME, name);
+			colonne_account.put(Colonne.SURNAME, username);
+			colonne_account.put(Colonne.NICKNAME, userID);
+			colonne_account.put(Colonne.FISCAL_CODE, codiceFiscale);
+			colonne_account.put(Colonne.EMAIL, Email);
+			colonne_account.put(Colonne.PASSWORD, password);
+			//colonne_account.put(Colonne.RESIDENCE_ID_REF, resd_ID);
+			
+			//colonne_residenza.put(Colonne.ID, resd_ID);
+			colonne_residenza.put(Colonne.VIA_PIAZZA, viaPiazza);
+			colonne_residenza.put(Colonne.CIVIC_NUMER, Integer.parseInt(civicNumber));
+			colonne_residenza.put(Colonne.PROVINCE_NAME, province);
+			colonne_residenza.put(Colonne.COUNCIL_NAME, commune);
+
+
+
+
+			QueriesManager.addAccount_and_addResidence(colonne_account, colonne_residenza);
+			
+			return getAccount(Email, password);	
+		} 
+		catch (SQLException e) {
+			Terminal.getInstance().printError_ln("Host " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET + " error: " + e);
+			e.printStackTrace();
+			
+		}
+		catch (Exception e) {
+			Terminal.getInstance().printError_ln("Host " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET + " error: " + e);
+			
+		}
+
+		return account;
 	}
 }

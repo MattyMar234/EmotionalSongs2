@@ -13,6 +13,7 @@ import javax.swing.JFileChooser;
 
 import Parser.JsonParser;
 import database.PredefinedSQLCode;
+import database.QueryBuilder;
 import database.PredefinedSQLCode.Colonne;
 import database.PredefinedSQLCode.Tabelle;
 import me.tongfei.progressbar.ProgressBar;
@@ -41,6 +42,14 @@ public class Loader {
     private Loader() {
         this.terminal = Terminal.getInstance();
         this.main = App.getInstance();
+    }
+
+    public boolean addColum(Tabelle tabella, Colonne colonna) throws SQLException {
+
+        String query = QueryBuilder.addColumn(tabella, colonna);
+        System.out.println(query);
+        this.main.database.submitQuery(query); 
+        return true;
     }
 
 
@@ -126,7 +135,7 @@ public class Loader {
             }
 
             if(!tuttePresenti) {
-                terminal.printError_ln(Color.RED_BOLD_BRIGHT + "FILE MISSING" + Color.RESET);
+                terminal.printError_ln(Terminal.Color.RED_BOLD_BRIGHT + "FILE MISSING" + Terminal.Color.RESET);
                 terminal.printInfo_ln("Database configuration ended\n");
                 return 0;
             }
@@ -135,7 +144,7 @@ public class Loader {
             }
         }
         else {
-            terminal.printError_ln(Color.RED_BOLD_BRIGHT + "INVALID PATH" + Color.RESET);
+            terminal.printError_ln(Terminal.Color.RED_BOLD_BRIGHT + "INVALID PATH" + Terminal.Color.RESET);
             terminal.printInfo_ln("Database configuration ended\n");
             return 0;
         }
