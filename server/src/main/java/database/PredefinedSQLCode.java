@@ -156,7 +156,7 @@ public class PredefinedSQLCode
     {
         ID("ID",                      "VARCHAR",  ID_SIZE,         "NOT NULL"),
         SONG_ID_REF("ID_Song",        "VARCHAR",  ID_SIZE,         "NOT NULL"),
-        EMAIL("email",                "VARCHAR",  "(120)",    "NOT NULL"),
+        EMAIL("email",                "VARCHAR",  "(120)",    "NOT NULL UNIQUE"),
         PASSWORD("password",          "VARCHAR",  "(120)",    "NOT NULL"),
         ARTIST_ID_REF("ID_Artist",    "VARCHAR",  ID_SIZE,         "NOT NULL"),
         PLAYLIST_ID_REF("playli_ref", "VARCHAR",  ID_SIZE,         "NOT NULL"),
@@ -312,7 +312,7 @@ public class PredefinedSQLCode
         tablesPrimaryKey.put(Tabelle.COMMENTO,          new Colonne[] {Colonne.ID});
         tablesPrimaryKey.put(Tabelle.EMOZIONE,          new Colonne[] {Colonne.ID});
         tablesPrimaryKey.put(Tabelle.PLAYLIST,          new Colonne[] {Colonne.ID});
-        tablesPrimaryKey.put(Tabelle.ACCOUNT,           new Colonne[] {Colonne.NICKNAME, Colonne.EMAIL});
+        tablesPrimaryKey.put(Tabelle.ACCOUNT,           new Colonne[] {Colonne.NICKNAME}); //, Colonne.EMAIL
         //tablesPrimaryKey.put(Tabelle.COMUNE,            new Colonne[] {Colonne.NAME});
         //tablesPrimaryKey.put(Tabelle.PROVINCIA,         new Colonne[] {Colonne.NAME});
         tablesPrimaryKey.put(Tabelle.RESIDENZA,         new Colonne[] {Colonne.ID});

@@ -19,6 +19,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
+import objects.MyImage;
 import objects.Song;
 import utility.PathFormatter;
 
@@ -53,7 +54,7 @@ public class ElementContainer extends ControllerBase implements Initializable{
                 Song s = (Song) displayedElement;
                 title.setText(s.getTitle());
 
-                //EmotionalSongs.imageDownloader.addImageToDownload(s.getImage("300x300").getUrl(), image);
+                EmotionalSongs.imageDownloader.addImageToDownload(s.getImage(MyImage.ImageSize.S300x300).getUrl(), image);
                 
                 /*new Thread(() -> { // Lambda Expression
                     System.out.println(s.getImage("300x300").getUrl());

@@ -252,7 +252,7 @@ public class Terminal extends Thread
                     if(main.isDatabaseConnected()) {
                         String ask = "Are you sure you want to delete data from \"" + Color.CYAN_BOLD_BRIGHT + main.database.getDB_NAME() + Color.RESET + "\" database ?";
                         
-                        if(askYesNo(ask, in))
+                        if(askYesNo(ask))
                             clearDatabase();
                         else                        
                             printInfo_ln("operation cancelled");
@@ -506,18 +506,7 @@ public class Terminal extends Thread
         }
     }  
     
-    public boolean askYesNo(String question, BufferedReader in) throws IOException {
-        System.out.println(question);
-        System.out.print("[y/n] > ");
-
-        String result = in.readLine();
-        if(result.equalsIgnoreCase("y")) {
-            return true;
-        }
-        else {
-            return true;
-        }
-    }
+    
 
 
     public boolean askYesNo(String question) throws IOException {
@@ -529,7 +518,7 @@ public class Terminal extends Thread
             return true;
         }
         else {
-            return true;
+            return false;
         }
     }
 
