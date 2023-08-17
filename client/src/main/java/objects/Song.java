@@ -14,6 +14,7 @@ public class Song implements Serializable
     private String albumId;
 
     private HashMap <String, MyImage> images = new HashMap <String, MyImage>();
+    //private 
 
     // Costruttore
     public Song(String id, String title, String spotifyUrl, long durationMs, int popularity, String albumId) {
@@ -25,8 +26,8 @@ public class Song implements Serializable
         this.albumId = albumId;
     }
 
-    public MyImage getImage(String size) {
-        return images.get(size);
+    public MyImage getImage(MyImage.ImageSize size) {
+        return images.get(size.getImgSize());
     }
 
     // Metodi getter e setter per gli attributi della canzone

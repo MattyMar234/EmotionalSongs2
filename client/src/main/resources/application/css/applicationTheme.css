@@ -57,6 +57,7 @@
 
 #OrangeButton:hover {
     -fx-background-color: linear-gradient(to right, #eeea00, #f18a04);
+    -fx-background-color: linear-gradient(to top, #1a1900, #eeea00);
     -fx-font-size: 15;
     
 }
@@ -64,11 +65,11 @@
 
 /*======================== LABELS =====================*/
 
-.label {
+/*.label {
     -fx-font-weight: Bold;
     -fx-text-fill: white;
     -fx-font-size: 15;
-}
+}*/
 
 #error_label {
     -fx-text-fill:  #F14934;

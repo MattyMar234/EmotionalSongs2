@@ -3,6 +3,7 @@ package controllers;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.ResourceBundle;
 
@@ -52,7 +53,7 @@ public class ElementContainer extends ControllerBase implements Initializable{
                 Song s = (Song) displayedElement;
                 title.setText(s.getTitle());
 
-                EmotionalSongs.imageDownloader.addImageToDownload(s.getImage("300x300").getUrl(), image);
+                //EmotionalSongs.imageDownloader.addImageToDownload(s.getImage("300x300").getUrl(), image);
                 
                 /*new Thread(() -> { // Lambda Expression
                     System.out.println(s.getImage("300x300").getUrl());
@@ -96,7 +97,9 @@ public class ElementContainer extends ControllerBase implements Initializable{
     @FXML
     public void openLink(MouseEvent event) {
         if(displayedElement instanceof Song) {
-            Song s = (Song) displayedElement;
+            
+            
+            /*Song s = (Song) displayedElement;
             
             try {
                 openLink(s.getSpotifyUrl());
@@ -107,14 +110,18 @@ public class ElementContainer extends ControllerBase implements Initializable{
             catch (URISyntaxException e) {
                 e.printStackTrace();
             }
-   
-        } 
+        }*/ 
+
+            ArrayList<ControllerBase> loadedControllers = SceneManager.getInstance().showScene(SceneManager.SceneName.DISPLAY_ELEMENT_PAGE, displayedElement);
+            MainPage_ElementDisplayer_Controller Displayer_Controller = (MainPage_ElementDisplayer_Controller) loadedControllers.get(1);
+
         /*else if(displayedElement instanceof Artist) {
 
         }
         else if(displayedElement instanceof Album) {
 
         }*/
+        }
     }
     
 }

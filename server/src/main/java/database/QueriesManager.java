@@ -43,12 +43,11 @@ public class QueriesManager {
         return table;
     }
 
-    private static HashMap<Tabelle,HashMap<Colonne, Object>> getHashMaps_for_ClassConstructor(ResultSet resultSet, Tabelle... tabelle) throws SQLException {
-        
+    private static HashMap<Tabelle,HashMap<Colonne, Object>> getHashMaps_for_ClassConstructor(ResultSet resultSet, Tabelle... tabelle) throws SQLException 
+    {
         HashMap<Tabelle,HashMap<Colonne, Object>> constructorsMap = new HashMap<>();
         ResultSetMetaData rsmd = resultSet.getMetaData();
         
-
         int offset = 1;
 
         for (Tabelle tabella : tabelle) {
@@ -72,7 +71,6 @@ public class QueriesManager {
             }
             constructorsMap.put(tabella, table);
         }
-        
         return constructorsMap;
     }
 

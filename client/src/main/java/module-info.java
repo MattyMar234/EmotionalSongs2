@@ -17,6 +17,8 @@ module application.client {
     requires transitive javatuples;
     requires transitive org.kordamp.ikonli.javafx;
 
+    requires org.apache.commons.codec;
+
     opens application to javafx.fxml;
 
     exports application;

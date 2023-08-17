@@ -12,6 +12,9 @@ import objects.Account;
 import objects.UserActions;
 import java.io.IOException;
 import java.util.Optional;
+
+import org.apache.commons.codec.digest.DigestUtils;
+
 import application.SceneManager.SceneName;
 import applicationEvents.ConnectionEvent;
 import utility.ImageDownloader;
@@ -45,8 +48,13 @@ public class EmotionalSongs extends Application
 
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) 
+    {
         launch(args);
+
+        //String sha256hex = DigestUtils.sha256Hex("1234");
+        //System.out.println(sha256hex);
+        //String DeSha256hex = DigestUtils.256("2c1f6848fd51c5ff3a7d3c275bde7fc33c8e143138aa87e712f4a0470559ce40");
     }
 
     public static EmotionalSongs getInstance() {

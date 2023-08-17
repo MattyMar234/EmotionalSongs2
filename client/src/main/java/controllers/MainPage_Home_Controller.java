@@ -55,7 +55,6 @@ public class MainPage_Home_Controller extends ControllerBase implements Initiali
             catch (IOException e) {
                 e.printStackTrace();
             }
-    
         } 
 
         new Thread(() -> { // Lambda Expression

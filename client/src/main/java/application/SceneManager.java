@@ -20,6 +20,7 @@ import applicationEvents.ConnectionEvent;
 import controllers.ControllerBase;
 import controllers.MainPage_SideBar_Controller;
 import controllers.WindowContainerController;
+import interfaces.ControllerFunctions;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class SceneManager {
     private static final String MainPage_SideBar_path = "MainPage_SideBar.fxml";
     private static final String MainPage_home_path = "MainPage_Home.fxml";
     private static final String RegistrationPage_path = "UserRegistration.fxml";
+    private static final String ElementDisplay_path = "MainPage_ElementDisplayer.fxml";
 
     private int theme = 0;
     private ArrayList<ControllerBase> loadedControllers = new ArrayList<>();
@@ -45,6 +47,7 @@ public class SceneManager {
         ACCESS_PAGE(ApplicationState.ACCESS_PAGE,AccessPage_path),
         REGISTRATION_PAGE(ApplicationState.REGISTRATION_PAGE ,RegistrationPage_path),
         HOME_PAGE(ApplicationState.MAIN_PAGE, MainPage_SideBar_path, MainPage_home_path),
+        DISPLAY_ELEMENT_PAGE(ApplicationState.MAIN_PAGE, MainPage_SideBar_path, ElementDisplay_path),
         PLAYLISTS_PAGE(ApplicationState.MAIN_PAGE,""),
         ACCOUNT_PAGE(ApplicationState.MAIN_PAGE,""),
         COMMENT_PAGE(ApplicationState.MAIN_PAGE,"");
@@ -116,6 +119,7 @@ public class SceneManager {
         loader.setLocation(EmotionalSongs.class.getResource(name + ((!name.endsWith(".fxml")) ? ".fxml" : "")));
         //print hereee
         System.out.println();
+      
 
         return loader;
     }
@@ -245,20 +249,20 @@ public class SceneManager {
     * @param sceneName Identificativo della scena
     * @param args Parametri per i controllers
     */
-    public void showScene(SceneName sceneName, Object... args) 
+    public ArrayList<ControllerBase> showScene(SceneName sceneName, Object... args) 
     {
         SceneAction action = new SceneAction(sceneName, args);
         EmotionalSongs.getInstance().userActions.addAction(action);
-        executeShowScene(sceneName, args);
+        return executeShowScene(sceneName, args);
     } 
 
 
-    public void showScene(SceneAction sceneAction) {
-        executeShowScene(sceneAction.scenaName, sceneAction.args);
+    public ArrayList<ControllerBase> showScene(SceneAction sceneAction) {
+        return executeShowScene(sceneAction.scenaName, sceneAction.args);
     }
 
 
-    private void executeShowScene(SceneName sceneName, Object[] args) {
+    private ArrayList<ControllerBase> executeShowScene(SceneName sceneName, Object[] args) {
         //offset del file
         int fileOffset = 0;
         
@@ -304,6 +308,25 @@ public class SceneManager {
                 loadedControllers.add((ControllerBase)injectScene(file, loadedControllers.get(loadedControllers.size() - 1).anchor_for_injectScene));
             }
         }
+
+        //verifico se ho dei parametri da passare al controller
+        if(args.length > 0 ) {
+            //verifico se implementa l'interfaccia
+            // Inheritance testing:
+            Class<?> interfaceType = ControllerFunctions.class;
+            //Class<?> classType = SomeClass.class;
+
+            if (interfaceType.isAssignableFrom(loadedControllers.get(loadedControllers.size() - 1).getClass())) {
+                ControllerFunctions controller = (ControllerFunctions)loadedControllers.get(loadedControllers.size() - 1);
+                controller.injectData(args);
+            }
+            else {
+                throw new UnsupportedOperationException("this controller not implements: " + ControllerFunctions.class.getName());
+            }
+        }
+        
+
+
         
         //se voglio fare delle operazioni aggiuntive per ogni scena
         //per accedere a un specifico controller uso: "loadedControllers.get(index)"
@@ -319,8 +342,10 @@ public class SceneManager {
                 
             }
             default -> {
-                throw new IllegalArgumentException("Unexpected value: " + sceneName);
+                //throw new IllegalArgumentException("Unexpected value: " + sceneName);
             }
         }
+
+        return loadedControllers;
     }
 }

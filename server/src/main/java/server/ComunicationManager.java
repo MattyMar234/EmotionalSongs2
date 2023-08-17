@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 import Exceptions.InvalidEmailException;
 import Exceptions.InvalidPasswordException;
 import Exceptions.InvalidUserNameException;
@@ -210,7 +212,7 @@ public class ComunicationManager extends Thread implements ServerServices
 
 
 	@Override
-	public Account getAccount(String Email, String Password) throws RemoteException, InvalidPasswordException, InvalidUserNameException {
+	public Account getAccount(String Email, String password) throws RemoteException, InvalidPasswordException, InvalidUserNameException {
 		try {
 			terminal.printRequest_ln(formatFunctionRequest("getAccount() with email " + Email));
 			Account account = QueriesManager.getAccountByEmail(Email);
@@ -219,7 +221,7 @@ public class ComunicationManager extends Thread implements ServerServices
 			if(account == null)
 				throw new InvalidEmailException();
 
-			if(!account.getPassword().equals(Password))
+			if(!account.getPassword().equals(DigestUtils.sha256Hex(password)))
 				throw new InvalidPasswordException();
 				
 			return account;
@@ -272,7 +274,7 @@ public class ComunicationManager extends Thread implements ServerServices
 			colonne_account.put(Colonne.NICKNAME, userID);
 			colonne_account.put(Colonne.FISCAL_CODE, codiceFiscale);
 			colonne_account.put(Colonne.EMAIL, Email);
-			colonne_account.put(Colonne.PASSWORD, password);
+			colonne_account.put(Colonne.PASSWORD, DigestUtils.sha256Hex(password));
 			//colonne_account.put(Colonne.RESIDENCE_ID_REF, resd_ID);
 			
 			//colonne_residenza.put(Colonne.ID, resd_ID);
