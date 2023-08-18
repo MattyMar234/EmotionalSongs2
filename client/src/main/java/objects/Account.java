@@ -18,6 +18,10 @@ public class Account implements Serializable{
         return residenza;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
     public String getName() {
         return name;
     }

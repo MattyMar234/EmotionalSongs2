@@ -21,6 +21,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import objects.Album;
 import objects.MyImage;
 import objects.Song;
 
@@ -60,41 +61,58 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
 
         Platform.runLater(() -> {
 
+            Image img;
+            String imgURL = "";
+            String spotifyUrl = "";
+
             if(displayedElement instanceof Song) {
                 final Song song = (Song) displayedElement;
-
                 labelName.setText(song.getTitle());
                 labelType.setText("Song");
 
-                Image img = ObjectsCache.getImage(song.getImage(MyImage.ImageSize.S300x300).getUrl());
-                
-                if(img == null) {
-                    String imgURL = song.getImage(MyImage.ImageSize.S300x300).getUrl();
-                    EmotionalSongs.imageDownloader.addImageToDownload(imgURL, image);
-                    
-                }
-                else {
-                    String color = ColorToHex(getAverageColor(img));
-                    linearColorAnchorPane.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");");
-                    image.setImage(img);
-                }
-
-                image.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        try {
-                            openLink(song.getSpotifyUrl());
-                        } 
-                        catch (IOException e) {
-                            e.printStackTrace();
-                        } 
-                        catch (URISyntaxException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-
+                imgURL = song.getImage(MyImage.ImageSize.S300x300).getUrl();
+                spotifyUrl = song.getSpotifyUrl();
             }
+                
+            else if(displayedElement instanceof Album) {
+                final Album album = (Album) displayedElement;
+
+                labelName.setText(album.getName());
+                labelType.setText("Album");
+
+                imgURL = ((Album) displayedElement).getImage(MyImage.ImageSize.S300x300).getUrl();
+                album.getSpotifyURL();
+            }
+        
+
+            img = ObjectsCache.getImage(imgURL);
+
+                
+            if(img == null) {
+                EmotionalSongs.imageDownloader.addImageToDownload(imgURL, image);  
+            }
+            else {
+                String color = ColorToHex(getAverageColor(img));
+                linearColorAnchorPane.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");");
+                image.setImage(img);
+            }
+
+            final String url = spotifyUrl;
+
+            image.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    try {
+                        openLink(url);
+                    } 
+                    catch (IOException e) {
+                        e.printStackTrace();
+                    } 
+                    catch (URISyntaxException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
 
         });
         
@@ -104,8 +122,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
 
     @Override
     public void init(Object... data) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'init'");
+       
     }
 
 
@@ -120,14 +137,23 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
         double totalRed = 0;
         double totalGreen = 0;
         double totalBlue = 0;
-
+        //double pixelCount = 0;
         // Iterate through all pixels and accumulate color components
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 Color color = pixelReader.getColor(x, y);
+
+                /*if(color.getRed() > 32 && color.getGreen() > 32 && color.getBlue() > 32 ) {
+                    totalRed += color.getRed();
+                    totalGreen += color.getGreen();
+                    totalBlue += color.getBlue();
+                    pixelCount++;
+                }*/
+
                 totalRed += color.getRed();
                 totalGreen += color.getGreen();
                 totalBlue += color.getBlue();
+                    
             }
         }
 

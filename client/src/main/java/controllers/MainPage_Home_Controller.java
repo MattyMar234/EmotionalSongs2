@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 
 import application.ConnectionManager;
 import application.SceneManager;
+import interfaces.ServerServices;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,6 +22,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import objects.Song;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainPage_Home_Controller extends ControllerBase implements Initializable
 {
@@ -33,6 +35,7 @@ public class MainPage_Home_Controller extends ControllerBase implements Initiali
 
     private SceneManager sceneManager;
     private ArrayList<RowContainerController> rowControllers = new ArrayList<RowContainerController>();
+    private HashMap<String, RowContainerController> ControllersFunction = new HashMap<>();
 
     public MainPage_Home_Controller() {
         super();
@@ -42,43 +45,35 @@ public class MainPage_Home_Controller extends ControllerBase implements Initiali
     @Override
     public void initialize(URL location, ResourceBundle resources) 
     {
-        for(int j = 0; j < 7; j++) 
-        {
-            try {
-                RowContainerController controller = (RowContainerController) sceneManager.injectScene("RowContainer.fxml", scrollPaneVBox, new RowContainerController());
-                rowControllers.add(controller);
-                controller.init("Top 10 song", 10, scrollPane.getPrefWidth());
-            } 
-            catch (RemoteException e) {
-                e.printStackTrace();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
+        ServerServices services = ConnectionManager.getConnectionManager().getService();
+
+        try {
+            
+            RowContainerController controller1 = (RowContainerController) sceneManager.injectScene("RowContainer.fxml", scrollPaneVBox, new RowContainerController());
+            RowContainerController controller2 = (RowContainerController) sceneManager.injectScene("RowContainer.fxml", scrollPaneVBox, new RowContainerController());
+            RowContainerController controller3 = (RowContainerController) sceneManager.injectScene("RowContainer.fxml", scrollPaneVBox, new RowContainerController());
+            
+            controller1.init("Top 10 song", 10, scrollPane.getPrefWidth());
+            controller2.init("Top 10 song", 10, scrollPane.getPrefWidth());
+            controller3.init("Recent Publisched Album", 10, scrollPane.getPrefWidth());
+
+            new Thread(() -> {try{controller1.InjectData(services.getMostPopularSongs(10, 0), "Top 10 song");}catch (Exception e) {}}).start();
+            new Thread(() -> {try{controller2.InjectData(services.getMostPopularSongs(10, 10), "Top 10 song");}catch (Exception e) {}}).start();
+            new Thread(() -> {try{controller3.InjectData(services.getRecentPublischedAlbum(10,0,30), "Recent Publisched Album");}catch (Exception e) {}}).start();
         } 
+        catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    
 
         
 
-        new Thread(() -> { // Lambda Expression
-            //Platform.runLater(() -> { // Lambda Expression
+        
 
-                for(int i = 0; i < rowControllers.size(); i++) {
-                    try 
-                    {
-                        ArrayList<Song> songs = ConnectionManager.getConnectionManager().getService().getMostPopularSongs(10, 10*i);
-                        //System.out.println(songs.size());//RowContainerController controller = (RowContainerController) sceneManager.injectScene("RowContainer.fxml", scrollPaneVBox, new RowContainerController());
-                        
-                        RowContainerController controller = rowControllers.get(i);
-                        controller.InjectData(songs, "Top 10 song");
-                        
-                        
-                    } 
-                    catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }  
-            //}); 
-        }).start();
+        
         
         
 

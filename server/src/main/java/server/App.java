@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import Parser.JsonParser;
 import database.DatabaseManager;
 import database.PredefinedSQLCode;
+import database.QueriesManager;
+import database.QueryBuilder;
 import database.PredefinedSQLCode.Colonne;
 import database.PredefinedSQLCode.Tabelle;
 import utility.AsciiArtGenerator;
@@ -82,25 +84,21 @@ public class App extends JFrame
         new App(args);
     }
 
-    private App(String[] args) throws InterruptedException, IOException, ClassNotFoundException 
+    private App(String[] args) throws InterruptedException, IOException, ClassNotFoundException, SQLException 
     {
         super();
         App.instance = this;
         this.terminal = Terminal.getInstance();
         Class.forName("org.postgresql.Driver");
-        
+
         loadSettings();
         setDatabaseConnection();
+
         
         /*for (Tabelle s : PredefinedSQLCode.Tabelle.values()) {
             terminal.printInfo_ln(s.toString());
         }*/
 
-
-        
-
-        
-        
         
         terminal.printSeparator();
         this.terminal.start();
@@ -320,7 +318,7 @@ public class App extends JFrame
                    
                    
                     if(existingColumns.get(coll.getName().toLowerCase()) == null) {
-                        terminal.print_ln(Terminal.Color.RED_BOLD_BRIGHT + "Column \"" + coll.getName() + "\" Not Found"  + Terminal.Color.RESET);
+                        terminal.println(Terminal.Color.RED_BOLD_BRIGHT + "Column \"" + coll.getName() + "\" Not Found"  + Terminal.Color.RESET);
                         //terminal.print_ln(Terminal.Color.RED_BOLD_BRIGHT + "not found"  + Terminal.Color.RESET);
                         if(missingColumns.get(table) == null)
                             missingColumns.put(table,  new ArrayList<Colonne>());
@@ -328,7 +326,7 @@ public class App extends JFrame
                         missingColumns.get(table).add(coll);
                     }
                     else {
-                        terminal.print_ln(Terminal.Color.GREEN_BOLD_BRIGHT + "Column \"" + coll.getName() + "\" Found"  + Terminal.Color.RESET);
+                        terminal.println(Terminal.Color.GREEN_BOLD_BRIGHT + "Column \"" + coll.getName() + "\" Found"  + Terminal.Color.RESET);
                         //terminal.print_ln(Terminal.Color.GREEN_BOLD_BRIGHT + "found" + Terminal.Color.RESET);
 
                         

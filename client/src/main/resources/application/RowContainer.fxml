@@ -10,7 +10,7 @@
 
 <AnchorPane fx:id="anchor" maxHeight="-Infinity" maxWidth="5000.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="335.0" prefWidth="510.0" styleClass="RowContainer-Background" stylesheets="@css/ApplicationTheme.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.RowContainerController">
    <children>
-      <VBox maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="198.0">
+      <VBox maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="653.0">
          <children>
             <Label fx:id="title" maxHeight="-Infinity" prefHeight="50.0" prefWidth="600.0" styleClass="Label-CategoryTitle" text="Label">
                <VBox.margin>

@@ -5,12 +5,14 @@ import java.security.Timestamp;
 import java.sql.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.javatuples.Triplet;
 
 import database.PredefinedSQLCode.Colonne;
 import database.PredefinedSQLCode.Tabelle;
+import objects.Album;
 import server.Terminal;
 import database.PredefinedSQLCode.Operazioni_SQL;
 
@@ -20,6 +22,7 @@ import database.PredefinedSQLCode.Operazioni_SQL;
 public class QueryBuilder {
 
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private static Terminal terminal = Terminal.getInstance();
 
     /**
      * Questa funzione restituisce una stringa che rappresenta la query SQL per la realizzazione della tabella specificata.
@@ -219,17 +222,7 @@ public class QueryBuilder {
         return sb.toString();
     }
 
-    /**
-     * Genera la query per ricavare i generi musicali dell'artista
-     * @param id l'id dell'artista
-     * @param artistInformation se True aggiunge ai risultati i datim dell'artista
-     * @return
-     */
-    public static String getArtistGeners_query(final String id, final boolean artistInformation) {
-        return "SELECT "+ (artistInformation ? '*' : PredefinedSQLCode.Colonne.GENERE_MUSICALE) + " FROM " + PredefinedSQLCode.Tabelle.GENERI_ARTISTA + " NATURAL JOIN "
-        + "WHERE " + PredefinedSQLCode.Tabelle.GENERI_ARTISTA + "."+PredefinedSQLCode.Colonne.ID + " = " + id;
-    //select * from generiartista NATURAL JOIN artista WHERE generiartista.id = '66CXWjxzNUsdJxJ2JdwvnR';
-    }
+    
 
 
     public static String addColumn(Tabelle tabella, Colonne colonna) 
@@ -273,6 +266,16 @@ public class QueryBuilder {
         return "";
     }
 
+    
+
+    
+
+
+    //================================================ SINGOLI ELEMENTI =================================================//
+
+
+
+    //================================================ LISTE DI ELEMENTI =================================================//
     public static String getResidenceId_Query(String via, int numero, String comune, String provincia) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT ");
@@ -288,10 +291,10 @@ public class QueryBuilder {
         sb.append(" AND ");
         sb.append(PredefinedSQLCode.Colonne.PROVINCE_NAME.getName() + " = '" + provincia + "'");
     
-        System.out.println(sb.toString());
+        terminal.printQuery_ln(sb.toString());
         return sb.toString();
     }
-
+    
     public static String getAccountByEmail_query(String Email) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM ");
@@ -302,7 +305,7 @@ public class QueryBuilder {
         sb.append(" WHERE ");
         sb.append(Colonne.EMAIL.getName() + " = '" + Email + "';");
 
-        Terminal.getInstance().printQuery_ln(sb.toString());
+        terminal.printQuery_ln(sb.toString());
         return sb.toString();
 
     }
@@ -317,7 +320,58 @@ public class QueryBuilder {
         sb.append(" WHERE ");
         sb.append(Colonne.NICKNAME.getName() + " = '" + nickname + "';");
 
-        Terminal.getInstance().printQuery_ln(sb.toString());
+        terminal.printQuery_ln(sb.toString());
+        return sb.toString();
+    }
+
+    /**
+     * Genera la query per ricavare i generi musicali dell'artista
+     * @param id l'id dell'artista
+     * @param artistInformation se True aggiunge ai risultati i datim dell'artista
+     * @return
+     */
+    public static String getArtistGeners_query(final String id, final boolean artistInformation) {
+        return "SELECT "+ (artistInformation ? '*' : PredefinedSQLCode.Colonne.GENERE_MUSICALE) + " FROM " + PredefinedSQLCode.Tabelle.GENERI_ARTISTA + " NATURAL JOIN "
+        + "WHERE " + PredefinedSQLCode.Tabelle.GENERI_ARTISTA + "."+PredefinedSQLCode.Colonne.ID + " = " + id;
+    //select * from generiartista NATURAL JOIN artista WHERE generiartista.id = '66CXWjxzNUsdJxJ2JdwvnR';
+    }
+    
+    
+    public static String getSongs_by_AlbumID_query(String albumID) {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT c.* FROM  " + Tabelle.SONG + " c JOIN " + Tabelle.ALBUM + " a ON c.ID_Album = a.ID WHERE a.ID = \'" + albumID + "\'");
+        
+        //terminal.printQuery_ln(sb.toString());
+        return sb.toString();
+    }
+
+    public static String getAlbumImages_by_ID(String ID) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM " + PredefinedSQLCode.Tabelle.ALBUM_IMAGES.toString());
+        sb.append(" WHERE " + PredefinedSQLCode.Colonne.ID.getName() + " = '" + ID +"';");
+
+        //terminal.printQuery_ln(sb.toString());
+        return sb.toString();
+    }
+
+
+
+
+
+    //================================================ OPERAZIONI PARTICOLARI =================================================//
+    public static String getRecentPublischedAlbum_query(long limit, long offset, int threshold) {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM ");
+        sb.append(Tabelle.ALBUM + " a WHERE ");
+        sb.append(" a." + Colonne.ID.getName() + " IN (SELECT "+ Colonne.ID.getName());
+        sb.append(" FROM ");  
+        sb.append(Tabelle.ALBUM); 
+        sb.append(" WHERE " + Colonne.ELEMENT.getName() + " >= " + threshold + " ORDER BY " + Colonne.RELEASE_DATE.getName() + " DESC) ");      
+        sb.append(" ORDER BY a." + Colonne.RELEASE_DATE.getName() + " DESC LIMIT " + limit + " OFFSET " + offset + ";");
+        
+        //terminal.printQuery_ln(sb.toString());
         return sb.toString();
 
     }

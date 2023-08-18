@@ -4,7 +4,7 @@ public class WaithingAnimationThread extends Thread
 {
     public enum Animation {
         SPIN(new String[]{"\b|", "\b/", "\b-", "\b\\"}, 150),
-        DOTS(new String[]{".", "..", "...", ""}, 800);
+        DOTS(new String[]{".", "..", "...", "...", ""}, 700);
 
         private final String[] frames;
         private int delay;

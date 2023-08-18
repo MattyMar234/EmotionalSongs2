@@ -6,6 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.naming.spi.DirStateFactory.Result;
+import javax.swing.plaf.nimbus.State;
+
 public class DatabaseManager {
 
     private final String PROTOCOL = "jdbc:postgresql://";
@@ -96,6 +99,18 @@ public class DatabaseManager {
     public synchronized ResultSet submitQuery(String sql) throws SQLException {
         if(statement.execute(sql)){
             return statement.getResultSet();
+        }
+        return null;
+    }
+
+    public ResultSet submitQuery2(String sql) throws SQLException 
+    {
+        Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+       
+        if(statement.execute(sql)){
+            ResultSet result = statement.getResultSet();
+            statement.close();
+            return result;
         }
         return null;
     }

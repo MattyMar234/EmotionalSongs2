@@ -14,7 +14,7 @@ public class UserActions {
     private Stack<SceneAction> forward_queue = new Stack<SceneAction>();
     private SceneAction actualAction = null;
 
-    private static boolean log = false;
+    private static boolean log = true;
 
 
 
@@ -40,6 +40,10 @@ public class UserActions {
             backward_queue.push(actualAction);
             
             actualAction = action;
+
+            if(log) {
+                System.out.println("actual action: " + actualAction.scena_name);
+            }
 
             //rimuovo le operazione che posso fare in avanti
             forward_queue.clear();

@@ -94,6 +94,7 @@ public class PredefinedSQLCode
         PROCEDURE("PROCEDURE"),
         FUNCTION("FUNCTION"),
         DECLARE("DECLARE"),
+        OFFSET("OFFSET"),
         SET("SET"),
         BEGIN("BEGIN"),
         COMMIT("COMMIT"),
@@ -133,6 +134,8 @@ public class PredefinedSQLCode
         BETWEEN("BETWEEN"),
         LIKE("LIKE"),
         IS("IS"),
+        LIMIT("LIMIT"),
+        FROM("FROM"),
         CASCADE("CASCADE"),
         NULL("NULL");
 

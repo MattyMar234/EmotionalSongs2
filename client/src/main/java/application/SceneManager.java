@@ -17,6 +17,7 @@ import objects.UserActions;
 import org.javatuples.*;
 
 import applicationEvents.ConnectionEvent;
+import controllers.ApplicationAccessController;
 import controllers.ControllerBase;
 import controllers.MainPage_SideBar_Controller;
 import controllers.WindowContainerController;
@@ -122,7 +123,7 @@ public class SceneManager {
         //System.out.println(EmotionalSongs.class.getResource(name + ((!name.endsWith(".fxml")) ? ".fxml" : "")));
         loader.setLocation(EmotionalSongs.class.getResource(name + ((!name.endsWith(".fxml")) ? ".fxml" : "")));
         //print hereee
-        //System.out.println();
+        //System.out.println();  
       
 
         return loader;
@@ -257,7 +258,7 @@ public class SceneManager {
 
 
     public ArrayList<ControllerBase> showScene(SceneAction sceneAction) {
-        return executeShowScene(sceneAction.scenaName, sceneAction.args);
+        return executeShowScene(sceneAction.scena_name, sceneAction.args);
     }
 
 
@@ -351,7 +352,15 @@ public class SceneManager {
         switch (sceneName) 
         {
             case ACCESS_PAGE -> {
+                if(EmotionalSongs.getInstance().account != null) {
+                    ApplicationAccessController cont = (ApplicationAccessController)loadedControllers.get(1);
+                    cont.userName.setText(EmotionalSongs.getInstance().account.getEmail());
 
+                    //è cripta la password
+                    //cont.password.setText(EmotionalSongs.getInstance().account.getPassword());
+                }
+                //EmotionalSongs.getInstance().account = null;
+            
             }
             case REGISTRATION_PAGE -> {
 

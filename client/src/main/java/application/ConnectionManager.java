@@ -229,7 +229,7 @@ public class ConnectionManager extends UnicastRemoteObject implements ClientServ
 
 	@Override
 	public void testConnection() throws RemoteException {
-		System.out.println("server request");
+		//System.out.println("server request");
 	}
 
 	@Override

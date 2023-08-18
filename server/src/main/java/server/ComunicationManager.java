@@ -37,6 +37,7 @@ import database.PredefinedSQLCode.Tabelle;
 import interfaces.ClientServices;
 import interfaces.ServerServices;
 import objects.Account;
+import objects.Album;
 import objects.Song;
 import utility.WaithingAnimationThread;
 
@@ -84,7 +85,7 @@ public class ComunicationManager extends Thread implements ServerServices
 
 			terminal.printInfo_ln("Exporting objects");
 			ServerServices services = (ServerServices) UnicastRemoteObject.exportObject(this, 0);
-			registry.rebind(ComunicationManager.SERVICE_NAME, services);
+			//registry.rebind(ComunicationManager.SERVICE_NAME, services);
 			
 			try {Thread.sleep(ThreadLocalRandom.current().nextInt(400, 1000));} catch (Exception e) {}
 		
@@ -114,6 +115,8 @@ public class ComunicationManager extends Thread implements ServerServices
 
 			terminal.setAddTime(true);
 			terminal.startWaithing(Terminal.MessageType.INFO + " Server Running", WaithingAnimationThread.Animation.DOTS);
+
+			registry.rebind(ComunicationManager.SERVICE_NAME, services);
 
 			int index = 0;
 			while (!exit) 
@@ -210,6 +213,14 @@ public class ComunicationManager extends Thread implements ServerServices
 		return "Host " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET + " requested function:" + Terminal.Color.CYAN_BOLD_BRIGHT + "\"" + function + "\"" + Terminal.Color.RESET;
 	}
 
+	private void printError(Exception e) {
+		try {
+			Terminal.getInstance().printError_ln("Host " + Terminal.Color.MAGENTA + RemoteServer.getClientHost() + Terminal.Color.RESET + " error: " + e);
+		} catch (ServerNotActiveException e1) {
+			e1.printStackTrace();
+		}
+	}
+
 
 	@Override
 	public Account getAccount(String Email, String password) throws RemoteException, InvalidPasswordException, InvalidUserNameException {
@@ -243,8 +254,16 @@ public class ComunicationManager extends Thread implements ServerServices
 		String clientHost = "";
 		
 		try {
-			clientHost = RemoteServer.getClientHost();
-			Terminal.getInstance().printInfo_ln("Host " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET + " requested function: MostPopularSongs("+limit+ ", " + offset +")");
+			new Thread(() ->{
+				String clientHost2;
+				try {
+					clientHost2 = RemoteServer.getClientHost();
+					Terminal.getInstance().printInfo_ln("Host " + Terminal.Color.MAGENTA + clientHost2 + Terminal.Color.RESET + " requested function: MostPopularSongs("+limit+ ", " + offset +")");
+				} catch (ServerNotActiveException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}).start();
 			return QueriesManager.getTopPopularSongs(limit, offset);
 		} 
 		catch (Exception e) {
@@ -266,7 +285,14 @@ public class ComunicationManager extends Thread implements ServerServices
 		
 		try {
 			clientHost = RemoteServer.getClientHost();
-			Terminal.getInstance().printInfo_ln(formatFunctionRequest("addAccount()"));
+			new Thread(() ->{
+				try {
+					Terminal.getInstance().printInfo_ln(formatFunctionRequest("addAccount()"));
+				} catch (ServerNotActiveException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}).start();
 
 
 			colonne_account.put(Colonne.NAME, name);
@@ -301,5 +327,45 @@ public class ComunicationManager extends Thread implements ServerServices
 		}
 
 		return account;
+	}
+
+
+	@Override
+	public ArrayList<Album> getRecentPublischedAlbum(long limit, long offset, int threshold) throws RemoteException {
+
+		long startTime = System.nanoTime();  
+		ArrayList<Album> result = new ArrayList<>();
+
+		
+		try {
+			terminal.printRequest_ln(formatFunctionRequest("getRecentPublischedAlbum(limit: " + limit + ", offset: " + offset + ", threshold: " + threshold + ")"));
+			result = QueriesManager.getRecentPublischedAlbum(limit, offset, threshold);
+			
+			// ... the code being measured ...    
+			long estimatedTime = System.nanoTime() - startTime;
+			double seconds = (double)estimatedTime / 1000000000.0;
+
+			new Thread(() ->{
+				terminal.printInfo_ln("getRecentPublischedAlbum(limit: " + limit + ", offset: " + offset + ", threshold: " + threshold + ")" + " - " + seconds + " s");
+			}).start();
+			
+			
+			//terminal.printInfo_ln("getRecentPublischedAlbum(limit: " + limit + ", offset: " + offset + ", threshold: " + threshold + ")");
+			//terminal.printInfo_ln("getRecentPublischedAlbum(limit: " + limit + ", offset: " + offset + ", threshold: " + threshold + ")");
+			//terminal.printInfo_ln("getRecentPublischedAlbum(limit: " + limit + ", offset: " + offset + ", threshold: " + threshold + ")");
+			//
+			
+		
+		}
+		catch (SQLException e) {
+			printError(e);
+			e.printStackTrace();	
+		}
+		catch (Exception e) {
+			printError(e);
+			e.printStackTrace();
+		}
+
+		return result;
 	}
 }
