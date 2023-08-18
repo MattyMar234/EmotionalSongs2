@@ -17,14 +17,12 @@ public class Comment_controller implements Initializable, ControllerFunctions{
 
     @Override
     public void injectData(Object... data) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'injectData'");
+        
     }
 
     @Override
     public void init(Object... data) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'init'");
+
     }
 
     @Override
