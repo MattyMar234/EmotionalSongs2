@@ -12,6 +12,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 import objects.Song;
@@ -20,6 +21,7 @@ public class RowContainerController extends ControllerBase implements Initializa
 
     @FXML public HBox Hbox;
     @FXML public Label title;
+    @FXML public AnchorPane anchor;
 
     private ArrayList<ElementContainer> displayElementContainerList = new ArrayList<ElementContainer>();
     private SceneManager sceneManager;
@@ -40,8 +42,11 @@ public class RowContainerController extends ControllerBase implements Initializa
     }
 
 
-    public void init(String str, int elementNumber) {
+    public void init(String str, int elementNumber, double size) {
 
+        anchor.setPrefWidth(size);
+        anchor.setMinWidth(size);
+        
         for(int i = 0; i < elementNumber; i++) {
            try {
                 ElementContainer controller = (ElementContainer) sceneManager.injectScene("ElementContainer.fxml", Hbox, new ElementContainer());

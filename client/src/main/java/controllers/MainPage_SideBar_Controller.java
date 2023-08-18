@@ -11,6 +11,7 @@ import java.util.ResourceBundle;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import application.EmotionalSongs;
+import application.SceneManager;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
@@ -198,8 +199,12 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
 
     @FXML
     public void tryLogin(MouseEvent event) {
-
+        if(emotionalSongs.account == null) {
+            SceneManager.getInstance().showScene(SceneManager.SceneName.ACCESS_PAGE);
+        }
     }
+        
+    
 
     @FXML
     public void viewUserInformation(MouseEvent event) {

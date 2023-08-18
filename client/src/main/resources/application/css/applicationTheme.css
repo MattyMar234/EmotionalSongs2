@@ -57,7 +57,7 @@
 
 #OrangeButton:hover {
     -fx-background-color: linear-gradient(to right, #eeea00, #f18a04);
-    -fx-background-color: linear-gradient(to top, #1a1900, #eeea00);
+    -fx-background-color: linear-gradient(to top, #030300, #eeea00);
     -fx-font-size: 15;
     
 }
@@ -65,11 +65,28 @@
 
 /*======================== LABELS =====================*/
 
-/*.label {
+.Label-Style1{
     -fx-font-weight: Bold;
     -fx-text-fill: white;
-    -fx-font-size: 15;
-}*/
+    -fx-font-size: 14;
+}
+.Label-Style2{
+    -fx-font-weight: Bold;
+    -fx-text-fill: white;
+    -fx-font-size: 17;
+}
+
+.Label-CategoryTitle{
+    -fx-font-weight: Bold;
+    -fx-text-fill: white;
+    -fx-font-size: 24;
+}
+
+.Label-DisplayedeElement-Title{
+    -fx-font-weight: Bold;
+    -fx-text-fill: white;
+    -fx-font-size:48;
+}
 
 #error_label {
     -fx-text-fill:  #F14934;
@@ -162,6 +179,15 @@
 
 .ElementContainer-Background:hover {
     -fx-background-color: #282828;
+}
+
+
+.scroll-pane{
+    -fx-background-color:transparent;
+}
+
+ .scroll-pane > .viewport {  
+    -fx-background-color: transparent;
 }
 
 

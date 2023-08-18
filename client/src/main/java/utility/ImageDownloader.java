@@ -14,6 +14,8 @@ import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import application.ObjectsCache;
+
 public class ImageDownloader extends Thread 
 {
     private BlockingQueue<Node> queue = new LinkedBlockingDeque<>();
@@ -61,6 +63,9 @@ public class ImageDownloader extends Thread
                 try {
                     System.out.println(node.url);
                     Image img = download_Image_From_Internet(node.url);
+                    
+                    ObjectsCache.addImage(node.url, img);
+                    
                     Platform.runLater(() -> {node.image.setImage(img);});
                 }
                 catch (Exception e) {

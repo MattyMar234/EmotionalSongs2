@@ -32,6 +32,8 @@ public class SceneManager {
     private static final String MainPage_home_path = "MainPage_Home.fxml";
     private static final String RegistrationPage_path = "UserRegistration.fxml";
     private static final String ElementDisplay_path = "MainPage_ElementDisplayer.fxml";
+    private static final String BaseContainer_path = "ApplicationBase.fxml";
+    private static final String Comment_path = "Comment.fxml";
 
     private int theme = 0;
     private ArrayList<ControllerBase> loadedControllers = new ArrayList<>();
@@ -44,13 +46,15 @@ public class SceneManager {
 
     public enum SceneName {
 
-        ACCESS_PAGE(ApplicationState.ACCESS_PAGE,AccessPage_path),
-        REGISTRATION_PAGE(ApplicationState.REGISTRATION_PAGE ,RegistrationPage_path),
-        HOME_PAGE(ApplicationState.MAIN_PAGE, MainPage_SideBar_path, MainPage_home_path),
-        DISPLAY_ELEMENT_PAGE(ApplicationState.MAIN_PAGE, MainPage_SideBar_path, ElementDisplay_path),
+        ACCESS_PAGE(ApplicationState.ACCESS_PAGE,BaseContainer_path, AccessPage_path),
+        REGISTRATION_PAGE(ApplicationState.REGISTRATION_PAGE ,BaseContainer_path, RegistrationPage_path),
+        HOME_PAGE(ApplicationState.MAIN_PAGE, BaseContainer_path, MainPage_SideBar_path, MainPage_home_path),
+        DISPLAY_ELEMENT_PAGE(ApplicationState.MAIN_PAGE, BaseContainer_path, MainPage_SideBar_path, ElementDisplay_path),
         PLAYLISTS_PAGE(ApplicationState.MAIN_PAGE,""),
         ACCOUNT_PAGE(ApplicationState.MAIN_PAGE,""),
-        COMMENT_PAGE(ApplicationState.MAIN_PAGE,"");
+        
+        
+        COMMENT_ELEMENT(ApplicationState.MAIN_PAGE,Comment_path);
 
 
         private String[] file_array;
@@ -118,7 +122,7 @@ public class SceneManager {
         //System.out.println(EmotionalSongs.class.getResource(name + ((!name.endsWith(".fxml")) ? ".fxml" : "")));
         loader.setLocation(EmotionalSongs.class.getResource(name + ((!name.endsWith(".fxml")) ? ".fxml" : "")));
         //print hereee
-        System.out.println();
+        //System.out.println();
       
 
         return loader;
@@ -130,12 +134,12 @@ public class SceneManager {
         if(anchor instanceof BorderPane) {
             BorderPane temp = (BorderPane)anchor;
             temp.getChildren().removeAll();
-            temp.setCenter((AnchorPane)view);   
+            temp.setCenter(view);   
         }
         else if(anchor instanceof AnchorPane) {
             AnchorPane temp = (AnchorPane)anchor; 
             temp.getChildren().removeAll(); 
-            temp.getChildren().add((AnchorPane)view);
+            temp.getChildren().add(view);
         }
         else if(anchor instanceof VBox) {
             VBox temp = (VBox)anchor;  
@@ -203,8 +207,7 @@ public class SceneManager {
         Pair<Scene,FXMLLoader> output = null;
 
         //String path = PathFormatter.formatPath(EmotionalSongs.FXML_folder_path + "\\" + name + ((!name.endsWith(".fxml")) ? ".fxml" : ""));
-        //System.out.println("file requested: " + name);
-    
+        System.out.println("file requested: " + name);
 
         try {
             
@@ -237,12 +240,8 @@ public class SceneManager {
         return output;    
     }
 
-    private void showSceneBase() {
-        Pair<Scene,FXMLLoader> result = setStageScene("ApplicationBase.fxml");
-        FXMLLoader loader = result.getValue1();
+    
 
-        //this.sceneBase = loader.getController();
-    }
 
     /**
     * 
@@ -262,27 +261,41 @@ public class SceneManager {
     }
 
 
-    private ArrayList<ControllerBase> executeShowScene(SceneName sceneName, Object[] args) {
+    private ArrayList<ControllerBase> executeShowScene(SceneName sceneName, Object[] args) 
+    {
+        
+        //==================================== Verifica degli stati ====================================//
         //offset del file
         int fileOffset = 0;
         
-        
-        //se non ho ancora uno stato oppure devo caricare uno stato differente
-        if(applicationState == null || applicationState != sceneName.getCorrespondentState()) {
+        //se non ho ancora uno stato
+        if(applicationState == null ) {
+            applicationState = sceneName.getCorrespondentState(); 
+        }
+        //se devo caricare uno stato differente
+        else if(applicationState != sceneName.getCorrespondentState()) {
             applicationState = sceneName.getCorrespondentState(); //ottengo lo stato a cui appartiene la scena
-            loadedControllers.clear();
+            ControllerBase c = (ControllerBase)loadedControllers.get(0);
+            fileOffset = 1;
         }
         //se devo modificare la scena di uno stesso stato
         else if(applicationState == ApplicationState.MAIN_PAGE && applicationState == sceneName.getCorrespondentState()) {
             applicationState = sceneName.getCorrespondentState();
-            ControllerBase c = (ControllerBase)loadedControllers.get(0);
-            loadedControllers.clear();
-            loadedControllers.add(c);
-            fileOffset = 1;
+            fileOffset = 2;  
+        }
+
+        ArrayList<ControllerBase> temp = new ArrayList<ControllerBase>();
+        for(int i = 0; i < fileOffset; i++) {
+            temp.add((ControllerBase)loadedControllers.get(i));
         }
         
+        loadedControllers.clear();
+        loadedControllers = temp;
 
+        //==================================== Caricamento file ====================================//
+        
         for (int i = fileOffset; i < sceneName.getFilePath().length; i++) {
+            System.out.println(i);
             String file = sceneName.getFilePath()[i];
 
             //se sono la scena di base
@@ -309,6 +322,8 @@ public class SceneManager {
             }
         }
 
+
+        //==================================== verfica passaggio args... ====================================//
         //verifico se ho dei parametri da passare al controller
         if(args.length > 0 ) {
             //verifico se implementa l'interfaccia
@@ -321,13 +336,16 @@ public class SceneManager {
                 controller.injectData(args);
             }
             else {
+                //se ho dei parametri che non posso passare
                 throw new UnsupportedOperationException("this controller not implements: " + ControllerFunctions.class.getName());
             }
         }
-        
 
 
-        
+        //==================================== impostazione parametri ====================================//
+
+        WindowContainerController containerControlle = (WindowContainerController)loadedControllers.get(0);
+
         //se voglio fare delle operazioni aggiuntive per ogni scena
         //per accedere a un specifico controller uso: "loadedControllers.get(index)"
         switch (sceneName) 
@@ -339,7 +357,8 @@ public class SceneManager {
 
             }
             case HOME_PAGE -> {
-                
+                containerControlle.anchor.setMinWidth(1400);
+                containerControlle.anchor.setMinHeight(1000);  
             }
             default -> {
                 //throw new IllegalArgumentException("Unexpected value: " + sceneName);

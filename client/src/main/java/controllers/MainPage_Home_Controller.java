@@ -47,7 +47,7 @@ public class MainPage_Home_Controller extends ControllerBase implements Initiali
             try {
                 RowContainerController controller = (RowContainerController) sceneManager.injectScene("RowContainer.fxml", scrollPaneVBox, new RowContainerController());
                 rowControllers.add(controller);
-                controller.init("Top 10 song", 10);
+                controller.init("Top 10 song", 10, scrollPane.getPrefWidth());
             } 
             catch (RemoteException e) {
                 e.printStackTrace();
@@ -56,6 +56,8 @@ public class MainPage_Home_Controller extends ControllerBase implements Initiali
                 e.printStackTrace();
             }
         } 
+
+        
 
         new Thread(() -> { // Lambda Expression
             //Platform.runLater(() -> { // Lambda Expression

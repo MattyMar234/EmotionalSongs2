@@ -27,7 +27,7 @@
                      <children>
                         <HBox alignment="CENTER_LEFT" prefHeight="70.0" prefWidth="438.0" spacing="6.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
-                              <Label text=" IP SERVER:">
+                              <Label styleClass="Label-Style1" text=" IP SERVER:">
                                  <HBox.margin>
                                     <Insets left="8.0" />
                                  </HBox.margin>
@@ -40,7 +40,7 @@
                                     <Font size="13.0" />
                                  </font>
                               </TextField>
-                              <Label prefHeight="19.0" prefWidth="47.0" text="PORT:">
+                              <Label prefHeight="19.0" prefWidth="47.0" styleClass="Label-Style1" text="PORT:">
                                  <HBox.margin>
                                     <Insets left="10.0" />
                                  </HBox.margin>
@@ -52,7 +52,7 @@
                               </TextField>
                               <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="70.0" prefWidth="11.0" />
                               <FontIcon fx:id="connectionIcon" iconColor="WHITE" iconLiteral="mdi2c-connection" iconSize="24" wrappingWidth="27.0" />
-                              <Label fx:id="connectionStatus" text="Label" />
+                              <Label fx:id="connectionStatus" styleClass="Label-Style1" text="Label" />
                            </children>
                         </HBox>
                      </children>
@@ -133,7 +133,7 @@
                                                 <Button id="GreenButton" fx:id="LoginButton" layoutX="80.0" layoutY="279.0" mnemonicParsing="false" onAction="#accedi_Account" prefHeight="42.0" prefWidth="313.0" text="Accedi all'Account" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0" AnchorPane.topAnchor="272.0" />
                                                 <Button id="GreenButton" fx:id="NoAccountButton" layoutX="80.0" layoutY="347.0" mnemonicParsing="false" onAction="#NoAccount" prefHeight="42.0" prefWidth="313.0" text="Continua senza account" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0" AnchorPane.topAnchor="342.0" />
                                                 <AnchorPane id="divider" layoutY="235.0" prefHeight="13.0" prefWidth="419.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="422.0" />
-                                                <Label id="NewAccountLabel" fx:id="NewAccount" layoutX="175.0" layoutY="411.0" onMouseClicked="#CreateNewAccount" prefHeight="19.0" prefWidth="149.0" text="Crea un Account" textAlignment="CENTER" textOverrun="WORD_ELLIPSIS" underline="true" AnchorPane.topAnchor="462.0">
+                                                <Label id="NewAccountLabel" fx:id="NewAccount" alignment="CENTER" layoutX="175.0" layoutY="411.0" onMouseClicked="#CreateNewAccount" prefHeight="19.0" prefWidth="149.0" text="Crea un Account" textAlignment="CENTER" textOverrun="WORD_ELLIPSIS" underline="true" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="462.0">
                                                    <font>
                                                       <Font size="13.0" />
                                                    </font>

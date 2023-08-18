@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.ResourceBundle;
 
 import application.EmotionalSongs;
+import application.ObjectsCache;
 import application.SceneManager;
 import javafx.animation.FillTransition;
 import javafx.application.Platform;
@@ -51,10 +52,23 @@ public class ElementContainer extends ControllerBase implements Initializable{
         Platform.runLater(() -> { // Lambda Expression
             if(displayedElement instanceof Song) 
             {
-                Song s = (Song) displayedElement;
-                title.setText(s.getTitle());
+                Song song = (Song) displayedElement;
+                title.setText(song.getTitle());
 
-                EmotionalSongs.imageDownloader.addImageToDownload(s.getImage(MyImage.ImageSize.S300x300).getUrl(), image);
+                Image img = ObjectsCache.getImage(song.getImage(MyImage.ImageSize.S300x300).getUrl());
+
+                if(img == null) {
+                    String imgURL = song.getImage(MyImage.ImageSize.S300x300).getUrl();
+                    EmotionalSongs.imageDownloader.addImageToDownload(imgURL, image);
+                    //EmotionalSongs.imageDownloader.addImageToDownload(song.getImage(MyImage.ImageSize.S300x300).getUrl(), image);
+                    
+                }
+                else {
+                   
+                    image.setImage(img);
+                }
+
+                
                 
                 /*new Thread(() -> { // Lambda Expression
                     System.out.println(s.getImage("300x300").getUrl());
@@ -114,7 +128,7 @@ public class ElementContainer extends ControllerBase implements Initializable{
         }*/ 
 
             ArrayList<ControllerBase> loadedControllers = SceneManager.getInstance().showScene(SceneManager.SceneName.DISPLAY_ELEMENT_PAGE, displayedElement);
-            MainPage_ElementDisplayer_Controller Displayer_Controller = (MainPage_ElementDisplayer_Controller) loadedControllers.get(1);
+            //MainPage_ElementDisplayer_Controller Displayer_Controller = (MainPage_ElementDisplayer_Controller) loadedControllers.get(1);
 
         /*else if(displayedElement instanceof Artist) {
 

@@ -24,6 +24,7 @@ public class WindowContainerController extends ControllerBase implements Initial
     public void initialize(URL location, ResourceBundle resources) {
         anchor.setMinWidth(800);
         anchor.setMinHeight(900);
+        anchor_for_injectScene = anchor;
     }
 
     /*public void setAccessPage() {
