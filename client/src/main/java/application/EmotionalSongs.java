@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -71,6 +72,13 @@ public class EmotionalSongs extends Application
         SceneManager sceneManager = SceneManager.getInstance();
         sceneManager.setStage(stage);
         this.stage = stage;
+
+        //stage.setTitle();
+        stage.getIcons().add(new Image(PathFormatter.formatPath(ImageFolder + "\\generic\\icon.png")));
+        
+        
+      
+
 
         //stage.initStyle(StageStyle.UTILITY);
 

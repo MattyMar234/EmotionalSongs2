@@ -10,13 +10,13 @@
 
 <AnchorPane prefHeight="691.0" prefWidth="647.0" stylesheets="@css/ApplicationTheme.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainPage_ElementDisplayer_Controller">
    <children>
-      <AnchorPane fx:id="linearColorAnchorPane" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="551.0" prefWidth="647.0" style="-fx-background-color: linear-gradient(to top, #030300, #eeea00);" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <AnchorPane fx:id="linearColorAnchorPane" minHeight="-Infinity" prefHeight="551.0" prefWidth="647.0" style="-fx-background-color: linear-gradient(to top, #030300, #eeea00);" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
       <AnchorPane fx:id="blackColorAnchorPane" layoutY="551.0" prefHeight="140.0" prefWidth="647.0" style="-fx-background-color: #030300;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="551.0" />
-      <ScrollPane layoutY="150.0" prefHeight="541.0" prefWidth="647.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <ScrollPane fitToWidth="true" layoutY="150.0" prefHeight="541.0" prefWidth="647.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <content>
             <VBox prefHeight="676.0" prefWidth="647.0" style="-fx-background-color: trasparent;">
                <children>
-                  <AnchorPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="280.0" prefWidth="647.0" style="-fx-background-color: trasparent;">
+                  <AnchorPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="280.0" prefWidth="647.0" style="-fx-background-color: trasparent;">
                      <children>
                         <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="70.0">
                            <children>
@@ -36,8 +36,8 @@
                         </ImageView>
                      </children>
                   </AnchorPane>
-                  <AnchorPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="80.0" prefWidth="647.0" />
-                  <VBox fx:id="elementContainer" prefHeight="200.0" prefWidth="100.0" />
+                  <AnchorPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="80.0" prefWidth="647.0" style="-fx-background-color: transparent;" />
+                  <VBox fx:id="elementContainer" prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: transparent;" />
                </children>
             </VBox>
          </content>

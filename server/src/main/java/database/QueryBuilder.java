@@ -291,7 +291,7 @@ public class QueryBuilder {
         sb.append(" AND ");
         sb.append(PredefinedSQLCode.Colonne.PROVINCE_NAME.getName() + " = '" + provincia + "'");
     
-        terminal.printQuery_ln(sb.toString());
+        terminal.printQueryln(sb.toString());
         return sb.toString();
     }
     
@@ -305,7 +305,7 @@ public class QueryBuilder {
         sb.append(" WHERE ");
         sb.append(Colonne.EMAIL.getName() + " = '" + Email + "';");
 
-        terminal.printQuery_ln(sb.toString());
+        terminal.printQueryln(sb.toString());
         return sb.toString();
 
     }
@@ -320,7 +320,7 @@ public class QueryBuilder {
         sb.append(" WHERE ");
         sb.append(Colonne.NICKNAME.getName() + " = '" + nickname + "';");
 
-        terminal.printQuery_ln(sb.toString());
+        terminal.printQueryln(sb.toString());
         return sb.toString();
     }
 

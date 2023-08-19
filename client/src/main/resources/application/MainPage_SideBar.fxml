@@ -19,14 +19,14 @@
 
 <!--          -->
 
-<BorderPane id="main" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="400" minWidth="900" prefHeight="1000.0" prefWidth="1117.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainPage_SideBar_Controller">
+<BorderPane id="main" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainPage_SideBar_Controller">
    <stylesheets>
       <URL value="@css/homepage.css" />
       <URL value="@css/MainPage.css" />
       <URL value="@css/ApplicationTheme.css" />
    </stylesheets>
    <left>
-      <AnchorPane prefHeight="1000.0" prefWidth="280.0" BorderPane.alignment="CENTER">
+      <AnchorPane BorderPane.alignment="CENTER">
          <children>
             <VBox id="lsidebar" fx:id="lsidebar" prefHeight="1000.0" prefWidth="263.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       
@@ -53,7 +53,7 @@
                </Button>
       
                <!-- Playlist -->
-               <Button id="playlist" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#sidebtnClick" text="Playlist" visible="${controller.isLogged}">
+               <Button id="playlist" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#sidebtnClick" text="Playlist">
                <graphic>
                      <FontIcon iconLiteral="mdi2p-playlist-music" />
                   </graphic>
@@ -80,9 +80,9 @@
       </AnchorPane>
    </left>
    <center>
-      <BorderPane fx:id="anchor" prefHeight="1000.0" prefWidth="750.0" BorderPane.alignment="CENTER">
+      <BorderPane fx:id="anchor" BorderPane.alignment="CENTER">
          <top>
-            <AnchorPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="70.0" prefWidth="712.0" BorderPane.alignment="CENTER">
+            <AnchorPane prefHeight="70.0" prefWidth="712.0" BorderPane.alignment="CENTER">
                <children>
                   <VBox id="elementContainer" alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="56.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>

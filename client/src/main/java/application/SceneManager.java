@@ -181,15 +181,17 @@ public class SceneManager {
     * @param controllerFactory il costruttore della classe controller del file fxml
     * @return riferimento della classe controller del file fxml caricato.
     */ 
-    public Object injectScene(String sceneName, Object anchor, Object controller) throws IOException
+    public Object injectScene(String sceneName, Object anchor, final Object controller) throws IOException
     //public Object injectScene(String sceneName, Object anchor, Callback<Class<?>, Object> controllerFactory) throws IOException 
     {
         FXMLLoader loader = null;
+
 
         try {
             loader = getSceneLoader(sceneName);
             Node view = loader.load();
             loader.setControllerFactory(controllerClass -> {return controller;});//controllerClass -> {return controller;}
+            //loader.setController(controller);
             inject_FXML_code(view, anchor);
         } 
         catch (IOException e) {
@@ -212,7 +214,7 @@ public class SceneManager {
 
         try {
             
-            Scene scene = null;
+            Scene scene = null; 
             FXMLLoader loader = getSceneLoader(name);
            
             scene = new Scene(loader.load());
@@ -350,8 +352,9 @@ public class SceneManager {
         //se voglio fare delle operazioni aggiuntive per ogni scena
         //per accedere a un specifico controller uso: "loadedControllers.get(index)"
         switch (sceneName) 
-        {
+        { 
             case ACCESS_PAGE -> {
+                EmotionalSongs.getInstance().stage.setMinWidth(800);
                 if(EmotionalSongs.getInstance().account != null) {
                     ApplicationAccessController cont = (ApplicationAccessController)loadedControllers.get(1);
                     cont.userName.setText(EmotionalSongs.getInstance().account.getEmail());
@@ -359,6 +362,8 @@ public class SceneManager {
                     //è cripta la password
                     //cont.password.setText(EmotionalSongs.getInstance().account.getPassword());
                 }
+
+                
                 //EmotionalSongs.getInstance().account = null;
             
             }
@@ -366,8 +371,9 @@ public class SceneManager {
 
             }
             case HOME_PAGE -> {
-                containerControlle.anchor.setMinWidth(1400);
-                containerControlle.anchor.setMinHeight(1000);  
+                EmotionalSongs.getInstance().stage.setMinWidth(1000);
+                //containerControlle.anchor.setMinWidth(1400);
+                //containerControlle.anchor.setMinHeight(1000);  
             }
             default -> {
                 //throw new IllegalArgumentException("Unexpected value: " + sceneName);

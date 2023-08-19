@@ -46,8 +46,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        for(int i = 0; i < 10; i++)
-            SceneManager.getInstance().injectScene("Comment.fxml", elementContainer);
+        
         
     }
 
@@ -66,6 +65,13 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
             String spotifyUrl = "";
 
             if(displayedElement instanceof Song) {
+
+                for(int i = 0; i < 1; i++) {
+                    ((SongDetails_controller)SceneManager.getInstance().injectScene("SongDetails.fxml", elementContainer)).init();
+
+                }
+                    
+
                 final Song song = (Song) displayedElement;
                 labelName.setText(song.getTitle());
                 labelType.setText("Song");
@@ -92,7 +98,11 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                 EmotionalSongs.imageDownloader.addImageToDownload(imgURL, image);  
             }
             else {
-                String color = ColorToHex(getAverageColor(img));
+                Color everegedColor = getAverageColor(img);
+
+                everegedColor = brightenColor(everegedColor, 0.1);
+
+                String color = ColorToHex(everegedColor);
                 linearColorAnchorPane.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");");
                 image.setImage(img);
             }
@@ -165,6 +175,15 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
 
         // Create a color from the average components
         return new Color(averageRed, averageGreen, averageBlue, 1);
+    }
+
+
+    public static Color brightenColor(Color originalColor, double factor) {
+        double r = Math.min(originalColor.getRed() + factor, 1.0);
+        double g = Math.min(originalColor.getGreen() + factor, 1.0);
+        double b = Math.min(originalColor.getBlue() + factor, 1.0);
+
+        return new Color(r, g, b, originalColor.getOpacity());
     }
     
 

@@ -15,9 +15,6 @@ import java.util.Hashtable;
 import database.DatabaseManager;
 import java.awt.Desktop;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.io.File;
 
 
@@ -34,23 +31,7 @@ public class Terminal extends Thread
     private App main;
     private WaithingAnimationThread waithingThread = null;
     private jline.Terminal jlineTerminal = jline.TerminalFactory.get();
-    private Thread queueThread;
-
-    private BlockingQueue<QNode> printsQueue = new LinkedBlockingQueue<QNode>();
-
-    private class QNode {
-        MessageType type;
-        String message;
-        Color MessageColor;
-
-        public QNode(MessageType type, String message, Color MessageColor) {
-            this.type = type;
-            this.message = message;
-            this.MessageColor = MessageColor;
-        }
-    }
-
-    
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
     
     public enum Color {
         //Color end string, color reset
@@ -204,21 +185,10 @@ public class Terminal extends Thread
         System.out.print("\033\143");  
         System.out.print("\033[H\033[2J");
         //System.out.print("\033[8;86;140t");  
-        System.out.flush();  
-        
         jlineTerminal = jline.TerminalFactory.get();
         jlineTerminal.setEchoEnabled(true);
 
-        queueThread = new Thread(() -> {
-
-            super.setName("terminal printer");
-            while(true) {
-                setPriority(MAX_PRIORITY);
-                printOnTerminal_threadFunction();
-            }  
-        });
-
-        queueThread.start();
+        System.out.flush();   
     }    
 
     public static Terminal getInstance() 
@@ -229,7 +199,7 @@ public class Terminal extends Thread
 
             try {Thread.sleep(1000);} catch (InterruptedException e) {}
             
-            Terminal.instance.printInfo_ln("Application Running...");
+            Terminal.instance.printInfoln("Application Running...");
             Terminal.instance.ready = true;
         }
         return Terminal.instance;
@@ -245,15 +215,14 @@ public class Terminal extends Thread
     {
         App main = App.getInstance();
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        println("type \"help\" to see available commands");
+        System.out.println("type \"help\" to see available commands");
 
         while(this.fechUserInputs) 
         {
             try {
                 printArrow();
                 String command = in.readLine();
-                println("");
-                while(printsQueue.size() == 0);
+                System.out.println();
                 System.out.flush();
                 
                 
@@ -264,16 +233,14 @@ public class Terminal extends Thread
 
                     do {
                         if(main.isDatabaseConnected()) {
-                            this.jlineTerminal.setEchoEnabled(false);
                             main.runServer();
                             System.console().readLine();
                             main.StopServer();
-                            this.jlineTerminal.setEchoEnabled(true);
                             setAddTime(false);
                             break;
                         }
                         else {
-                            printInfo_ln("The database is not connected");
+                            printInfoln("The database is not connected");
                             main.setDatabaseConnection();
                         }   
                     }
@@ -293,11 +260,11 @@ public class Terminal extends Thread
                         if(askYesNo(ask))
                             clearDatabase();
                         else                        
-                            printInfo_ln("operation cancelled");
+                            printInfoln("operation cancelled");
                         
                     }
                     else {
-                        printInfo_ln("The database is not connected");
+                        printInfoln("The database is not connected");
                         main.setDatabaseConnection();
                     }        
                 }
@@ -315,42 +282,42 @@ public class Terminal extends Thread
                 }
                 else if(command.equalsIgnoreCase(Command.CONNECT.getCommandValue())) {
                     if(main.isDatabaseConnected()) {
-                        printInfo_ln("Database is already connected");
-                        printInfo_ln("terminate last connection");
+                        printInfoln("Database is already connected");
+                        printInfoln("terminate last connection");
                         DatabaseManager.getInstance().close();
                     }
                     
                     main.setDatabaseConnection();
                 }
                 else if(command.equalsIgnoreCase(Command.CHECK.getCommandValue())) {
-                    printInfo_ln("start database integrity test...");
+                    printInfoln("start database integrity test...");
                     
                     if(main.isDatabaseConnected()) {
                         main.DatabaseIntegrityTest();
                     }
                     else {
-                        printError_ln("The database is not connected");
+                        printErrorln("The database is not connected");
                     } 
                 
                 }
                 else if( !(command.equals("\n")||command.equals("\r")||command.equals("\n\r")||command.equals("\r\n"))) {
-                   printError_ln("Unknown command \"" + Color.CYAN_BOLD_BRIGHT + command + Color.RESET + "\""); 
+                   printErrorln("Unknown command \"" + Color.CYAN_BOLD_BRIGHT + command + Color.RESET + "\""); 
                 }
                 printSeparator();
-                println("type \"help\" to see available commands");
+                System.out.println("type \"help\" to see available commands");
                 
             }
             catch (IOException e) {
                 e.printStackTrace();
-                println(e.toString());
+                System.out.println(e);
             }
             catch (SQLException e) {
                 e.printStackTrace();
-                println(e.toString());
+                System.out.println(e);
             }
             catch (Exception e) {
                 e.printStackTrace();
-                println(e.toString());
+                System.out.println(e);
             }
         }
     }
@@ -361,7 +328,7 @@ public class Terminal extends Thread
 
     public void editSettings() 
     {
-        printInfo_ln("opening file " + App.FILE_SETTINGS_PATH);
+        printInfoln("opening file " + App.FILE_SETTINGS_PATH);
         Desktop desktop = Desktop.getDesktop();
         try {
             desktop.open(new File(App.FILE_SETTINGS_PATH));
@@ -418,19 +385,20 @@ public class Terminal extends Thread
                 if(verificaTipologia) {
                     verificaTipologia = false;
 
-                    for(int i = 0; i < 64; i++) print("-");
+                    for(int i = 0; i < 64; i++) System.out.print("-");
                     if (sql.toUpperCase().contains("CREATE") && sql.toUpperCase().contains("TABLE")) {
-                        print(" [TABLE CREATION] ");
+                        System.out.print(" [TABLE CREATION] ");
                     }
                     else if (sql.toUpperCase().contains("DROP") && sql.toUpperCase().contains("TABLE")) {
-                        print(" [TABLE DROPPING] ");
+                        System.out.print(" [TABLE DROPPING] ");
                     }
                     else if (sql.toUpperCase().contains("INSERT")) {
-                        print(" [TABLE INSERTION] ");
+                        System.out.print(" [TABLE INSERTION] ");
                     }
-                    for(int i = 0; i < 64; i++) print("-");
+                    for(int i = 0; i < 64; i++) System.out.print("-");
+                    System.out.println("\n");
                 }
-                println(sql);
+                System.out.println(sql);
             }
         }
     }
@@ -441,14 +409,14 @@ public class Terminal extends Thread
         for (Tabelle table : PredefinedSQLCode.Tabelle.values()) {
             try {
                 this.main.database.submitQuery(PredefinedSQLCode.deleteTable_Queries.get(table));
-                printInfo_ln("Table " + table + " removed");
+                printInfoln("Table " + table + " removed");
             
             } 
             catch (SQLException e) {
                 e.printStackTrace();
             }   
         }
-        printSucces_ln("all tables removed\n");
+        printSuccesln("all tables removed\n");
         return 0;
     }
 
@@ -468,8 +436,6 @@ public class Terminal extends Thread
         } 
         println("");
     }
-
-    
 
     public int getTerminalColumns() 
     {
@@ -556,6 +522,14 @@ public class Terminal extends Thread
         print("> ");
     }
 
+    /*public synchronized void printLogo() {
+        printSeparator();
+        System.out.print(Color.MAGENTA_BOLD_BRIGHT);
+        System.out.print(AsciiArtGenerator.generate("EmotionalSongs Server", AsciiArtGenerator.ASCII_STYLE.BIG_SMUSHING));
+        System.out.print(Color.RESET);
+        printSeparator();
+    }*/
+
     public void printLogo() {
         printSeparator();
 
@@ -572,157 +546,121 @@ public class Terminal extends Thread
         printSeparator();
     }
 
+    private synchronized void printOnTerminal(MessageType type, String message, Color MessageColor) 
+    {
+
+        if(type == null)
+            type = MessageType.NONE;
+
+        if(message == null)
+            message = "";
+
+        LocalDateTime now = LocalDateTime.now();
+        int terminalWidth = this.jlineTerminal.getWidth();
+        String processedString = "";
+
+
+        //avverto il thread
+        //synchronized(this) {
+            if(this.waithingThread != null) {
+                this.waithingThread.pause();
+            }
+        //}
 
     
-
-    private void printOnTerminal_threadFunction() 
-    {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");  
+        if(this.addTime) 
+            processedString = type.toString().replace(":", "(" + dtf.format(now) + ") :") + message;
+        else 
+            processedString = type.toString() + message; 
         
-        synchronized(this) {
-            while(printsQueue.size() == 0) {
-                try {
-                    wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+
+        
+        if (type != MessageType.NONE && processedString.length() > terminalWidth) {
+            int spaceIndex = processedString.lastIndexOf(" ", terminalWidth);
+
+            if (spaceIndex != -1) {
+
+                int endFistPart = spaceIndex;
+
+                String firstPart  = processedString.substring(0, endFistPart);
+                String secondPart = processedString.substring(endFistPart);
+
+                processedString =  firstPart + "\n";
+
+                if(this.addTime) {
+                    processedString += processedString = type.toString().replace(":", "(" + dtf.format(now) + ") :");
+                    processedString += secondPart + '\n';
                 }
             }
         }
+                
+        //QUERY KEY:
+        if(type == MessageType.QUERY) {
+            for (SQLKeyword keyword : SQLKeyword.values()) {
+                String keywordString = keyword.getKeyword();
 
-
-        while(printsQueue.size() > 0) 
-        {
-            QNode node = printsQueue.poll();
-            MessageType type = node.type;
-            String message = node.message; 
-            Color MessageColor = node.MessageColor;
-            
-
-            if(type == null)
-                type = MessageType.NONE;
-
-            if(message == null)
-                message = "";
-
-            LocalDateTime now = LocalDateTime.now();
-            int terminalWidth = this.jlineTerminal.getWidth();
-            String processedString = "";
-
-
-            //avverto il thread
-            synchronized(this) {
-                if(this.waithingThread != null) {
-                    this.waithingThread.pause();
-                }
+                if(processedString.contains(keyword + "\t") || processedString.contains(keyword + " ") || processedString.contains(keyword + "(") || processedString.contains(keyword + ",") || processedString.contains(keyword + ";") || processedString.contains(keyword + "\n"))
+                    processedString = processedString.replaceAll(keywordString, Color.MAGENTA_BOLD_BRIGHT + keywordString + Color.RESET);
             }
-
-        
-            if(this.addTime) 
-                processedString = type.toString().replace(":", "(" + dtf.format(now) + ") :") + message;
-            else 
-                processedString = type.toString() + message; 
-            
-
-            
-            if (type != MessageType.NONE && processedString.length() > terminalWidth) {
-                int spaceIndex = processedString.lastIndexOf(" ", terminalWidth);
-
-                if (spaceIndex != -1) {
-
-                    int endFistPart = spaceIndex;
-
-                    String firstPart  = processedString.substring(0, endFistPart);
-                    String secondPart = processedString.substring(endFistPart);
-
-                    processedString =  firstPart + "\n";
-
-                    if(this.addTime) {
-                        processedString += processedString = type.toString().replace(":", "(" + dtf.format(now) + ") :");
-                        processedString += secondPart + '\n';
-                    }
-                }
-            }
-                    
-            //QUERY KEY:
-            if(type == MessageType.QUERY) {
-                for (SQLKeyword keyword : SQLKeyword.values()) {
-                    String keywordString = keyword.getKeyword();
-
-                    if(processedString.contains(keyword + "\t") || processedString.contains(keyword + " ") || processedString.contains(keyword + "(") || processedString.contains(keyword + ",") || processedString.contains(keyword + ";") || processedString.contains(keyword + "\n"))
-                        processedString = processedString.replaceAll(keywordString, Color.MAGENTA_BOLD_BRIGHT + keywordString + Color.RESET);
-                }
-            }
-            
-            synchronized(this) {
-                if(this.waithingThread != null) {
-                while(!this.waithingThread.isInPause());
-                System.out.print(processedString);
-                this.waithingThread.restart();
-            }
-                else {
-                    System.out.print(processedString);
-                } 
-            }
-             
         }
+        
+        //synchronized(this) {
+        if(this.waithingThread != null) {
+            while(!this.waithingThread.isInPause());
+            System.out.print(processedString);
+            this.waithingThread.restart();
+        }
+        else {
+            System.out.print(processedString);
+        } 
+        //}
+            
     }
 
-    public synchronized void println(String message) {
-        printsQueue.add(new QNode(MessageType.NONE, message + "\n", null));
-        notifyAll();
+    public void println(String message) {
+        printOnTerminal(MessageType.NONE, message + "\n", null);
     }
 
-    public synchronized void printInfo_ln(String message) {
-        printsQueue.add(new QNode(MessageType.INFO, " " + message + "\n", null));
-        notifyAll();
+    public void printInfoln(String message) {
+        printOnTerminal(MessageType.INFO, " " + message + "\n", null);
     }
 
-    public synchronized void printSucces_ln(String message) {
-        printsQueue.add(new QNode(MessageType.SUCCES, " " + message + "\n", null));
-        notifyAll();
+    public void printSuccesln(String message) {
+        printOnTerminal(MessageType.SUCCES, " " + message + "\n", null);
     }
 
-    public synchronized void printError_ln(String message) {
-        printsQueue.add(new QNode(MessageType.ERROR, " " + message + "\n", null));
-        notifyAll();
+    public void printErrorln(String message) {
+        printOnTerminal(MessageType.ERROR, " " + message + "\n", null);
     }
 
-    public synchronized void printRequest_ln(String message) {
-        printsQueue.add(new QNode(MessageType.REQUEST, " " + message + "\n", null));
-        notifyAll();
+    public void printRequestln(String message) {
+        printOnTerminal(MessageType.REQUEST, " " + message + "\n", null);
     }
-    public synchronized void printQuery_ln(String message) {
-        printsQueue.add(new QNode(MessageType.QUERY, " " + message + "\n", null));
-        notifyAll();
+    public void printQueryln(String message) {
+        printOnTerminal(MessageType.QUERY, " " + message + "\n", null);
     }
 
 
-    public synchronized void print(String message) {
-        printsQueue.add(new QNode(MessageType.NONE, message, null));
-        notifyAll();
+    public void print(String message) {
+        printOnTerminal(MessageType.NONE, message, null);
     }
 
-    public synchronized void printInfo(String message) {
-        printsQueue.add(new QNode(MessageType.INFO, " " + message, null));
-        notifyAll();
+    public void printInfo(String message) {
+        printOnTerminal(MessageType.INFO, " " + message, null);
     }
 
-    public synchronized void printSucces(String message) {
-        printsQueue.add(new QNode(MessageType.SUCCES, " " + message, null));
-        notifyAll();
+    public void printSucces(String message) {
+        printOnTerminal(MessageType.SUCCES, " " + message, null);
     }
 
-    public synchronized void printError(String message) {
-        printsQueue.add(new QNode(MessageType.ERROR, " " + message, null));
-        notifyAll();
+    public void printError(String message) {
+        printOnTerminal(MessageType.ERROR, " " + message, null);
     }
 
-    public synchronized void printRequest(String message) {
-        printsQueue.add(new QNode(MessageType.REQUEST, " " + message, null));
-        notifyAll();
+    public void printRequest(String message) {
+        printOnTerminal(MessageType.REQUEST, " " + message, null);
     }
-    public synchronized void printQuery(String message) {
-        printsQueue.add(new QNode(MessageType.QUERY, " " + message, null));
-        notifyAll();
+    public void printQuery(String message) {
+        printOnTerminal(MessageType.QUERY, " " + message, null);
     }
 }

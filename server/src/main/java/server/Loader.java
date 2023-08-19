@@ -60,11 +60,11 @@ public class Loader {
                 if(clear)// || table== Tabelle.SONG)
                     this.main.database.submitQuery(PredefinedSQLCode.deleteTable_Queries.get(table));
 
-                terminal.printInfo_ln("Creating table: " + table);
+                terminal.printInfoln("Creating table: " + table);
                 this.main.database.submitQuery(PredefinedSQLCode.createTable_Queries.get(table)); 
             }
         } catch (SQLException e) {
-            terminal.printError_ln(e.toString());
+            terminal.printErrorln(e.toString());
             e.printStackTrace();
             System.exit(0);
         }
@@ -84,7 +84,7 @@ public class Loader {
 
 
 
-        terminal.printInfo_ln("start database configuration");
+        terminal.printInfoln("start database configuration");
         
         
         //==================================== SELEZIONE DEI FILE ====================================//
@@ -98,16 +98,16 @@ public class Loader {
             switch(fileChooser.showOpenDialog(null))
             {
                 case JFileChooser.CANCEL_OPTION:
-                    terminal.printInfo_ln("database configuration ended");
+                    terminal.printInfoln("database configuration ended");
                     return 0;
 
                 case JFileChooser.APPROVE_OPTION:
                     database__data_folder = new File(fileChooser.getSelectedFile().getAbsolutePath());
-                    terminal.printInfo_ln("select folder: " + database__data_folder);
+                    terminal.printInfoln("select folder: " + database__data_folder);
                     break;
 
                 default:
-                    terminal.printError_ln("FileDialog Error");
+                    terminal.printErrorln("FileDialog Error");
                     return 0;
             }
         }
@@ -126,26 +126,26 @@ public class Loader {
 
                 if (!subFolder.exists() || !subFolder.isDirectory()) {
                     tuttePresenti = false;
-                    terminal.printError_ln(cartella + " folder not found");
+                    terminal.printErrorln(cartella + " folder not found");
                 } 
                 else {
                     foldersPath.put(cartella, subFolder);
-                    terminal.printSucces_ln(cartella + " folder found");
+                    terminal.printSuccesln(cartella + " folder found");
                 }
             }
 
             if(!tuttePresenti) {
-                terminal.printError_ln(Terminal.Color.RED_BOLD_BRIGHT + "FILE MISSING" + Terminal.Color.RESET);
-                terminal.printInfo_ln("Database configuration ended\n");
+                terminal.printErrorln(Terminal.Color.RED_BOLD_BRIGHT + "FILE MISSING" + Terminal.Color.RESET);
+                terminal.printInfoln("Database configuration ended\n");
                 return 0;
             }
             else {
-                terminal.printSucces_ln("All folders found\n");
+                terminal.printSuccesln("All folders found\n");
             }
         }
         else {
-            terminal.printError_ln(Terminal.Color.RED_BOLD_BRIGHT + "INVALID PATH" + Terminal.Color.RESET);
-            terminal.printInfo_ln("Database configuration ended\n");
+            terminal.printErrorln(Terminal.Color.RED_BOLD_BRIGHT + "INVALID PATH" + Terminal.Color.RESET);
+            terminal.printInfoln("Database configuration ended\n");
             return 0;
         }
 
@@ -160,7 +160,7 @@ public class Loader {
             long fileCount = 0L;
 
             System.out.println("-----------------------------------------------------------------------------------------");
-            terminal.printInfo_ln("analyzing " + foldersPath.get(key).getAbsolutePath());
+            terminal.printInfoln("analyzing " + foldersPath.get(key).getAbsolutePath());
             terminal.startWaithing(MessageType.INFO + " reading files...");
             
             if(key == TRACKS || key == ALBUM) 
@@ -185,7 +185,7 @@ public class Loader {
             }
 
             terminal.stopWaithing();
-            terminal.printInfo_ln("Files found: " + fileCount);
+            terminal.printInfoln("Files found: " + fileCount);
 
             ProgressBar progressBar = new ProgressBar(MessageType.INFO.toString() +  " Loading " + key, fileCount, ProgressBarStyle.ASCII);
             progressBar.start();

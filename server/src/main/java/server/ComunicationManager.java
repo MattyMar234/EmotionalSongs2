@@ -60,14 +60,14 @@ public class ComunicationManager extends Thread implements ServerServices
 	public void run() 
 	{
 		this.terminal = Terminal.getInstance();
-		terminal.printInfo_ln("Start comunication inizilization");
+		terminal.printInfoln("Start comunication inizilization");
 		terminal.startWaithing(Terminal.MessageType.INFO + " Starting server...");
 		
 		
 		try {
 			try {Thread.sleep(ThreadLocalRandom.current().nextInt(400, 1000));} catch (Exception e) {}
 
-			terminal.printInfo_ln("Creating registry on port " + port);
+			terminal.printInfoln("Creating registry on port " + port);
 			Registry registry = null;
 			
 			try {
@@ -83,7 +83,7 @@ public class ComunicationManager extends Thread implements ServerServices
 			try {Thread.sleep(ThreadLocalRandom.current().nextInt(400, 1000));} catch (Exception e) {}
 			
 
-			terminal.printInfo_ln("Exporting objects");
+			terminal.printInfoln("Exporting objects");
 			ServerServices services = (ServerServices) UnicastRemoteObject.exportObject(this, 0);
 			//registry.rebind(ComunicationManager.SERVICE_NAME, services);
 			
@@ -108,10 +108,10 @@ public class ComunicationManager extends Thread implements ServerServices
 
 			terminal.stopWaithing();
 			terminal.printSeparator();
-			terminal.printSucces_ln(Terminal.Color.GREEN_BOLD_BRIGHT + "Server initialization complete" + Terminal.Color.RESET);
+			terminal.printSuccesln(Terminal.Color.GREEN_BOLD_BRIGHT + "Server initialization complete" + Terminal.Color.RESET);
 			terminal.printSeparator();
-			terminal.printInfo_ln("Server listening on "+ Terminal.Color.MAGENTA + IP + ":" + port + Terminal.Color.RESET);
-			terminal.printInfo_ln("press ENTER to end the communication");
+			terminal.printInfoln("Server listening on "+ Terminal.Color.MAGENTA + IP + ":" + port + Terminal.Color.RESET);
+			terminal.printInfoln("press ENTER to end the communication");
 
 			terminal.setAddTime(true);
 			terminal.startWaithing(Terminal.MessageType.INFO + " Server Running", WaithingAnimationThread.Animation.DOTS);
@@ -129,7 +129,7 @@ public class ComunicationManager extends Thread implements ServerServices
 						clientServices.testConnection();
 					}
 					catch (Exception e) {
-						terminal.printError_ln("Connection lost with: " + Terminal.Color.MAGENTA + IPs.get(clientServices) + Terminal.Color.RESET);
+						terminal.printErrorln("Connection lost with: " + Terminal.Color.MAGENTA + IPs.get(clientServices) + Terminal.Color.RESET);
 						IPs.remove(clientServices);
 						clients.remove(clientServices);
 
@@ -142,12 +142,12 @@ public class ComunicationManager extends Thread implements ServerServices
 			UnicastRemoteObject.unexportObject(this, true);
 			registry.unbind(ComunicationManager.SERVICE_NAME);
 			terminal.stopWaithing();
-			terminal.printInfo_ln("Closing Server...");
+			terminal.printInfoln("Closing Server...");
 			terminal.setAddTime(false);
     
 		} 
 		catch (RemoteException e) {
-			terminal.printError_ln("Server fallied");
+			terminal.printErrorln("Server fallied");
 			e.printStackTrace();
 			return;
 		}
@@ -183,7 +183,7 @@ public class ComunicationManager extends Thread implements ServerServices
                         clientHost = interfaceAddress.getAddress().getHostAddress();
 			}*/
 
-			Terminal.getInstance().printInfo_ln("Host connected: " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET);
+			Terminal.getInstance().printInfoln("Host connected: " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET);
 			IPs.put(client, clientHost);
 		} 
 		catch (Exception e) {
@@ -199,7 +199,7 @@ public class ComunicationManager extends Thread implements ServerServices
 	
 		try {
 			String clientHost = RemoteServer.getClientHost();
-			Terminal.getInstance().printInfo_ln("Host disconnected : " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET);
+			Terminal.getInstance().printInfoln("Host disconnected : " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET);
 			IPs.remove(client);
 		} 
 		catch (ServerNotActiveException e) {
@@ -208,14 +208,25 @@ public class ComunicationManager extends Thread implements ServerServices
 	}
 
 
-	private String formatFunctionRequest(String function) throws ServerNotActiveException {
-		String clientHost = RemoteServer.getClientHost();
+	private String formatFunctionRequest(String clientHost, String function) {
 		return "Host " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET + " requested function:" + Terminal.Color.CYAN_BOLD_BRIGHT + "\"" + function + "\"" + Terminal.Color.RESET;
 	}
 
+	private String formatFunctionRequestTime(String clientHost, String function, double time) {
+
+		String timeStr = "";
+
+		if(time <= 0.400) timeStr = " executed in " + Terminal.Color.GREEN_BOLD_BRIGHT + time + Terminal.Color.RESET + " seconds";
+		else if(time <= 0.800) timeStr = " executed in " + Terminal.Color.YELLOW_BOLD_BRIGHT + time + Terminal.Color.RESET + " seconds";
+		else if(time >= 0.800) timeStr = " executed in " + Terminal.Color.RED_BOLD_BRIGHT + time + Terminal.Color.RESET + " seconds";
+
+		return "Host " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET + " function " + Terminal.Color.CYAN_BOLD_BRIGHT + "\"" + function + "\"" + Terminal.Color.RESET + timeStr;
+	}
+
+
 	private void printError(Exception e) {
 		try {
-			Terminal.getInstance().printError_ln("Host " + Terminal.Color.MAGENTA + RemoteServer.getClientHost() + Terminal.Color.RESET + " error: " + e);
+			Terminal.getInstance().printErrorln("Host " + Terminal.Color.MAGENTA + RemoteServer.getClientHost() + Terminal.Color.RESET + " error: " + e);
 		} catch (ServerNotActiveException e1) {
 			e1.printStackTrace();
 		}
@@ -223,54 +234,87 @@ public class ComunicationManager extends Thread implements ServerServices
 
 
 	@Override
-	public Account getAccount(String Email, String password) throws RemoteException, InvalidPasswordException, InvalidUserNameException {
+	public ArrayList<Song> getMostPopularSongs(long limit, long offset) throws RemoteException 
+	{
+		final Terminal terminal = Terminal.getInstance();
+		final long startTime = System.nanoTime();
+
+		ArrayList<Song> result = null;
+
 		try {
-			terminal.printRequest_ln(formatFunctionRequest("getAccount() with email " + Email));
-			Account account = QueriesManager.getAccountByEmail(Email);
-			System.out.println(account);
+			final String clientHost = RemoteServer.getClientHost();
+			
+			new Thread(() ->{
+				terminal.printRequestln(formatFunctionRequest(clientHost, "MostPopularSongs("+limit+ ", " + offset +")"));
+			}).start();
+
+			result = QueriesManager.getTopPopularSongs(limit, offset);
+
+
+			new Thread(() ->{
+				double estimatedTime = System.nanoTime() - startTime;
+				double seconds = (double)estimatedTime / 1000000000.0;
+				terminal.printInfoln(formatFunctionRequestTime(clientHost, "MostPopularSongs("+limit+ ", " + offset +")", seconds));
+			}).start();
+			
+			
+		} 
+		catch (ServerNotActiveException e) {
+			e.printStackTrace();
+		}
+		catch (Exception e) {
+			Terminal.getInstance().printErrorln("Error function MostPopularSongs(): " + e);
+		}
+		
+		return result;
+		
+	}
+
+
+	@Override
+	public Account getAccount(String Email, String password) throws RemoteException, InvalidPasswordException, InvalidUserNameException 
+	{
+		Account account = null;
+		final Terminal terminal = Terminal.getInstance();
+		final long startTime = System.nanoTime();
+		
+		try {
+			final String clientHost = RemoteServer.getClientHost();
+			
+			new Thread(() ->{
+				terminal.printRequestln(formatFunctionRequest(clientHost, "getAccount(email:"+Email+")"));
+			}).start();
+
+
+			account = QueriesManager.getAccountByEmail(Email);
+
 
 			if(account == null)
 				throw new InvalidEmailException();
 
 			if(!account.getPassword().equals(DigestUtils.sha256Hex(password)))
 				throw new InvalidPasswordException();
-				
-			return account;
-		}
-		 
-		catch (Exception e) {
-			System.out.println(e);
-			e.printStackTrace();
-		}
 
-		throw new InvalidPasswordException();
-		//return null;
-	}
-
-
-	@Override
-	public ArrayList<Song> getMostPopularSongs(long limit, long offset) throws RemoteException {
-		
-		String clientHost = "";
-		
-		try {
+			
 			new Thread(() ->{
-				String clientHost2;
-				try {
-					clientHost2 = RemoteServer.getClientHost();
-					Terminal.getInstance().printInfo_ln("Host " + Terminal.Color.MAGENTA + clientHost2 + Terminal.Color.RESET + " requested function: MostPopularSongs("+limit+ ", " + offset +")");
-				} catch (ServerNotActiveException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				double estimatedTime = System.nanoTime() - startTime;
+				double seconds = (double)estimatedTime / 1000000000.0;
+				terminal.printInfoln(formatFunctionRequestTime(clientHost, "getAccount(email:"+Email+")", seconds));
 			}).start();
-			return QueriesManager.getTopPopularSongs(limit, offset);
+			
+
+
 		} 
-		catch (Exception e) {
-			Terminal.getInstance().printError_ln("Host " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET + " error: " + e);
-			return null;
+		catch (ServerNotActiveException e) {
+			Terminal.getInstance().printErrorln("Error function MostPopularSongs(): " + e);
 		}
+		catch (Exception e) {
+			Terminal.getInstance().printErrorln("Error function MostPopularSongs(): " + e);
+		}
+
+		return account;
 	}
+
 
 
 	@Override
@@ -280,20 +324,18 @@ public class ComunicationManager extends Thread implements ServerServices
 	{
 		HashMap<Colonne, Object> colonne_account   = new HashMap<Colonne, Object>();
 		HashMap<Colonne, Object> colonne_residenza = new HashMap<Colonne, Object>();
-		Account account = null;
-		String clientHost = "";
 		
-		try {
-			clientHost = RemoteServer.getClientHost();
-			new Thread(() ->{
-				try {
-					Terminal.getInstance().printInfo_ln(formatFunctionRequest("addAccount()"));
-				} catch (ServerNotActiveException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}).start();
+		final Terminal terminal = Terminal.getInstance();
+		final long startTime = System.nanoTime();
+		Account account = null;
+		
 
+		try {
+			final String clientHost = RemoteServer.getClientHost();
+			
+			new Thread(() ->{
+				terminal.printRequestln(formatFunctionRequest(clientHost, "addAccount()"));
+			}).start();
 
 			colonne_account.put(Colonne.NAME, name);
 			colonne_account.put(Colonne.SURNAME, username);
@@ -310,20 +352,21 @@ public class ComunicationManager extends Thread implements ServerServices
 			colonne_residenza.put(Colonne.COUNCIL_NAME, commune);
 
 
-
-
 			QueriesManager.addAccount_and_addResidence(colonne_account, colonne_residenza);
-			
-			return getAccount(Email, password);	
+			account = getAccount(Email, password);	
+
+			new Thread(() ->{
+				double estimatedTime = System.nanoTime() - startTime;
+				double seconds = (double)estimatedTime / 1000000000.0;
+				terminal.printInfoln(formatFunctionRequestTime(clientHost, "addAccount()", seconds));
+			}).start();
+
 		} 
-		catch (SQLException e) {
-			Terminal.getInstance().printError_ln("Host " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET + " error: " + e);
-			e.printStackTrace();
-			
+		catch (ServerNotActiveException e) {
+			Terminal.getInstance().printErrorln("Error function MostPopularSongs(): " + e);
 		}
 		catch (Exception e) {
-			Terminal.getInstance().printError_ln("Host " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET + " error: " + e);
-			
+			Terminal.getInstance().printErrorln("Error function MostPopularSongs(): " + e);
 		}
 
 		return account;
@@ -333,29 +376,25 @@ public class ComunicationManager extends Thread implements ServerServices
 	@Override
 	public ArrayList<Album> getRecentPublischedAlbum(long limit, long offset, int threshold) throws RemoteException {
 
-		long startTime = System.nanoTime();  
+		Account account = null;
+		final Terminal terminal = Terminal.getInstance();
+		final long startTime = System.nanoTime(); 
 		ArrayList<Album> result = new ArrayList<>();
 
 		
 		try {
-			terminal.printRequest_ln(formatFunctionRequest("getRecentPublischedAlbum(limit: " + limit + ", offset: " + offset + ", threshold: " + threshold + ")"));
+			final String clientHost = RemoteServer.getClientHost();
+			new Thread(() ->{
+				terminal.printRequestln(formatFunctionRequest(clientHost, "getRecentPublischedAlbum(limit: " + limit + ", offset: " + offset + ", threshold: " + threshold + ")"));
+			});
+			
 			result = QueriesManager.getRecentPublischedAlbum(limit, offset, threshold);
 			
-			// ... the code being measured ...    
-			long estimatedTime = System.nanoTime() - startTime;
-			double seconds = (double)estimatedTime / 1000000000.0;
-
 			new Thread(() ->{
-				terminal.printInfo_ln("getRecentPublischedAlbum(limit: " + limit + ", offset: " + offset + ", threshold: " + threshold + ")" + " - " + seconds + " s");
+				double estimatedTime = System.nanoTime() - startTime;
+				double seconds = (double)estimatedTime / 1000000000.0;
+				terminal.printInfoln(formatFunctionRequestTime(clientHost, "getRecentPublischedAlbum(limit: " + limit + ", offset: " + offset + ", threshold: " + threshold + ")", seconds));
 			}).start();
-			
-			
-			//terminal.printInfo_ln("getRecentPublischedAlbum(limit: " + limit + ", offset: " + offset + ", threshold: " + threshold + ")");
-			//terminal.printInfo_ln("getRecentPublischedAlbum(limit: " + limit + ", offset: " + offset + ", threshold: " + threshold + ")");
-			//terminal.printInfo_ln("getRecentPublischedAlbum(limit: " + limit + ", offset: " + offset + ", threshold: " + threshold + ")");
-			//
-			
-		
 		}
 		catch (SQLException e) {
 			printError(e);

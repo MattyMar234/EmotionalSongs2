@@ -122,21 +122,21 @@ public class App extends JFrame
         database.setConnectionParametre(this.DB_name, this.DB_IP, this.DB_port, this.DB_user, DB_password);
 
         
-        terminal.printInfo_ln("Database connection attempt on URL: " + Terminal.Color.CYAN_BOLD_BRIGHT + database.getURL() + Terminal.Color.RESET);
+        terminal.printInfoln("Database connection attempt on URL: " + Terminal.Color.CYAN_BOLD_BRIGHT + database.getURL() + Terminal.Color.RESET);
 
         try {
             database.connect();
             if(database.testConnection() && database.connect()) {
-                terminal.printSucces_ln("Database found and connection established");
+                terminal.printSuccesln("Database found and connection established");
                 databaseConnected = true;
             }
             else {
-                terminal.printError_ln(Terminal.Color.RED_BOLD_BRIGHT + "Database not responding" + Terminal.Color.RESET);
+                terminal.printErrorln(Terminal.Color.RED_BOLD_BRIGHT + "Database not responding" + Terminal.Color.RESET);
                 databaseConnected = false;
             } 
         } 
         catch (Exception e) {
-            terminal.printError_ln("Connection failed. Error: " + Terminal.Color.RED_BOLD_BRIGHT + e.getMessage() + Terminal.Color.RESET);   
+            terminal.printErrorln("Connection failed. Error: " + Terminal.Color.RED_BOLD_BRIGHT + e.getMessage() + Terminal.Color.RESET);   
             databaseConnected = false;
         }
     }
@@ -167,7 +167,7 @@ public class App extends JFrame
             } 
             if(!Files.exists(file) || Files.size(file) <= 12) {
                 
-                terminal.printError_ln("settings file not found");
+                terminal.printErrorln("settings file not found");
                 initializeSettings();
             }
            
@@ -186,7 +186,7 @@ public class App extends JFrame
     protected void loadSettings() throws IOException {
 
         Terminal terminal = Terminal.getInstance();
-        terminal.printInfo_ln("Loading settings");
+        terminal.printInfoln("Loading settings");
 
         if(!checkSettings())
             return;
@@ -200,7 +200,7 @@ public class App extends JFrame
         this.DB_user = node.get(jsonDataName.DATABASE_USER.toString()).asText();
         this.DB_name = node.get(jsonDataName.DATABASE_NAME.toString()).asText();
 
-        terminal.printSucces_ln("Loading completed");
+        terminal.printSuccesln("Loading completed");
 
     }
 
@@ -211,7 +211,7 @@ public class App extends JFrame
     private void initializeSettings() throws IOException 
     {
         Terminal terminal = Terminal.getInstance();
-        terminal.printInfo_ln("setup default settings");
+        terminal.printInfoln("setup default settings");
 
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode data = objectMapper.createObjectNode();
@@ -290,8 +290,8 @@ public class App extends JFrame
         
         for (Tabelle table : PredefinedSQLCode.Tabelle.values()) 
         {
-            terminal.printInfo_ln("---------------------------------------------------------------------------------------------------");
-            terminal.printInfo_ln("Testing table \"" + Terminal.Color.CYAN_BOLD_BRIGHT + table + Terminal.Color.RESET + "\":");
+            terminal.printInfoln("---------------------------------------------------------------------------------------------------");
+            terminal.printInfoln("Testing table \"" + Terminal.Color.CYAN_BOLD_BRIGHT + table + Terminal.Color.RESET + "\":");
             Colonne[] colls = PredefinedSQLCode.tablesAttributes.get(table);
             
             

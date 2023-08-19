@@ -97,7 +97,7 @@ public class QueriesManager {
             return account;    
         } 
         else {
-            Terminal.getInstance().printQuery_ln("nessun elemento trovato");
+            Terminal.getInstance().printQueryln("nessun elemento trovato");
             return null;
         }
     }
