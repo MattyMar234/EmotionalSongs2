@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import objects.SceneAction;
 import objects.UserActions;
+import utility.PathFormatter;
 
 import org.javatuples.*;
 
@@ -23,7 +24,9 @@ import controllers.MainPage_SideBar_Controller;
 import controllers.WindowContainerController;
 import interfaces.ControllerFunctions;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class SceneManager {
@@ -119,12 +122,17 @@ public class SceneManager {
     public FXMLLoader getSceneLoader(String name) throws IOException  
     {
         FXMLLoader loader = new FXMLLoader();
+        String path = PathFormatter.formatPath(EmotionalSongs.FXML_folder_path + "\\" + ((!name.endsWith(".fxml")) ? name + ".fxml" : name));
+        File file = new File(path);
         
-        //System.out.println(EmotionalSongs.class.getResource(name + ((!name.endsWith(".fxml")) ? ".fxml" : "")));
-        loader.setLocation(EmotionalSongs.class.getResource(name + ((!name.endsWith(".fxml")) ? ".fxml" : "")));
-        //print hereee
-        //System.out.println();  
-      
+        URL file_URL = file.toURI().toURL();
+
+        System.out.println("full path: " + path);
+        System.out.println("URL: " + file_URL);
+        
+        loader.setLocation(file_URL);
+        System.out.println("Location: " + loader.getLocation());
+        
 
         return loader;
     }
@@ -219,7 +227,7 @@ public class SceneManager {
            
             scene = new Scene(loader.load());
             this.stage.setScene(scene);
-            this.stage.show();
+            this.stage.show(); 
 
             output = new Pair<Scene,FXMLLoader>(scene, loader);
         }

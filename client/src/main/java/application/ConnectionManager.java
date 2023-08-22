@@ -15,8 +15,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
 import javafx.util.Duration;
+import utility.PathFormatter;
 
 import java.beans.EventHandler;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -85,7 +90,23 @@ public class ConnectionManager extends UnicastRemoteObject implements ClientServ
 	 * @param port server's port
 	 * @return success of the connection
 	 */
-	public boolean testCustomConnection(String host, int port) {
+	public boolean testCustomConnection(String host, int port) 
+	{
+		host.replaceAll("\n", "").replaceAll("\r", "").replaceAll("\t", "");
+		
+		if(PathFormatter.isUnix() || PathFormatter.isMac()) {
+			if(host.split("\\.").length != 4 ) {
+				return false;
+			}
+		}
+		else 
+			if(host.split(".").length != 4 ) {
+				return false;
+			}
+
+		
+			
+		
 		String backupHost = hostAddress;
 		int backupPort = hostPort;
 		
@@ -96,23 +117,48 @@ public class ConnectionManager extends UnicastRemoteObject implements ClientServ
 		return success;
 	}
 
+	private static boolean isReachable(String host, int openPort, int timeOutMillis) {
+    try {
+        try (Socket soc = new Socket()) {
+            soc.connect(new InetSocketAddress(host, openPort), timeOutMillis);
+        }
+        return true;
+    } catch (IOException ex) {
+        return false;
+    }
+}
+
 	//qundo sono collegato
 	/**
 	 * Tests a connection to the EmotionalSong server
 	 * @return success of the connection
 	 */
 	private boolean testServerConnection() {
-		boolean success = true;
+		boolean success = false;
 		
 		try {
+			if(isReachable(hostAddress, hostPort, 2)) {
+				System.out.println("host found");
+			}
+			else {
+				System.out.println("invalid host");
+				return false;
+			}
+			//192.168.1.136
+			System.out.println("start RMI Service connection");
 			Registry registry = LocateRegistry.getRegistry(hostAddress, hostPort);
+			
+		
 			ServerServices test = (ServerServices) registry.lookup("EmotionalSongs_services");
-			success = (test != null);
-		} catch (RemoteException | NotBoundException e) {
-			success = false;
-		} catch (ClassCastException e) {
+			System.out.println("Connected");
+			//success = (test != null);
+			return true;
+		} 
+		
+		catch (Exception e) {
 			success = false;
 			e.printStackTrace();
+			System.out.println(e);
 		}
 		return success;
 	}

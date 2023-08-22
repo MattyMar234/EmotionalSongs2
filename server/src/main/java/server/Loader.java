@@ -22,7 +22,7 @@ import server.Terminal.MessageType;
 import server.Terminal;
 import utility.FileElementCounter;
 import utility.GenericThread;
-import utility.PathFormatter;
+import utility.OS_utility;
 import utility.WaithingAnimationThread;
 
 public class Loader {
@@ -90,7 +90,7 @@ public class Loader {
         //==================================== SELEZIONE DEI FILE ====================================//
         if(!test) {
 
-            final JFileChooser fileChooser = new JFileChooser(PathFormatter.formatPath(System.getProperty("user.home") + "/Desktop"));
+            final JFileChooser fileChooser = new JFileChooser(OS_utility.formatPath(System.getProperty("user.home") + "/Desktop"));
             fileChooser.setVisible(true);
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 

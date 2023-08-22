@@ -134,17 +134,17 @@ public class ApplicationAccessController extends ControllerBase implements Initi
                         connectionManager.disconnect();
                     }
 
+
                     //aspetto
                     try {Thread.sleep(800);} catch (InterruptedException e) {}
                     continue;
                 }
-
+                
                 //se sono collegato e non si è verificato alcun evento allora mi metto in pausa.
                 
                 try {Thread.sleep(1000);} catch (InterruptedException e) {}
                 
                 Platform.runLater(() -> {
-
                     
                     //verifico lo stato della connessione
                     if(testServerConnectionParams(IP.getText(), Integer.parseInt(PORT.getText()))) {
@@ -405,8 +405,8 @@ public class ApplicationAccessController extends ControllerBase implements Initi
     @FXML
     public void checkConnection(KeyEvent event) {
 
-        connectionParamsEvent = true;
-        /*if(IP == null || PORT == null || IP.getText().length() == 0 || PORT.getText().length() == 0 || IP.getText().split(".").length == 4) {
+        
+        if(IP == null || PORT == null || IP.getText().length() == 0 || PORT.getText().length() == 0 || IP.getText().split(".").length == 4) {
             return;
         }
 
@@ -418,7 +418,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
             if(connectionManager.isConnected()) {
                 connectionManager.disconnect();
             }
-        }*/
+        }
     }
 
     private boolean testServerConnectionParams(String IP, int PORT) 

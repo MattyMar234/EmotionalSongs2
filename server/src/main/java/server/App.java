@@ -27,15 +27,15 @@ import database.QueryBuilder;
 import database.PredefinedSQLCode.Colonne;
 import database.PredefinedSQLCode.Tabelle;
 import utility.AsciiArtGenerator;
-import utility.PathFormatter;
+import utility.OS_utility;
 import utility.AsciiArtGenerator.ASCII_STYLE;
 
 
 public class App extends JFrame
 {
-    public final static String WORKING_DIRECTORY  = PathFormatter.formatPath(System.getProperty("user.dir"));
-    public final static String SETTINGS_DIRECTORY = PathFormatter.formatPath(WORKING_DIRECTORY + "/data");
-    public final static String FILE_SETTINGS_PATH = PathFormatter.formatPath(SETTINGS_DIRECTORY + "/settings.json");
+    public final static String WORKING_DIRECTORY  = OS_utility.formatPath(System.getProperty("user.dir"));
+    public final static String SETTINGS_DIRECTORY = OS_utility.formatPath(WORKING_DIRECTORY + "/data");
+    public final static String FILE_SETTINGS_PATH = OS_utility.formatPath(SETTINGS_DIRECTORY + "/settings.json");
 
     private static App instance;
 
@@ -79,9 +79,22 @@ public class App extends JFrame
 
     public static void main( String[] args ) throws Exception 
     {
-        UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-        new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor(); 
-        new App(args);
+        
+        if(OS_utility.isWindows()) {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+            new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor(); 
+            Class.forName("org.postgresql.Driver");
+            new App(args);
+        }
+        else {
+            //UIManager.setLookAndFeel("java.desktop/com.sun.java.swing.plaf.gtk");
+            new ProcessBuilder("clear").inheritIO().start().waitFor();
+            
+            Class.forName("org.postgresql.Driver");
+            new App(args);
+        }
+        
+        
     }
 
     private App(String[] args) throws InterruptedException, IOException, ClassNotFoundException, SQLException 
@@ -136,7 +149,8 @@ public class App extends JFrame
             } 
         } 
         catch (Exception e) {
-            terminal.printErrorln("Connection failed. Error: " + Terminal.Color.RED_BOLD_BRIGHT + e.getMessage() + Terminal.Color.RESET);   
+            //terminal.printErrorln("Connection failed. Error: " + Terminal.Color.RED_BOLD_BRIGHT + e.getMessage() + Terminal.Color.RESET+ "  " + Terminal.Color.RESET);   
+            terminal.printErrorln("Connection failed. Error: " + e.getMessage() + Terminal.Color.RESET+ "  " + Terminal.Color.RESET);   
             databaseConnected = false;
         }
     }

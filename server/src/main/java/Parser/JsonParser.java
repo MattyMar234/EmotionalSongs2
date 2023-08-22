@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import database.PredefinedSQLCode;
-import utility.PathFormatter;
+import utility.OS_utility;
 
 /**
  * This class offers various methods to parse JSON files
