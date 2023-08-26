@@ -1,210 +1,245 @@
 package server;
 
 import java.io.*;
+import java.lang.reflect.Parameter;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
-import java.nio.channels.IllegalBlockingModeException;
-import java.rmi.NoSuchObjectException;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.RemoteServer;
 import java.rmi.server.ServerNotActiveException;
-import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
-
+import java.util.function.Function;
+import java.util.regex.Pattern;
 import org.apache.commons.codec.digest.DigestUtils;
-
 import Exceptions.InvalidEmailException;
 import Exceptions.InvalidPasswordException;
-import Exceptions.InvalidUserNameException;
-import database.DatabaseManager;
-import database.QueryBuilder;
 import database.QueriesManager;
 import database.PredefinedSQLCode.Colonne;
-import database.PredefinedSQLCode.Tabelle;
-import interfaces.ClientServices;
-import interfaces.ServerServices;
+import interfaces.SocketService;
 import objects.Account;
 import objects.Album;
 import objects.Song;
 import utility.WaithingAnimationThread;
 
-public class ComunicationManager extends Thread implements ServerServices
+public class ComunicationManager extends Thread implements SocketService, Serializable
 {
-	private ArrayList<ClientServices> clients = new ArrayList<ClientServices>();
-	private Hashtable<ClientServices,String> IPs = new Hashtable<ClientServices,String>();
-	
+	protected ArrayList<ConnectionHandler> clientsThread = new ArrayList<>();
+	private HashMap<ServerServicesName, Function<Object,Object>> serverFunctions = new HashMap<>();
+
 	private Terminal terminal;
 	private boolean exit = false;
 	private int port;
 
-	private static final String SERVICE_NAME = "EmotionalSongs_services";
 
 	public ComunicationManager(int port) throws RemoteException {
+		this.terminal = Terminal.getInstance();
 		this.port = port;
+		setDaemon(true);
+		setPriority(MAX_PRIORITY);
+
+
+		serverFunctions.put(ServerServicesName.ADD_ACCOUNT, this::addAccount);
+		serverFunctions.put(ServerServicesName.GET_ACCOUNT, this::getAccount);
+		serverFunctions.put(ServerServicesName.GET_MOST_POPULAR_SONGS, this::getMostPopularSongs);
+		serverFunctions.put(ServerServicesName.GET_RECENT_PUPLISCED_ALBUMS, this::getRecentPublischedAlbum);
+		serverFunctions.put(ServerServicesName.GET_MOST_POPULAR_SONGS, this::getMostPopularSongs);
+		serverFunctions.put(ServerServicesName.SEARCH_SONGS, this::searchSongs);
+		serverFunctions.put(ServerServicesName.SEARCH_ALBUMS, this::searchAlbums);
 	}
+	
+	public Function<Object,Object> getServerServiceFunction(ServerServicesName name) {
+		return this.serverFunctions.get(name);
+	}
+
 
 	
 	public void run() 
 	{
-		this.terminal = Terminal.getInstance();
+		ServerSocket server = null;
+		String IP = "";
+
+
 		terminal.printInfoln("Start comunication inizilization");
 		terminal.startWaithing(Terminal.MessageType.INFO + " Starting server...");
-		
-		
+		try {Thread.sleep(ThreadLocalRandom.current().nextInt(400, 1000));} catch (Exception e) {}
+
 		try {
-			try {Thread.sleep(ThreadLocalRandom.current().nextInt(400, 1000));} catch (Exception e) {}
-
-			terminal.printInfoln("Creating registry on port " + port);
-			Registry registry = null;
-			
-			try {
-				registry = LocateRegistry.createRegistry(port);
-			} catch (Exception e) {
-				registry = LocateRegistry.getRegistry(port);
-			}
-
-			
-			
-
-
-			try {Thread.sleep(ThreadLocalRandom.current().nextInt(400, 1000));} catch (Exception e) {}
-			
-
-			terminal.printInfoln("Exporting objects");
-			ServerServices services = (ServerServices) UnicastRemoteObject.exportObject(this, 0);
-			//registry.rebind(ComunicationManager.SERVICE_NAME, services);
-			
-			try {Thread.sleep(ThreadLocalRandom.current().nextInt(400, 1000));} catch (Exception e) {}
-		
-
-			//InetAddress localhost = InetAddress.getLocalHost();
-            //String ipAddress = localhost.getHostAddress();
-
-			//Socket socket = new Socket();
-			//socket.connect(new InetSocketAddress("google.com", 80));
-			//String IP = socket.getLocalAddress().getHostAddress();
-			String IP = "";
-
-			//stampa L'IP del server
-			Enumeration<NetworkInterface> networkInterfaceEnumeration = NetworkInterface.getNetworkInterfaces();
-            while( networkInterfaceEnumeration.hasMoreElements()){
-                for ( InterfaceAddress interfaceAddress : networkInterfaceEnumeration.nextElement().getInterfaceAddresses())
-                    if ( interfaceAddress.getAddress().isSiteLocalAddress())
-                        IP = interfaceAddress.getAddress().getHostAddress();
-			}
-
-			terminal.stopWaithing();
-			terminal.printSeparator();
-			terminal.printSuccesln(Terminal.Color.GREEN_BOLD_BRIGHT + "Server initialization complete" + Terminal.Color.RESET);
-			terminal.printSeparator();
-			terminal.printInfoln("Server listening on "+ Terminal.Color.MAGENTA + IP + ":" + port + Terminal.Color.RESET);
-			terminal.printInfoln("press ENTER to end the communication");
-
-			terminal.setAddTime(true);
-			terminal.startWaithing(Terminal.MessageType.INFO + " Server Running", WaithingAnimationThread.Animation.DOTS);
-
-			registry.rebind(ComunicationManager.SERVICE_NAME, services);
-
-			int index = 0;
-			while (!exit) 
-			{
-				if(clients.size() > 0) {
-					index = (++index) % clients.size();
-					ClientServices clientServices = clients.get(index);
-					
-					try {
-						clientServices.testConnection();
-					}
-					catch (Exception e) {
-						terminal.printErrorln("Connection lost with: " + Terminal.Color.MAGENTA + IPs.get(clientServices) + Terminal.Color.RESET);
-						IPs.remove(clientServices);
-						clients.remove(clientServices);
-
-					}
-				}
-
-				try {sleep((int)1000/(clients.size() == 0 ? 1 : clients.size()));} catch (Exception e) {}
-			}
-			
-			UnicastRemoteObject.unexportObject(this, true);
-			registry.unbind(ComunicationManager.SERVICE_NAME);
-			terminal.stopWaithing();
-			terminal.printInfoln("Closing Server...");
-			terminal.setAddTime(false);
-    
+			IP = getPublicIPv4();
+			//IP = InetAddress.getLocalHost().getHostAddress();
 		} 
-		catch (RemoteException e) {
-			terminal.printErrorln("Server fallied");
+		catch (Exception e) {
+			terminal.printErrorln(e.toString());
 			e.printStackTrace();
 			return;
 		}
-		catch (Exception e) {
-			System.out.println(e);
-			e.printStackTrace();
-		}	
 
 		
+		terminal.printInfoln("Start SOCKET configuration:");
+		terminal.printInfoln("ServerSocket creation on port " + port);
+		
+		try {Thread.sleep(ThreadLocalRandom.current().nextInt(400, 1000));} catch (Exception e) {}
+		try {
+			server = new ServerSocket(port);
+			server.setSoTimeout(500);
+
+			//IP = server.getInetAddress()
+		} 
+		catch (Exception e) {
+			terminal.printErrorln(e.toString());
+			e.printStackTrace();
+			return;
+		}
+
+		terminal.stopWaithing();
+		terminal.printSeparator();
+		terminal.printSuccesln(Terminal.Color.GREEN_BOLD_BRIGHT + "Server initialization complete" + Terminal.Color.RESET);
+		terminal.printSeparator();
+		terminal.printInfoln("Server listening on "+ Terminal.Color.MAGENTA + IP + ":" + port + Terminal.Color.RESET);
+		terminal.printInfoln("press ENTER to end the communication");
+		terminal.setAddTime(true);
+		terminal.startWaithing(Terminal.MessageType.INFO + " Server Running", WaithingAnimationThread.Animation.DOTS);
+		terminal.printLine();
+
+			
+		int index = 0;
+		while (!exit) 
+		{
+			try {
+				
+				Socket clientSocket = server.accept();
+				if(clientSocket == null) 
+					continue;
+
+				terminal.printInfoln("Connection established with: " + Terminal.Color.MAGENTA + clientSocket.getInetAddress().getHostAddress() + Terminal.Color.RESET);
+				
+				ConnectionHandler connectionHandler = new ConnectionHandler(clientSocket, this);
+				connectionHandler.start();
+				clientsThread.add(connectionHandler);
+			
+			} 
+			catch (java.io.InterruptedIOException e) {
+				continue;
+			}
+			catch (IOException e) {
+				terminal.printErrorln(e.toString());
+				e.printStackTrace();
+			}
+
+		}	
+
+		ArrayList<ConnectionHandler> temp = (ArrayList<ConnectionHandler>) clientsThread.clone();
+		for(ConnectionHandler client : clientsThread)
+			client.terminate();
+
+		for(ConnectionHandler client : temp)
+			while(client.isAlive())
+		
+		
+			
+		
+		if(server != null) {
+			try {
+				server.close();
+			} 
+			catch (IOException e) {
+				terminal.printErrorln(e.toString());
+				e.printStackTrace();
+				return;
+			}
+		}
+		
+			
+		terminal.stopWaithing();
+		terminal.printInfoln("Closing Server...");
+		terminal.setAddTime(false);	
 	}
 
 	public void terminate() {
 		this.exit = true;
+		Thread.currentThread().interrupt();
 	}
 
-	
+	protected void removeClientSocket(ConnectionHandler connectionHandler) {
+		this.clientsThread.remove(connectionHandler);
+		terminal.printInfoln("host disconected: " + Terminal.Color.MAGENTA + connectionHandler.getSocket().getInetAddress().getHostAddress() + Terminal.Color.RESET);
+	}
+// ==================================== UTILITY ====================================//
 
-
-	@Override
-	public synchronized void addClient(ClientServices client) throws RemoteException 
+	@SuppressWarnings("unused")
+	private String getPublicIPv4() throws UnknownHostException, SocketException 
 	{
-		clients.add(client);
-		
-		try {
-			String clientHost = RemoteServer.getClientHost();
+		Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
+		String ipToReturn = null;
+		while(e.hasMoreElements())
+		{
+			NetworkInterface n = (NetworkInterface) e.nextElement();
+			Enumeration<InetAddress> ee = n.getInetAddresses();
+			while (ee.hasMoreElements())
+			{
+				InetAddress i = (InetAddress) ee.nextElement();
+				String currentAddress = i.getHostAddress();
+				Terminal.getInstance().printInfoln("IP address "+currentAddress+ " found");
 
-			/*String clientHost = "";
+				//i.isSiteLocalAddress()&&!i.isLoopbackAddress() && validate(currentAddress)
+				if(validate(currentAddress)){
+					ipToReturn = currentAddress;    
+				}else{
+					//System.out.println("Address not validated as public IPv4");
+				}
 
-			Enumeration<NetworkInterface> networkInterfaceEnumeration = NetworkInterface.getNetworkInterfaces();
-            while( networkInterfaceEnumeration.hasMoreElements()){
-                for ( InterfaceAddress interfaceAddress : networkInterfaceEnumeration.nextElement().getInterfaceAddresses())
-                    if ( interfaceAddress.getAddress().isSiteLocalAddress())
-                        clientHost = interfaceAddress.getAddress().getHostAddress();
-			}*/
-
-			Terminal.getInstance().printInfoln("Host connected: " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET);
-			IPs.put(client, clientHost);
-		} 
-		catch (Exception e) {
-			e.printStackTrace();
+			}
 		}
+
+		return ipToReturn;
 	}
 
+	private static final Pattern IPv4RegexPattern = Pattern.compile(
+			"^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 
-	@Override
-	public void disconnect(ClientServices client) throws RemoteException 
-	{
-		clients.remove(client);
-	
-		try {
-			String clientHost = RemoteServer.getClientHost();
-			Terminal.getInstance().printInfoln("Host disconnected : " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET);
-			IPs.remove(client);
-		} 
-		catch (ServerNotActiveException e) {
-			e.printStackTrace();
-		}
+	public static boolean validate(final String ip) {
+		return IPv4RegexPattern.matcher(ip).matches();
+	}
+
+	private void printFunctionExecutionTime(String functionName, String clientHost,double startTime) {
+		new Thread(() ->{
+				double estimatedTime = System.nanoTime() - startTime;
+				double seconds = (double)estimatedTime / 1000000000.0;
+				terminal.printInfoln(formatFunctionRequestTime(clientHost, functionName, seconds));
+			}).start();
+	}
+
+	private void printFunctionArgs(String functionName, String clientHost) {
+
+		new Thread(() ->{
+			try {
+				//terminal.printRequestln(formatFunctionRequest(clientHost, "MostPopularSongs("+limit+ ", " + offset +")"));
+				terminal.printRequestln(formatFunctionRequest(clientHost, functionName));
+				for (Parameter parameter : this.getClass().getMethod(functionName).getParameters()) 
+				{
+					String value = (String) this.getClass().getDeclaredField(parameter.getName()).get(this);
+					System.out.println("Valore parametro "+ parameter.getName()+": " + value);
+				}
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (NoSuchFieldException e) {
+				e.printStackTrace();
+			}	
+		}).start();	
 	}
 
 
@@ -233,168 +268,194 @@ public class ComunicationManager extends Thread implements ServerServices
 	}
 
 
-	@Override
-	public ArrayList<Song> getMostPopularSongs(long limit, long offset) throws RemoteException 
+// ==================================== COMUNICTION ====================================//
+
+	/*@Override
+	public synchronized void addClient(ClientServices client) throws RemoteException 
 	{
-		final Terminal terminal = Terminal.getInstance();
-		final long startTime = System.nanoTime();
-
-		ArrayList<Song> result = null;
-
+		clients.add(client);
+		
 		try {
-			final String clientHost = RemoteServer.getClientHost();
-			
-			new Thread(() ->{
-				terminal.printRequestln(formatFunctionRequest(clientHost, "MostPopularSongs("+limit+ ", " + offset +")"));
-			}).start();
+			String clientHost = RemoteServer.getClientHost();
 
-			result = QueriesManager.getTopPopularSongs(limit, offset);
+			Terminal.getInstance().printInfoln("Host connected: " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET);
+			IPs.put(client, clientHost);
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 
-			new Thread(() ->{
-				double estimatedTime = System.nanoTime() - startTime;
-				double seconds = (double)estimatedTime / 1000000000.0;
-				terminal.printInfoln(formatFunctionRequestTime(clientHost, "MostPopularSongs("+limit+ ", " + offset +")", seconds));
-			}).start();
-			
-			
+	@Override
+	public void disconnect(ClientServices client) throws RemoteException 
+	{
+		clients.remove(client);
+	
+		try {
+			String clientHost = RemoteServer.getClientHost();
+			Terminal.getInstance().printInfoln("Host disconnected : " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET);
+			IPs.remove(client);
 		} 
 		catch (ServerNotActiveException e) {
 			e.printStackTrace();
 		}
-		catch (Exception e) {
-			Terminal.getInstance().printErrorln("Error function MostPopularSongs(): " + e);
-		}
-		
-		return result;
-		
-	}
+	}*/
 
+	//====================================== SOCKET SERVICES ======================================//
 
 	@Override
-	public Account getAccount(String Email, String password) throws RemoteException, InvalidPasswordException, InvalidUserNameException 
+	public Object addAccount(Object args) 
 	{
-		Account account = null;
-		final Terminal terminal = Terminal.getInstance();
-		final long startTime = System.nanoTime();
-		
-		try {
-			final String clientHost = RemoteServer.getClientHost();
-			
-			new Thread(() ->{
-				terminal.printRequestln(formatFunctionRequest(clientHost, "getAccount(email:"+Email+")"));
-			}).start();
+		final double startTime = System.nanoTime();
+		final String[] keys = {"name", "username", "userID", "codiceFiscale", "email", "password", "civicNumber", "viaPiazza", "cap", "commune", "province"};
+		final HashMap<String, Object> argsTable = (HashMap<String, Object>) ((Object[])args)[0];
+		final String clientHost = (String)((Object[])args)[1];
 
-
-			account = QueriesManager.getAccountByEmail(Email);
-
-
-			if(account == null)
-				throw new InvalidEmailException();
-
-			if(!account.getPassword().equals(DigestUtils.sha256Hex(password)))
-				throw new InvalidPasswordException();
-
-			
-			new Thread(() ->{
-				double estimatedTime = System.nanoTime() - startTime;
-				double seconds = (double)estimatedTime / 1000000000.0;
-				terminal.printInfoln(formatFunctionRequestTime(clientHost, "getAccount(email:"+Email+")", seconds));
-			}).start();
-			
-
-
-		} 
-		catch (ServerNotActiveException e) {
-			Terminal.getInstance().printErrorln("Error function MostPopularSongs(): " + e);
-		}
-		catch (Exception e) {
-			Terminal.getInstance().printErrorln("Error function MostPopularSongs(): " + e);
-		}
-
-		return account;
-	}
-
-
-
-	@Override
-	public Account addAccount(String name, String username, String userID, String codiceFiscale, String Email,
-			String password, String civicNumber, String viaPiazza, String cap, String commune, String province)
-			throws RemoteException, InvalidUserNameException, InvalidEmailException 
-	{
 		HashMap<Colonne, Object> colonne_account   = new HashMap<Colonne, Object>();
 		HashMap<Colonne, Object> colonne_residenza = new HashMap<Colonne, Object>();
-		
-		final Terminal terminal = Terminal.getInstance();
-		final long startTime = System.nanoTime();
-		Account account = null;
-		
+
+		//verifico che ci siano tutti i parametri necessari
+		for (String str : keys) {
+			if (!argsTable.containsKey(str)) {
+				return new Exception("Missing argument: " + str);
+			}
+		}
+
+		Object account = null;
 
 		try {
-			final String clientHost = RemoteServer.getClientHost();
 			
-			new Thread(() ->{
-				terminal.printRequestln(formatFunctionRequest(clientHost, "addAccount()"));
-			}).start();
-
-			colonne_account.put(Colonne.NAME, name);
-			colonne_account.put(Colonne.SURNAME, username);
-			colonne_account.put(Colonne.NICKNAME, userID);
-			colonne_account.put(Colonne.FISCAL_CODE, codiceFiscale);
-			colonne_account.put(Colonne.EMAIL, Email);
-			colonne_account.put(Colonne.PASSWORD, DigestUtils.sha256Hex(password));
+			printFunctionArgs("addAccount", clientHost);
+			colonne_account.put(Colonne.NAME, argsTable.get("name"));
+			colonne_account.put(Colonne.SURNAME, argsTable.get("username"));
+			colonne_account.put(Colonne.NICKNAME, argsTable.get("userID"));
+			colonne_account.put(Colonne.FISCAL_CODE, argsTable.get("codiceFiscale"));
+			colonne_account.put(Colonne.EMAIL, argsTable.get("email"));
+			colonne_account.put(Colonne.PASSWORD, DigestUtils.sha256Hex((String) argsTable.get("password")));
 			//colonne_account.put(Colonne.RESIDENCE_ID_REF, resd_ID);
 			
 			//colonne_residenza.put(Colonne.ID, resd_ID);
-			colonne_residenza.put(Colonne.VIA_PIAZZA, viaPiazza);
-			colonne_residenza.put(Colonne.CIVIC_NUMER, Integer.parseInt(civicNumber));
-			colonne_residenza.put(Colonne.PROVINCE_NAME, province);
-			colonne_residenza.put(Colonne.COUNCIL_NAME, commune);
-
+			colonne_residenza.put(Colonne.VIA_PIAZZA, argsTable.get("viaPiazza"));
+			colonne_residenza.put(Colonne.CIVIC_NUMER, Integer.parseInt((String)argsTable.get("civicNumber")));
+			colonne_residenza.put(Colonne.PROVINCE_NAME, argsTable.get("province"));
+			colonne_residenza.put(Colonne.COUNCIL_NAME, argsTable.get("commune"));
+			colonne_residenza.put(Colonne.CAP, Integer.parseInt((String)argsTable.get("cap")));
 
 			QueriesManager.addAccount_and_addResidence(colonne_account, colonne_residenza);
-			account = getAccount(Email, password);	
+			account = getAccount(new Object[] {argsTable.get("email"), argsTable.get("password")});
 
-			new Thread(() ->{
-				double estimatedTime = System.nanoTime() - startTime;
-				double seconds = (double)estimatedTime / 1000000000.0;
-				terminal.printInfoln(formatFunctionRequestTime(clientHost, "addAccount()", seconds));
-			}).start();
-
+			printFunctionExecutionTime("addAccount", clientHost, startTime);
 		} 
-		catch (ServerNotActiveException e) {
-			Terminal.getInstance().printErrorln("Error function MostPopularSongs(): " + e);
-		}
 		catch (Exception e) {
 			Terminal.getInstance().printErrorln("Error function MostPopularSongs(): " + e);
+			return new Exception(e);
 		}
-
+		
 		return account;
 	}
 
 
 	@Override
-	public ArrayList<Album> getRecentPublischedAlbum(long limit, long offset, int threshold) throws RemoteException {
+	@SuppressWarnings("unchecked")
+	public Object getAccount(Object args) 
+	{
+		final double startTime = System.nanoTime();
+		final String[] keys = {"email", "password"};
+		final HashMap<String, Object> argsTable = (HashMap<String, Object>) ((Object[])args)[0];
+		final String clientHost = (String)((Object[])args)[1];
 
-		Account account = null;
-		final Terminal terminal = Terminal.getInstance();
-		final long startTime = System.nanoTime(); 
+		Object result = null;
+
+		//verifico che ci siano tutti i parametri necessari
+		for (String str : keys) {
+			if (!argsTable.containsKey(str)) {
+				return new Exception("Missing argument: " + str);
+			}
+		}
+		
+		try { 
+			printFunctionArgs("getAccount", clientHost);
+
+			//cerco se esiste un account con quell'email
+			Account account = QueriesManager.getAccountByEmail((String) argsTable.get("email"));
+
+			//verifico se l'ho trovato
+			if(account == null)
+				return new InvalidEmailException();
+
+			//verifico se le password combaciano
+			if(!account.getPassword().equals(DigestUtils.sha256Hex((String) argsTable.get("password"))))
+				return new InvalidPasswordException();
+
+			result = account;
+
+			printFunctionExecutionTime("getAccount", clientHost, startTime);
+		} 
+		catch (Exception /*| InvalidEmailException*/ e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		return result;	
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Object getMostPopularSongs(Object args) 
+	{
+		final double startTime = System.nanoTime();
+		final String[] keys = {"limit", "offset"};
+		final HashMap<String, Object> argsTable = (HashMap<String, Object>) ((Object[])args)[0];
+		final String clientHost = (String)((Object[])args)[1];
+
+		//verifico che ci siano tutti i parametri necessari
+		for (String str : keys) {
+			if (!argsTable.containsKey(str)) {
+				return new Exception("Missing argument: " + str);
+			}
+		}
+
+		ArrayList<Song> result = null;
+
+		try {
+			
+			printFunctionArgs("getMostPopularSongs", clientHost);
+			result = QueriesManager.getTopPopularSongs((long)argsTable.get("limit"), (long)argsTable.get("offset"));
+			printFunctionExecutionTime("getMostPopularSongs", clientHost, startTime);
+		} 
+		catch (Exception e) {
+			Terminal.getInstance().printErrorln("Error function MostPopularSongs(): " + e);
+			return new Exception(e);
+		}
+		
+		return result;
+	}
+
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Object getRecentPublischedAlbum(Object args) 
+	{
+		final double startTime = System.nanoTime();
+		final String[] keys = {"limit", "offset", "threshold"};
+		final HashMap<String, Object> argsTable = (HashMap<String, Object>) ((Object[])args)[0];
+		final String clientHost = (String)((Object[])args)[1];
+
 		ArrayList<Album> result = new ArrayList<>();
 
+		//verifico che ci siano tutti i parametri necessari
+		for (String str : keys) {
+			if (!argsTable.containsKey(str)) {
+				return new Exception("Missing argument: " + str);
+			}
+		}
 		
 		try {
-			final String clientHost = RemoteServer.getClientHost();
-			new Thread(() ->{
-				terminal.printRequestln(formatFunctionRequest(clientHost, "getRecentPublischedAlbum(limit: " + limit + ", offset: " + offset + ", threshold: " + threshold + ")"));
-			});
-			
-			result = QueriesManager.getRecentPublischedAlbum(limit, offset, threshold);
-			
-			new Thread(() ->{
-				double estimatedTime = System.nanoTime() - startTime;
-				double seconds = (double)estimatedTime / 1000000000.0;
-				terminal.printInfoln(formatFunctionRequestTime(clientHost, "getRecentPublischedAlbum(limit: " + limit + ", offset: " + offset + ", threshold: " + threshold + ")", seconds));
-			}).start();
+
+			printFunctionArgs("getRecentPublischedAlbum", clientHost);
+			result = QueriesManager.getRecentPublischedAlbum((long)argsTable.get("limit"), (long)argsTable.get("offset"), (int)argsTable.get("threshold"));
+			printFunctionExecutionTime("getRecentPublischedAlbum", clientHost, startTime);
 		}
 		catch (SQLException e) {
 			printError(e);
@@ -403,8 +464,74 @@ public class ComunicationManager extends Thread implements ServerServices
 		catch (Exception e) {
 			printError(e);
 			e.printStackTrace();
+		} 
+		return result;
+	}
+
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Object searchSongs(Object args) 
+	{
+		final double startTime = System.nanoTime();
+		final String[] keys = {"searchString", "limit", "offset"};
+		final HashMap<String, Object> argsTable = (HashMap<String, Object>) ((Object[])args)[0];
+		final String clientHost = (String)((Object[])args)[1];
+		ArrayList<Song> result = new ArrayList<>();
+
+
+
+		//verifico che ci siano tutti i parametri necessari
+		for (String str : keys) {
+			if (!argsTable.containsKey(str)) {
+				return new Exception("Missing argument: " + str);
+			}
 		}
 
+		
+        try {
+
+			printFunctionArgs("searchSongs", clientHost);
+            result = QueriesManager.searchSong((String)argsTable.get("searchString"), (long)argsTable.get("limit"), (long)argsTable.get("offset"));
+			printFunctionExecutionTime("searchSongs", clientHost, startTime);
+		} 
+		catch (Exception e) {
+			printError(e);
+            e.printStackTrace();
+        }
+		return result;
+	}
+
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Object searchAlbums(Object args) 
+	{
+		final double startTime = System.nanoTime();
+		final String[] keys = {"searchString", "limit", "offset"};
+		final HashMap<String, Object> argsTable = (HashMap<String, Object>) ((Object[])args)[0];
+		final String clientHost = (String)((Object[])args)[1];
+		ArrayList<Album> result = new ArrayList<>();
+
+
+
+		//verifico che ci siano tutti i parametri necessari
+		for (String str : keys) {
+			if (!argsTable.containsKey(str)) {
+				return new Exception("Missing argument: " + str);
+			}
+		}
+
+        try {
+
+			printFunctionArgs("searchAlbums", clientHost);
+            result = QueriesManager.searchAlbum((String)argsTable.get("searchString"), (long)argsTable.get("limit"), (long)argsTable.get("offset"));
+			printFunctionExecutionTime("searchAlbums", clientHost, startTime);
+		} 
+		catch (Exception e) {
+			printError(e);
+            e.printStackTrace();
+        }
 		return result;
 	}
 }

@@ -276,4 +276,56 @@ public class QueriesManager {
 
         return result;
     }
+
+
+    public static synchronized ArrayList<Song> searchSong(String search, long limit, long offset) throws SQLException {
+        DatabaseManager database = DatabaseManager.getInstance();
+        ArrayList<Song> result = new ArrayList<Song>();
+
+        String query = QueryBuilder.getSongSearch_query(search, limit, offset);
+        ResultSet resultSet = database.submitQuery(query);
+
+        while (resultSet.next()) { 
+            Song song = new Song(getHashMap_for_ClassConstructor(resultSet, Tabelle.SONG));
+            song.addImages(getAlbumImages_by_ID(song.getAlbumId()));
+            result.add(song);    
+        }
+
+        resultSet.close();
+
+        /*for (Song song : result) {
+            song.addImages(getAlbumImages_by_ID(song.getAlbumId()));
+        }*/
+
+
+        return result; 
+    }
+
+    public static synchronized ArrayList<Album> searchAlbum(String search, long limit, long offset) throws SQLException {
+        DatabaseManager database = DatabaseManager.getInstance();
+        ArrayList<Album> result = new ArrayList<Album>();
+
+        String query = QueryBuilder.getAlbumSearch_query(search, limit, offset);
+        ResultSet resultSet = database.submitQuery(query);
+
+        while (resultSet.next()) { 
+            Album album = new Album(getHashMap_for_ClassConstructor(resultSet, Tabelle.ALBUM));
+            album.addImages(getAlbumImages_by_ID(album.getID()));
+            result.add(album);    
+        }
+
+        resultSet.close();
+
+        /*for (Album album : result) {
+            album.addImages(getAlbumImages_by_ID(album.getID()));
+        }*/
+
+
+        return result; 
+    
+
+
+    }
+
 }
+

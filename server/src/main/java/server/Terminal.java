@@ -36,7 +36,6 @@ public class Terminal extends Thread
     public enum Color {
         //Color end string, color reset
         RESET("\033[0m"),
-        
 
         // Regular Colors. Normal color, no bold, background color etc.
         BLACK("\033[0;30m"),    // BLACK
@@ -215,14 +214,24 @@ public class Terminal extends Thread
     public void run() 
     {
         App main = App.getInstance();
+        String command;
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("type \"help\" to see available commands");
+        boolean autoRUN = main.getServerAutoStart();
 
         while(this.fechUserInputs) 
         {
             try {
+                System.out.println("type \"help\" to see available commands");
                 printArrow();
-                String command = in.readLine();
+
+                if(autoRUN) {
+                    autoRUN = false;
+                    command = Command.START.getCommandValue();
+                }
+                else {
+                    command = in.readLine();
+                }
+                
                 System.out.println();
                 System.out.flush();
                 
@@ -285,7 +294,7 @@ public class Terminal extends Thread
                     if(main.isDatabaseConnected()) {
                         printInfoln("Database is already connected");
                         printInfoln("terminate last connection");
-                        DatabaseManager.getInstance().close();
+                        DatabaseManager.getInstance().closeConnection();
                     }
                     
                     main.setDatabaseConnection();
@@ -305,7 +314,7 @@ public class Terminal extends Thread
                    printErrorln("Unknown command \"" + Color.CYAN_BOLD_BRIGHT + command + Color.RESET + "\""); 
                 }
                 printSeparator();
-                System.out.println("type \"help\" to see available commands");
+                
                 
             }
             catch (IOException e) {
@@ -489,10 +498,10 @@ public class Terminal extends Thread
         for(int i = 0; i < terminalWidth; i++)
             sb.append("=");
 
-        print(sb.toString() + "\n");
+        println(sb.toString());
     }  
 
-    public void printLine(List<String> list) {
+    public void printLine() {
         int terminalWidth = this.jlineTerminal.getWidth();
         StringBuilder sb = new StringBuilder();
 

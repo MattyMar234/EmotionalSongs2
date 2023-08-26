@@ -482,7 +482,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
 
        
 
-        ServerServices service = ConnectionManager.getConnectionManager().getService();
+        ConnectionManager service = ConnectionManager.getConnectionManager();
         
         try {
             Account account = service.addAccount(name.getText(), surname.getText(), userID.getText(), codiceFiscale.getText(), email.getText(), password.getText(), civicNumber.getText(), viaPiazza.getText(), cap.getSelectionModel().getSelectedItem(), commune.getSelectionModel().getSelectedItem(), province.getSelectionModel().getSelectedItem());

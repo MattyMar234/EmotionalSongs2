@@ -45,34 +45,29 @@ public class MainPage_Home_Controller extends ControllerBase implements Initiali
     @Override
     public void initialize(URL location, ResourceBundle resources) 
     {
-        ServerServices services = ConnectionManager.getConnectionManager().getService();
+        ConnectionManager services = ConnectionManager.getConnectionManager();
 
         try {
             
             RowContainerController controller1 = (RowContainerController) sceneManager.injectScene("RowContainer.fxml", scrollPaneVBox, new RowContainerController());
             RowContainerController controller2 = (RowContainerController) sceneManager.injectScene("RowContainer.fxml", scrollPaneVBox, new RowContainerController());
             RowContainerController controller3 = (RowContainerController) sceneManager.injectScene("RowContainer.fxml", scrollPaneVBox, new RowContainerController());
+            RowContainerController controller4 = (RowContainerController) sceneManager.injectScene("RowContainer.fxml", scrollPaneVBox, new RowContainerController());
+            RowContainerController controller5 = (RowContainerController) sceneManager.injectScene("RowContainer.fxml", scrollPaneVBox, new RowContainerController());
             
             controller1.init("Top 10 song", 10, scrollPane.getPrefWidth());
             controller2.init("Top 10 song", 10, scrollPane.getPrefWidth());
             controller3.init("Recent Publisched Album", 10, scrollPane.getPrefWidth());
+            controller4.init("test ricerca canzoni", 10, scrollPane.getPrefWidth());
+            controller5.init("test ricerca album", 10, scrollPane.getPrefWidth());
 
             new Thread(() -> {try{controller1.InjectData(services.getMostPopularSongs(10, 0), "Top 10 song");}catch (Exception e) {}}).start();
             new Thread(() -> {try{controller2.InjectData(services.getMostPopularSongs(10, 10), "Top 10 song");}catch (Exception e) {}}).start();
             new Thread(() -> {try{controller3.InjectData(services.getRecentPublischedAlbum(10,0,30), "Recent Publisched Album");}catch (Exception e) {}}).start();
+            new Thread(() -> {try{controller4.InjectData(services.searchSongs("Master of Puppets",10,0), "test ricerca canzoni");}catch (Exception e) {}}).start();
+            new Thread(() -> {try{controller5.InjectData(services.searchAlbums("Metallica", 10, 0), "test ricerca album");}catch (Exception e) {}}).start();
         
             
-            RowContainerController controller11 = (RowContainerController) sceneManager.injectScene("RowContainer.fxml", scrollPaneVBox, new RowContainerController());
-            RowContainerController controller12 = (RowContainerController) sceneManager.injectScene("RowContainer.fxml", scrollPaneVBox, new RowContainerController());
-            RowContainerController controller13 = (RowContainerController) sceneManager.injectScene("RowContainer.fxml", scrollPaneVBox, new RowContainerController());
-            
-            controller11.init("Top 10 song", 10, scrollPane.getPrefWidth());
-            controller12.init("Top 10 song", 10, scrollPane.getPrefWidth());
-            controller13.init("Recent Publisched Album", 10, scrollPane.getPrefWidth());
-
-            new Thread(() -> {try{controller11.InjectData(services.getMostPopularSongs(10, 0), "Top 10 song");}catch (Exception e) {}}).start();
-            new Thread(() -> {try{controller12.InjectData(services.getMostPopularSongs(10, 10), "Top 10 song");}catch (Exception e) {}}).start();
-            new Thread(() -> {try{controller13.InjectData(services.getRecentPublischedAlbum(10,0,30), "Recent Publisched Album");}catch (Exception e) {}}).start();
         } 
         catch (RemoteException e) {
             e.printStackTrace();

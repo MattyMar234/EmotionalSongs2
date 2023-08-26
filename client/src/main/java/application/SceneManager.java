@@ -127,11 +127,11 @@ public class SceneManager {
         
         URL file_URL = file.toURI().toURL();
 
-        System.out.println("full path: " + path);
-        System.out.println("URL: " + file_URL);
+        //System.out.println("full path: " + path);
+        //System.out.println("URL: " + file_URL);
         
         loader.setLocation(file_URL);
-        System.out.println("Location: " + loader.getLocation());
+        //System.out.println("Location: " + loader.getLocation());
         
 
         return loader;

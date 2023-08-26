@@ -128,7 +128,9 @@ public class EmotionalSongs extends Application
     public void handleConnectionLostEvent(ConnectionEvent event) {
         System.out.println("Connection lost");
         this.showConnectionAlert();
-        SceneManager.getInstance().showScene(SceneName.ACCESS_PAGE);
+        Platform.runLater(() -> {
+            SceneManager.getInstance().showScene(SceneName.ACCESS_PAGE);
+        });
     }
 
     public void handleInvalidConnectionEvent(ConnectionEvent event) {
@@ -171,6 +173,7 @@ public class EmotionalSongs extends Application
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 // Puoi gestire l'azione quando l'utente preme "OK" qui, se necessario
             }
+            //SceneManager.getInstance().showScene(SceneName.ACCESS_PAGE);
         });
 	}
 

@@ -60,6 +60,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
     private ObservableList<ImageView> imgs = FXCollections.observableArrayList();
     private SceneManager sceneManager = SceneManager.getInstance();
     private volatile boolean connectionParamsEvent = false;
+    private boolean labelColor_state = false;
     
     @FXML public Label LabeErrorlField1;
     @FXML public Label LabeErrorlField2;
@@ -146,20 +147,28 @@ public class ApplicationAccessController extends ControllerBase implements Initi
                 
                 Platform.runLater(() -> {
                     
-                    //verifico lo stato della connessione
-                    if(testServerConnectionParams(IP.getText(), Integer.parseInt(PORT.getText()))) {
-                        
-                        //verifico se sono già collegato a quell'host
-                        if(!connectionManager.isConnected() || (connectionManager.getAddress() != IP.getText() && connectionManager.getPort() != Integer.parseInt(PORT.getText()))) {
-                            connectionManager.setConnectionData(IP.getText(), Integer.parseInt(PORT.getText()));
-                            connectionManager.connect();
+                    /*try {
+                        //verifico lo stato della connessione
+                        if(testServerConnectionParams(IP.getText(), Integer.parseInt(PORT.getText()))) {
+                            
+                            //verifico se sono già collegato a quell'host
+                            if(!connectionManager.isConnected() || (connectionManager.getAddress() != IP.getText() && connectionManager.getPort() != Integer.parseInt(PORT.getText()))) {
+                                connectionManager.setConnectionData(IP.getText(), Integer.parseInt(PORT.getText()));
+                                connectionManager.connect();
+                            }
+                        }
+                        else {
+                            if(connectionManager.isConnected()) {
+                                connectionManager.disconnect();
+                            }
                         }
                     }
-                    else {
-                        if(connectionManager.isConnected()) {
-                            connectionManager.disconnect();
-                        }
-                    }
+                    catch (Exception e) {
+                        System.out.println(e);
+                    }*/
+
+                    checkConnection(null);
+                    
                 });
             }
             
@@ -372,7 +381,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
 
         try {
             ConnectionManager connection = ConnectionManager.getConnectionManager();
-            Account response = connection.getService().getAccount(userName.getText(), password.getText());
+            Account response = connection.getAccount(userName.getText(), password.getText());
 
             if(response != null) {
                 EmotionalSongs.getInstance().account = response;
@@ -410,15 +419,34 @@ public class ApplicationAccessController extends ControllerBase implements Initi
             return;
         }
 
-        if(testServerConnectionParams(IP.getText(), Integer.parseInt(PORT.getText()))) {
+        if(event != null) {
+            connectionManager.disconnect();
             connectionManager.setConnectionData(IP.getText(), Integer.parseInt(PORT.getText()));
             connectionManager.connect();
         }
-        else {
-            if(connectionManager.isConnected()) {
-                connectionManager.disconnect();
+            
+        
+        if(!connectionManager.isConnected() && connectionManager.connect()) {
+            if(connectionManager.isConnected()) 
+            {
+                //labelColor_state = !labelColor_state;
+                connectionStatus.setText(EmotionalSongs.applicationLanguage == 0 ? "Server trovato" : "Server found");
+                connectionStatus.setStyle("-fx-text-fill: #1ED760;");
+                connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #1ED760;");
             }
         }
+        else {
+            if(!connectionManager.isConnected()) {
+                //labelColor_state = !labelColor_state;
+                connectionStatus.setText(EmotionalSongs.applicationLanguage == 0 ? "Server non trovato" : "Server not found");
+                connectionStatus.setStyle("-fx-text-fill: #F14934;");
+                connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #F14934;");
+            }
+            
+            /*if(!connectionManager.testServerConnection()) {
+                connectionManager.disconnect();    
+            }*/
+        }  
     }
 
     private boolean testServerConnectionParams(String IP, int PORT) 

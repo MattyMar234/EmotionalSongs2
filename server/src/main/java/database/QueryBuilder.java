@@ -375,5 +375,35 @@ public class QueryBuilder {
         return sb.toString();
 
     }
-    
+
+
+    //================================================ OPERAZIONI DI IRCERCA =================================================//
+    public static String getSongSearch_query(String search, long limit, long offset) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT c.* ");
+        sb.append("FROM " + Tabelle.SONG + " c JOIN " + Tabelle.ALBUM + " a ON c."+ Colonne.ALBUM_ID_REF.getName() + " = a."+ Colonne.ID.getName());
+        sb.append(" WHERE c." + Colonne.TITLE.getName() + " LIKE '" + search + "%'");
+        //sb.append(" OR a."+ Colonne.RELEASE_DATE.getName() +" LIKE '" + search + "%'");   
+        sb.append(" ORDER BY c." + Colonne.TITLE.getName() + ", a." + Colonne.RELEASE_DATE.getName());   
+        sb.append(" LIMIT " + limit + " OFFSET " + offset + ";");
+
+        //terminal.printQueryln(sb.toString());
+        return sb.toString();
+    }
+
+    public static String getAlbumSearch_query(String search, long limit, long offset) 
+    {
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT a.* ");
+        sb.append("FROM " + Tabelle.ALBUM + " a ");
+        sb.append("WHERE a." + Colonne.NAME.getName() + " LIKE '" + search + "%'");
+        //sb.append(" OR a." + Colonne.RELEASE_DATE.getName() + " LIKE '" + search + "%'");
+        sb.append(" ORDER BY a." + Colonne.NAME.getName() + ", a." + Colonne.RELEASE_DATE.getName());
+        sb.append(" LIMIT " + limit + " OFFSET " + offset + ";");
+
+        //terminal.printQueryln(sb.toString());
+        return sb.toString();
+
+    }
 }

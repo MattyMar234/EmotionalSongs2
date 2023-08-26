@@ -5,6 +5,7 @@ import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,8 +28,8 @@ import database.QueryBuilder;
 import database.PredefinedSQLCode.Colonne;
 import database.PredefinedSQLCode.Tabelle;
 import utility.AsciiArtGenerator;
-import utility.OS_utility;
 import utility.AsciiArtGenerator.ASCII_STYLE;
+import utility.OS_utility;
 
 
 public class App extends JFrame
@@ -36,6 +37,7 @@ public class App extends JFrame
     public final static String WORKING_DIRECTORY  = OS_utility.formatPath(System.getProperty("user.dir"));
     public final static String SETTINGS_DIRECTORY = OS_utility.formatPath(WORKING_DIRECTORY + "/data");
     public final static String FILE_SETTINGS_PATH = OS_utility.formatPath(SETTINGS_DIRECTORY + "/settings.json");
+    public final static String FILE_POLICY_PATH = OS_utility.formatPath(SETTINGS_DIRECTORY + "/security.policy");
 
     private static App instance;
 
@@ -65,6 +67,7 @@ public class App extends JFrame
     private String DB_password;
     private String DB_user;
     private String DB_name;
+    private boolean autoRun = false;
     
     public DatabaseManager database = null;
     private boolean databaseConnected = false;
@@ -79,22 +82,14 @@ public class App extends JFrame
 
     public static void main( String[] args ) throws Exception 
     {
+        UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+        new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor(); 
+
+        System.getProperties().setProperty("java.security.policy", FILE_POLICY_PATH);
+
         
-        if(OS_utility.isWindows()) {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-            new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor(); 
-            Class.forName("org.postgresql.Driver");
-            new App(args);
-        }
-        else {
-            //UIManager.setLookAndFeel("java.desktop/com.sun.java.swing.plaf.gtk");
-            new ProcessBuilder("clear").inheritIO().start().waitFor();
-            
-            Class.forName("org.postgresql.Driver");
-            new App(args);
-        }
-        
-        
+
+        new App(args);
     }
 
     private App(String[] args) throws InterruptedException, IOException, ClassNotFoundException, SQLException 
@@ -126,6 +121,10 @@ public class App extends JFrame
         System.exit(0);
     }
 
+    public boolean getServerAutoStart() {
+        return autoRun;
+    }
+
     /**
      * this function sets up the connection with the database
      */
@@ -149,8 +148,7 @@ public class App extends JFrame
             } 
         } 
         catch (Exception e) {
-            //terminal.printErrorln("Connection failed. Error: " + Terminal.Color.RED_BOLD_BRIGHT + e.getMessage() + Terminal.Color.RESET+ "  " + Terminal.Color.RESET);   
-            terminal.printErrorln("Connection failed. Error: " + e.getMessage() + Terminal.Color.RESET+ "  " + Terminal.Color.RESET);   
+            terminal.printErrorln("Connection failed. Error: " + Terminal.Color.RED_BOLD_BRIGHT + e.getMessage() + Terminal.Color.RESET);   
             databaseConnected = false;
         }
     }
@@ -213,6 +211,7 @@ public class App extends JFrame
         this.DB_password = node.get(jsonDataName.DATABASE_PW.toString()).asText();
         this.DB_user = node.get(jsonDataName.DATABASE_USER.toString()).asText();
         this.DB_name = node.get(jsonDataName.DATABASE_NAME.toString()).asText();
+        this.autoRun = node.get("ServerAutoRUN").asBoolean();
 
         terminal.printSuccesln("Loading completed");
 
@@ -236,6 +235,7 @@ public class App extends JFrame
         ((ObjectNode) data).put(jsonDataName.DATABASE_PW.toString(), "admin");
         ((ObjectNode) data).put(jsonDataName.DATABASE_USER.toString(), "postgres");
         ((ObjectNode) data).put(jsonDataName.DATABASE_NAME.toString(), "EmotionalSongs");
+        ((ObjectNode) data).put("ServerAutoRUN", false);
 
         JsonParser.writeJsonFile(FILE_SETTINGS_PATH, data);
         loadSettings();
@@ -255,6 +255,7 @@ public class App extends JFrame
         ((ObjectNode) data).put(jsonDataName.DATABASE_PW.toString(), this.DB_password);
         ((ObjectNode) data).put(jsonDataName.DATABASE_USER.toString(), this.DB_user);
         ((ObjectNode) data).put(jsonDataName.DATABASE_NAME.toString(), this.DB_name);
+        ((ObjectNode) data).put("ServerAutoRUN", false);
 
         JsonParser.writeJsonFile(FILE_SETTINGS_PATH, data);
     }
