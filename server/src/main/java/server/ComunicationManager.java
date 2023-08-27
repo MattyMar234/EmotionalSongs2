@@ -163,20 +163,22 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		for(ConnectionHandler client : temp)
 			while(client.isAlive())
 		
-		
-		if(server != null) {
-			try {
-				server.close();
-			} 
-			catch (IOException e) {
-				terminal.printErrorln(e.toString());
-				e.printStackTrace();
-				return;
-			}
-		}
 			
-		terminal.stopWaithing();
 		terminal.printInfoln("Closing Server...");
+		try {
+			while(!server.isClosed()) {
+				server.close();
+			}	
+		} 
+		catch (IOException e) {
+			terminal.printErrorln(e.toString());
+			e.printStackTrace();
+			return;
+		}
+		
+		terminal.printInfo("server is close: " + server.isClosed());
+		
+		terminal.stopWaithing();
 		terminal.setAddTime(false);	
 	}
 
