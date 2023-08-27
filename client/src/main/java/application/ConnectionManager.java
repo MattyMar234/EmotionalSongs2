@@ -25,7 +25,7 @@ import objects.Account;
 import objects.Album;
 import objects.Song;
 import objects.Packet;
-import utility.PathFormatter;
+import utility.UtilityOS;
 
 import java.beans.EventHandler;
 import java.io.IOException;
@@ -37,11 +37,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
+import java.security.InvalidParameterException;
 
 
 public class ConnectionManager {
@@ -99,18 +96,18 @@ public class ConnectionManager {
 				resultToWait--;
 				notifyAll();
 			}
-		} catch (Exception e) {
+		} 
+		catch (Exception e) {
 			synchronized(this) {
 				disconnect();
 				notifyAll();
 			}
-			EmotionalSongs.getInstance().stage.fireEvent(new ConnectionEvent(ConnectionEvent.DISCONNECTED));
-			
+			EmotionalSongs.getInstance().stage.fireEvent(new ConnectionEvent(ConnectionEvent.DISCONNECTED));	
 		}
 		
 	}
 
-    private ConnectionManager() throws RemoteException {
+    private ConnectionManager() {
 
 		hostAddress = defaultHostAddress;
 		hostPort = defaultHostPort;
@@ -148,7 +145,7 @@ public class ConnectionManager {
 			try {
 				manager = new ConnectionManager();
 
-			} catch (RemoteException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
@@ -166,7 +163,7 @@ public class ConnectionManager {
 	{
 		host.replaceAll("\n", "").replaceAll("\r", "").replaceAll("\t", "");
 
-		if(PathFormatter.isUnix() || PathFormatter.isMac()) {
+		if(UtilityOS.isUnix() || UtilityOS.isMac()) {
 			if(host.split("\\.").length != 4 ) {
 				return false;
 			}
@@ -216,7 +213,7 @@ public class ConnectionManager {
 
 		host = host.replaceAll("\n", "").replaceAll("\r", "").replaceAll("\t", "");
 
-		if(PathFormatter.isUnix() || PathFormatter.isMac()) {
+		if(UtilityOS.isUnix() || UtilityOS.isMac()) {
 			if(host.split("\\.").length != 4 ) {
 				return false;
 			}
@@ -330,15 +327,22 @@ public class ConnectionManager {
 	}
 
 	/* ========================== Service methods ==========================  */
-
-	private Object makeRequest(Packet task) throws IOException 
+	/**
+	 * Questa funzione invia i dati al server e aspetta che il server risponda.
+	 * @param task L'operazione che deve essere eseguita dal server.
+	 * @return	Il risultato dell'operazione.
+	 * @throws IOException Se si riscontrano problemi con la comunicazione con il server o con si è connessi.
+	 * @throws InvalidParameterException Se il task contiene dei parametri non corretti.
+	 */
+	private Object makeRequest(Packet task) throws IOException, InvalidParameterException 
 	{
 		final String myId = task.getId();
 
-		if(this.clientSocket == null )
-			return null;
+		//
+		if(this.clientSocket == null)
+			throw new IOException("Non si è connessi con il server");
 
-		//invio i dati
+		//invio i dati e sveglio il thread che gestisce la ricezzione dei risultati
 		synchronized(this) {
 			outputStream.writeObject(task);
 			outputStream.flush();
@@ -354,19 +358,22 @@ public class ConnectionManager {
 			}
 		}
 
-		if(this.clientSocket == null ) {
-			throw new IOException();
-		}
+		if(this.clientSocket == null)
+			throw new IOException("Comunicazione con il server persa");
+		
 		
 		Object result = requestResult.get(myId);
 		requestResult.remove(myId);
+
+		//se ho mandato dei parametri non validi
+		if(result instanceof InvalidParameterException)
+			throw (InvalidParameterException) result;
+
 		return result;
 	}
 
 	
-	public boolean testConnection() 
-	{
-		//System.out.println("sending: " + ServerServicesName.PING.name());
+	public boolean testConnection() {
 		try {
 			makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.PING.name(), null));
 			return true;
@@ -378,30 +385,25 @@ public class ConnectionManager {
 	}
 
 
-
-	public void addClient(ClientServices client) throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'addClient'");
-	}
-
-
-	
 	public void CloseComunication() throws Exception {
 		makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.DISCONNECT.name(), null));
 	}
 
 
 
-	public synchronized Account addAccount(String name, String username, String userID, String codiceFiscale, String Email, String password, String civicNumber, String viaPiazza, String cap, String commune, String province) throws RemoteException, InvalidUserNameException, InvalidEmailException
+	public Account addAccount(String name, String username, String userID, String codiceFiscale, String Email, String password, String civicNumber, String viaPiazza, String cap, String commune, String province) throws InvalidUserNameException, InvalidEmailException
 	{
 		try {
-			for (Parameter parameter : this.getClass().getMethod("addAccount").getParameters()) {
-				String value = (String) getClass().getDeclaredField(parameter.getName()).get(this);
-				System.out.println("Valore parametro "+ parameter.getName()+": " + value);
-			}
-			
+			Object[] params = new Object[]{
+				"name", name,"username", username,"userID", userID,	"codiceFiscale", codiceFiscale,	"Email", Email,	"password", password,
+				"civicNumber", civicNumber,"viaPiazza", viaPiazza,"cap", cap,"commune", commune,"province", province
+			};
+
+			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.ADD_ACCOUNT.name(), params));
+			return (Account) result;
 		} 
 		catch (Exception e) {
+			System.out.println(e);
 			e.printStackTrace();
 		}
 		
@@ -409,11 +411,21 @@ public class ConnectionManager {
 	}
 
 
-	public Account getAccount(String Email, String Password) throws RemoteException, InvalidPasswordException, InvalidUserNameException, InvalidEmailException{
+	public Account getAccount(String Email, String password) throws InvalidPasswordException, InvalidUserNameException, InvalidEmailException {
+		Object[] params = new Object[]{"Email", Email,"password", password};
+
+		try {
+			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_ACCOUNT.name(), params));
+			return (Account) result;
+		} 
+		catch (Exception e) {
+			System.out.println(e);
+			e.printStackTrace();
+		}
 		return null;
 	}
 
-
+	@SuppressWarnings("unchecked")
 	public ArrayList<Song> getMostPopularSongs(long limit, long offset) throws Exception 
 	{
 		ArrayList<Song> data = null;
@@ -426,28 +438,56 @@ public class ConnectionManager {
 		catch (IOException e) {
 			e.printStackTrace();
 		}
-
 		return data;
 	}
 
 
-	
+	@SuppressWarnings("unchecked")
 	public ArrayList<Album> getRecentPublischedAlbum(long limit, long offset, int threshold) throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getRecentPublischedAlbum'");
+		ArrayList<Album> data = null;
+		Object[] params = new Object[]{"limit", limit,"offset", offset, "threshold", threshold};
+	
+		try {
+			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_MOST_POPULAR_SONGS.name(), params));
+			data = (ArrayList<Album>) result;
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		return data;
 	}
 
 
-
-	public ArrayList<Song> searchSongs(String searchString, long limit, long offset) throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'searchSongs'");
+	@SuppressWarnings("unchecked")
+	public ArrayList<Song> searchSongs(String searchString, long limit, long offset) throws Exception 
+	{
+		Object[] params = new Object[]{"searchString", searchString, "limit", limit, "offset", offset};
+		ArrayList<Song> data = null;
+		
+		try {
+			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.SEARCH_SONGS.name(), params));
+			data = (ArrayList<Song>) result;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return data;
 	}
+	
 
-
+	@SuppressWarnings("unchecked")
 	public ArrayList<Album> searchAlbums(String searchString, long limit, long offset) throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'searchAlbums'");
+		Object[] params = new Object[]{"searchString", searchString, "limit", limit, "offset", offset};
+		ArrayList<Album> data = null;
+		
+		try {
+			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.SEARCH_SONGS.name(), params));
+			data = (ArrayList<Album>) result;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return data;
 	}
 
 }

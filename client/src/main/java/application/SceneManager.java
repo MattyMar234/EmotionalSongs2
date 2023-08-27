@@ -12,8 +12,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import objects.SceneAction;
-import objects.UserActions;
-import utility.PathFormatter;
+import utility.UtilityOS;
 
 import org.javatuples.*;
 
@@ -122,7 +121,7 @@ public class SceneManager {
     public FXMLLoader getSceneLoader(String name) throws IOException  
     {
         FXMLLoader loader = new FXMLLoader();
-        String path = PathFormatter.formatPath(EmotionalSongs.FXML_folder_path + "\\" + ((!name.endsWith(".fxml")) ? name + ".fxml" : name));
+        String path = UtilityOS.formatPath(EmotionalSongs.FXML_folder_path + "\\" + ((!name.endsWith(".fxml")) ? name + ".fxml" : name));
         File file = new File(path);
         
         URL file_URL = file.toURI().toURL();

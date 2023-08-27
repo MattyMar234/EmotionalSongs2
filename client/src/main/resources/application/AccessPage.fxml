@@ -35,7 +35,7 @@
                                     <Font name="System Bold" size="12.0" />
                                  </font>
                               </Label>
-                              <TextField id="text-field_error_" fx:id="IP" onKeyReleased="#checkConnection" prefHeight="30.0" prefWidth="110.0" promptText="server IP">
+                              <TextField id="text-field_error_" fx:id="IP" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyReleased="#checkConnection" prefHeight="30.0" prefWidth="120.0" promptText="server IP">
                                  <font>
                                     <Font size="13.0" />
                                  </font>
@@ -45,11 +45,13 @@
                                     <Insets left="10.0" />
                                  </HBox.margin>
                               </Label>
-                              <TextField id="text-field_error_" fx:id="PORT" onKeyReleased="#checkConnection" prefHeight="20.0" prefWidth="47.0" promptText="port">
+                              <TextField id="text-field_error_" fx:id="PORT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyReleased="#checkConnection" prefHeight="20.0" prefWidth="50.0" promptText="port">
                                  <font>
                                     <Font size="13.0" />
                                  </font>
                               </TextField>
+                              <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="70.0" prefWidth="24.0" />
+                              <Button fx:id="connectButton" mnemonicParsing="false" onMouseClicked="#connectButtonEvent" text="Connettiti" />
                               <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="70.0" prefWidth="11.0" />
                               <FontIcon fx:id="connectionIcon" iconColor="WHITE" iconLiteral="mdi2c-connection" iconSize="24" wrappingWidth="27.0" />
                               <Label fx:id="connectionStatus" styleClass="Label-Style1" text="Label" />

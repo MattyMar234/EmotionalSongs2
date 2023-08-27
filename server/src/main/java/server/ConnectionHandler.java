@@ -45,8 +45,6 @@ public class ConnectionHandler extends Thread {
 
                 if(packet.parameters != null) {
                     int parametreCount = packet.parameters.length;
-                    //System.out.println("get: " + action.name() + " " + parametreCount + " params");
-
                 
                     //riordino i dati e verifico la loro validità
                     for(int i = 0; i < parametreCount - (parametreCount % 2); i+=2) {
@@ -61,7 +59,10 @@ public class ConnectionHandler extends Thread {
                     }
                 }
                 else {
-                    //System.out.println("get: " + action.name());
+                    /*synchronized(this) {
+                       outputStream.writeObject(packet.id);
+                       outputStream.writeObject(new InvalidParameterException("packet.parameters is null"));
+                    }*/
                 }
 
                 //se termino la connessiuone
@@ -74,7 +75,7 @@ public class ConnectionHandler extends Thread {
                 }
                 //se voglio fare un test di ping
                 else if(action == ServerServicesName.PING) {
-                    Terminal.getInstance().printInfoln("ping response with " + Terminal.Color.MAGENTA_BRIGHT +clientIP + Terminal.Color.RESET);
+                    Terminal.getInstance().printInfoln("ping response with " + Terminal.Color.MAGENTA_BRIGHT + clientIP + Terminal.Color.RESET);
                     synchronized(this) {
                        outputStream.writeObject(packet.id);
                        outputStream.writeObject(null);
@@ -102,7 +103,7 @@ public class ConnectionHandler extends Thread {
                 else {
                     terminal.printError("unknown socket function \""+ packet.command +"\"");
                     synchronized(this) {
-                       outputStream.writeObject(packet.command);
+                       outputStream.writeObject(packet.id);
                        outputStream.writeObject(new InvalidParameterException());
                     }
                 }

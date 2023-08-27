@@ -48,6 +48,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import objects.Account;
+import utility.UtilityOS;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
@@ -70,14 +71,15 @@ public class ApplicationAccessController extends ControllerBase implements Initi
     
     @FXML public ImageView LabelError_IMG1;
     @FXML public ImageView LabelError_IMG2;
-
+    
     @FXML public TextField userName;
     @FXML public PasswordField password;
-
+    
     @FXML public TextField IP;
     @FXML public TextField PORT;
-
-
+    
+    
+    @FXML public Button connectButton;
     @FXML public Button LoginButton;
     @FXML public Button NoAccountButton;
 
@@ -108,9 +110,13 @@ public class ApplicationAccessController extends ControllerBase implements Initi
         super.addObjectText_Translations(LoginButton, new String[] {"Accedi all'Account", "Login"});
         super.addObjectText_Translations(NoAccountButton, new String[] {"Continua senza Account", "Continue without account"});
         super.addObjectText_Translations(userName, new String[] {"L'email oppure l'userID", "Email or userID"});
+        super.addObjectText_Translations(connectButton, new String[] {"Connettiti", "Connect"});
         super.setTextsLanguage();
 
         EmotionalSongs.getInstance().stage.addEventFilter(ConnectionEvent.DISCONNECTED, this::handleConnectionLostEvent);
+        connectionStatus.setText(EmotionalSongs.applicationLanguage == 0 ? "Server non trovato" : "Server not found");
+        connectionStatus.setStyle("-fx-text-fill: #F14934;");
+        connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #F14934;");
 
 
         this.LabelError_IMG1.setImage(super.AwesomeIcon_to_Image(FontAwesomeIcon.EXCLAMATION_CIRCLE, 80));
@@ -119,7 +125,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
         PORT.setText(Integer.toString(connectionManager.getPort()));
         IP.setText(connectionManager.getAddress());
 
-        new Thread(() -> {
+        /*new Thread(() -> {
 
             SceneManager sceneManager = SceneManager.getInstance();
             Thread th = Thread.currentThread();
@@ -128,83 +134,52 @@ public class ApplicationAccessController extends ControllerBase implements Initi
             while(sceneManager.getApplicationState() == ApplicationState.ACCESS_PAGE) 
             {
                 //verifico se ho scritto qualcosa
-                if(IP == null || PORT == null || IP.getText().length() == 0 || PORT.getText().length() == 0) {
-                    
+                if(IP == null || PORT == null || IP.getText().length() <= 8 || PORT.getText().length() <= 2) 
+                {
                     //se non collegato e ho rimosso i dati
                     if(connectionManager.isConnected()) {
                         connectionManager.disconnect();
                     }
-
-
                     //aspetto
-                    try {Thread.sleep(800);} catch (InterruptedException e) {}
-                    continue;
+                    try {Thread.sleep(800);} catch (InterruptedException e) {}  
                 }
-                
-                //se sono collegato e non si è verificato alcun evento allora mi metto in pausa.
-                
-                try {Thread.sleep(1000);} catch (InterruptedException e) {}
-                
-                Platform.runLater(() -> {
-                    
-                    /*try {
-                        //verifico lo stato della connessione
-                        if(testServerConnectionParams(IP.getText(), Integer.parseInt(PORT.getText()))) {
-                            
-                            //verifico se sono già collegato a quell'host
-                            if(!connectionManager.isConnected() || (connectionManager.getAddress() != IP.getText() && connectionManager.getPort() != Integer.parseInt(PORT.getText()))) {
-                                connectionManager.setConnectionData(IP.getText(), Integer.parseInt(PORT.getText()));
-                                connectionManager.connect();
-                            }
-                        }
-                        else {
-                            if(connectionManager.isConnected()) {
-                                connectionManager.disconnect();
-                            }
-                        }
-                    }
-                    catch (Exception e) {
-                        System.out.println(e);
-                    }*/
-
+                else {
+                    try {Thread.sleep(1000);} catch (InterruptedException e) {}
                     checkConnection(null);
-                    
-                });
+                   
+                }   
             }
-            
-        }).start();
+        }).start();*/
+
+        
 
 
     
         //carico tutte le immagini delle lingue
         File folder = new File(EmotionalSongs.flagsFolder);
-        System.out.println(folder.getAbsolutePath());
         File[] listOfFiles = folder.listFiles();
 
-        /*Queue<File> queue = new LinkedList<File>();
+        Queue<File> queue = new LinkedList<File>();
         for(File f : listOfFiles) queue.add(f);
 
         int index = 1;
-        while(queue.size() > 0) 
-        {
-            File f = queue.poll(); //ottengo e rimuovo
-
-            //se non è un file, viene comunque rimosso
-            if(f.isFile()) 
-            {   
-                //se l'immagine cossiponde a quella che cerco
-                int number = Integer.parseInt(f.getName().split("_")[0]);
-                
-                if(number == index) 
-                {
-                    //creo la nuova immagine e l'aggiungo
+        while(queue.size() > 0) {
+            File file = queue.poll();
+            //se l'immagine corrisponde a quella che cerco
+            if(file.isFile()) {   
+                if(Integer.parseInt(file.getName().split("_")[0]) == index) {
                     try {
-                        ImageView img = new ImageView(SwingFXUtils.toFXImage(ImageIO.read(f), null));
+                        ImageView image = new ImageView();
 
-                        img.setFitHeight(36);
-                        img.setFitWidth(36);
-                        imgs.add(img);
-                        flags.getItems().add(img);
+                        if(UtilityOS.isUnix() || UtilityOS.isMac())
+                            image.setImage(new Image(file.toURI().toString()));
+                        else
+                            image.setImage(SwingFXUtils.toFXImage(ImageIO.read(file), null));
+
+                        image.setFitHeight(30);
+                        image.setFitWidth(30);
+                        imgs.add(image);
+                        flags.getItems().add(image);
                         index++;
                     } 
                     catch (IOException e) {
@@ -213,15 +188,13 @@ public class ApplicationAccessController extends ControllerBase implements Initi
                     }
                 }
                 else {
-                    queue.add(f);
+                    queue.add(file);
                 }
             }
-        }*/
-
+        }
 
         //definisco come caricare le immagini nella combox
         flags.setCellFactory(new Callback<ListView<ImageView>, ListCell<ImageView>>() {
-
             @Override public ListCell<ImageView> call(ListView<ImageView> p) {
                 return new ListCell<ImageView>() {
                     
@@ -237,19 +210,16 @@ public class ApplicationAccessController extends ControllerBase implements Initi
 
                             setGraphic(v);
                         }
-                   }
-              };
-          }
+                    }
+                };
+            }
         });
-
-
         flags.getSelectionModel().select(EmotionalSongs.applicationLanguage);
         clearError();
     }
           
     
-    public class StatusListCell extends ListCell<ImageView> 
-    {
+    public class StatusListCell extends ListCell<ImageView> {
         protected void updateItem(ImageView item, boolean empty) {
             
             super.updateItem(item, empty);
@@ -264,7 +234,6 @@ public class ApplicationAccessController extends ControllerBase implements Initi
                 //setText();
             }
         }
-    
     }
 
     class IconTextCellClass extends ListCell<ImageView> {
@@ -409,62 +378,102 @@ public class ApplicationAccessController extends ControllerBase implements Initi
             
         }
     } 
-    
-    
-    @FXML
-    public void checkConnection(KeyEvent event) {
 
+
+    @FXML
+    public void connectButtonEvent(MouseEvent event) 
+    {
+        boolean ok = true;
+
+        if(IP == null || PORT == null || IP.getText().length() == 0 || PORT.getText().length() <= 3 || IP.getText().split("\\.").length != 4)
+            ok = false;
         
-        if(IP == null || PORT == null || IP.getText().length() == 0 || PORT.getText().length() == 0 || IP.getText().split(".").length == 4) {
+        for (String n : IP.getText().split("\\.")) {
+            try {
+                if (n.length() == 0 || n.length() > 3 || Integer.parseInt(n) < 0 || Integer.parseInt(n) > 255)
+                    ok = false;
+            } 
+            catch (Exception e) {
+                ok = false;
+            }  
+        }
+
+        if(!ok) {
+            if(connectionManager.isConnected())
+                connectionManager.disconnect();
+
+            connectionStatus.setText(EmotionalSongs.applicationLanguage == 0 ? "Server non trovato" : "Server not found");
+            connectionStatus.setStyle("-fx-text-fill: #F14934;");
+            connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #F14934;");
             return;
         }
-
-        if(event != null) {
+        else if(connectionManager.isConnected()) 
+        {
             connectionManager.disconnect();
             connectionManager.setConnectionData(IP.getText(), Integer.parseInt(PORT.getText()));
-            connectionManager.connect();
-        }
-            
-        
-        if(!connectionManager.isConnected() && connectionManager.connect()) {
-            if(connectionManager.isConnected()) 
-            {
-                //labelColor_state = !labelColor_state;
+            if(connectionManager.connect()) {
                 connectionStatus.setText(EmotionalSongs.applicationLanguage == 0 ? "Server trovato" : "Server found");
                 connectionStatus.setStyle("-fx-text-fill: #1ED760;");
                 connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #1ED760;");
             }
-        }
-        else {
-            if(!connectionManager.isConnected()) {
-                //labelColor_state = !labelColor_state;
+            else {
                 connectionStatus.setText(EmotionalSongs.applicationLanguage == 0 ? "Server non trovato" : "Server not found");
                 connectionStatus.setStyle("-fx-text-fill: #F14934;");
                 connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #F14934;");
-            }
-            
-            /*if(!connectionManager.testServerConnection()) {
-                connectionManager.disconnect();    
-            }*/
-        }  
-    }
-
-    private boolean testServerConnectionParams(String IP, int PORT) 
-    {
-        if(connectionManager.testCustomConnection(IP,PORT)) {
-            connectionStatus.setText(EmotionalSongs.applicationLanguage == 0 ? "Server trovato" : "Server found");
-            connectionStatus.setStyle("-fx-text-fill: #1ED760;");
-            connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #1ED760;");
-            return true;
-            
+                }
         }
         else {
-            connectionStatus.setText(EmotionalSongs.applicationLanguage == 0 ? "Server non trovato" : "Server not found");
-            connectionStatus.setStyle("-fx-text-fill: #F14934;");
-            connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #F14934;");
-            return false;
-        }
+            connectionManager.setConnectionData(IP.getText(), Integer.parseInt(PORT.getText()));
+            if(connectionManager.connect()) {
+                connectionStatus.setText(EmotionalSongs.applicationLanguage == 0 ? "Server trovato" : "Server found");
+                connectionStatus.setStyle("-fx-text-fill: #1ED760;");
+                connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #1ED760;");
+            }
+        }   
     }
+    
+    
+    
+    @FXML
+    public synchronized void checkConnection(KeyEvent event) 
+    {
+        /*if(event != null) {
+            connectionManager.disconnect();
+            
+            connectionManager.connect();
+        }
+            
+        Platform.runLater(() -> {
+            if(!connectionManager.isConnected() && connectionManager.connect()) {
+                if(connectionManager.isConnected()) 
+                {
+                    if(labelColor_state == false) {
+                        labelColor_state = !labelColor_state;
+                        connectionStatus.setText(EmotionalSongs.applicationLanguage == 0 ? "Server trovato" : "Server found");
+                        connectionStatus.setStyle("-fx-text-fill: #1ED760;");
+                        connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #1ED760;");
+                    }
+                    
+                }
+            }
+            else {
+                if(!connectionManager.isConnected()) {
+
+                    if(labelColor_state == false) {
+                        labelColor_state = !labelColor_state;
+                        connectionStatus.setText(EmotionalSongs.applicationLanguage == 0 ? "Server non trovato" : "Server not found");
+                        connectionStatus.setStyle("-fx-text-fill: #F14934;");
+                        connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #F14934;");
+                    }
+                    //labelColor_state = !labelColor_state;
+                   
+                }
+               
+            } 
+        });*/   
+    }
+
+    
     
 
     private void clearError() {

@@ -2,7 +2,7 @@ package utility;
 
 import java.util.Properties;
 
-public final class PathFormatter
+public final class UtilityOS
 {
     private static String OS = System.getProperty("os.name").toLowerCase();
     private static String fileSeparator = System.getProperty("file.separator");

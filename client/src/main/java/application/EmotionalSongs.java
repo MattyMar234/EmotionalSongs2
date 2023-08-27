@@ -10,8 +10,9 @@ import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import objects.Account;
-import objects.UserActions;
+
 import java.io.IOException;
+import java.lang.System.Logger.Level;
 import java.util.Optional;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -19,18 +20,18 @@ import org.apache.commons.codec.digest.DigestUtils;
 import application.SceneManager.SceneName;
 import applicationEvents.ConnectionEvent;
 import utility.ImageDownloader;
-import utility.PathFormatter;
+import utility.UtilityOS;
 
 
 public class EmotionalSongs extends Application
 {
     //================================[Variabili di classe]================================//
     public static final String ApplicationDirectory = System.getProperty("user.dir");
-    public static final String FXML_folder_path = PathFormatter.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application"); //main\\resources\\pages-fxml
-    public static final String CSS_file_folder = PathFormatter.formatPath(ApplicationDirectory + "\\src\\main\\css"); //main\\resources\\pages-fxml
-    public static final String flagsFolder = PathFormatter.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\image\\flags");
-    public static final String LocationsPath = PathFormatter.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\data\\comuni.json");
-    public static final String ImageFolder = PathFormatter.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\image");
+    public static final String FXML_folder_path = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application"); //main\\resources\\pages-fxml
+    public static final String CSS_file_folder = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\css"); //main\\resources\\pages-fxml
+    public static final String flagsFolder = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\image\\flags");
+    public static final String LocationsPath = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\data\\comuni.json");
+    public static final String ImageFolder = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\image");
     
     public static final ImageDownloader imageDownloader = new ImageDownloader();
     private static EmotionalSongs instance = null;
@@ -38,7 +39,7 @@ public class EmotionalSongs extends Application
     
     //================================[Variabili]================================//
     public static int applicationLanguage = 0;
-    public UserActions userActions = new UserActions();
+    public ApplicationActions userActions = new ApplicationActions();
     public Stage stage;
     public Account account;
     
@@ -52,6 +53,7 @@ public class EmotionalSongs extends Application
     public static void main(String[] args) 
     {
         launch(args);
+        //ManagementFactory.getPlatformMXBean(PlatformLoggingMXBean.class).setLoggerLevel("javafx.css", "OFF");
 
         //String sha256hex = DigestUtils.sha256Hex("1234");
         //System.out.println(sha256hex);
@@ -74,7 +76,7 @@ public class EmotionalSongs extends Application
         this.stage = stage;
 
         //stage.setTitle();
-        System.out.println(PathFormatter.formatPath(ImageFolder + "\\generic\\icon.png"));
+        System.out.println(UtilityOS.formatPath(ImageFolder + "\\generic\\icon.png"));
         //stage.getIcons().add(new Image();
         
         

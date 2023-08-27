@@ -1,13 +1,9 @@
-package objects;
+package application;
 
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Stack;
+import objects.SceneAction;
 
-import application.SceneManager;
-import application.SceneManager.SceneName;
-
-public class UserActions {
+public class ApplicationActions {
 
     private SceneManager sceneManager = SceneManager.getInstance();
     private Stack<SceneAction> backward_queue = new Stack<SceneAction>();
@@ -18,7 +14,7 @@ public class UserActions {
 
 
 
-    public UserActions() {
+    public ApplicationActions() {
         forward_queue.clear();
         backward_queue.clear();
 
@@ -42,7 +38,7 @@ public class UserActions {
             actualAction = action;
 
             if(log) {
-                System.out.println("actual action: " + actualAction.scena_name);
+                System.out.println("actual action: " + actualAction.scena_name.name());
             }
 
             //rimuovo le operazione che posso fare in avanti

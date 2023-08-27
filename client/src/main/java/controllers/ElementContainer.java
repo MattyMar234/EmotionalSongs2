@@ -1,6 +1,7 @@
 package controllers;
 
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
@@ -19,7 +20,7 @@ import objects.Album;
 import objects.Artist;
 import objects.MyImage;
 import objects.Song;
-import utility.PathFormatter;
+import utility.UtilityOS;
 
 public class ElementContainer extends ControllerBase implements Initializable{
 
@@ -92,13 +93,17 @@ public class ElementContainer extends ControllerBase implements Initializable{
     
     
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
-
-        // genera numero casuale tra 0 e 3
+    public void initialize(URL location, ResourceBundle resources) 
+    {
         Random random = new Random();
         int number = random.nextInt(22) + 1;
 
-        image.setImage(new Image(PathFormatter.formatPath(EmotionalSongs.ImageFolder + "\\colored_icon\\" + number + ".png")));
+        this.title.setText("?");
+
+        if(UtilityOS.isUnix() || UtilityOS.isMac())
+            image.setImage(new Image(new File(UtilityOS.formatPath(EmotionalSongs.ImageFolder + "\\colored_icon\\" + number + ".png")).toURI().toString()));
+        else
+            image.setImage(new Image(UtilityOS.formatPath(EmotionalSongs.ImageFolder + "\\colored_icon\\" + number + ".png")));
         
     }
 
@@ -110,7 +115,7 @@ public class ElementContainer extends ControllerBase implements Initializable{
     @FXML
     public void openLink(MouseEvent event) {
         
-        SceneManager.getInstance().showScene(SceneManager.SceneName.DISPLAY_ELEMENT_PAGE, displayedElement);
+        //SceneManager.getInstance().showScene(SceneManager.SceneName.DISPLAY_ELEMENT_PAGE, displayedElement);
         if(displayedElement instanceof Song) { 
             /*Song s = (Song) displayedElement;openLink(s.getSpotifyUrl());*/
             SceneManager.getInstance().showScene(SceneManager.SceneName.DISPLAY_ELEMENT_PAGE, displayedElement);

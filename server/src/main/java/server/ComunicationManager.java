@@ -2,7 +2,9 @@ package server;
 
 import java.io.*;
 import java.lang.reflect.Parameter;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -67,13 +69,31 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		ServerSocket server = null;
 		String IP = "";
 
+		/*try (ServerSocket tempSocket = new ServerSocket(port)) {
+			Socket s1 = new Socket("localhost", port);
+			Socket s2 = tempSocket.accept();
+			IP =  (((InetSocketAddress) s2.getRemoteSocketAddress()).getAddress()).toString().replace("/","");
+			s2.close();
+		} 
+		catch (IOException e1) {
+		}*/
+
+		try(final DatagramSocket socket = new DatagramSocket()){
+			socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
+			IP = socket.getLocalAddress().getHostAddress();
+		}
+		catch(Exception e) {
+
+		}
+
 
 		terminal.printInfoln("Start comunication inizilization");
 		terminal.startWaithing(Terminal.MessageType.INFO + " Starting server...");
 		try {Thread.sleep(ThreadLocalRandom.current().nextInt(400, 1000));} catch (Exception e) {}
 
 		try {
-			IP = getPublicIPv4();
+			if(IP == "")
+				IP = getPublicIPv4();
 			//IP = InetAddress.getLocalHost().getHostAddress();
 		} 
 		catch (Exception e) {
@@ -103,18 +123,17 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		terminal.printSeparator();
 		terminal.printSuccesln(Terminal.Color.GREEN_BOLD_BRIGHT + "Server initialization complete" + Terminal.Color.RESET);
 		terminal.printSeparator();
-		terminal.printInfoln("Server listening on "+ Terminal.Color.MAGENTA + IP + ":" + port + Terminal.Color.RESET);
-		terminal.printInfoln("press ENTER to end the communication");
+		terminal.printInfoln("Server listening on "+ Terminal.Color.MAGENTA + IP + " : " + port + Terminal.Color.RESET);
+		terminal.printInfoln("press ENTER to stop the server");
 		terminal.setAddTime(true);
 		terminal.startWaithing(Terminal.MessageType.INFO + " Server Running", WaithingAnimationThread.Animation.DOTS);
 		terminal.printLine();
 
 			
-		int index = 0;
 		while (!exit) 
 		{
 			try {
-				
+				//ho impostato un timeout di 500ms
 				Socket clientSocket = server.accept();
 				if(clientSocket == null) 
 					continue;
@@ -136,6 +155,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 
 		}	
 
+		//faccio una copia per evitare errori
 		ArrayList<ConnectionHandler> temp = (ArrayList<ConnectionHandler>) clientsThread.clone();
 		for(ConnectionHandler client : clientsThread)
 			client.terminate();
@@ -143,8 +163,6 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		for(ConnectionHandler client : temp)
 			while(client.isAlive())
 		
-		
-			
 		
 		if(server != null) {
 			try {
@@ -156,7 +174,6 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 				return;
 			}
 		}
-		
 			
 		terminal.stopWaithing();
 		terminal.printInfoln("Closing Server...");
@@ -270,39 +287,8 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 
 // ==================================== COMUNICTION ====================================//
 
-	/*@Override
-	public synchronized void addClient(ClientServices client) throws RemoteException 
-	{
-		clients.add(client);
-		
-		try {
-			String clientHost = RemoteServer.getClientHost();
 
-			Terminal.getInstance().printInfoln("Host connected: " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET);
-			IPs.put(client, clientHost);
-		} 
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-
-	@Override
-	public void disconnect(ClientServices client) throws RemoteException 
-	{
-		clients.remove(client);
-	
-		try {
-			String clientHost = RemoteServer.getClientHost();
-			Terminal.getInstance().printInfoln("Host disconnected : " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET);
-			IPs.remove(client);
-		} 
-		catch (ServerNotActiveException e) {
-			e.printStackTrace();
-		}
-	}*/
-
-	//====================================== SOCKET SERVICES ======================================//
+//====================================== SOCKET SERVICES ======================================//
 
 	@Override
 	public Object addAccount(Object args) 
