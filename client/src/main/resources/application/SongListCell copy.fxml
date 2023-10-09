@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SplitMenuButton?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<?import com.sun.tools.javac.jvm.Items?>
+<AnchorPane fx:id="anchor" maxWidth="Infinity" prefHeight="80.0" style="  -fx-border-width: 0 0 0 10;" xmlns="http://javafx.com/javafx/18"
+            xmlns:fx="http://javafx.com/fxml/1"  >
+<children>
+    <HBox alignment="CENTER_LEFT" prefHeight="400.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <children>
+
+            <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true" />
+            <Label fx:id="label1" alignment="CENTER" prefWidth="200.0" text="Song" />
+            <Label fx:id="label2" alignment="CENTER" prefWidth="200.0" text="Author" />
+
+            <Region HBox.hgrow="ALWAYS" />
+            <HBox alignment="CENTER_LEFT" spacing="30" >
+                <MenuButton id="detailsBtn" styleClass="arrow-button" mnemonicParsing="false" popupSide="LEFT">
+                    <graphic>
+                        <FontIcon id="dots-icon" iconLiteral="mdi2d-dots-horizontal" />
+                    </graphic>
+                    <items>
+                        <MenuItem>
+                            <graphic>
+                                <MenuButton id="playlistMenuBtn" fx:id="playlistMenuBtn" mnemonicParsing="false"
+                                            popupSide="LEFT" text="Aggiungi alla playlist"
+                                            onMouseEntered="#showPlaylist"    >
+<!--                                    -->
+                                    <items>
+                                        <MenuItem  text="playlist1"/>
+                                        <MenuItem   text="playlist12"/>
+
+
+
+                                    </items>
+                                </MenuButton>
+
+                            </graphic>
+
+
+                        </MenuItem>
+                        <MenuItem>
+                            <graphic>
+                                <Button styleClass="menubtn"  onMouseEntered="#hidePlaylist" text="Vai all'artista"/>
+                            </graphic>
+                        </MenuItem>
+                        <MenuItem>
+                            <graphic>
+                                <Button styleClass="menubtn" onMouseEntered="#hidePlaylist" text="Vai all'album"/>
+                            </graphic>
+                        </MenuItem>
+                    </items>
+
+                </MenuButton>
+                <Button styleClass="btnlistcell" layoutX="496.0" layoutY="25.0" mnemonicParsing="false" prefHeight="50.0" >
+                    <graphic>
+                        <FontIcon id="expand-icon" iconLiteral="mdi2a-arrow-expand-all"  />
+                    </graphic>
+                </Button>
+                <Button styleClass="btnlistcell" mnemonicParsing="false" prefHeight="50.0" >
+                    <graphic>
+                        <FontIcon id="spotify-icon" iconLiteral="mdi2s-spotify" iconSize="30" />
+                    </graphic>
+                </Button>
+                <Label id="songName" alignment="CENTER" text="mm:ss" />
+            </HBox>
+        </children>
+        <padding>
+            <Insets left="10.0" right="10.0" />
+        </padding>
+    </HBox>
+</children>
+</AnchorPane>

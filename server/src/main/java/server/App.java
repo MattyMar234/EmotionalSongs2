@@ -309,6 +309,11 @@ public class App extends JFrame
             terminal.printInfoln("Testing table \"" + Terminal.Color.CYAN_BOLD_BRIGHT + table + Terminal.Color.RESET + "\":");
             Colonne[] colls = PredefinedSQLCode.tablesAttributes.get(table);
             
+            try {
+                Thread.sleep(150);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             
             try {
                 resultSet = db.getConnection().getMetaData().getColumns(null, null, table.toString().toLowerCase(), null);
@@ -362,7 +367,7 @@ public class App extends JFrame
             }
         }
 
-        if(missingColumns.size() > 0 && terminal.askYesNo("add missing colums ?")) 
+        if(missingColumns.size() > 0 && terminal.askYesNo("\nadd missing colums ?")) 
         {
             Loader loader = Loader.getInstance();
 

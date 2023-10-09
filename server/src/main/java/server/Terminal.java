@@ -218,17 +218,33 @@ public class Terminal extends Thread
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         boolean autoRUN = main.getServerAutoStart();
 
+        try {
+            printInfoln("start database integrity test...");
+                    
+            if(main.isDatabaseConnected()) {
+                main.DatabaseIntegrityTest();
+            }
+            else {
+                printErrorln("The database is not connected");
+            }   
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        finally {
+            printSeparator();
+        }
+        
+
         while(this.fechUserInputs) 
         {
             try {
-                System.out.println("type \"help\" to see available commands");
-                printArrow();
-
                 if(autoRUN) {
                     autoRUN = false;
                     command = Command.START.getCommandValue();
                 }
                 else {
+                    System.out.println("type \"help\" to see available commands");
+                    printArrow();
                     command = in.readLine();
                 }
                 
@@ -377,8 +393,8 @@ public class Terminal extends Thread
     
 
 
-    private void printSQL() {
-
+    private void printSQL() 
+    {
         for (Hashtable<Tabelle, String> queries : PredefinedSQLCode.elenco_QuerySQL) {
             boolean verificaTipologia = true;
             
@@ -516,15 +532,19 @@ public class Terminal extends Thread
 
     public boolean askYesNo(String question) throws IOException {
         println(question);
-        println("[y/n] > ");
+        print("[y/n] > ");
 
         String result = new BufferedReader(new InputStreamReader(System.in)).readLine();
         if(result.equalsIgnoreCase("y")) {
+            System.out.println();
             return true;
         }
         else {
+            System.out.println();
             return false;
         }
+
+        
     }
 
 
@@ -618,6 +638,7 @@ public class Terminal extends Thread
         if(this.waithingThread != null) {
             while(!this.waithingThread.isInPause());
             System.out.print(processedString);
+            this.waithingThread.print();
             this.waithingThread.restart();
         }
         else {

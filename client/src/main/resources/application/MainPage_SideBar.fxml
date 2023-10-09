@@ -26,12 +26,12 @@
       <URL value="@css/ApplicationTheme.css" />
    </stylesheets>
    <left>
-      <AnchorPane BorderPane.alignment="CENTER">
+      <AnchorPane prefHeight="1000.0" prefWidth="198.0" BorderPane.alignment="CENTER">
          <children>
-            <VBox id="lsidebar" fx:id="lsidebar" prefHeight="1000.0" prefWidth="263.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <VBox id="lsidebar" fx:id="lsidebar" prefHeight="1000.0" prefWidth="250.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       
                   <HBox id="logocontainer" prefHeight="95.0" prefWidth="311.0">
-                  <ImageView fitHeight="65.0" fitWidth="268.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="50.0" fitWidth="208.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@image/generic/Logo.png" />
                      </image>
@@ -39,21 +39,21 @@
                   </HBox>
       
                <!--Home-->
-               <Button id="home" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#sidebtnClick" styleClass="selected" text="Home">
+               <Button id="home" fx:id="homeButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#setHomePage" styleClass="selected" text="Home">
                   <graphic>
                      <FontIcon iconLiteral="mdi2h-home" />
                   </graphic>
                </Button>
       
                <!-- Esplora -->
-               <Button id="explore" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#sidebtnClick" text="Esplora">
+               <Button id="explore" fx:id="exploreButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#SetExplorePage" text="Esplora">
                   <graphic>
                      <FontIcon iconLiteral="mdi2c-compass" />
                   </graphic>
                </Button>
       
                <!-- Playlist -->
-               <Button id="playlist" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#sidebtnClick" text="Playlist">
+               <Button id="playlist" fx:id="playlistButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#SetPlayList" text="Playlist">
                <graphic>
                      <FontIcon iconLiteral="mdi2p-playlist-music" />
                   </graphic>

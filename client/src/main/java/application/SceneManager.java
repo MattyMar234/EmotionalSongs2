@@ -37,6 +37,7 @@ public class SceneManager {
     private static final String ElementDisplay_path = "MainPage_ElementDisplayer.fxml";
     private static final String BaseContainer_path = "ApplicationBase.fxml";
     private static final String Comment_path = "Comment.fxml";
+    private static final String SongListView_path = "SongListCell.fxml";
 
     private int theme = 0;
     private ArrayList<ControllerBase> loadedControllers = new ArrayList<>();
@@ -44,19 +45,49 @@ public class SceneManager {
     
     private static SceneManager instance;
     private Stage stage;
+
+
+    /**
+     * Classe enum per tener traccia delle finestre presenti nell'applicazione
+     */
+    public enum ApplicationWinodw {
+        EMOTIONL_SONGS_WINDOW;
+    }
+
+    /**
+     * Classe enum per tener traccia degli static in cui si può trovare una finestra
+     */
+    public enum ApplicationState {
+        ACCESS_PAGE,
+        REGISTRATION_PAGE,
+        MAIN_PAGE
+    }
+
+    public enum SceneElements {
+
+        SONG_LIST_VIEW(SongListView_path);
+
+        private String file;
+    
+        private SceneElements(String file) {
+            this.file = file;
+        }
+
+        public String getPath() {
+            return file;
+        }
+    }
     
 
 
-    public enum SceneName {
-
+    public enum SceneName 
+    {
         ACCESS_PAGE(ApplicationState.ACCESS_PAGE,BaseContainer_path, AccessPage_path),
         REGISTRATION_PAGE(ApplicationState.REGISTRATION_PAGE ,BaseContainer_path, RegistrationPage_path),
         HOME_PAGE(ApplicationState.MAIN_PAGE, BaseContainer_path, MainPage_SideBar_path, MainPage_home_path),
         DISPLAY_ELEMENT_PAGE(ApplicationState.MAIN_PAGE, BaseContainer_path, MainPage_SideBar_path, ElementDisplay_path),
-        PLAYLISTS_PAGE(ApplicationState.MAIN_PAGE,""),
-        ACCOUNT_PAGE(ApplicationState.MAIN_PAGE,""),
-        
-        
+        //PLAYLISTS_PAGE(ApplicationState.MAIN_PAGE,""),
+        //ACCOUNT_PAGE(ApplicationState.MAIN_PAGE,""),
         COMMENT_ELEMENT(ApplicationState.MAIN_PAGE,Comment_path);
 
 
@@ -78,17 +109,7 @@ public class SceneManager {
         }
     }
 
-    public enum ApplicationState {
-        ACCESS_PAGE,
-        REGISTRATION_PAGE,
-        MAIN_PAGE
-    }
-
     
-
-    
-
-
     public static SceneManager getInstance() {
         if (instance == null) {
             instance = new SceneManager();
@@ -112,31 +133,30 @@ public class SceneManager {
         stage.setResizable(resizable);
     }
 
+
+    //============================================= METHODS =============================================//
     /**
     * Resistuisce il loader del file FXML specificato
     * @param name Il nome del file FXML
     * @return Il loader del file FXML
     * @throws IOException Eccezione generata nel caso il file FXML non sia trovato
     */
-    public FXMLLoader getSceneLoader(String name) throws IOException  
+    private FXMLLoader get_FXML_File_Loader(String name) throws IOException  
     {
         FXMLLoader loader = new FXMLLoader();
         String path = UtilityOS.formatPath(EmotionalSongs.FXML_folder_path + "\\" + ((!name.endsWith(".fxml")) ? name + ".fxml" : name));
         File file = new File(path);
-        
         URL file_URL = file.toURI().toURL();
-
-        //System.out.println("full path: " + path);
-        //System.out.println("URL: " + file_URL);
-        
         loader.setLocation(file_URL);
-        //System.out.println("Location: " + loader.getLocation());
-        
-
+       
         return loader;
     }
 
-
+    /**
+     * In base al tipo di nodo, eseguo l'operazione per inserire il nuovo codice
+     * @param view
+     * @param anchor
+     */
     private void inject_FXML_code(Node view, Object anchor) 
     {
         if(anchor instanceof BorderPane) {
@@ -159,70 +179,17 @@ public class SceneManager {
         }
     }
 
-
     /**
-    * Carico il contenuto di un file fxml all'interno di un anchor generico
-    * @param sceneName Il nome del file fxml
-    * @param anchor Il riferimento dell'anchor (anchorPane o BorderPane)
-    * @return riferimento della classe controller del file fxml caricato.
-    */ 
-    public Object injectScene(String sceneName, Object anchor) {
-
-        FXMLLoader loader = null;
-        try {
-            loader = getSceneLoader(sceneName);
-            Node view = loader.load();
-            inject_FXML_code(view, anchor);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-        
-        return loader.getController();
-    }
-
-    /**
-    * Carico il contenuto di un file fxml all'interno di un anchor generico, con la possibilià di specificare il costruttore del controller.
-    * @param sceneName Il nome del file fxml
-    * @param anchor Il riferimento dell'anchor (anchorPane o BorderPane)
-    * @param controllerFactory il costruttore della classe controller del file fxml
-    * @return riferimento della classe controller del file fxml caricato.
-    */ 
-    public Object injectScene(String sceneName, Object anchor, final Object controller) throws IOException
-    //public Object injectScene(String sceneName, Object anchor, Callback<Class<?>, Object> controllerFactory) throws IOException 
-    {
-        FXMLLoader loader = null;
-
-
-        try {
-            loader = getSceneLoader(sceneName);
-            Node view = loader.load();
-            loader.setControllerFactory(controllerClass -> {return controller;});//controllerClass -> {return controller;}
-            //loader.setController(controller);
-            inject_FXML_code(view, anchor);
-        } 
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        return loader.getController();
-    }
-
-    
-
-    /*
      * Imposta il contenute dello stage
      */
-    public Pair<Scene,FXMLLoader> setStageScene(String name)
+    private Pair<Scene,FXMLLoader> setStageScene(String name)
     {
         Pair<Scene,FXMLLoader> output = null;
-
-        //String path = PathFormatter.formatPath(EmotionalSongs.FXML_folder_path + "\\" + name + ((!name.endsWith(".fxml")) ? ".fxml" : ""));
-        System.out.println("file requested: " + name);
+        System.out.println("FXML file requested: " + name);
 
         try {
-            
             Scene scene = null; 
-            FXMLLoader loader = getSceneLoader(name);
+            FXMLLoader loader = get_FXML_File_Loader(name);
            
             scene = new Scene(loader.load());
             this.stage.setScene(scene);
@@ -249,6 +216,77 @@ public class SceneManager {
         }  
         return output;    
     }
+
+
+    /**
+    * Carico il contenuto di un file fxml all'interno di un anchor generico
+    * @param sceneName Il nome del file fxml
+    * @param anchor Il riferimento dell'anchor (anchorPane o BorderPane)
+    * @return riferimento della classe controller del file fxml caricato.
+    */ 
+    public Object injectElement(SceneElements element, Object anchor) {
+
+        FXMLLoader loader = null;
+        try {
+            loader = get_FXML_File_Loader(element.getPath());
+            Node view = loader.load();
+            inject_FXML_code(view, anchor);
+        } 
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return loader.getController();
+    }
+
+    /**
+    * Carico il contenuto di un file fxml all'interno di un anchor generico
+    * @param sceneName Il nome del file fxml
+    * @param anchor Il riferimento dell'anchor (anchorPane o BorderPane)
+    * @return riferimento della classe controller del file fxml caricato.
+    */ 
+    public Object injectScene(String sceneName, Object anchor) {
+
+        FXMLLoader loader = null;
+        try {
+            loader = get_FXML_File_Loader(sceneName);
+            Node view = loader.load();
+            inject_FXML_code(view, anchor);
+        } 
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return loader.getController();
+    }
+
+    /**
+    * Carico il contenuto di un file fxml all'interno di un anchor generico, con la possibilià di specificare il costruttore del controller.
+    * @param sceneName Il nome del file fxml
+    * @param anchor Il riferimento dell'anchor (anchorPane o BorderPane)
+    * @param controllerFactory il costruttore della classe controller del file fxml
+    * @return riferimento della classe controller del file fxml caricato.
+    */ 
+    public Object injectScene(String sceneName, Object anchor, final Object controller) throws IOException
+    //public Object injectScene(String sceneName, Object anchor, Callback<Class<?>, Object> controllerFactory) throws IOException 
+    {
+        FXMLLoader loader = null;
+
+
+        try {
+            loader = get_FXML_File_Loader(sceneName);
+            Node view = loader.load();
+            loader.setControllerFactory(controllerClass -> {return controller;});//controllerClass -> {return controller;}
+            //loader.setController(controller);
+            inject_FXML_code(view, anchor);
+        } 
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return loader.getController();
+    }
+
+    
+
+    
 
     
 

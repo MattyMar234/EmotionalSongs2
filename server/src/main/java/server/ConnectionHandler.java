@@ -43,6 +43,8 @@ public class ConnectionHandler extends Thread {
                 ServerServicesName action = ServerServicesName.valueOf(packet.command);
                 HashMap<String, Object> params = new HashMap<>();
 
+                terminal.printInfoln("GET: " + action.toString());
+
                 if(packet.parameters != null) {
                     int parametreCount = packet.parameters.length;
                 
@@ -75,7 +77,9 @@ public class ConnectionHandler extends Thread {
                 }
                 //se voglio fare un test di ping
                 else if(action == ServerServicesName.PING) {
-                    Terminal.getInstance().printInfoln("ping response with " + Terminal.Color.MAGENTA_BRIGHT + clientIP + Terminal.Color.RESET);
+                    new Thread(() -> {
+                        Terminal.getInstance().printInfoln("ping response with " + Terminal.Color.MAGENTA_BRIGHT + clientIP + Terminal.Color.RESET);
+                    });
                     synchronized(this) {
                        outputStream.writeObject(packet.id);
                        outputStream.writeObject(null);
@@ -84,7 +88,7 @@ public class ConnectionHandler extends Thread {
                 //se devo eseguire una funzione
                 else if(action != null) {
                     new Thread(() -> {
-                        Object result = manager.getServerServiceFunction(action).apply(new Object[] {params, clientIP});
+                        Object result = manager.executeServerServiceFunction(action, params, clientIP);
                         
                         synchronized(ConnectionHandler.class) 
                         {
@@ -126,5 +130,10 @@ public class ConnectionHandler extends Thread {
     protected void terminate() {
         this.run = false;
         interrupt();
+        try {
+            clientSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

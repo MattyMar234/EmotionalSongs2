@@ -86,8 +86,6 @@ public class ElementContainer extends ControllerBase implements Initializable{
                 Platform.runLater(() -> {image.setImage(img);});
                 
             }
-
-
         }
     }
     
@@ -99,12 +97,7 @@ public class ElementContainer extends ControllerBase implements Initializable{
         int number = random.nextInt(22) + 1;
 
         this.title.setText("?");
-
-        if(UtilityOS.isUnix() || UtilityOS.isMac())
-            image.setImage(new Image(new File(UtilityOS.formatPath(EmotionalSongs.ImageFolder + "\\colored_icon\\" + number + ".png")).toURI().toString()));
-        else
-            image.setImage(new Image(UtilityOS.formatPath(EmotionalSongs.ImageFolder + "\\colored_icon\\" + number + ".png")));
-        
+        image.setImage(UtilityOS.getImage(EmotionalSongs.ImageFolder + "\\colored_icon\\" + number + ".png"));    
     }
 
     @FXML
@@ -121,12 +114,12 @@ public class ElementContainer extends ControllerBase implements Initializable{
             SceneManager.getInstance().showScene(SceneManager.SceneName.DISPLAY_ELEMENT_PAGE, displayedElement);
             //MainPage_ElementDisplayer_Controller Displayer_Controller = (MainPage_ElementDisplayer_Controller) loadedControllers.get(1);
 
-        /*else if(displayedElement instanceof Artist) {
-
+        }
+        else if(displayedElement instanceof Artist) {
         }
         else if(displayedElement instanceof Album) {
-
-        }*/
+            
+            SceneManager.getInstance().showScene(SceneManager.SceneName.DISPLAY_ELEMENT_PAGE, displayedElement);
         }
     }
     

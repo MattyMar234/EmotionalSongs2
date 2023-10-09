@@ -62,6 +62,42 @@
     
 }
 
+/*------------------LIST-VIEW------------------*/
+#detailsBtn {
+    -fx-background-color: transparent; /* Remove background */
+    -fx-padding: 0; /* Remove padding */
+    -fx-cursor: hand;
+}
+
+#detailsBtn .arrow {
+    visibility: collapse; /* Hide the arrow */
+}
+
+#detailsBtn > .menu-item {
+    -fx-background-color: #282828; /* Background color for menu items */
+    -fx-text-fill: white; /* Text color for menu items */
+}
+
+.context-menu{
+    -fx-background-color: #282828; /* Set the background to transparent */
+}
+
+.context-menu .menu-item:hover {
+    -fx-background-color: #8259E3; /* Background color for hovered menu item */
+}
+
+.menubtn{
+    -fx-alignment: CENTER-LEFT;
+    -fx-pref-width:150;
+    -fx-background-color: transparent;
+}
+
+.btnlistcell{
+    -fx-background-color: transparent;
+    -fx-cursor: hand; /* Hand cursor */
+}
+/*---------------------------------------------*/
+
 
 /*======================== LABELS =====================*/
 
@@ -95,10 +131,22 @@
    
 }
 
-/*======================== IMAGES =====================*/
+/*======================== IMAGES/ICONS =====================*/
 
 #image_error > .glyph-icon {
     -fx-fill:  #F14934;
+}
+
+#spotify-icon{
+    -fx-fill: #1DB954;
+}
+#expand-icon{
+    -fx-fill: #8259E3;
+    -fx-icon-size: 30;
+}
+#dots-icon{
+    -fx-fill: #FFFFFF;
+    -fx-icon-size: 30;
 }
 
 /*======================== FIELDS =====================*/
@@ -185,8 +233,6 @@
 
 /*================================ SCROLLPANE */
 
-
-
 .scroll-pane{
     -fx-background-color:transparent;
 }
@@ -194,7 +240,6 @@
 .scroll-pane > .viewport {  
     -fx-background-color: transparent;
 }
-
 
 
 .scroll-bar .increment-button {
@@ -237,9 +282,6 @@
 -fx-background-color: transparent;
 }
 
-
-/**/
-
 .chart-legend {
     -fx-background-color:  #bfaeee;
     -fx-stroke: #ffffff;
@@ -252,4 +294,36 @@
     
 }
 
+
+/*==================================== LIST-VIEW ====================================*/
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-font-size: 14px;
+    -fx-padding: 0 50;
+
+}
+
+/* Apply styles to the text in ListCell */
+.list-cell .text {
+    -fx-fill: white; /* Apply the text color */
+}
+.list-cell:hover {
+    -fx-background-color: #555555; /* Change to the desired lighter color */
+}
+
+/* Apply styles to ListView */
+.list-view {
+    -fx-background-color: transparent;
+    /* Add other properties for ListView here */
+}
+
+.list-view .scroll-bar:vertical {
+    -fx-background-color: transparent; /* Background color of the scrollbar track */
+}
+
+.list-view .scroll-bar:vertical .thumb {
+    -fx-background-color: #8259E3; /* Thumb color */
+    -fx-background-insets: 0, 2; /* Insets for the thumb */
+    -fx-background-radius: 5px; /* Thumb border radius */
+}
 

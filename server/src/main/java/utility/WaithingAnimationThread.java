@@ -22,6 +22,7 @@ public class WaithingAnimationThread extends Thread
     private String text = "";
     private boolean end = false;
     private boolean inPause = false;
+    private Thread me;
 
     public WaithingAnimationThread(String text) {
         //this.text = (text.endsWith("...") ? text : text + "...");
@@ -43,6 +44,7 @@ public class WaithingAnimationThread extends Thread
     
     public void run() 
     {
+        me = Thread.currentThread();
         while(true) {
             try {Thread.sleep(animation.delay);}catch (InterruptedException e) {}
 
@@ -53,9 +55,9 @@ public class WaithingAnimationThread extends Thread
             print();
         }
     }
-    private synchronized void print() {
+    public synchronized void print() {
 
-        if(pause) {
+        if(pause && Thread.currentThread() == me) {
             while(pause) {
                 clear();
                 this.inPause = true;

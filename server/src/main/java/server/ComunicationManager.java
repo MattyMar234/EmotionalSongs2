@@ -1,6 +1,7 @@
 package server;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -35,31 +36,97 @@ import utility.WaithingAnimationThread;
 public class ComunicationManager extends Thread implements SocketService, Serializable
 {
 	protected ArrayList<ConnectionHandler> clientsThread = new ArrayList<>();
-	private HashMap<ServerServicesName, Function<Object,Object>> serverFunctions = new HashMap<>();
+	private HashMap<ServerServicesName, Function<HashMap<String, Object>,Object>> serverFunctions = new HashMap<>();
+	private HashMap<ServerServicesName, String[]> functionParametreKeys = new HashMap<>();
+	//private HashMap<Function<HashMap<String, Object>,Object>, Method> functionName = new HashMap<>();
+	private HashMap<ServerServicesName, String> functionName = new HashMap<>();
 
 	private Terminal terminal;
 	private boolean exit = false;
 	private int port;
 
-
+	/**
+	 * Costruttore della classe
+	 * @param port
+	 * @throws RemoteException
+	 */
 	public ComunicationManager(int port) throws RemoteException {
 		this.terminal = Terminal.getInstance();
 		this.port = port;
 		setDaemon(true);
 		setPriority(MAX_PRIORITY);
 
-
+		//hashMap che associa a ogni servizio la sua funzione
 		serverFunctions.put(ServerServicesName.ADD_ACCOUNT, this::addAccount);
 		serverFunctions.put(ServerServicesName.GET_ACCOUNT, this::getAccount);
-		serverFunctions.put(ServerServicesName.GET_MOST_POPULAR_SONGS, this::getMostPopularSongs);
 		serverFunctions.put(ServerServicesName.GET_RECENT_PUPLISCED_ALBUMS, this::getRecentPublischedAlbum);
 		serverFunctions.put(ServerServicesName.GET_MOST_POPULAR_SONGS, this::getMostPopularSongs);
 		serverFunctions.put(ServerServicesName.SEARCH_SONGS, this::searchSongs);
 		serverFunctions.put(ServerServicesName.SEARCH_ALBUMS, this::searchAlbums);
+		serverFunctions.put(ServerServicesName.GET_SONG_BY_IDS, this::getSongByIDs);
+		serverFunctions.put(ServerServicesName.GET_ALBUM_SONGS, this::getAlbumsSongs);
+
+		//hashMap che associa a ogni servizio i parametri richiesti
+		functionParametreKeys.put(ServerServicesName.ADD_ACCOUNT, new String[] {"name", "username", "userID", "codiceFiscale", "email", "password", "civicNumber", "viaPiazza", "cap", "commune", "province"});
+		functionParametreKeys.put(ServerServicesName.GET_ACCOUNT, new String[]{"email", "password"});
+		functionParametreKeys.put(ServerServicesName.GET_MOST_POPULAR_SONGS, new String[]{"limit", "offset"});
+		functionParametreKeys.put(ServerServicesName.GET_RECENT_PUPLISCED_ALBUMS, new String[]{"limit", "offset", "threshold"});
+		functionParametreKeys.put(ServerServicesName.SEARCH_SONGS, new String[]{"searchString", "limit", "offset"});
+		functionParametreKeys.put(ServerServicesName.SEARCH_ALBUMS, new String[]{"searchString", "limit", "offset"});
+		functionParametreKeys.put(ServerServicesName.GET_SONG_BY_IDS, new String[]{"IDs"});
+		functionParametreKeys.put(ServerServicesName.GET_ALBUM_SONGS, new String[]{"albumID"});
+
+		try {
+			//hashMap che associa a ogni servizio il nome della sua funzione
+			functionName.put(ServerServicesName.ADD_ACCOUNT, "addAccount");
+			functionName.put(ServerServicesName.GET_ACCOUNT, "getAccount");
+			functionName.put(ServerServicesName.GET_MOST_POPULAR_SONGS, "getRecentPublischedAlbum");
+			functionName.put(ServerServicesName.GET_RECENT_PUPLISCED_ALBUMS, "getMostPopularSongs");
+			functionName.put(ServerServicesName.SEARCH_SONGS, "searchSongs");
+			functionName.put(ServerServicesName.SEARCH_ALBUMS, "searchAlbums");
+			functionName.put(ServerServicesName.GET_SONG_BY_IDS, "getSongByIDs");
+			functionName.put(ServerServicesName.GET_ALBUM_SONGS, "getAlbumsSongs");
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
-	
-	public Function<Object,Object> getServerServiceFunction(ServerServicesName name) {
-		return this.serverFunctions.get(name);
+
+	/**
+	 * Funzione che serve per eseguire i servizi del server
+	 * @param name Nome del servizio
+	 * @param params Parametri del servizio ( HashMap<String, Object> )
+	 * @param clientIP L'IP dell'host
+	 * @return
+	 */
+	public Object executeServerServiceFunction(final ServerServicesName name, final HashMap<String, Object> params, final String clientIP) 
+	{
+		//inizializzo il timer e ottengo il riferimento della funzione da richiamare
+		final double startTime = System.nanoTime();
+		Function<HashMap<String, Object>,Object> function = this.serverFunctions.get(name);
+		
+		//verifico se tutti i parametri sono corretti
+		if(!testParametre(params, functionParametreKeys.get(name))) 
+			return new Exception("Missing argument");
+
+		//eseguo le operazioni
+		try {
+			//printFunctionArgs(function, clientIP);	
+			Object output =  function.apply(params);
+
+			if(output instanceof Exception) {
+				throw (Exception) output;
+			}
+			return output;
+		}
+		catch (Exception e) {
+			printError(e);
+            e.printStackTrace();
+			return e; 
+        }
+		finally {
+			printFunctionExecutionTime(functionName.get(name), clientIP, startTime);
+		}
 	}
 
 
@@ -68,15 +135,6 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	{
 		ServerSocket server = null;
 		String IP = "";
-
-		/*try (ServerSocket tempSocket = new ServerSocket(port)) {
-			Socket s1 = new Socket("localhost", port);
-			Socket s2 = tempSocket.accept();
-			IP =  (((InetSocketAddress) s2.getRemoteSocketAddress()).getAddress()).toString().replace("/","");
-			s2.close();
-		} 
-		catch (IOException e1) {
-		}*/
 
 		try(final DatagramSocket socket = new DatagramSocket()){
 			socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
@@ -154,17 +212,21 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 			}
 
 		}	
+		
+		terminal.printInfoln("Closing Server...");
 
 		//faccio una copia per evitare errori
 		ArrayList<ConnectionHandler> temp = (ArrayList<ConnectionHandler>) clientsThread.clone();
 		for(ConnectionHandler client : clientsThread)
 			client.terminate();
 
+		if(temp.size() > 0)
+			terminal.printInfoln("waith for clients thread...");
+
 		for(ConnectionHandler client : temp)
-			while(client.isAlive())
+			while(client.isAlive());
 		
 			
-		terminal.printInfoln("Closing Server...");
 		try {
 			while(!server.isClosed()) {
 				server.close();
@@ -228,37 +290,28 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		return IPv4RegexPattern.matcher(ip).matches();
 	}
 
-	private void printFunctionExecutionTime(String functionName, String clientHost,double startTime) {
+	private void printFunctionExecutionTime(String function, String clientHost,double startTime) {
 		new Thread(() ->{
-				double estimatedTime = System.nanoTime() - startTime;
-				double seconds = (double)estimatedTime / 1000000000.0;
-				terminal.printInfoln(formatFunctionRequestTime(clientHost, functionName, seconds));
-			}).start();
+			//Method f = this.functionName.get(function);
+			
+
+			double estimatedTime = System.nanoTime() - startTime;
+			double seconds = (double)estimatedTime / 1000000000.0;
+			terminal.printInfoln(formatFunctionRequestTime(clientHost, function, seconds));
+		}).start();
 	}
 
-	private void printFunctionArgs(String functionName, String clientHost) {
+	private void printFunctionArgs(Function functionName, String clientHost) {
 
-		new Thread(() ->{
+		/*new Thread(() ->{
 			try {
 				//terminal.printRequestln(formatFunctionRequest(clientHost, "MostPopularSongs("+limit+ ", " + offset +")"));
-				terminal.printRequestln(formatFunctionRequest(clientHost, functionName));
-				for (Parameter parameter : this.getClass().getMethod(functionName).getParameters()) 
-				{
-					String value = (String) this.getClass().getDeclaredField(parameter.getName()).get(this);
-					System.out.println("Valore parametro "+ parameter.getName()+": " + value);
-				}
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (NoSuchFieldException e) {
+				//terminal.printRequestln(formatFunctionRequest(clientHost, functionName));
+				
+			} catch (Exception e) {
 				e.printStackTrace();
 			}	
-		}).start();	
+		}).start();*/
 	}
 
 
@@ -287,34 +340,30 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	}
 
 
-// ==================================== COMUNICTION ====================================//
 
 
-//====================================== SOCKET SERVICES ======================================//
-
-	@Override
-	public Object addAccount(Object args) 
-	{
-		final double startTime = System.nanoTime();
-		final String[] keys = {"name", "username", "userID", "codiceFiscale", "email", "password", "civicNumber", "viaPiazza", "cap", "commune", "province"};
-		final HashMap<String, Object> argsTable = (HashMap<String, Object>) ((Object[])args)[0];
-		final String clientHost = (String)((Object[])args)[1];
-
-		HashMap<Colonne, Object> colonne_account   = new HashMap<Colonne, Object>();
-		HashMap<Colonne, Object> colonne_residenza = new HashMap<Colonne, Object>();
-
+	//====================================== SOCKET SERVICES ======================================//
+	
+	private boolean testParametre(HashMap<String, Object> argsTable, String[] keys) {
 		//verifico che ci siano tutti i parametri necessari
 		for (String str : keys) {
 			if (!argsTable.containsKey(str)) {
-				return new Exception("Missing argument: " + str);
+				terminal.printErrorln("Missing argument: " + str);
+				return false;
 			}
 		}
-
-		Object account = null;
+		return true;
+	}
+	
+	
+	//---------------------------- operazioni con Account ---------------------------- //
+	@Override
+	public Object addAccount(final HashMap<String, Object> argsTable) 
+	{
+		HashMap<Colonne, Object> colonne_account   = new HashMap<Colonne, Object>();
+		HashMap<Colonne, Object> colonne_residenza = new HashMap<Colonne, Object>();
 
 		try {
-			
-			printFunctionArgs("addAccount", clientHost);
 			colonne_account.put(Colonne.NAME, argsTable.get("name"));
 			colonne_account.put(Colonne.SURNAME, argsTable.get("username"));
 			colonne_account.put(Colonne.NICKNAME, argsTable.get("userID"));
@@ -331,40 +380,24 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 			colonne_residenza.put(Colonne.CAP, Integer.parseInt((String)argsTable.get("cap")));
 
 			QueriesManager.addAccount_and_addResidence(colonne_account, colonne_residenza);
-			account = getAccount(new Object[] {argsTable.get("email"), argsTable.get("password")});
 
-			printFunctionExecutionTime("addAccount", clientHost, startTime);
+			HashMap<String, Object> temp = new HashMap<String, Object>();
+			temp.put("email", argsTable.get("email"));
+			temp.put("password", argsTable.get("password"));
+
+			return getAccount(temp);
 		} 
 		catch (Exception e) {
-			Terminal.getInstance().printErrorln("Error function MostPopularSongs(): " + e);
-			return new Exception(e);
-		}
-		
-		return account;
+			return e;
+        }
 	}
 
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Object getAccount(Object args) 
+	public Object getAccount(final HashMap<String, Object> argsTable) 
 	{
-		final double startTime = System.nanoTime();
-		final String[] keys = {"email", "password"};
-		final HashMap<String, Object> argsTable = (HashMap<String, Object>) ((Object[])args)[0];
-		final String clientHost = (String)((Object[])args)[1];
-
-		Object result = null;
-
-		//verifico che ci siano tutti i parametri necessari
-		for (String str : keys) {
-			if (!argsTable.containsKey(str)) {
-				return new Exception("Missing argument: " + str);
-			}
-		}
-		
 		try { 
-			printFunctionArgs("getAccount", clientHost);
-
 			//cerco se esiste un account con quell'email
 			Account account = QueriesManager.getAccountByEmail((String) argsTable.get("email"));
 
@@ -376,150 +409,180 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 			if(!account.getPassword().equals(DigestUtils.sha256Hex((String) argsTable.get("password"))))
 				return new InvalidPasswordException();
 
-			result = account;
-
-			printFunctionExecutionTime("getAccount", clientHost, startTime);
+			return account;
 		} 
-		catch (Exception /*| InvalidEmailException*/ e) {
-			e.printStackTrace();
-			return null;
-		}
-
-		return result;	
+		catch (Exception e) {
+			return e;
+        }	
 	}
+
+	//---------------------------- operazioni con SONG ---------------------------- //
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Object getMostPopularSongs(Object args) 
+	public Object getMostPopularSongs(final HashMap<String, Object> argsTable) 
 	{
-		final double startTime = System.nanoTime();
-		final String[] keys = {"limit", "offset"};
-		final HashMap<String, Object> argsTable = (HashMap<String, Object>) ((Object[])args)[0];
-		final String clientHost = (String)((Object[])args)[1];
-
-		//verifico che ci siano tutti i parametri necessari
-		for (String str : keys) {
-			if (!argsTable.containsKey(str)) {
-				return new Exception("Missing argument: " + str);
-			}
-		}
-
-		ArrayList<Song> result = null;
-
 		try {
-			
-			printFunctionArgs("getMostPopularSongs", clientHost);
-			result = QueriesManager.getTopPopularSongs((long)argsTable.get("limit"), (long)argsTable.get("offset"));
-			printFunctionExecutionTime("getMostPopularSongs", clientHost, startTime);
+			return QueriesManager.getTopPopularSongs((long)argsTable.get("limit"), (long)argsTable.get("offset"));
 		} 
 		catch (Exception e) {
-			Terminal.getInstance().printErrorln("Error function MostPopularSongs(): " + e);
-			return new Exception(e);
-		}
-		
-		return result;
+			return e;
+        }
+	}
+
+	
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Object searchSongs(final HashMap<String, Object> argsTable) 
+	{
+        try {
+            ArrayList<Song> result = QueriesManager.searchSong((String)argsTable.get("searchString"), (long)argsTable.get("limit"), (long)argsTable.get("offset"));
+			return result;
+		} 
+		catch (Exception e) {
+			return e;
+        }
 	}
 
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Object getRecentPublischedAlbum(Object args) 
+	public Object getRecentPublischedAlbum(final HashMap<String, Object> argsTable) 
 	{
-		final double startTime = System.nanoTime();
-		final String[] keys = {"limit", "offset", "threshold"};
-		final HashMap<String, Object> argsTable = (HashMap<String, Object>) ((Object[])args)[0];
-		final String clientHost = (String)((Object[])args)[1];
-
-		ArrayList<Album> result = new ArrayList<>();
-
-		//verifico che ci siano tutti i parametri necessari
-		for (String str : keys) {
-			if (!argsTable.containsKey(str)) {
-				return new Exception("Missing argument: " + str);
-			}
-		}
-		
 		try {
-
-			printFunctionArgs("getRecentPublischedAlbum", clientHost);
-			result = QueriesManager.getRecentPublischedAlbum((long)argsTable.get("limit"), (long)argsTable.get("offset"), (int)argsTable.get("threshold"));
-			printFunctionExecutionTime("getRecentPublischedAlbum", clientHost, startTime);
-		}
-		catch (SQLException e) {
-			printError(e);
-			e.printStackTrace();	
+			ArrayList<Album> result = QueriesManager.getRecentPublischedAlbum((long)argsTable.get("limit"), (long)argsTable.get("offset"), (int)argsTable.get("threshold"));
+			return result;
 		}
 		catch (Exception e) {
-			printError(e);
-			e.printStackTrace();
-		} 
-		return result;
+			return e;
+        }
 	}
+
 
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Object searchSongs(Object args) 
+	public Object searchAlbums(final HashMap<String, Object> argsTable) 
 	{
-		final double startTime = System.nanoTime();
-		final String[] keys = {"searchString", "limit", "offset"};
-		final HashMap<String, Object> argsTable = (HashMap<String, Object>) ((Object[])args)[0];
-		final String clientHost = (String)((Object[])args)[1];
-		ArrayList<Song> result = new ArrayList<>();
-
-
-
-		//verifico che ci siano tutti i parametri necessari
-		for (String str : keys) {
-			if (!argsTable.containsKey(str)) {
-				return new Exception("Missing argument: " + str);
-			}
-		}
-
-		
         try {
-
-			printFunctionArgs("searchSongs", clientHost);
-            result = QueriesManager.searchSong((String)argsTable.get("searchString"), (long)argsTable.get("limit"), (long)argsTable.get("offset"));
-			printFunctionExecutionTime("searchSongs", clientHost, startTime);
+            ArrayList<Album> result = QueriesManager.searchAlbum((String)argsTable.get("searchString"), (long)argsTable.get("limit"), (long)argsTable.get("offset"));
+			return result;
 		} 
 		catch (Exception e) {
-			printError(e);
-            e.printStackTrace();
+			return e;
         }
-		return result;
 	}
 
+	@Override
+	public Object deleteAccount(final HashMap<String, Object> argsTable) {
+		throw new UnsupportedOperationException("Unimplemented method 'deleteAccount'");
+	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Object searchAlbums(Object args) 
-	{
-		final double startTime = System.nanoTime();
-		final String[] keys = {"searchString", "limit", "offset"};
-		final HashMap<String, Object> argsTable = (HashMap<String, Object>) ((Object[])args)[0];
-		final String clientHost = (String)((Object[])args)[1];
-		ArrayList<Album> result = new ArrayList<>();
-
-
-
-		//verifico che ci siano tutti i parametri necessari
-		for (String str : keys) {
-			if (!argsTable.containsKey(str)) {
-				return new Exception("Missing argument: " + str);
-			}
-		}
-
-        try {
-
-			printFunctionArgs("searchAlbums", clientHost);
-            result = QueriesManager.searchAlbum((String)argsTable.get("searchString"), (long)argsTable.get("limit"), (long)argsTable.get("offset"));
-			printFunctionExecutionTime("searchAlbums", clientHost, startTime);
+	public Object getSongByIDs(final HashMap<String, Object> argsTable) {
+		try {
+            return QueriesManager.searchSongByIDs((String[])argsTable.get("IDs"));
 		} 
 		catch (Exception e) {
-			printError(e);
-            e.printStackTrace();
+			return e;
         }
-		return result;
+	}
+
+	@Override
+	public Object getAlbumsSongs(final HashMap<String, Object> argsTable) 
+	{
+        try {
+            ArrayList<Song> result = QueriesManager.getAlbumSongs((String)argsTable.get("albumID"));
+			terminal.printInfoln("element: " + result.size());
+			return result;
+		} 
+		catch (Exception e) {
+			return e;
+        }
+	}
+
+	@Override
+	public Object getArtistsSongs(final HashMap<String, Object> argsTable) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'getArtistsSongs'");
+	}
+
+	@Override
+	public Object getPlaylistsSongs(final HashMap<String, Object> argsTable) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'getPlaylistsSongs'");
+	}
+
+	@Override
+	public Object getAlbumsByIDs(final HashMap<String, Object> argsTable) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'getAlbumsByIDs'");
+	}
+
+	@Override
+	public Object getArtistsAlbums(final HashMap<String, Object> argsTable) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'getArtistsAlbums'");
+	}
+
+	@Override
+	public Object searchArtists(final HashMap<String, Object> argsTable) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'searchArtists'");
+	}
+
+	@Override
+	public Object getArtistsByIDs(final HashMap<String, Object> argsTable) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'getArtistsByIDs'");
+	}
+
+	@Override
+	public Object addPlaylist(final HashMap<String, Object> argsTable) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'addPlaylist'");
+	}
+
+	@Override
+	public Object deletePlaylist(final HashMap<String, Object> argsTable) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'deletePlaylist'");
+	}
+
+	@Override
+	public Object removeSongFromPlaylist(final HashMap<String, Object> argsTable) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'removeSongFromPlaylist'");
+	}
+
+	@Override
+	public Object addSongToPlaylist(final HashMap<String, Object> argsTable) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'addSongToPlaylist'");
+	}
+
+	@Override
+	public Object getAccountsPlaylistsBy(final HashMap<String, Object> argsTable) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'getAccountsPlaylistsBy'");
+	}
+
+	@Override
+	public Object getAccountComments(final HashMap<String, Object> argsTable) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'getAccountComments'");
+	}
+
+	@Override
+	public Object addComment(final HashMap<String, Object> argsTable) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'addComment'");
+	}
+
+	@Override
+	public Object deleteComment(final HashMap<String, Object> argsTable) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'deleteComment'");
 	}
 }

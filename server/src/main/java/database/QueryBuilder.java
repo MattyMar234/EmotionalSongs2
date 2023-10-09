@@ -337,6 +337,7 @@ public class QueryBuilder {
     }
     
     
+
     public static String getSongs_by_AlbumID_query(String albumID) {
 
         StringBuilder sb = new StringBuilder();
@@ -346,12 +347,45 @@ public class QueryBuilder {
         return sb.toString();
     }
 
+
     public static String getAlbumImages_by_ID(String ID) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM " + PredefinedSQLCode.Tabelle.ALBUM_IMAGES.toString());
         sb.append(" WHERE " + PredefinedSQLCode.Colonne.ID.getName() + " = '" + ID +"';");
 
         //terminal.printQuery_ln(sb.toString());
+        return sb.toString();
+    }
+
+    /**
+     * Genera la query che ritorna le canzoni con gli ID specificati
+     * @param IDs
+     * @return
+     */
+    public static String getSongByID_query(String[] IDs) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM " + PredefinedSQLCode.Tabelle.SONG.toString());
+        sb.append(" WHERE " );
+
+        for (int i = 0; i < IDs.length; i++) {
+            sb.append(PredefinedSQLCode.Colonne.ID.getName() + " = '" + IDs[i] + (i < IDs.length - 1 ? "' OR " : "';"));
+        } 
+
+        //terminal.printQuery_ln(sb.toString());
+        return sb.toString();
+    }
+
+    /**
+     * Genera la query per ottenere tutte le canzoni di un album
+     * @param ID l'ID dell'album
+     * @return
+     */
+    public static String getAlbumSongs_query(String ID) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM " + PredefinedSQLCode.Tabelle.SONG.toString());
+        sb.append(" WHERE " + PredefinedSQLCode.Colonne.ALBUM_ID_REF.getName() + " = '" + ID +"';");
+
+        //terminal.printQueryln(sb.toString());
         return sb.toString();
     }
 
@@ -377,7 +411,7 @@ public class QueryBuilder {
     }
 
 
-    //================================================ OPERAZIONI DI IRCERCA =================================================//
+    //================================================ OPERAZIONI DI RICERCA =================================================//
     public static String getSongSearch_query(String search, long limit, long offset) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT c.* ");

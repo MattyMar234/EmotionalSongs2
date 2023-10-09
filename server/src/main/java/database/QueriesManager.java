@@ -78,6 +78,24 @@ public class QueriesManager {
     }
 
 
+    private static ArrayList<Song> buildSongObjects_From_resultSet(ResultSet resultSet, boolean autoClose) throws SQLException 
+    {
+        ArrayList<Song> result = new ArrayList<Song>();
+
+        while (resultSet.next()) { 
+            Song song = new Song(getHashMap_for_ClassConstructor(resultSet, Tabelle.SONG));
+            song.addImages(getAlbumImages_by_ID(song.getAlbumId()));
+            result.add(song);    
+        }
+
+        if(autoClose) {
+            resultSet.close();
+        }
+
+        return result;
+    }
+
+
     
     
 
@@ -158,7 +176,7 @@ public class QueriesManager {
 
 
 
-    public static synchronized ArrayList<Song> getTopPopularSongs(long limit, long offset) throws SQLException {
+    public static ArrayList<Song> getTopPopularSongs(long limit, long offset) throws SQLException {
 
         /*
         * SELECT * FROM Canzone c JOIN immaginialbums on immaginialbums.id = c.id_album  
@@ -193,55 +211,10 @@ public class QueriesManager {
 
 
 
-    public static synchronized ArrayList<Album> getRecentPublischedAlbum(long limit, long offset, int threshold) throws SQLException 
+    public static ArrayList<Album> getRecentPublischedAlbum(long limit, long offset, int threshold) throws SQLException 
     {
         DatabaseManager database = DatabaseManager.getInstance();
         ArrayList<Album> result = new ArrayList<Album>();
-        Semaphore MUTEX = new Semaphore(0);
-        ArrayList<Thread> threads = new ArrayList<Thread>();
-
-        //per ogni album ottenuto, creo un thread e lo eseguo
-        /*while (resultSet.next()) { 
-            Thread t = new Thread(() -> {
-                try {
-                    //creo un album
-                    Album album = new Album(getHashMap_for_ClassConstructor(resultSet, Tabelle.ALBUM));
-                    
-                    System.out.println(album);
-
-                    
-                    album.addImages(getAlbumImages_by_ID(album.getID()));
-
-                    //creo ed eseguo la query per ottenere tutte le canzoni dell'album
-                    String albums_song_query = QueryBuilder.getSongs_by_AlbumID_query(resultSet.getString(Colonne.ID.getName()));
-                    ResultSet songResultSet = database.submitQuery2(albums_song_query);
-
-                    //per tutte le canzoni che ho ottenuto, predo l'ID e aggiungo alla lista di canzoni dell'album
-                    while(songResultSet.next()) {
-                        String song_id = songResultSet.getString(Colonne.ID.getName());
-                        album.addSongID(song_id);
-                    }
-
-                    //aggiungo il dato alla raccolta
-                    MUTEX.tryAcquire();
-                    result.add(album);
-                    MUTEX.release();
-                } 
-                catch (SQLException e) {
-                    Terminal.getInstance().printQuery_ln("error: " + Terminal.Color.RED_BOLD_BRIGHT + e.getMessage() + Terminal.Color.RESET);
-                }
-
-            });
-            threads.add(t);
-            t.start();    
-        }
-
-        //aspetto che tutti i thread siano terminati
-        for (Thread t : threads) {
-            try {t.join();} catch (InterruptedException e) {}
-        }
-        */
-
         String query = QueryBuilder.getRecentPublischedAlbum_query(limit, offset, threshold);
         
         
@@ -277,8 +250,15 @@ public class QueriesManager {
         return result;
     }
 
-
-    public static synchronized ArrayList<Song> searchSong(String search, long limit, long offset) throws SQLException {
+    /**
+     * Cerca tutte le canzoni che contengono nel titolo la parola passata come parametro
+     * @param search la parola da cercare nel titolo delle canzoni
+     * @param limit numero di record massimi che si vuole avere come risultato
+     * @param offset numero di record da saltare
+     * @return una lista di Song che contengono nel titolo la parola passata come parametro
+     * @throws SQLException
+     */
+    public static ArrayList<Song> searchSong(String search, long limit, long offset) throws SQLException {
         DatabaseManager database = DatabaseManager.getInstance();
         ArrayList<Song> result = new ArrayList<Song>();
 
@@ -297,11 +277,22 @@ public class QueriesManager {
             song.addImages(getAlbumImages_by_ID(song.getAlbumId()));
         }*/
 
-
         return result; 
     }
 
-    public static synchronized ArrayList<Album> searchAlbum(String search, long limit, long offset) throws SQLException {
+    public static ArrayList<Song> searchSongByIDs(String[] IDs) throws SQLException {
+        DatabaseManager database = DatabaseManager.getInstance();
+        String query = QueryBuilder.getSongByID_query(IDs);
+        return buildSongObjects_From_resultSet(database.submitQuery(query), true);
+    }
+
+    public static ArrayList<Song> getAlbumSongs(String albumID) throws SQLException {
+        DatabaseManager database = DatabaseManager.getInstance();
+        String query = QueryBuilder.getAlbumSongs_query(albumID);
+        return buildSongObjects_From_resultSet(database.submitQuery(query), true);
+    }
+
+    public static ArrayList<Album> searchAlbum(String search, long limit, long offset) throws SQLException {
         DatabaseManager database = DatabaseManager.getInstance();
         ArrayList<Album> result = new ArrayList<Album>();
 

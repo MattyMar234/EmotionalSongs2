@@ -17,7 +17,7 @@ public class Album implements Serializable {
     private int element;
     private String artistID;
 
-    private List<String> songID_list = new ArrayList<>();
+    private ArrayList<String> songID_list = new ArrayList<>();
     private HashMap <String, MyImage> images = new HashMap <String, MyImage>();
 
 
@@ -45,6 +45,10 @@ public class Album implements Serializable {
         }
         stringBuilder.append("]");
         return stringBuilder.toString();
+    }
+
+    public ArrayList<String> getSongsID() {
+        return songID_list;
     }
 
     public MyImage getImage(MyImage.ImageSize size) {

@@ -3,17 +3,23 @@ package controllers;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import application.EmotionalSongs;
 import application.ObjectsCache;
 import application.SceneManager;
+import application.SceneManager.SceneElements;
 import interfaces.ControllerFunctions;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
@@ -22,7 +28,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import objects.Album;
+import objects.Artist;
 import objects.MyImage;
+import objects.Playlist;
 import objects.Song;
 
 
@@ -39,7 +47,14 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     @FXML public AnchorPane linearColorAnchorPane;
     @FXML public AnchorPane blackColorAnchorPane;
 
+    @FXML public ListView<Object> listView;
     private Object displayedElement;
+    private ObservableList<Object> ObservableList = FXCollections.observableArrayList();
+
+
+    private Image img;
+    private String imgURL = "";
+    private String spotifyUrl = "";
 
     
     
@@ -56,38 +71,23 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     public void injectData(Object... data) {
         this.displayedElement = data[0];
 
-        
-
         Platform.runLater(() -> {
-
-            Image img;
-            String imgURL = "";
-            String spotifyUrl = "";
-
-            if(displayedElement instanceof Song) {
-
-                for(int i = 0; i < 1; i++) {
-                    ((SongDetails_controller)SceneManager.getInstance().injectScene("SongDetails.fxml", elementContainer)).init();
-
+            try {
+                if(displayedElement instanceof Song) {
+                    setupAsSong(data);  
                 }
-                    
-
-                final Song song = (Song) displayedElement;
-                labelName.setText(song.getTitle());
-                labelType.setText("Song");
-
-                imgURL = song.getImage(MyImage.ImageSize.S300x300).getUrl();
-                spotifyUrl = song.getSpotifyUrl();
-            }
-                
-            else if(displayedElement instanceof Album) {
-                final Album album = (Album) displayedElement;
-
-                labelName.setText(album.getName());
-                labelType.setText("Album");
-
-                imgURL = ((Album) displayedElement).getImage(MyImage.ImageSize.S300x300).getUrl();
-                album.getSpotifyURL();
+                else if(displayedElement instanceof Album) {
+                    setupAsAlbum(data);    
+                }
+                else if(displayedElement instanceof Artist) {
+                    setupAsArtist(data);    
+                }
+                else if(displayedElement instanceof Playlist) {
+                    //setupAsArtist(data);    
+                }
+            } 
+            catch (Exception e) {
+                e.printStackTrace();
             }
         
 
@@ -133,6 +133,76 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     @Override
     public void init(Object... data) {
        
+    }
+
+
+
+    private void setupAsSong(Object... data) 
+    { 
+        for(int i = 0; i < 1; i++) {
+            ((SongDetails_controller)SceneManager.getInstance().injectScene("SongDetails.fxml", elementContainer)).init();
+        }
+            
+
+        final Song song = (Song) displayedElement;
+        labelName.setText(song.getTitle());
+        labelType.setText("Song");
+
+        imgURL = song.getImage(MyImage.ImageSize.S300x300).getUrl();
+        spotifyUrl = song.getSpotifyUrl();
+
+        listView.setVisible(false);
+    }   
+
+
+
+    private void setupAsAlbum(Object... data) throws Exception 
+    {
+        final Album album = (Album) displayedElement;
+
+        
+        labelName.setText(album.getName());
+        labelType.setText("Album");
+
+        imgURL = ((Album) displayedElement).getImage(MyImage.ImageSize.S300x300).getUrl();
+        album.getSpotifyURL();
+
+        //connectionManager.getSongByIDs(album.getSongsID().toArray());
+        
+        
+
+        new Thread(() -> {
+            try {
+                //ObservableList.addAll(songs);
+                ArrayList<Song> songs = connectionManager.getAlbumSongs(album.getID());
+                
+                System.out.println("element: " + songs.size());
+                for (Song song : songs) {
+
+                    System.out.println("loading element: " + song.getTitle());
+                    
+                    Platform.runLater(() -> {
+                        ListCell_Controller listCell = (ListCell_Controller) SceneManager.getInstance().injectElement(SceneElements.SONG_LIST_VIEW, elementContainer);
+                        listCell.injectData(song);
+                    });
+                    
+                }
+
+                
+            } 
+            catch (Exception e) {
+                System.out.println(e);
+                e.printStackTrace();
+            }
+        }).start();
+        
+      
+    }
+
+    private void setupAsArtist(Object... data) 
+    {
+        
+
     }
 
 

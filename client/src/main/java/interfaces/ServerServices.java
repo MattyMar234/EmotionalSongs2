@@ -29,6 +29,9 @@ public interface ServerServices {
     public ArrayList<Song> searchSongs(String searchString, long limit, long offset) throws Exception;
     public ArrayList<Album> searchAlbums(String searchString, long limit, long offset) throws Exception;
 
+    //canzoni
+    public ArrayList<Song> getSongByIDs(String[] IDs) throws Exception;
+    public ArrayList<Song> getAlbumsSongs(String AlbumID) throws Exception;
     
     //public ArrayList<Artist> searchArtists(String searchString, long limit, long offset) throws RemoteException;
 

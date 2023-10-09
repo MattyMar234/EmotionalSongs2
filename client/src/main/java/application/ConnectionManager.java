@@ -66,12 +66,13 @@ public class ConnectionManager {
 	private class PacketLintener_thread extends Thread 
 	{
 		public PacketLintener_thread() {
+			super("PacketListener");
 			start();
 		}
 
 		@Override
 		public void run() {
-			while(true) {try {waitForPacket(); getPacket();} catch (Exception e) {e.printStackTrace();}}
+			while(true) {try {waitForPacket(); getPackets();} catch (Exception e) {e.printStackTrace();}}
 		}
 	}
 
@@ -84,7 +85,7 @@ public class ConnectionManager {
 		}
 	}
 
-	private void getPacket() throws ClassNotFoundException, IOException 
+	private void getPackets() throws ClassNotFoundException, IOException 
 	{
 		try {
 			String id = (String) inputStream.readObject();
@@ -102,7 +103,6 @@ public class ConnectionManager {
 				disconnect();
 				notifyAll();
 			}
-			EmotionalSongs.getInstance().stage.fireEvent(new ConnectionEvent(ConnectionEvent.DISCONNECTED));	
 		}
 		
 	}
@@ -118,11 +118,16 @@ public class ConnectionManager {
         }
 
 		new Thread(() -> {
-			try {Thread.sleep(1000);	} catch (InterruptedException e) {}
-			
+			Thread.currentThread().setName("PING sender");
+			//Thread.currentThread().setDaemon(true);
+
 			while(true) {
+				try {Thread.sleep(1000);	} catch (InterruptedException e) {System.out.println(e);}
 				if(isConnected()) {
-					testServerConnection();
+					if(!testServerConnection()) {
+						disconnect();
+						EmotionalSongs.getInstance().stage.fireEvent(new ConnectionEvent(ConnectionEvent.DISCONNECTED));	
+					}
 				}
 			}
 		}).start();
@@ -190,18 +195,19 @@ public class ConnectionManager {
 	 * @return success of the connection
 	 */
 	public synchronized boolean testServerConnection() {
-		boolean result = false;
-
 		try {
 			if(isConnected() && clientSocket != null) {
-				result = testConnection();
+				return testConnection();
 			} 
-		} catch (Exception e) {
-			result = false;
-			//e.printStackTrace();
+			else {
+				return false;
+			}
+		} 
+		catch (Exception e) {
 			System.out.println(e);
+			return false;
+			//e.printStackTrace();
 		}
-		return result;
 	}
 
 	/**
@@ -268,7 +274,7 @@ public class ConnectionManager {
 	}
 
 
-	public synchronized boolean isConnected() {
+	public boolean isConnected() {
 		return connected;
 	}
 
@@ -281,16 +287,19 @@ public class ConnectionManager {
 
 		//timeline.stop();
 		connected = false;
-		try {
-			this.CloseComunication();
-		} catch (Exception e) {
-			System.out.println(e);
-			//e.printStackTrace();
+		if(isConnected()) {
+			try {
+				this.CloseComunication();
+			} catch (Exception e) {
+				System.out.println(e);
+				e.printStackTrace();
+			}
 		}
 		
 		resultToWait = 0;
 		requestResult.clear();
 		clientSocket = null;
+		notifyAll();
 		
 	}
 	
@@ -343,21 +352,23 @@ public class ConnectionManager {
 			throw new IOException("Non si è connessi con il server");
 
 		//invio i dati e sveglio il thread che gestisce la ricezzione dei risultati
-		synchronized(this) {
-			outputStream.writeObject(task);
-			outputStream.flush();
-			resultToWait++;
-			notifyAll();
-		}
-		
-		
-		//aspetto che il mio risultato si disponibile
-		synchronized(this) {
-			while(clientSocket != null && !requestResult.containsKey(myId)) {
-				try {wait();} catch (InterruptedException e) {}
+		try {
+			synchronized(this) {
+				outputStream.writeObject(task);
+				outputStream.flush();
+				resultToWait++;
+				notifyAll();
+
+				while(clientSocket != null && !requestResult.containsKey(myId)) {
+					try {wait();} catch (InterruptedException e) {}
+				}
 			}
 		}
-
+		catch (Exception e) {
+			System.out.println(e);
+			throw e;
+		}
+		
 		if(this.clientSocket == null)
 			throw new IOException("Comunicazione con il server persa");
 		
@@ -369,6 +380,12 @@ public class ConnectionManager {
 		if(result instanceof InvalidParameterException)
 			throw (InvalidParameterException) result;
 
+		System.out.println("result: " + Thread.currentThread().getName());
+		/*for (StackTraceElement line : Thread.currentThread().getStackTrace()) {
+			System.out.println(line.toString());
+		}
+		
+		System.exit(0);*/
 		return result;
 	}
 
@@ -448,7 +465,7 @@ public class ConnectionManager {
 		Object[] params = new Object[]{"limit", limit,"offset", offset, "threshold", threshold};
 	
 		try {
-			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_MOST_POPULAR_SONGS.name(), params));
+			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_RECENT_PUPLISCED_ALBUMS.name(), params));
 			data = (ArrayList<Album>) result;
 		}
 		catch (IOException e) {
@@ -483,6 +500,42 @@ public class ConnectionManager {
 		try {
 			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.SEARCH_SONGS.name(), params));
 			data = (ArrayList<Album>) result;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return data;
+	}
+
+
+	public ArrayList<Song> getSongByIDs(String[] IDs) throws Exception 
+	{
+		Object[] params = new Object[]{"IDs", IDs};
+		ArrayList<Song> data = null;
+		
+		try {
+			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_SONG_BY_IDS.name(), params));
+			data = (ArrayList<Song>) result;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return data;
+	}
+
+    public ArrayList<Song> getAlbumSongs(String AlbumID) throws Exception 
+	{
+		System.out.println("AlbumID:" + AlbumID);
+		Object[] params = new Object[]{"albumID", AlbumID};
+		ArrayList<Song> data = null;
+		
+		try {
+			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_ALBUM_SONGS.name(), params));
+			
+			if(result instanceof Exception)
+				throw (Exception) result;
+			
+			data = (ArrayList<Song>) result;
 		}
 		catch (Exception e) {
 			e.printStackTrace();

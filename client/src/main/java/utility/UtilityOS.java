@@ -1,6 +1,10 @@
 package utility;
 
+import java.io.File;
 import java.util.Properties;
+
+import application.EmotionalSongs;
+import javafx.scene.image.Image;
 
 public final class UtilityOS
 {
@@ -41,4 +45,13 @@ public final class UtilityOS
     public static String getSeparator() {
         return fileSeparator;
     }
+
+    public static Image getImage(String path) 
+    {
+        if(UtilityOS.isUnix() || UtilityOS.isMac())
+            return new Image(new File(UtilityOS.formatPath(path)).toURI().toString());
+        else
+            return new Image(UtilityOS.formatPath(path));
+    }
 }
+

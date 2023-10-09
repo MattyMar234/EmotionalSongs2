@@ -57,8 +57,8 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
 
 
     // ========================= Buttons ========================= //
-    @FXML public Button profileButton;
-    @FXML public Button reposityButton;
+    @FXML public Button homeButton;
+    @FXML public Button exploreButton;
     @FXML public Button playlistButton;
     //@FXML public Button optionsButton;
     @FXML public Button CambioButton;
@@ -158,10 +158,7 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
     
 
 
-    public void setHomePage() {
-        //this.anchor.getChildren().clear();
-        //super.setApplicationPage("MainPage_Home.fxml", this.anchor); //ApplicationAccessPage
-    }
+    
 
     private void ClearActiveButtons() {
 
@@ -228,12 +225,12 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
     }
 
     @FXML
-    public void setReposity(ActionEvent event) throws IOException
+    public void setHomePage(ActionEvent event) throws IOException
     {
         if(state != 1 ) {
             state = 1;
             ClearActiveButtons();
-            this.buttons.get(1).setStyle(ButtonColor);
+            
             
         }
     }
@@ -243,16 +240,17 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
     {
         state = 2;
         ClearActiveButtons();
-        this.buttons.get(2).setStyle(ButtonColor);
+        //this.buttons.get(2).setStyle(ButtonColor);
+        SceneManager.getInstance().showScene(SceneManager.SceneName.DISPLAY_ELEMENT_PAGE);
+        System.out.println("heree");
         //SetPlayListPage();
     }
 
     @FXML
-    public void SetOptions(ActionEvent event) throws IOException {
+    public void SetExplorePage(ActionEvent event) throws IOException {
         if(state != 3 ) {
             state = 3;
-            ClearActiveButtons();
-            this.buttons.get(3).setStyle(ButtonColor);
+            
             //SetOptionsPage();
         }
     }
