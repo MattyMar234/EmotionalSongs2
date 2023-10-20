@@ -18,6 +18,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
@@ -32,6 +33,7 @@ import objects.Artist;
 import objects.MyImage;
 import objects.Playlist;
 import objects.Song;
+import utility.UtilityOS;
 
 
 public class MainPage_ElementDisplayer_Controller extends ControllerBase implements Initializable, ControllerFunctions {
@@ -43,6 +45,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     @FXML public ImageView image;
 
     @FXML public VBox elementContainer;
+    @FXML public Button actionButton;
 
     @FXML public AnchorPane linearColorAnchorPane;
     @FXML public AnchorPane blackColorAnchorPane;
@@ -52,7 +55,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     private ObservableList<Object> ObservableList = FXCollections.observableArrayList();
 
 
-    private Image img;
+    private Image img = null;
     private String imgURL = "";
     private String spotifyUrl = "";
 
@@ -60,9 +63,8 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-        
-        
+        actionButton.setDisable(true);
+        actionButton.setVisible(false);
     }
 
 
@@ -75,57 +77,71 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
             try {
                 if(displayedElement instanceof Song) {
                     setupAsSong(data);  
+                    setImage_and_backgroundColor();
+                    setImageLink();
                 }
                 else if(displayedElement instanceof Album) {
-                    setupAsAlbum(data);    
+                    setupAsAlbum(data);
+                    setImage_and_backgroundColor();    
+                    setImageLink();
                 }
                 else if(displayedElement instanceof Artist) {
-                    setupAsArtist(data);    
+                    setupAsArtist(data);  
+                    setImage_and_backgroundColor();  
+                    setImageLink();
                 }
                 else if(displayedElement instanceof Playlist) {
-                    //setupAsArtist(data);    
+                    //setupAsArtist(data);   
+                    setImage_and_backgroundColor(); 
+                    setImageLink();
                 }
+                else if(displayedElement.getClass().isArray()) {
+                    setupAsPlaylistShower(data);
+                } 
             } 
             catch (Exception e) {
                 e.printStackTrace();
             }
-        
-
-            img = ObjectsCache.getImage(imgURL);
-
-                
-            if(img == null) {
-                EmotionalSongs.imageDownloader.addImageToDownload(imgURL, image);  
-            }
-            else {
-                Color everegedColor = getAverageColor(img);
-
-                everegedColor = brightenColor(everegedColor, 0.1);
-
-                String color = ColorToHex(everegedColor);
-                linearColorAnchorPane.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");");
-                image.setImage(img);
-            }
-
-            final String url = spotifyUrl;
-
-            image.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-                    try {
-                        openLink(url);
-                    } 
-                    catch (IOException e) {
-                        e.printStackTrace();
-                    } 
-                    catch (URISyntaxException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-
         });
-        
+    }
+
+    private void setImageLink() {
+        final String url = spotifyUrl;
+        image.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                try {
+                    openLink(url);
+                } 
+                catch (IOException e) {
+                    e.printStackTrace();
+                } 
+                catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void setImage_and_backgroundColor() {
+        if(!imgURL.equals("")) {
+            
+        }
+        img = ObjectsCache.getImage(imgURL);
+
+        if(img == null) {
+            EmotionalSongs.imageDownloader.addImageToDownload(imgURL, image);  
+        }
+        else 
+        {
+            Color everegedColor = getAverageColor(img);
+
+            everegedColor = brightenColor(everegedColor, 0.1);
+
+            String color = ColorToHex(everegedColor);
+            linearColorAnchorPane.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");");
+            image.setImage(img);
+        }
     }
 
 
@@ -139,10 +155,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
 
     private void setupAsSong(Object... data) 
     { 
-        for(int i = 0; i < 1; i++) {
-            ((SongDetails_controller)SceneManager.getInstance().injectScene("SongDetails.fxml", elementContainer)).init();
-        }
-            
+        ((SongDetails_controller)SceneManager.getInstance().injectScene("SongDetails.fxml", elementContainer)).init();
 
         final Song song = (Song) displayedElement;
         labelName.setText(song.getTitle());
@@ -160,17 +173,13 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     {
         final Album album = (Album) displayedElement;
 
-        
         labelName.setText(album.getName());
         labelType.setText("Album");
 
         imgURL = ((Album) displayedElement).getImage(MyImage.ImageSize.S300x300).getUrl();
         album.getSpotifyURL();
 
-        //connectionManager.getSongByIDs(album.getSongsID().toArray());
         
-        
-
         new Thread(() -> {
             try {
                 //ObservableList.addAll(songs);
@@ -182,26 +191,60 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                     System.out.println("loading element: " + song.getTitle());
                     
                     Platform.runLater(() -> {
-                        ListCell_Controller listCell = (ListCell_Controller) SceneManager.getInstance().injectElement(SceneElements.SONG_LIST_VIEW, elementContainer);
+                        ListCell_Controller listCell = (ListCell_Controller) SceneManager.getInstance().injectElement(SceneElements.LIST_ELEMENT, elementContainer);
                         listCell.injectData(song);
                     });
-                    
-                }
-
-                
+                } 
             } 
             catch (Exception e) {
                 System.out.println(e);
                 e.printStackTrace();
             }
         }).start();
-        
-      
     }
 
     private void setupAsArtist(Object... data) 
     {
         
+
+    }
+
+    private void setupAsPlaylistShower(Object... data) 
+    {
+        labelName.setText("Le tue playlist");
+        labelType.setText("");
+        image.setImage(new Image(UtilityOS.formatPath(EmotionalSongs.ImageFolder + "\\icon\\playlistIcon.png")));
+        linearColorAnchorPane.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ "#050500" +");");
+
+        actionButton.setDisable(false);
+        actionButton.setVisible(true);
+        actionButton.setText("Crea una nuova playlist");
+
+        actionButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                //SceneManager.getInstance().showScene(null, data)
+            }
+        });
+        
+        Object[] test = new Object[]{new Playlist(), new Playlist(), new Playlist()};
+        //carico le playlist
+        new Thread(() -> {
+            try {
+                for (Object p : test) //Object p : data
+                {
+                    Playlist playtlist = (Playlist)p;
+                    Platform.runLater(() -> {
+                        ListCell_Controller listCell = (ListCell_Controller) SceneManager.getInstance().injectElement(SceneElements.LIST_ELEMENT, elementContainer);
+                        listCell.injectData(playtlist);
+                    });
+                } 
+            } 
+            catch (Exception e) {
+                System.out.println(e);
+                e.printStackTrace();
+            }
+        }).start();
 
     }
 

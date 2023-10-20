@@ -51,7 +51,8 @@ public class SceneManager {
      * Classe enum per tener traccia delle finestre presenti nell'applicazione
      */
     public enum ApplicationWinodw {
-        EMOTIONL_SONGS_WINDOW;
+        EMOTIONL_SONGS_WINDOW,
+        PLAYLIST_CREATION_WINDOW;
     }
 
     /**
@@ -65,7 +66,7 @@ public class SceneManager {
 
     public enum SceneElements {
 
-        SONG_LIST_VIEW(SongListView_path);
+        LIST_ELEMENT(SongListView_path);
 
         private String file;
     
@@ -296,7 +297,7 @@ public class SceneManager {
     * @param sceneName Identificativo della scena
     * @param args Parametri per i controllers
     */
-    public ArrayList<ControllerBase> showScene(SceneName sceneName, Object... args) 
+    public ControllerBase showScene(SceneName sceneName, Object... args) 
     {
         SceneAction action = new SceneAction(sceneName, args);
         EmotionalSongs.getInstance().userActions.addAction(action);
@@ -304,12 +305,12 @@ public class SceneManager {
     } 
 
 
-    public ArrayList<ControllerBase> showScene(SceneAction sceneAction) {
+    public ControllerBase showScene(SceneAction sceneAction) {
         return executeShowScene(sceneAction.scena_name, sceneAction.args);
     }
 
 
-    private ArrayList<ControllerBase> executeShowScene(SceneName sceneName, Object[] args) 
+    private ControllerBase executeShowScene(SceneName sceneName, Object[] args) 
     {
         
         //==================================== Verifica degli stati ====================================//
@@ -425,6 +426,6 @@ public class SceneManager {
             }
         }
 
-        return loadedControllers;
+        return loadedControllers.get(loadedControllers.size() - 1);
     }
 }

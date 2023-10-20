@@ -37,6 +37,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import objects.Playlist;
 import utility.UtilityOS;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -229,9 +230,7 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
     {
         if(state != 1 ) {
             state = 1;
-            ClearActiveButtons();
-            
-            
+            ClearActiveButtons();  
         }
     }
 
@@ -241,9 +240,9 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
         state = 2;
         ClearActiveButtons();
         //this.buttons.get(2).setStyle(ButtonColor);
-        SceneManager.getInstance().showScene(SceneManager.SceneName.DISPLAY_ELEMENT_PAGE);
-        System.out.println("heree");
-        //SetPlayListPage();
+        MainPage_ElementDisplayer_Controller element = (MainPage_ElementDisplayer_Controller) SceneManager.getInstance().showScene(SceneManager.SceneName.DISPLAY_ELEMENT_PAGE);
+        Object data = new Playlist[]{};
+        element.injectData(data);
     }
 
     @FXML

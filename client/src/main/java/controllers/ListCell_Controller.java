@@ -17,6 +17,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import objects.Album;
 import objects.Comment;
+import objects.Playlist;
 import objects.Song;
 
 public class ListCell_Controller implements Initializable, ControllerFunctions
@@ -74,6 +75,10 @@ public class ListCell_Controller implements Initializable, ControllerFunctions
         else if(element instanceof Comment) {
             
         } 
+        else if(element instanceof Playlist) {
+            label1.setText(String.valueOf("??"));
+            label2.setText("platlist title");
+        }
     }
 
     public static String convertTime(long milliseconds) {

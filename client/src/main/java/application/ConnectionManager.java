@@ -247,8 +247,7 @@ public class ConnectionManager {
 		if(isConnected())
 			return true;
 			
-		try 
-		{
+		try	{
 			//provo a creare un socket e i relativi streams.
 			//se va a buon fine, vuoldire che mi sono collegato al server
 			Socket clientSocket  = new Socket(hostAddress, hostPort);
@@ -346,8 +345,8 @@ public class ConnectionManager {
 	private Object makeRequest(Packet task) throws IOException, InvalidParameterException 
 	{
 		final String myId = task.getId();
+		double start = System.nanoTime();
 
-		//
 		if(this.clientSocket == null)
 			throw new IOException("Non si è connessi con il server");
 
@@ -381,11 +380,8 @@ public class ConnectionManager {
 			throw (InvalidParameterException) result;
 
 		System.out.println("result: " + Thread.currentThread().getName());
-		/*for (StackTraceElement line : Thread.currentThread().getStackTrace()) {
-			System.out.println(line.toString());
-		}
-		
-		System.exit(0);*/
+		double end = System.nanoTime();
+		System.out.println(task.getCommand() + " time: " + (end - start)/1000000000 + "s" );
 		return result;
 	}
 
