@@ -76,7 +76,7 @@ public class RowContainerController extends ControllerBase implements Initializa
         Platform.runLater(() -> {title.setText(this.elementsTitle);});
 
         for(final Object o : castedList) {
-            displayElementContainerList.get(i++).InjectData(o);
+            displayElementContainerList.get(i++).injectData(o);
         }  
     }
 

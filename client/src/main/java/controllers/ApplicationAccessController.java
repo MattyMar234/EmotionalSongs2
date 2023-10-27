@@ -19,7 +19,7 @@ import application.ConnectionManager;
 import application.EmotionalSongs;
 import application.SceneManager;
 import application.SceneManager.ApplicationState;
-import application.SceneManager.SceneName;
+import application.SceneManager.ApplicationScene;
 import applicationEvents.ConnectionEvent;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -293,8 +293,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
         }
 
         clearError();
-        //WindowContainerController.getActiveInstance().setMainPage();
-        sceneManager.showScene(SceneName.HOME_PAGE);
+        sceneManager.showScene(ApplicationScene.MAIN_PAGE_HOME);
       
     }
 
@@ -306,9 +305,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
         }
 
         clearError();
-        sceneManager.showScene(SceneName.REGISTRATION_PAGE);
-        //WindowContainerController.getActiveInstance().setRegistrationPage();
-        
+        sceneManager.showScene(ApplicationScene.REGISTRATION_PAGE);
     }
 
     @FXML
@@ -354,7 +351,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
 
             if(response != null) {
                 EmotionalSongs.getInstance().account = response;
-                sceneManager.showScene(SceneName.HOME_PAGE);
+                sceneManager.showScene(ApplicationScene.MAIN_PAGE_HOME);
             }
         } 
         catch (InvalidUserNameException e) {

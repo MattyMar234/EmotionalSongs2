@@ -9,8 +9,8 @@ import java.util.ResourceBundle;
 import application.EmotionalSongs;
 import application.ObjectsCache;
 import application.SceneManager;
-import application.SceneManager.SceneElements;
-import interfaces.ControllerFunctions;
+import application.SceneManager.FXML_elements;
+import interfaces.Injectable;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -36,7 +36,7 @@ import objects.Song;
 import utility.UtilityOS;
 
 
-public class MainPage_ElementDisplayer_Controller extends ControllerBase implements Initializable, ControllerFunctions {
+public class MainPage_ElementDisplayer_Controller extends ControllerBase implements Initializable, Injectable {
 
 
     @FXML public Label labelName;
@@ -132,16 +132,16 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
         if(img == null) {
             EmotionalSongs.imageDownloader.addImageToDownload(imgURL, image);  
         }
-        else 
-        {
-            Color everegedColor = getAverageColor(img);
+        
+        
+        Color everegedColor = getAverageColor(img);
 
-            everegedColor = brightenColor(everegedColor, 0.1);
+        everegedColor = brightenColor(everegedColor, 0.1);
 
-            String color = ColorToHex(everegedColor);
-            linearColorAnchorPane.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");");
-            image.setImage(img);
-        }
+        String color = ColorToHex(everegedColor);
+        linearColorAnchorPane.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");");
+        image.setImage(img);
+        
     }
 
 
@@ -164,7 +164,9 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
         imgURL = song.getImage(MyImage.ImageSize.S300x300).getUrl();
         spotifyUrl = song.getSpotifyUrl();
 
-        listView.setVisible(false);
+        System.out.println(imgURL);
+
+        //listView.setVisible(false);
     }   
 
 
@@ -191,7 +193,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                     System.out.println("loading element: " + song.getTitle());
                     
                     Platform.runLater(() -> {
-                        ListCell_Controller listCell = (ListCell_Controller) SceneManager.getInstance().injectElement(SceneElements.LIST_ELEMENT, elementContainer);
+                        ListCell_Controller listCell = (ListCell_Controller) SceneManager.getInstance().injectElement(FXML_elements.LIST_ELEMENT, elementContainer);
                         listCell.injectData(song);
                     });
                 } 
@@ -235,7 +237,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                 {
                     Playlist playtlist = (Playlist)p;
                     Platform.runLater(() -> {
-                        ListCell_Controller listCell = (ListCell_Controller) SceneManager.getInstance().injectElement(SceneElements.LIST_ELEMENT, elementContainer);
+                        ListCell_Controller listCell = (ListCell_Controller) SceneManager.getInstance().injectElement(FXML_elements.LIST_ELEMENT, elementContainer);
                         listCell.injectData(playtlist);
                     });
                 } 

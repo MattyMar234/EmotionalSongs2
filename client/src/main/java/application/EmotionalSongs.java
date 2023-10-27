@@ -17,7 +17,7 @@ import java.util.Optional;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
-import application.SceneManager.SceneName;
+import application.SceneManager.ApplicationScene;
 import applicationEvents.ConnectionEvent;
 import utility.ImageDownloader;
 import utility.UtilityOS;
@@ -110,7 +110,7 @@ public class EmotionalSongs extends Application
         stage.addEventFilter(ConnectionEvent.SERVER_NOT_FOUND, this::handleInvalidConnectionEvent);
 
     
-        sceneManager.showScene(SceneName.ACCESS_PAGE);
+        sceneManager.showScene(ApplicationScene.ACCESS_PAGE);
         
 
         /*for (Song s : this.connectionManager.getService().getMostPopularSongs(10,0)) {
@@ -131,7 +131,7 @@ public class EmotionalSongs extends Application
         System.out.println("Connection lost");
         this.showConnectionAlert();
         Platform.runLater(() -> {
-            SceneManager.getInstance().showScene(SceneName.ACCESS_PAGE);
+            SceneManager.getInstance().showScene(ApplicationScene.ACCESS_PAGE);
         });
     }
 

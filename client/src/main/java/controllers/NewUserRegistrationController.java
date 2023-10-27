@@ -15,7 +15,7 @@ import Exceptions.InvalidUserNameException;
 import application.ConnectionManager;
 import application.EmotionalSongs;
 import application.SceneManager;
-import application.SceneManager.SceneName;
+import application.SceneManager.ApplicationScene;
 import interfaces.ServerServices;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -487,7 +487,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
         try {
             Account account = service.addAccount(name.getText(), surname.getText(), userID.getText(), codiceFiscale.getText(), email.getText(), password.getText(), civicNumber.getText(), viaPiazza.getText(), cap.getSelectionModel().getSelectedItem(), commune.getSelectionModel().getSelectedItem(), province.getSelectionModel().getSelectedItem());
             EmotionalSongs.getInstance().account = account;
-            SceneManager.getInstance().showScene(SceneName.HOME_PAGE);
+            SceneManager.getInstance().showScene(ApplicationScene.MAIN_PAGE_HOME);
         
         } 
         catch (InvalidUserNameException e) {
@@ -517,7 +517,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
 
     @FXML
     public void TurnBack() throws IOException {
-       SceneManager.getInstance().showScene(SceneName.ACCESS_PAGE);
+       SceneManager.getInstance().showScene(ApplicationScene.ACCESS_PAGE);
     }
 
     @FXML

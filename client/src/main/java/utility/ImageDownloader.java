@@ -61,7 +61,7 @@ public class ImageDownloader extends Thread
                 Node node = queue.poll();
 
                 try {
-                    System.out.println(node.url);
+                    //System.out.println(node.url);
                     Image img = download_Image_From_Internet(node.url);
                     
                     ObjectsCache.addImage(node.url, img);

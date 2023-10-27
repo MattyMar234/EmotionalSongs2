@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 import application.EmotionalSongs;
 import application.ObjectsCache;
 import application.SceneManager;
+import interfaces.Injectable;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -22,36 +23,42 @@ import objects.MyImage;
 import objects.Song;
 import utility.UtilityOS;
 
-public class ElementContainer extends ControllerBase implements Initializable{
-
-
+public class ElementContainer extends ControllerBase implements Initializable, Injectable 
+{
     @FXML public ImageView image;
     @FXML public Label title;
-
-
-    private SceneManager sceneManager;
+    
     private Object displayedElement;
     
-    public ElementContainer(Object displayedElement) {
-        super();
-        sceneManager = SceneManager.getInstance();
-        this.displayedElement = displayedElement;
-    }
-
+    
     public ElementContainer() {
         super();
-        sceneManager = SceneManager.getInstance();
     }
 
-    public void InjectData(Object displayedElement) {
-        this.displayedElement = displayedElement;
+    @Override
+    public void initialize(URL location, ResourceBundle resources) 
+    {
+        Random random = new Random();
+        int number = random.nextInt(22) + 1;
 
+        this.title.setText("?");
+        image.setImage(UtilityOS.getImage(EmotionalSongs.ImageFolder + "\\colored_icon\\" + number + ".png"));    
+    }
+
+    @Override
+    public void init(Object... data) {
+        
+    }
+
+    
+    @Override
+    public void injectData(Object...data) {
+        this.displayedElement = data[0];
 
         if(displayedElement instanceof Song) 
         {
             Song song = (Song) displayedElement;
             Platform.runLater(() -> {title.setText(song.getTitle());});
-
 
             Image img = ObjectsCache.getImage(song.getImage(MyImage.ImageSize.S300x300).getUrl());
 
@@ -90,15 +97,6 @@ public class ElementContainer extends ControllerBase implements Initializable{
     }
     
     
-    @Override
-    public void initialize(URL location, ResourceBundle resources) 
-    {
-        Random random = new Random();
-        int number = random.nextInt(22) + 1;
-
-        this.title.setText("?");
-        image.setImage(UtilityOS.getImage(EmotionalSongs.ImageFolder + "\\colored_icon\\" + number + ".png"));    
-    }
 
     @FXML
     public void hovered(MouseEvent event) {
@@ -106,21 +104,15 @@ public class ElementContainer extends ControllerBase implements Initializable{
     }
 
     @FXML
-    public void openLink(MouseEvent event) {
-        
-        //SceneManager.getInstance().showScene(SceneManager.SceneName.DISPLAY_ELEMENT_PAGE, displayedElement);
+    public void openLink(MouseEvent event) 
+    {
         if(displayedElement instanceof Song) { 
-            /*Song s = (Song) displayedElement;openLink(s.getSpotifyUrl());*/
-            SceneManager.getInstance().showScene(SceneManager.SceneName.DISPLAY_ELEMENT_PAGE, displayedElement);
-            //MainPage_ElementDisplayer_Controller Displayer_Controller = (MainPage_ElementDisplayer_Controller) loadedControllers.get(1);
-
+            sceneManager.showScene(SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE, displayedElement);
         }
         else if(displayedElement instanceof Artist) {
         }
         else if(displayedElement instanceof Album) {
-            
-            SceneManager.getInstance().showScene(SceneManager.SceneName.DISPLAY_ELEMENT_PAGE, displayedElement);
+            sceneManager.showScene(SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE, displayedElement);
         }
     }
-    
 }

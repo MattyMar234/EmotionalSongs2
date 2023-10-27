@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import interfaces.ControllerFunctions;
+import interfaces.Injectable;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -14,7 +14,7 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.layout.AnchorPane;
 import objects.Song;
 
-public class CommentListCell_Controller extends ListCell<Song> implements Initializable, ControllerFunctions {
+public class CommentListCell_Controller extends ListCell<Song> implements Initializable, Injectable {
 
     @FXML public Label label1;
     @FXML public Label label2;

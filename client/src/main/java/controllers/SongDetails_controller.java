@@ -7,7 +7,7 @@ import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import interfaces.ControllerFunctions;
+import interfaces.Injectable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -21,7 +21,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import objects.Emotion;
 
-public class SongDetails_controller extends ControllerBase implements Initializable, ControllerFunctions
+public class SongDetails_controller extends ControllerBase implements Initializable, Injectable
 {
 
     @FXML public PieChart chart;

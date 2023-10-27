@@ -198,7 +198,7 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
     @FXML
     public void tryLogin(MouseEvent event) {
         if(emotionalSongs.account == null) {
-            SceneManager.getInstance().showScene(SceneManager.SceneName.ACCESS_PAGE);
+            SceneManager.getInstance().showScene(SceneManager.ApplicationScene.ACCESS_PAGE);
         }
     }
         
@@ -228,10 +228,7 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
     @FXML
     public void setHomePage(ActionEvent event) throws IOException
     {
-        if(state != 1 ) {
-            state = 1;
-            ClearActiveButtons();  
-        }
+        MainPage_ElementDisplayer_Controller element = (MainPage_ElementDisplayer_Controller) SceneManager.getInstance().showScene(SceneManager.ApplicationScene.MAIN_PAGE_HOME);
     }
 
     @FXML
@@ -240,9 +237,13 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
         state = 2;
         ClearActiveButtons();
         //this.buttons.get(2).setStyle(ButtonColor);
-        MainPage_ElementDisplayer_Controller element = (MainPage_ElementDisplayer_Controller) SceneManager.getInstance().showScene(SceneManager.SceneName.DISPLAY_ELEMENT_PAGE);
-        Object data = new Playlist[]{};
-        element.injectData(data);
+        MainPage_ElementDisplayer_Controller element = (MainPage_ElementDisplayer_Controller) SceneManager.getInstance().showScene(SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE);
+        
+        if(element != null) {
+            Object data = new Playlist[]{};
+            element.injectData(data);
+        }
+        
     }
 
     @FXML

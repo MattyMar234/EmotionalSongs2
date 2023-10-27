@@ -10,7 +10,7 @@ public class ApplicationActions {
     private Stack<SceneAction> forward_queue = new Stack<SceneAction>();
     private SceneAction actualAction = null;
 
-    private static boolean log = true;
+    private static boolean log = false;
 
 
 

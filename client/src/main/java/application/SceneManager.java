@@ -21,12 +21,15 @@ import controllers.ApplicationAccessController;
 import controllers.ControllerBase;
 import controllers.MainPage_SideBar_Controller;
 import controllers.WindowContainerController;
-import interfaces.ControllerFunctions;
+import interfaces.Injectable;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Stack;
+
 
 public class SceneManager {
 
@@ -41,7 +44,11 @@ public class SceneManager {
 
     private int theme = 0;
     private ArrayList<ControllerBase> loadedControllers = new ArrayList<>();
+    private ArrayList<SceneElemets> loadedSceneElemets = new ArrayList<>();
     private ApplicationState applicationState = null;
+
+    private HashMap<ApplicationWinodws, ApplicationScene> windows_currentScene = new HashMap<>();
+    private HashMap<ApplicationWinodws, Stack<ControllerBase>> windows_currentSceneControllers = new HashMap<>();
     
     private static SceneManager instance;
     private Stage stage;
@@ -50,9 +57,19 @@ public class SceneManager {
     /**
      * Classe enum per tener traccia delle finestre presenti nell'applicazione
      */
-    public enum ApplicationWinodw {
-        EMOTIONL_SONGS_WINDOW,
-        PLAYLIST_CREATION_WINDOW;
+    public enum ApplicationWinodws {
+        EMOTIONL_SONGS_WINDOW(null),
+        PLAYLIST_CREATION_WINDOW(null);
+        
+        Class<?> windowManagerClass;
+
+        private ApplicationWinodws(Class<?> windowManagerClass) {
+            this.windowManagerClass = windowManagerClass;
+        }
+
+        private Class<?> getWindowManagerClass() {
+            return this.windowManagerClass;
+        }
     }
 
     /**
@@ -64,13 +81,13 @@ public class SceneManager {
         MAIN_PAGE
     }
 
-    public enum SceneElements {
+    public enum FXML_elements {
 
         LIST_ELEMENT(SongListView_path);
 
         private String file;
     
-        private SceneElements(String file) {
+        private FXML_elements(String file) {
             this.file = file;
         }
 
@@ -78,44 +95,63 @@ public class SceneManager {
             return file;
         }
     }
-    
 
-
-    public enum SceneName 
+    private enum SceneElemets
     {
-        ACCESS_PAGE(ApplicationState.ACCESS_PAGE,BaseContainer_path, AccessPage_path),
-        REGISTRATION_PAGE(ApplicationState.REGISTRATION_PAGE ,BaseContainer_path, RegistrationPage_path),
-        HOME_PAGE(ApplicationState.MAIN_PAGE, BaseContainer_path, MainPage_SideBar_path, MainPage_home_path),
-        DISPLAY_ELEMENT_PAGE(ApplicationState.MAIN_PAGE, BaseContainer_path, MainPage_SideBar_path, ElementDisplay_path),
-        //PLAYLISTS_PAGE(ApplicationState.MAIN_PAGE,""),
-        //ACCOUNT_PAGE(ApplicationState.MAIN_PAGE,""),
-        COMMENT_ELEMENT(ApplicationState.MAIN_PAGE,Comment_path);
+        BASE_CONTAINER(BaseContainer_path),
+        REGISTRATION(RegistrationPage_path),
+        ACCESS(AccessPage_path),
+        MAIN_SIDEBAR(MainPage_SideBar_path),
+        MAIN_HOME(MainPage_home_path),
+        MAIN_EXPLORE(null),
+        MAIN_DISPLAYER(ElementDisplay_path);
+        
 
+        private Object[] parametre;
+        private String file;
 
-        private String[] file_array;
-        private ApplicationState state;
-
-    
-        private SceneName(ApplicationState state, String... file) {
-            this.file_array = file;
-            this.state = state;
+        private SceneElemets(String file, Object...parametre) {
+            this.parametre = parametre;
+            this.file = file;
         }
 
-        public String[] getFilePath() {
-            return file_array;
+        public String getElemetFilePath() {
+            return file;
         }
 
-        public ApplicationState getCorrespondentState() {
-            return state;
+        public Object[] getParameters() {
+            return parametre;
         }
     }
-
     
+
+
+    public enum ApplicationScene 
+    {
+        ACCESS_PAGE,
+        REGISTRATION_PAGE,
+        CREATE_PLAYLIST,
+        MAIN_PAGE_HOME,
+        MAIN_PAGE_EXPLORE,
+        MAIN_PAGE_PLAYLIST,
+        MAIN_PAGE_SHOW_SONG,
+        MAIN_PAGE_SHOW_ALBUM,
+        DISPLAY_ELEMENT_PAGE,
+        MAIN_PAGE_SHOW_PLAYLIST;
+    }
+
     public static SceneManager getInstance() {
-        if (instance == null) {
+        if (instance == null)
             instance = new SceneManager();
-        }
         return instance;
+    }
+
+    private SceneManager() {
+        windows_currentScene.put(ApplicationWinodws.EMOTIONL_SONGS_WINDOW, null);
+        windows_currentScene.put(ApplicationWinodws.PLAYLIST_CREATION_WINDOW, null);
+        
+        windows_currentSceneControllers.put(ApplicationWinodws.EMOTIONL_SONGS_WINDOW, new Stack<>());
+        windows_currentSceneControllers.put(ApplicationWinodws.PLAYLIST_CREATION_WINDOW, new Stack<>());
     }
 
     public ApplicationState getApplicationState() {
@@ -225,7 +261,7 @@ public class SceneManager {
     * @param anchor Il riferimento dell'anchor (anchorPane o BorderPane)
     * @return riferimento della classe controller del file fxml caricato.
     */ 
-    public Object injectElement(SceneElements element, Object anchor) {
+    public Object injectElement(FXML_elements element, Object anchor) {
 
         FXMLLoader loader = null;
         try {
@@ -285,91 +321,115 @@ public class SceneManager {
         return loader.getController();
     }
 
-    
-
-    
-
-    
-
+ 
 
     /**
     * 
     * @param sceneName Identificativo della scena
     * @param args Parametri per i controllers
     */
-    public ControllerBase showScene(SceneName sceneName, Object... args) 
+    public ControllerBase showScene(ApplicationScene sceneName, Object... args) 
     {
         SceneAction action = new SceneAction(sceneName, args);
         EmotionalSongs.getInstance().userActions.addAction(action);
-        return executeShowScene(sceneName, args);
+        return executeShowScene(ApplicationWinodws.EMOTIONL_SONGS_WINDOW,sceneName, args);
     } 
 
 
     public ControllerBase showScene(SceneAction sceneAction) {
-        return executeShowScene(sceneAction.scena_name, sceneAction.args);
+        return executeShowScene(ApplicationWinodws.EMOTIONL_SONGS_WINDOW,sceneAction.scena_name, sceneAction.args);
     }
 
-
-    private ControllerBase executeShowScene(SceneName sceneName, Object[] args) 
+    
+    private ControllerBase executeShowScene(ApplicationWinodws window, ApplicationScene sceneName, Object[] args) 
     {
-        
-        //==================================== Verifica degli stati ====================================//
-        //offset del file
-        int fileOffset = 0;
-        
-        //se non ho ancora uno stato
-        if(applicationState == null ) {
-            applicationState = sceneName.getCorrespondentState(); 
-        }
-        //se devo caricare uno stato differente
-        else if(applicationState != sceneName.getCorrespondentState()) {
-            applicationState = sceneName.getCorrespondentState(); //ottengo lo stato a cui appartiene la scena
-            ControllerBase c = (ControllerBase)loadedControllers.get(0);
-            fileOffset = 1;
-        }
-        //se devo modificare la scena di uno stesso stato
-        else if(applicationState == ApplicationState.MAIN_PAGE && applicationState == sceneName.getCorrespondentState()) {
-            applicationState = sceneName.getCorrespondentState();
-            fileOffset = 2;  
-        }
+        ApplicationScene currentScene = windows_currentScene.get(window);
+        Stack<ControllerBase> loadedController = windows_currentSceneControllers.get(window);         
 
-        ArrayList<ControllerBase> temp = new ArrayList<ControllerBase>();
-        for(int i = 0; i < fileOffset; i++) {
-            temp.add((ControllerBase)loadedControllers.get(i));
-        }
+        //verifico che il nome sia valido
+        if(sceneName == null)
+            throw new RuntimeException("sceneName can't be \"NULL\"");
         
-        loadedControllers.clear();
-        loadedControllers = temp;
+        //verifico se devo caricare una scena diversa da quella attuale
+        if(currentScene == sceneName)
+            return null;
 
-        //==================================== Caricamento file ====================================//
         
-        for (int i = fileOffset; i < sceneName.getFilePath().length; i++) {
-            System.out.println(i);
-            String file = sceneName.getFilePath()[i];
+        switch(window)
+        {
+            case EMOTIONL_SONGS_WINDOW -> {
 
-            //se sono la scena di base
-            if(loadedControllers.size() == 0) 
-            {
-                Pair<Scene,FXMLLoader> result = setStageScene(file);
-                Scene scene = result.getValue0();
-                FXMLLoader loader = result.getValue1();
-
-                //se voglio un tema da applicare all'applicazione
-                /*if(theme == 0) {
-                    scene.getStylesheets().add(SceneManager.class.getResource("/styles/dark-theme.css").toExternalForm());
+                if(loadedController.size() == 0) {
+                    Pair<Scene,FXMLLoader> result = setStageScene(SceneElemets.BASE_CONTAINER.file);
+                    Scene scene = result.getValue0();
+                    FXMLLoader loader = result.getValue1();
+                    loadedController.push((ControllerBase)loader.getController());
                 }
-                else if (theme == 1) {
-                    scene.getStylesheets().add(SceneManager.class.getResource("/styles/dark-theme.css").toExternalForm());
-                }*/
 
-                loadedControllers.add(loader.getController());
+                switch(sceneName) 
+                {
+                    case ACCESS_PAGE:
+                        while(loadedController.size() > 1) loadedController.pop();
+                        loadedController.push((ControllerBase)injectScene(SceneElemets.ACCESS.file, loadedController.peek().anchor_for_injectScene));
+                        EmotionalSongs.getInstance().stage.setMinWidth(800);
+                        break;
+
+                    case REGISTRATION_PAGE:
+                        while(loadedController.size() > 1) loadedController.pop();
+                        loadedController.push((ControllerBase)injectScene(SceneElemets.REGISTRATION.file, loadedController.peek().anchor_for_injectScene));
+                        break;
+
+                    case CREATE_PLAYLIST:
+                        break;
+                    case MAIN_PAGE_EXPLORE:
+                        break;
+                    case MAIN_PAGE_HOME:
+
+                        while(loadedController.size() > 2) loadedController.pop();
+
+                        if(loadedController.size() == 1) {
+                           loadedController.push((ControllerBase)injectScene(SceneElemets.MAIN_SIDEBAR.file, loadedController.peek().anchor_for_injectScene)); 
+                        }
+                        else if(!(loadedController.peek() instanceof MainPage_SideBar_Controller)) {
+                            loadedController.pop();
+                            loadedController.push((ControllerBase)injectScene(SceneElemets.MAIN_SIDEBAR.file, loadedController.peek().anchor_for_injectScene));
+                        }
+                        loadedController.push((ControllerBase)injectScene(SceneElemets.MAIN_HOME.file, loadedController.peek().anchor_for_injectScene));
+                        break;
+
+                    case MAIN_PAGE_SHOW_PLAYLIST:
+                    case MAIN_PAGE_SHOW_ALBUM:
+                    case MAIN_PAGE_SHOW_SONG:
+                    case MAIN_PAGE_PLAYLIST:
+                    case DISPLAY_ELEMENT_PAGE:
+                        while(loadedController.size() > 2) loadedController.pop();
+
+                        if(loadedController.size() == 1) {
+                           loadedController.push((ControllerBase)injectScene(SceneElemets.MAIN_SIDEBAR.file, loadedController.peek().anchor_for_injectScene)); 
+                        }
+                        else if(!(loadedController.peek() instanceof MainPage_SideBar_Controller)) {
+                            loadedController.pop();
+                            loadedController.push((ControllerBase)injectScene(SceneElemets.MAIN_SIDEBAR.file, loadedController.peek().anchor_for_injectScene));
+                        }
+                        loadedController.push((ControllerBase)injectScene(SceneElemets.MAIN_DISPLAYER.file, loadedController.peek().anchor_for_injectScene));
+                        break;
+                    
+                    
+                    
+                    default:
+                        throw new RuntimeException("Invalid window scene");   
+                }
             }
-            //se sono una scena da inserire in un altra scena
-            else {
-                //accedo all'anchor dell'untimo controller della lista controller e inserisco il codice della nuova scena
-                loadedControllers.add((ControllerBase)injectScene(file, loadedControllers.get(loadedControllers.size() - 1).anchor_for_injectScene));
+
+            case PLAYLIST_CREATION_WINDOW -> {
+
+            }
+
+            default -> {
+                throw new RuntimeException("Invalid window");
             }
         }
+
 
 
         //==================================== verfica passaggio args... ====================================//
@@ -377,55 +437,20 @@ public class SceneManager {
         if(args.length > 0 ) {
             //verifico se implementa l'interfaccia
             // Inheritance testing:
-            Class<?> interfaceType = ControllerFunctions.class;
+            Class<?> interfaceType = Injectable.class;
             //Class<?> classType = SomeClass.class;
 
-            if (interfaceType.isAssignableFrom(loadedControllers.get(loadedControllers.size() - 1).getClass())) {
-                ControllerFunctions controller = (ControllerFunctions)loadedControllers.get(loadedControllers.size() - 1);
+            if (interfaceType.isAssignableFrom(windows_currentSceneControllers.get(window).peek().getClass())) {
+                Injectable controller = (Injectable)windows_currentSceneControllers.get(window).peek();
                 controller.injectData(args);
             }
             else {
                 //se ho dei parametri che non posso passare
-                throw new UnsupportedOperationException("this controller not implements: " + ControllerFunctions.class.getName());
+                throw new UnsupportedOperationException("this controller not implements: " + Injectable.class.getName());
             }
         }
 
-
-        //==================================== impostazione parametri ====================================//
-
-        WindowContainerController containerControlle = (WindowContainerController)loadedControllers.get(0);
-
-        //se voglio fare delle operazioni aggiuntive per ogni scena
-        //per accedere a un specifico controller uso: "loadedControllers.get(index)"
-        switch (sceneName) 
-        { 
-            case ACCESS_PAGE -> {
-                EmotionalSongs.getInstance().stage.setMinWidth(800);
-                if(EmotionalSongs.getInstance().account != null) {
-                    ApplicationAccessController cont = (ApplicationAccessController)loadedControllers.get(1);
-                    cont.userName.setText(EmotionalSongs.getInstance().account.getEmail());
-
-                    //è cripta la password
-                    //cont.password.setText(EmotionalSongs.getInstance().account.getPassword());
-                }
-
-                
-                //EmotionalSongs.getInstance().account = null;
-            
-            }
-            case REGISTRATION_PAGE -> {
-
-            }
-            case HOME_PAGE -> {
-                EmotionalSongs.getInstance().stage.setMinWidth(1000);
-                //containerControlle.anchor.setMinWidth(1400);
-                //containerControlle.anchor.setMinHeight(1000);  
-            }
-            default -> {
-                //throw new IllegalArgumentException("Unexpected value: " + sceneName);
-            }
-        }
-
-        return loadedControllers.get(loadedControllers.size() - 1);
+        windows_currentScene.put(window, sceneName);
+        return windows_currentSceneControllers.get(window).peek();
     }
 }

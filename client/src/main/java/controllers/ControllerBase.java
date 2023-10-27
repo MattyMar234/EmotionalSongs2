@@ -13,6 +13,7 @@ import java.net.URL;
 
 import application.ConnectionManager;
 import application.EmotionalSongs;
+import application.SceneManager;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.embed.swing.SwingFXUtils;
@@ -37,11 +38,13 @@ public abstract class ControllerBase {
     protected EmotionalSongs emotionalSongs = EmotionalSongs.getInstance();
 
     public Object anchor_for_injectScene;
+    protected SceneManager sceneManager;
 
 
 
     public ControllerBase() {
         this.MainClassReference = EmotionalSongs.getInstance();
+        this.sceneManager = SceneManager.getInstance();
     }
 
     protected Image download_Image_From_Internet(String imageURL) throws IOException 

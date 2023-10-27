@@ -5,8 +5,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import application.SceneManager;
-import application.SceneManager.SceneElements;
-import interfaces.ControllerFunctions;
+import application.SceneManager.FXML_elements;
+import interfaces.Injectable;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -20,7 +20,7 @@ import objects.Comment;
 import objects.Playlist;
 import objects.Song;
 
-public class ListCell_Controller implements Initializable, ControllerFunctions
+public class ListCell_Controller implements Initializable, Injectable
 {
     private static final SceneManager sceneManager = SceneManager.getInstance();
 
