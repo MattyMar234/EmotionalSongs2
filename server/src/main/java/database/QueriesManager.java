@@ -313,9 +313,13 @@ public class QueriesManager {
 
 
         return result; 
-    
 
+    }
 
+    public static void addPlaylist(String accountID, String playlistName) throws SQLException {
+        DatabaseManager database = DatabaseManager.getInstance();
+        String query = QueryBuilder.addPlaylist_query(accountID, playlistName);
+        database.submitInsertQuery(query);
     }
 
 }
