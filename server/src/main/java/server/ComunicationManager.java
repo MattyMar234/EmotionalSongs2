@@ -65,6 +65,9 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		serverFunctions.put(ServerServicesName.SEARCH_ALBUMS, this::searchAlbums);
 		serverFunctions.put(ServerServicesName.GET_SONG_BY_IDS, this::getSongByIDs);
 		serverFunctions.put(ServerServicesName.GET_ALBUM_SONGS, this::getAlbumsSongs);
+		serverFunctions.put(ServerServicesName.ADD_PLAYLIST, this::addPlaylist);
+		serverFunctions.put(ServerServicesName.ADD_SONG_PLAYLIST, this::addSongToPlaylist);
+
 
 		//hashMap che associa a ogni servizio i parametri richiesti
 		functionParametreKeys.put(ServerServicesName.ADD_ACCOUNT, new String[] {"name", "username", "userID", "codiceFiscale", "email", "password", "civicNumber", "viaPiazza", "cap", "commune", "province"});
@@ -75,6 +78,8 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		functionParametreKeys.put(ServerServicesName.SEARCH_ALBUMS, new String[]{"searchString", "limit", "offset"});
 		functionParametreKeys.put(ServerServicesName.GET_SONG_BY_IDS, new String[]{"IDs"});
 		functionParametreKeys.put(ServerServicesName.GET_ALBUM_SONGS, new String[]{"albumID"});
+		functionParametreKeys.put(ServerServicesName.ADD_PLAYLIST, new String[]{"accountID", "playlistName"});
+		functionParametreKeys.put(ServerServicesName.ADD_SONG_PLAYLIST, new String[]{"accountID", "playlistID", "songID"});
 
 		try {
 			//hashMap che associa a ogni servizio il nome della sua funzione
@@ -86,6 +91,8 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 			functionName.put(ServerServicesName.SEARCH_ALBUMS, "searchAlbums");
 			functionName.put(ServerServicesName.GET_SONG_BY_IDS, "getSongByIDs");
 			functionName.put(ServerServicesName.GET_ALBUM_SONGS, "getAlbumsSongs");
+			functionName.put(ServerServicesName.ADD_PLAYLIST, "addPlaylist");
+			functionName.put(ServerServicesName.ADD_SONG_PLAYLIST, "addSongToPlaylist");
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -540,8 +547,13 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 
 	@Override
 	public Object addPlaylist(final HashMap<String, Object> argsTable) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'addPlaylist'");
+		try {
+			QueriesManager.addPlaylist((String)argsTable.get("accountID"), (String)argsTable.get("playlistName"));
+			return null;        
+		} 
+		catch (Exception e) {
+			return e;
+        }
 	}
 
 	@Override

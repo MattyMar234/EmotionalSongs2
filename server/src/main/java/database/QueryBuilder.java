@@ -440,4 +440,16 @@ public class QueryBuilder {
         return sb.toString();
 
     }
+
+    public static String addPlaylist_query(String accountID,String playlistName){
+        StringBuilder sb = new StringBuilder();
+        sb.append("INSERT INTO " + Tabelle.PLAYLIST + " (");
+        sb.append(Colonne.ACCOUNT_ID_REF.getName() + ", ");
+        sb.append(Colonne.NAME.getName() + ") VALUES (");
+        sb.append("'" + accountID + "', ");
+        sb.append("'" + playlistName + "');");
+
+        //terminal.printQueryln(sb.toString());
+        return sb.toString();
+    }
 }
