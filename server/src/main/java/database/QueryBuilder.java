@@ -452,4 +452,24 @@ public class QueryBuilder {
         //terminal.printQueryln(sb.toString());
         return sb.toString();
     }
+
+
+    public static String getAccountsPlaylists_query(String accountID) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM " + Tabelle.PLAYLIST + " WHERE " + Colonne.ACCOUNT_ID_REF.getName() + " = '" + accountID + "';");
+
+        return sb.toString();
+    }
+
+    public static String addSongToPlaylist_query(String playlistID, String songID) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("INSERT INTO " + Tabelle.PLAYLIST_SONGS + " (");
+        sb.append(Colonne.PLAYLIST_ID_REF.getName() + ", ");
+        sb.append(Colonne.SONG_ID_REF.getName() + ") VALUES (");
+        sb.append("'" + playlistID + "', ");
+        sb.append("'" + songID + "');");
+
+        //terminal.printQueryln(sb.toString());
+        return sb.toString();
+    }
 }

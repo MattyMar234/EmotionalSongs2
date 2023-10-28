@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Queue;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
@@ -66,6 +67,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		serverFunctions.put(ServerServicesName.GET_SONG_BY_IDS, this::getSongByIDs);
 		serverFunctions.put(ServerServicesName.GET_ALBUM_SONGS, this::getAlbumsSongs);
 		serverFunctions.put(ServerServicesName.ADD_PLAYLIST, this::addPlaylist);
+		serverFunctions.put(ServerServicesName.GET_ACCOUNT_PLAYLIST, this::getAccountsPlaylists);
 		serverFunctions.put(ServerServicesName.ADD_SONG_PLAYLIST, this::addSongToPlaylist);
 
 
@@ -79,7 +81,9 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		functionParametreKeys.put(ServerServicesName.GET_SONG_BY_IDS, new String[]{"IDs"});
 		functionParametreKeys.put(ServerServicesName.GET_ALBUM_SONGS, new String[]{"albumID"});
 		functionParametreKeys.put(ServerServicesName.ADD_PLAYLIST, new String[]{"accountID", "playlistName"});
+		functionParametreKeys.put(ServerServicesName.GET_ACCOUNT_PLAYLIST, new String[]{"accountID"});
 		functionParametreKeys.put(ServerServicesName.ADD_SONG_PLAYLIST, new String[]{"accountID", "playlistID", "songID"});
+		
 
 		try {
 			//hashMap che associa a ogni servizio il nome della sua funzione
@@ -92,6 +96,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 			functionName.put(ServerServicesName.GET_SONG_BY_IDS, "getSongByIDs");
 			functionName.put(ServerServicesName.GET_ALBUM_SONGS, "getAlbumsSongs");
 			functionName.put(ServerServicesName.ADD_PLAYLIST, "addPlaylist");
+			functionName.put(ServerServicesName.GET_ACCOUNT_PLAYLIST, "getAccountsPlaylistsBy");
 			functionName.put(ServerServicesName.ADD_SONG_PLAYLIST, "addSongToPlaylist");
 		}
 		catch(Exception e) {
@@ -570,14 +575,24 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 
 	@Override
 	public Object addSongToPlaylist(final HashMap<String, Object> argsTable) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'addSongToPlaylist'");
+		try {
+			QueriesManager.addSongToPlaylist((String)argsTable.get("accountID"), (String)argsTable.get("playlistID"), (String)argsTable.get("songID"));
+			return null;        
+		} 
+		catch (Exception e) {
+			return e;
+		}
 	}
 
 	@Override
-	public Object getAccountsPlaylistsBy(final HashMap<String, Object> argsTable) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getAccountsPlaylistsBy'");
+	public Object getAccountsPlaylists(final HashMap<String, Object> argsTable) {
+		try {
+			QueriesManager.getAccountsPlaylists((String)argsTable.get("accountID") );
+			return null;
+		} 
+		catch (Exception e) {
+			return e;
+		}
 	}
 
 	@Override
