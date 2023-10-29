@@ -10,6 +10,7 @@ import Exceptions.InvalidEmailException;
 import Exceptions.InvalidPasswordException;
 import Exceptions.InvalidUserNameException;
 import applicationEvents.ConnectionEvent;
+import enumClasses.ServerServicesName;
 import interfaces.ClientServices;
 import interfaces.ServerServices;
 import javafx.animation.KeyFrame;
@@ -41,7 +42,7 @@ import java.rmi.RemoteException;
 import java.security.InvalidParameterException;
 
 
-public class ConnectionManager {
+public class ConnectionManager implements ServerServices{
 
     //Singleton pattern
     private static ConnectionManager manager;
@@ -126,7 +127,7 @@ public class ConnectionManager {
 				if(isConnected()) {
 					if(!testServerConnection()) {
 						disconnect();
-						EmotionalSongs.getInstance().stage.fireEvent(new ConnectionEvent(ConnectionEvent.DISCONNECTED));	
+						SceneManager.getInstance().fireEvent(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, new ConnectionEvent(ConnectionEvent.DISCONNECTED));
 					}
 				}
 			}
@@ -425,7 +426,7 @@ public class ConnectionManager {
 
 
 	public Account getAccount(String Email, String password) throws InvalidPasswordException, InvalidUserNameException, InvalidEmailException {
-		Object[] params = new Object[]{"Email", Email,"password", password};
+		Object[] params = new Object[]{"email", Email,"password", password};
 
 		try {
 			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_ACCOUNT.name(), params));
@@ -519,6 +520,7 @@ public class ConnectionManager {
 		return data;
 	}
 
+	@Override
     public ArrayList<Song> getAlbumSongs(String AlbumID) throws Exception 
 	{
 		System.out.println("AlbumID:" + AlbumID);
@@ -537,6 +539,104 @@ public class ConnectionManager {
 			e.printStackTrace();
 		}
 		return data;
+	}
+
+	
+
+	@Override
+	public boolean addPlaylist(String playlistName, String userID) throws Exception {
+		System.out.println("addPlaylist: playlistName = " + playlistName + " userID = " + userID);
+
+		Object[] params = new Object[]{"accountID", userID, "playlistName", playlistName};
+
+		try {
+			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.ADD_PLAYLIST.name(), params));
+			
+			if(result instanceof Exception)
+				throw (Exception) result;
+			
+			return true;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	@Override
+	public boolean removePlaylist(String userID, String playlistID) throws Exception {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'removePlaylist'");
+	}
+
+	@Override
+	public boolean addSongToPlaylist(String userID, String playlistID, String songID) throws Exception {
+		System.out.println("addSongToPlaylist: userID = " + userID + " playlistID = " + playlistID + " songID = " + songID);
+		
+		Object[] params = new Object[]{"accountID", userID, "playlistID", playlistID, "songID", songID};
+		try {
+			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.ADD_SONG_PLAYLIST.name(), params));
+			
+			if(result instanceof Exception)
+				throw (Exception) result;
+			return true;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	@Override
+	public boolean removeSongFromPlaylist(String userID, String playlistID, String songID) throws Exception {
+		System.out.println("removeSongFromPlaylist: userID = " + userID + " playlistID = " + playlistID + " songID = " + songID);
+
+		Object[] params = new Object[]{"accountID", userID, "playlistID", playlistID, "songID", songID};
+		try {
+			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.REMOVE_SONG_PLAYLIST.name(), params));
+			
+			if(result instanceof Exception)
+				throw (Exception) result;
+			
+			return true;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+
+	@Override
+	public Object getAccountPlaylists(String userID) throws Exception {
+		System.out.println("getAccountPlaylists: userID = " + userID);
+
+		Object[] params = new Object[]{"accountID", userID};
+
+		try {
+			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.ADD_PLAYLIST.name(), params));
+			
+			if(result instanceof Exception)
+				throw (Exception) result;
+			
+			return true;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	@Override
+	public Object getPlaylistSongs(String userID, String playlistID) throws Exception {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'getPlaylistSongs'");
+	}
+
+	@Override
+	public boolean renamePlaylist(String userID, String playlistID, String newName) throws Exception {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'renamePlaylist'");
 	}
 
 }

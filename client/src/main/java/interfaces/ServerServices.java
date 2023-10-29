@@ -13,7 +13,7 @@ import objects.Song;
 
 public interface ServerServices {
     
-    public void addClient(ClientServices client) throws Exception;
+    //public void addClient(ClientServices client) throws Exception;
     public void CloseComunication() throws Exception;
     public boolean testConnection();
     
@@ -28,11 +28,18 @@ public interface ServerServices {
     //ricerca
     public ArrayList<Song> searchSongs(String searchString, long limit, long offset) throws Exception;
     public ArrayList<Album> searchAlbums(String searchString, long limit, long offset) throws Exception;
+    //public ArrayList<Artist> searchArtists(String searchString, long limit, long offset) throws RemoteException;
 
     //canzoni
     public ArrayList<Song> getSongByIDs(String[] IDs) throws Exception;
-    public ArrayList<Song> getAlbumsSongs(String AlbumID) throws Exception;
+    public ArrayList<Song> getAlbumSongs(String AlbumID) throws Exception;
     
-    //public ArrayList<Artist> searchArtists(String searchString, long limit, long offset) throws RemoteException;
-
+    //playlist
+    public boolean addPlaylist(String playlistName, String userID) throws Exception;
+    public boolean removePlaylist(String userID, String playlistID) throws Exception;
+    public boolean addSongToPlaylist(String userID, String playlistID, String songID) throws Exception;
+    public boolean removeSongFromPlaylist(String userID, String playlistID, String songID) throws Exception;
+    public Object getAccountPlaylists(String userID) throws Exception;
+    public Object getPlaylistSongs(String userID, String playlistID) throws Exception;
+    public boolean renamePlaylist(String userID, String playlistID, String newName) throws Exception;
 }

@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import Exceptions.InvalidEmailException;
 import Exceptions.InvalidUserNameException;
 import application.ConnectionManager;
-import application.EmotionalSongs;
+import application.Main;
 import application.SceneManager;
 import application.SceneManager.ApplicationScene;
 import interfaces.ServerServices;
@@ -439,7 +439,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
 
             if(data == null || data.equals("")) {
                 SetLabelError(labelSing);
-                labelSing.setText(EmotionalSongs.applicationLanguage == 0 ? "Campi non compilati" : "Fields not filled in");
+                labelSing.setText(Main.applicationLanguage == 0 ? "Campi non compilati" : "Fields not filled in");
                 return;
             }
         }
@@ -452,7 +452,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
 
             if(data == null) {
                 SetLabelError(labelSing);
-                labelSing.setText(EmotionalSongs.applicationLanguage == 0 ? "Valori non selezionati" : "Values not selected");
+                labelSing.setText(Main.applicationLanguage == 0 ? "Valori non selezionati" : "Values not selected");
                 return;
             }
         }
@@ -462,7 +462,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
         //passwords
         if(!password.getText().equals(password2.getText())) {
             SetLabelError(labelSing);
-            labelSing.setText(EmotionalSongs.applicationLanguage == 0 ? "Le password non coincidono" : "Passwords do not match");
+            labelSing.setText(Main.applicationLanguage == 0 ? "Le password non coincidono" : "Passwords do not match");
             return;
         }
 
@@ -486,8 +486,8 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
         
         try {
             Account account = service.addAccount(name.getText(), surname.getText(), userID.getText(), codiceFiscale.getText(), email.getText(), password.getText(), civicNumber.getText(), viaPiazza.getText(), cap.getSelectionModel().getSelectedItem(), commune.getSelectionModel().getSelectedItem(), province.getSelectionModel().getSelectedItem());
-            EmotionalSongs.getInstance().account = account;
-            SceneManager.getInstance().showScene(ApplicationScene.MAIN_PAGE_HOME);
+            Main.account = account;
+            SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW,ApplicationScene.MAIN_PAGE_HOME);
         
         } 
         catch (InvalidUserNameException e) {
@@ -517,7 +517,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
 
     @FXML
     public void TurnBack() throws IOException {
-       SceneManager.getInstance().showScene(ApplicationScene.ACCESS_PAGE);
+       SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW,ApplicationScene.ACCESS_PAGE);
     }
 
     @FXML

@@ -3,7 +3,7 @@ package utility;
 import java.io.File;
 import java.util.Properties;
 
-import application.EmotionalSongs;
+import application.Main;
 import javafx.scene.image.Image;
 
 public final class UtilityOS

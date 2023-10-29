@@ -8,14 +8,14 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import application.EmotionalSongs;
+import application.Main;
 
 
 
 public class LocationsLoader extends Thread {
 
     private ArrayList<Region> regions = new ArrayList<Region>();
-    private String path = EmotionalSongs.LocationsPath;
+    private String path = Main.LocationsPath;
     private UtilityInterface function;
 
     public LocationsLoader(UtilityInterface function) {

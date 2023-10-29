@@ -7,6 +7,14 @@
 
 }
 
+.border-10PX {
+    -fx-background-radius: 10px;
+}
+
+.Theme-color-1 {
+    -fx-background-color: #282828;
+}
+
 
 
 
@@ -111,6 +119,11 @@
     -fx-text-fill: white;
     -fx-font-size: 17;
 }
+.Label-Style3{
+    -fx-font-weight: Bold;
+    -fx-text-fill: white;
+    -fx-font-size: 24;
+}
 
 .Label-CategoryTitle{
     -fx-font-weight: Bold;
@@ -163,6 +176,18 @@
 .search-text-field {
     -fx-background-color: #ffffff;
     -fx-background-radius: 100;
+}
+
+.text-field-style1 {
+    -fx-background-color: #3E3E3E;
+    -fx-background-radius: 5;
+    -fx-border-width: 0px;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: lighter;
+    -fx-font-size: 18px;
+
+    
+
 }
 
 /*.login-text-field, .login-password-field{

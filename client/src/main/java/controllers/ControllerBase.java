@@ -12,7 +12,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import application.ConnectionManager;
-import application.EmotionalSongs;
+import application.Main;
 import application.SceneManager;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -30,21 +30,18 @@ import javax.imageio.ImageIO;
 
 public abstract class ControllerBase {
 
-    private EmotionalSongs MainClassReference;
+    private Main MainClassReference;
     private HashMap<Object, String[]> windowObjectsTexts = new HashMap<Object, String[]>();
     private HashMap<Object, String[]> ObjectsErrorVisualization = new HashMap<Object, String[]>();
     
-    protected ConnectionManager connectionManager = ConnectionManager.getConnectionManager();
-    protected EmotionalSongs emotionalSongs = EmotionalSongs.getInstance();
+    public final ConnectionManager connectionManager = ConnectionManager.getConnectionManager();
+    public final SceneManager sceneManager = SceneManager.getInstance();
 
     public Object anchor_for_injectScene;
-    protected SceneManager sceneManager;
-
 
 
     public ControllerBase() {
-        this.MainClassReference = EmotionalSongs.getInstance();
-        this.sceneManager = SceneManager.getInstance();
+        
     }
 
     protected Image download_Image_From_Internet(String imageURL) throws IOException 
@@ -88,14 +85,14 @@ public abstract class ControllerBase {
         for (Object object : windowObjectsTexts.keySet()) {
 
             if(object instanceof javafx.scene.control.Label)
-                ((javafx.scene.control.Label) object).setText(windowObjectsTexts.get(object)[EmotionalSongs.applicationLanguage]);
+                ((javafx.scene.control.Label) object).setText(windowObjectsTexts.get(object)[Main.applicationLanguage]);
             
             else if(object instanceof Button) {
-                ((javafx.scene.control.Button) object).setText(windowObjectsTexts.get(object)[EmotionalSongs.applicationLanguage]);   
+                ((javafx.scene.control.Button) object).setText(windowObjectsTexts.get(object)[Main.applicationLanguage]);   
             }
 
             else if(object instanceof javafx.scene.control.TextField)
-                ((javafx.scene.control.TextField) object).setPromptText(windowObjectsTexts.get(object)[EmotionalSongs.applicationLanguage]);
+                ((javafx.scene.control.TextField) object).setPromptText(windowObjectsTexts.get(object)[Main.applicationLanguage]);
         }
         
     }

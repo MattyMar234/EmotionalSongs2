@@ -6,7 +6,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.ResourceBundle;
-import application.EmotionalSongs;
+import application.Main;
 import application.ObjectsCache;
 import application.SceneManager;
 import interfaces.Injectable;
@@ -42,7 +42,7 @@ public class ElementContainer extends ControllerBase implements Initializable, I
         int number = random.nextInt(22) + 1;
 
         this.title.setText("?");
-        image.setImage(UtilityOS.getImage(EmotionalSongs.ImageFolder + "\\colored_icon\\" + number + ".png"));    
+        image.setImage(UtilityOS.getImage(Main.ImageFolder + "\\colored_icon\\" + number + ".png"));    
     }
 
     @Override
@@ -64,7 +64,7 @@ public class ElementContainer extends ControllerBase implements Initializable, I
 
             if(img == null) {
                 String imgURL = song.getImage(MyImage.ImageSize.S300x300).getUrl();
-                EmotionalSongs.imageDownloader.addImageToDownload(imgURL, image);
+                Main.imageDownloader.addImageToDownload(imgURL, image);
                 //EmotionalSongs.imageDownloader.addImageToDownload(song.getImage(MyImage.ImageSize.S300x300).getUrl(), image);
             }
             else {
@@ -86,7 +86,7 @@ public class ElementContainer extends ControllerBase implements Initializable, I
 
             if(img == null) {
                 String imgURL = album.getImage(MyImage.ImageSize.S300x300).getUrl();
-                EmotionalSongs.imageDownloader.addImageToDownload(imgURL, image);
+                Main.imageDownloader.addImageToDownload(imgURL, image);
                 //EmotionalSongs.imageDownloader.addImageToDownload(song.getImage(MyImage.ImageSize.S300x300).getUrl(), image);
             }
             else {
@@ -107,12 +107,12 @@ public class ElementContainer extends ControllerBase implements Initializable, I
     public void openLink(MouseEvent event) 
     {
         if(displayedElement instanceof Song) { 
-            sceneManager.showScene(SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE, displayedElement);
+            sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE, displayedElement);
         }
         else if(displayedElement instanceof Artist) {
         }
         else if(displayedElement instanceof Album) {
-            sceneManager.showScene(SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE, displayedElement);
+            sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE, displayedElement);
         }
     }
 }

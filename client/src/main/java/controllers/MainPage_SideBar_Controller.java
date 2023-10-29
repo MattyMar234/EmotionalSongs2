@@ -10,7 +10,7 @@ import java.util.ResourceBundle;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import application.EmotionalSongs;
+import application.Main;
 import application.SceneManager;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -102,11 +102,11 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
     {
         anchor_for_injectScene = anchor;
 
-        if(emotionalSongs.account == null) {
-            userName.setText(EmotionalSongs.applicationLanguage == 0 ? "Accedi" : "Login");
+        if(Main.account == null) {
+            userName.setText(Main.applicationLanguage == 0 ? "Accedi" : "Login");
         }
         else {
-            userName.setText(emotionalSongs.account.getNickname());
+            userName.setText(Main.account.getNickname());
         }
 
         
@@ -176,12 +176,12 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
 
     @FXML
     public void BackwardAction(MouseEvent event) {
-        emotionalSongs.userActions.undo();
+        Main.userActions.undo();
     }
 
     @FXML
     public void ForwardAction(MouseEvent event) {
-        emotionalSongs.userActions.redo();
+        Main.userActions.redo();
     }
 
 
@@ -197,8 +197,8 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
 
     @FXML
     public void tryLogin(MouseEvent event) {
-        if(emotionalSongs.account == null) {
-            SceneManager.getInstance().showScene(SceneManager.ApplicationScene.ACCESS_PAGE);
+        if(Main.account == null) {
+            SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, SceneManager.ApplicationScene.ACCESS_PAGE);
         }
     }
         
@@ -228,7 +228,7 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
     @FXML
     public void setHomePage(ActionEvent event) throws IOException
     {
-        MainPage_ElementDisplayer_Controller element = (MainPage_ElementDisplayer_Controller) SceneManager.getInstance().showScene(SceneManager.ApplicationScene.MAIN_PAGE_HOME);
+        MainPage_ElementDisplayer_Controller element = (MainPage_ElementDisplayer_Controller) SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, SceneManager.ApplicationScene.MAIN_PAGE_HOME);
     }
 
     @FXML
@@ -237,7 +237,7 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
         state = 2;
         ClearActiveButtons();
         //this.buttons.get(2).setStyle(ButtonColor);
-        MainPage_ElementDisplayer_Controller element = (MainPage_ElementDisplayer_Controller) SceneManager.getInstance().showScene(SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE);
+        MainPage_ElementDisplayer_Controller element = (MainPage_ElementDisplayer_Controller) SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE);
         
         if(element != null) {
             Object data = new Playlist[]{};

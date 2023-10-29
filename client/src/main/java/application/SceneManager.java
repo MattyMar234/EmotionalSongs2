@@ -1,5 +1,8 @@
 package application;
 
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -25,6 +28,9 @@ import interfaces.Injectable;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InvalidClassException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +47,7 @@ public class SceneManager {
     private static final String BaseContainer_path = "ApplicationBase.fxml";
     private static final String Comment_path = "Comment.fxml";
     private static final String SongListView_path = "SongListCell.fxml";
+    private static final String PlaylistCreation_path = "PlaylistCreationPage.fxml";
 
     private int theme = 0;
     private ArrayList<ControllerBase> loadedControllers = new ArrayList<>();
@@ -49,17 +56,18 @@ public class SceneManager {
 
     private HashMap<ApplicationWinodws, ApplicationScene> windows_currentScene = new HashMap<>();
     private HashMap<ApplicationWinodws, Stack<ControllerBase>> windows_currentSceneControllers = new HashMap<>();
-    
+    private HashMap <ApplicationWinodws, Stage> windowsStage = new HashMap<>();
+    private HashMap <ApplicationWinodws, Object> activeWindow = new HashMap<>();
+
     private static SceneManager instance;
-    private Stage stage;
 
 
     /**
      * Classe enum per tener traccia delle finestre presenti nell'applicazione
      */
     public enum ApplicationWinodws {
-        EMOTIONL_SONGS_WINDOW(null),
-        PLAYLIST_CREATION_WINDOW(null);
+        EMOTIONL_SONGS_WINDOW(EmotionalSongsWindow.class),
+        PLAYLIST_CREATION_WINDOW(PlaylistCreationWindow.class);
         
         Class<?> windowManagerClass;
 
@@ -104,7 +112,9 @@ public class SceneManager {
         MAIN_SIDEBAR(MainPage_SideBar_path),
         MAIN_HOME(MainPage_home_path),
         MAIN_EXPLORE(null),
-        MAIN_DISPLAYER(ElementDisplay_path);
+        MAIN_DISPLAYER(ElementDisplay_path),
+        PLAYLIST_CREATOR(PlaylistCreation_path);
+
         
 
         private Object[] parametre;
@@ -130,14 +140,15 @@ public class SceneManager {
     {
         ACCESS_PAGE,
         REGISTRATION_PAGE,
-        CREATE_PLAYLIST,
         MAIN_PAGE_HOME,
         MAIN_PAGE_EXPLORE,
         MAIN_PAGE_PLAYLIST,
         MAIN_PAGE_SHOW_SONG,
         MAIN_PAGE_SHOW_ALBUM,
         DISPLAY_ELEMENT_PAGE,
-        MAIN_PAGE_SHOW_PLAYLIST;
+        MAIN_PAGE_SHOW_PLAYLIST,
+
+        CREATE_PLAYLIST;
     }
 
     public static SceneManager getInstance() {
@@ -159,18 +170,72 @@ public class SceneManager {
     }
 
 
-    public void setStage(Stage primaryStage) {
-
-        stage = primaryStage;
-        stage.setTitle("Emotional Songs 2.0");
-        stage.setResizable(true);
+    public void setStage(ApplicationWinodws window, Stage primaryStage) {
+        this.windowsStage.put(window, primaryStage);
     }
 
-    public void setResizable(boolean resizable) {
-        stage.setResizable(resizable);
+    public void removeStage(ApplicationWinodws window, Class<?> windowManagerClass) {
+        
+        //if(windowManagerClass != window.getWindowManagerClass())
+        //    throw new RuntimeException("invalid class");
+        Stage stage =  this.windowsStage.get(window);
+        stage.close();
+
+        this.windowsStage.remove(window);
+        this.activeWindow.remove(window);
+        windows_currentScene.put(window, null);
+        windows_currentSceneControllers.get(window).clear();        
     }
 
+    public void fireEvent(ApplicationWinodws window, Event event) {
+        this.windowsStage.get(window).fireEvent(event);
+    }
 
+    public void addEventFilter(ApplicationWinodws window, EventType<Event> eventType, EventHandler<? super Event> eventFilter) {
+        this.windowsStage.get(window).addEventFilter(eventType, eventFilter);
+    }
+
+    public Stage getWindowStage(ApplicationWinodws window) {
+        return this.windowsStage.get(window);
+    }
+
+    /**
+     * Questa funzione viene utilizzata avviare una particolarte finestra del programma.
+     * @param name
+     * @param args
+     */
+    public void startWindow(ApplicationWinodws wName, String[] args) 
+    {
+        try {
+            if(wName == null)
+                return;
+
+            if(activeWindow.containsKey(wName)) {
+                //throw new RuntimeException("Window already started");
+                removeStage(wName,null);
+            }
+
+            Class<?> windowManager = wName.getWindowManagerClass();
+
+            if(windowManager == null)
+                throw new RuntimeException("Window not available");
+        
+                Method method = windowManager.getDeclaredMethod("startWindow", Object.class);
+                method.setAccessible(true);
+                Object result = method.invoke(Object.class, (Object)args);
+                activeWindow.put(wName, result);
+        } 
+        catch (InvocationTargetException e) {
+        
+            // Answer:
+            e.getCause().printStackTrace();
+        }
+        catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+            System.exit(0);
+        }
+    }
     //============================================= METHODS =============================================//
     /**
     * Resistuisce il loader del file FXML specificato
@@ -181,7 +246,7 @@ public class SceneManager {
     private FXMLLoader get_FXML_File_Loader(String name) throws IOException  
     {
         FXMLLoader loader = new FXMLLoader();
-        String path = UtilityOS.formatPath(EmotionalSongs.FXML_folder_path + "\\" + ((!name.endsWith(".fxml")) ? name + ".fxml" : name));
+        String path = UtilityOS.formatPath(Main.FXML_folder_path + "\\" + ((!name.endsWith(".fxml")) ? name + ".fxml" : name));
         File file = new File(path);
         URL file_URL = file.toURI().toURL();
         loader.setLocation(file_URL);
@@ -219,7 +284,7 @@ public class SceneManager {
     /**
      * Imposta il contenute dello stage
      */
-    private Pair<Scene,FXMLLoader> setStageScene(String name)
+    private Pair<Scene,FXMLLoader> setStageScene(Stage stage, String name)
     {
         Pair<Scene,FXMLLoader> output = null;
         System.out.println("FXML file requested: " + name);
@@ -229,8 +294,8 @@ public class SceneManager {
             FXMLLoader loader = get_FXML_File_Loader(name);
            
             scene = new Scene(loader.load());
-            this.stage.setScene(scene);
-            this.stage.show(); 
+            stage.setScene(scene);
+            stage.show(); 
 
             output = new Pair<Scene,FXMLLoader>(scene, loader);
         }
@@ -328,11 +393,11 @@ public class SceneManager {
     * @param sceneName Identificativo della scena
     * @param args Parametri per i controllers
     */
-    public ControllerBase showScene(ApplicationScene sceneName, Object... args) 
+    public ControllerBase setScene(ApplicationWinodws window, ApplicationScene sceneName, Object... args) 
     {
         SceneAction action = new SceneAction(sceneName, args);
-        EmotionalSongs.getInstance().userActions.addAction(action);
-        return executeShowScene(ApplicationWinodws.EMOTIONL_SONGS_WINDOW,sceneName, args);
+        //Main.getInstance().userActions.addAction(action);
+        return executeShowScene(window,sceneName, args);
     } 
 
 
@@ -343,35 +408,39 @@ public class SceneManager {
     
     private ControllerBase executeShowScene(ApplicationWinodws window, ApplicationScene sceneName, Object[] args) 
     {
-        ApplicationScene currentScene = windows_currentScene.get(window);
-        Stack<ControllerBase> loadedController = windows_currentSceneControllers.get(window);         
+        if(!this.windowsStage.containsKey(window))
+            throw new RuntimeException("windowManager");
 
         //verifico che il nome sia valido
         if(sceneName == null)
             throw new RuntimeException("sceneName can't be \"NULL\"");
         
+
+        ApplicationScene currentScene = windows_currentScene.get(window);
+        Stack<ControllerBase> loadedController = windows_currentSceneControllers.get(window);         
+        Stage stage = this.windowsStage.get(window);
+
         //verifico se devo caricare una scena diversa da quella attuale
         if(currentScene == sceneName)
             return null;
 
+        if(loadedController.size() == 0) {
+            Pair<Scene,FXMLLoader> result = setStageScene(stage, SceneElemets.BASE_CONTAINER.file);
+            Scene scene = result.getValue0();
+            FXMLLoader loader = result.getValue1();
+            loadedController.push((ControllerBase)loader.getController());
+        }
         
         switch(window)
         {
             case EMOTIONL_SONGS_WINDOW -> {
-
-                if(loadedController.size() == 0) {
-                    Pair<Scene,FXMLLoader> result = setStageScene(SceneElemets.BASE_CONTAINER.file);
-                    Scene scene = result.getValue0();
-                    FXMLLoader loader = result.getValue1();
-                    loadedController.push((ControllerBase)loader.getController());
-                }
-
                 switch(sceneName) 
                 {
                     case ACCESS_PAGE:
                         while(loadedController.size() > 1) loadedController.pop();
                         loadedController.push((ControllerBase)injectScene(SceneElemets.ACCESS.file, loadedController.peek().anchor_for_injectScene));
-                        EmotionalSongs.getInstance().stage.setMinWidth(800);
+                        stage.setMinWidth(800);
+                        stage.setMinHeight(800);
                         break;
 
                     case REGISTRATION_PAGE:
@@ -379,8 +448,6 @@ public class SceneManager {
                         loadedController.push((ControllerBase)injectScene(SceneElemets.REGISTRATION.file, loadedController.peek().anchor_for_injectScene));
                         break;
 
-                    case CREATE_PLAYLIST:
-                        break;
                     case MAIN_PAGE_EXPLORE:
                         break;
                     case MAIN_PAGE_HOME:
@@ -422,7 +489,19 @@ public class SceneManager {
             }
 
             case PLAYLIST_CREATION_WINDOW -> {
+                switch(sceneName) 
+                {
+                    case CREATE_PLAYLIST:
+                        stage.setMinWidth(512);
+                        stage.setMinHeight(350);
 
+                        while(loadedController.size() > 1) loadedController.pop();
+                        loadedController.push((ControllerBase)injectScene(SceneElemets.PLAYLIST_CREATOR.file, loadedController.peek().anchor_for_injectScene));                     
+                        break;
+                    
+                    default:
+                        throw new RuntimeException("Invalid window scene");   
+                }
             }
 
             default -> {

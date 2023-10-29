@@ -16,7 +16,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import Exceptions.InvalidPasswordException;
 import Exceptions.InvalidUserNameException;
 import application.ConnectionManager;
-import application.EmotionalSongs;
+import application.Main;
 import application.SceneManager;
 import application.SceneManager.ApplicationState;
 import application.SceneManager.ApplicationScene;
@@ -113,8 +113,10 @@ public class ApplicationAccessController extends ControllerBase implements Initi
         super.addObjectText_Translations(connectButton, new String[] {"Connettiti", "Connect"});
         super.setTextsLanguage();
 
-        EmotionalSongs.getInstance().stage.addEventFilter(ConnectionEvent.DISCONNECTED, this::handleConnectionLostEvent);
-        connectionStatus.setText(EmotionalSongs.applicationLanguage == 0 ? "Server non trovato" : "Server not found");
+        Stage stage = sceneManager.getWindowStage(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW);
+
+        stage.addEventFilter(ConnectionEvent.DISCONNECTED, this::handleConnectionLostEvent);
+        connectionStatus.setText(Main.applicationLanguage == 0 ? "Server non trovato" : "Server not found");
         connectionStatus.setStyle("-fx-text-fill: #F14934;");
         connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #F14934;");
 
@@ -156,7 +158,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
 
     
         //carico tutte le immagini delle lingue
-        File folder = new File(EmotionalSongs.flagsFolder);
+        File folder = new File(Main.flagsFolder);
         File[] listOfFiles = folder.listFiles();
 
         Queue<File> queue = new LinkedList<File>();
@@ -214,7 +216,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
                 };
             }
         });
-        flags.getSelectionModel().select(EmotionalSongs.applicationLanguage);
+        flags.getSelectionModel().select(Main.applicationLanguage);
         clearError();
     }
           
@@ -266,11 +268,11 @@ public class ApplicationAccessController extends ControllerBase implements Initi
     public void changeLanguage(ActionEvent event) 
     {
         
-        EmotionalSongs.applicationLanguage = flags.getSelectionModel().getSelectedIndex();
+        Main.applicationLanguage = flags.getSelectionModel().getSelectedIndex();
         //System.out.println(EmotionalSongs.applicationLanguage);
         
     
-        flags.getSelectionModel().select(EmotionalSongs.applicationLanguage);
+        flags.getSelectionModel().select(Main.applicationLanguage);
         //flags.getItems().clear();
         //flags.getItems().addAll(imgs);
         //flags.getSelectionModel().select(imgs.get(EmotionalSongs.applicationLanguage));
@@ -288,31 +290,34 @@ public class ApplicationAccessController extends ControllerBase implements Initi
     @FXML
     public void NoAccount(ActionEvent event) throws IOException {
         if (!connectionManager.isConnected()) {
-            emotionalSongs.stage.fireEvent(new ConnectionEvent(ConnectionEvent.SERVER_NOT_FOUND));
+            Stage stage = sceneManager.getWindowStage(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW);
+            stage.fireEvent(new ConnectionEvent(ConnectionEvent.SERVER_NOT_FOUND));
             return;
         }
 
         clearError();
-        sceneManager.showScene(ApplicationScene.MAIN_PAGE_HOME);
+        sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, ApplicationScene.MAIN_PAGE_HOME);
       
     }
 
     @FXML
     public void CreateNewAccount(MouseEvent event) throws IOException {
         if (!connectionManager.isConnected()) {
-            emotionalSongs.stage.fireEvent(new ConnectionEvent(ConnectionEvent.SERVER_NOT_FOUND));
+            Stage stage = sceneManager.getWindowStage(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW);
+            stage.fireEvent(new ConnectionEvent(ConnectionEvent.SERVER_NOT_FOUND));
             return;
         }
 
         clearError();
-        sceneManager.showScene(ApplicationScene.REGISTRATION_PAGE);
+        sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, ApplicationScene.REGISTRATION_PAGE);
     }
 
     @FXML
     public void accedi_Account(ActionEvent event) throws IOException 
     {
         if (!connectionManager.isConnected()) {
-            emotionalSongs.stage.fireEvent(new ConnectionEvent(ConnectionEvent.SERVER_NOT_FOUND));
+            Stage stage = sceneManager.getWindowStage(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW);
+            stage.fireEvent(new ConnectionEvent(ConnectionEvent.SERVER_NOT_FOUND));
             return;
         }
             
@@ -322,7 +327,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
 
         //verifico validità del campo
         if(userName == null || userName.getText().length() == 0) {
-            this.LabeErrorlField1.setText(EmotionalSongs.applicationLanguage == 0 ? "Inserisci il tuo nome utente o il tuo indirizzo e-mail." : "Enter your username or e-mail address.");
+            this.LabeErrorlField1.setText(Main.applicationLanguage == 0 ? "Inserisci il tuo nome utente o il tuo indirizzo e-mail." : "Enter your username or e-mail address.");
             this.LabeErrorlField1.setVisible(true);
             this.LabelError_IMG1.setVisible(true);
             userName.setId("text-field_error");
@@ -331,7 +336,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
 
         //verifico validità del campo
         if(password == null || password.getText().length() == 0) {
-            this.LabeErrorlField2.setText(EmotionalSongs.applicationLanguage == 0 ? "Inserisci la tua password." : "Please enter your password.");
+            this.LabeErrorlField2.setText(Main.applicationLanguage == 0 ? "Inserisci la tua password." : "Please enter your password.");
             this.LabeErrorlField2.setVisible(true);
             this.LabelError_IMG2.setVisible(true);
             password.setId("text-field_error");
@@ -350,8 +355,8 @@ public class ApplicationAccessController extends ControllerBase implements Initi
             Account response = connection.getAccount(userName.getText(), password.getText());
 
             if(response != null) {
-                EmotionalSongs.getInstance().account = response;
-                sceneManager.showScene(ApplicationScene.MAIN_PAGE_HOME);
+                Main.account = response;
+                sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, ApplicationScene.MAIN_PAGE_HOME);
             }
         } 
         catch (InvalidUserNameException e) {
@@ -360,13 +365,13 @@ public class ApplicationAccessController extends ControllerBase implements Initi
             userName.setId("text-field_error");
             String target = e.getMessage().split(" not found")[0];
             
-            this.LabeErrorlField1.setText(EmotionalSongs.applicationLanguage == 0 ? target + " non trovato." : e.getMessage()+".");
+            this.LabeErrorlField1.setText(Main.applicationLanguage == 0 ? target + " non trovato." : e.getMessage()+".");
         }
         catch (InvalidPasswordException e) {
             this.LabeErrorlField2.setVisible(true);
             this.LabelError_IMG2.setVisible(true);
             password.setId("text-field_error");
-            this.LabeErrorlField2.setText(EmotionalSongs.applicationLanguage == 0 ? "Password errata" : e.getMessage()+".");
+            this.LabeErrorlField2.setText(Main.applicationLanguage == 0 ? "Password errata" : e.getMessage()+".");
         }
         catch (Exception e) {
             
@@ -399,7 +404,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
             if(connectionManager.isConnected())
                 connectionManager.disconnect();
 
-            connectionStatus.setText(EmotionalSongs.applicationLanguage == 0 ? "Server non trovato" : "Server not found");
+            connectionStatus.setText(Main.applicationLanguage == 0 ? "Server non trovato" : "Server not found");
             connectionStatus.setStyle("-fx-text-fill: #F14934;");
             connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #F14934;");
             return;
@@ -409,12 +414,12 @@ public class ApplicationAccessController extends ControllerBase implements Initi
             connectionManager.disconnect();
             connectionManager.setConnectionData(IP.getText(), Integer.parseInt(PORT.getText()));
             if(connectionManager.connect()) {
-                connectionStatus.setText(EmotionalSongs.applicationLanguage == 0 ? "Server trovato" : "Server found");
+                connectionStatus.setText(Main.applicationLanguage == 0 ? "Server trovato" : "Server found");
                 connectionStatus.setStyle("-fx-text-fill: #1ED760;");
                 connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #1ED760;");
             }
             else {
-                connectionStatus.setText(EmotionalSongs.applicationLanguage == 0 ? "Server non trovato" : "Server not found");
+                connectionStatus.setText(Main.applicationLanguage == 0 ? "Server non trovato" : "Server not found");
                 connectionStatus.setStyle("-fx-text-fill: #F14934;");
                 connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #F14934;");
                 }
@@ -422,7 +427,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
         else {
             connectionManager.setConnectionData(IP.getText(), Integer.parseInt(PORT.getText()));
             if(connectionManager.connect()) {
-                connectionStatus.setText(EmotionalSongs.applicationLanguage == 0 ? "Server trovato" : "Server found");
+                connectionStatus.setText(Main.applicationLanguage == 0 ? "Server trovato" : "Server found");
                 connectionStatus.setStyle("-fx-text-fill: #1ED760;");
                 connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #1ED760;");
             }

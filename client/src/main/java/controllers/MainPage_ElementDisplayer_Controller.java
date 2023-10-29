@@ -6,7 +6,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-import application.EmotionalSongs;
+import application.Main;
 import application.ObjectsCache;
 import application.SceneManager;
 import application.SceneManager.FXML_elements;
@@ -130,7 +130,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
         img = ObjectsCache.getImage(imgURL);
 
         if(img == null) {
-            EmotionalSongs.imageDownloader.addImageToDownload(imgURL, image);  
+            Main.imageDownloader.addImageToDownload(imgURL, image);  
         }
         
         
@@ -215,7 +215,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     {
         labelName.setText("Le tue playlist");
         labelType.setText("");
-        image.setImage(new Image(UtilityOS.formatPath(EmotionalSongs.ImageFolder + "\\icon\\playlistIcon.png")));
+        image.setImage(new Image(UtilityOS.formatPath(Main.ImageFolder + "\\icon\\playlistIcon.png")));
         linearColorAnchorPane.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ "#050500" +");");
 
         actionButton.setDisable(false);
@@ -225,7 +225,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
         actionButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                //SceneManager.getInstance().showScene(null, data)
+                sceneManager.startWindow(SceneManager.ApplicationWinodws.PLAYLIST_CREATION_WINDOW, null);
             }
         });
         

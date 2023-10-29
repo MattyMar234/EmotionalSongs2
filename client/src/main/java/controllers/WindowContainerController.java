@@ -22,8 +22,8 @@ public class WindowContainerController extends ControllerBase implements Initial
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        anchor.setMinWidth(800);
-        anchor.setMinHeight(900);
+        //anchor.setMinWidth(800);
+        //anchor.setMinHeight(900);
         anchor_for_injectScene = anchor;
     }
 
