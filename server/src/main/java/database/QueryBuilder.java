@@ -516,12 +516,39 @@ public class QueryBuilder {
         return sb.toString();
     }
 
-    public static String getAccountComments_query(String songID, String accountID) {
+    public static String getAccountSongComment_query(String songID, String accountID) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM " + Tabelle.COMMENTO + " WHERE ");
         sb.append(Colonne.SONG_ID_REF.getName() + " = '" + songID + "'AND");
         sb.append(Colonne.ACCOUNT_ID_REF.getName() + " = '" + accountID + "';");
 
+
+        //terminal.printQueryln(sb.toString());
+        return sb.toString();
+    }
+
+    public static String getSongComment_query(String songID) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM " + Tabelle.COMMENTO + " WHERE ");
+        sb.append(Colonne.SONG_ID_REF.getName() + " = '" + songID + "';");
+
+        //terminal.printQueryln(sb.toString());
+        return sb.toString();
+    }
+
+    public static String getAccountComment_query(String accountID) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM " + Tabelle.COMMENTO + " WHERE ");
+        sb.append(Colonne.ACCOUNT_ID_REF.getName() + " = '" + accountID + "';");
+
+        //terminal.printQueryln(sb.toString());
+        return sb.toString();
+    }
+
+    public static String getSongEmotion_query(String songID) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM " + Tabelle.EMOZIONE + " WHERE ");
+        sb.append(Colonne.SONG_ID_REF.getName() + " = '" + songID + "';");
 
         //terminal.printQueryln(sb.toString());
         return sb.toString();

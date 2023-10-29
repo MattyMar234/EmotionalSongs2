@@ -36,9 +36,14 @@ public interface SocketService
     public Object renamePlaylist(HashMap<String, Object> argsTable) throws Exception;
 
     //Comment
-    public Object getAccountComments(HashMap<String, Object> argsTable) throws Exception;
+    public Object getAccountSongComment(HashMap<String, Object> argsTable) throws Exception;
     public Object addComment(HashMap<String, Object> argsTable) throws Exception;
     public Object deleteComment(HashMap<String, Object> argsTable) throws Exception;
+    public Object getSongComment(HashMap<String, Object> argsTable) throws Exception;
+    public Object getAccountComment(HashMap<String, Object> argsTable) throws Exception;
+
+    //emozioni
+    public Object getSongEmotion(HashMap<String, Object> argsTable) throws Exception;
     
     
 }

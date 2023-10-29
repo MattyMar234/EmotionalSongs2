@@ -363,12 +363,29 @@ public class QueriesManager {
         database.submitQuery(query);
     }
 
-    public static void getAccountComments(String accountID, String songID) throws SQLException{
+    public static void getAccountSongComment(String accountID, String songID) throws SQLException{
         DatabaseManager database = DatabaseManager.getInstance();
-        String query = QueryBuilder.getAccountComments_query(accountID, songID);
+        String query = QueryBuilder.getAccountSongComment_query(accountID, songID);
+        database.submitQuery(query);
+    }
+
+    public static void getSongComment(String songID) throws SQLException {
+        DatabaseManager database = DatabaseManager.getInstance();
+        String query = QueryBuilder.getSongComment_query(songID);
         database.submitQuery(query);
     }
     
+    public static void getAccountComment(String accountID) throws SQLException {
+        DatabaseManager database = DatabaseManager.getInstance();
+        String query = QueryBuilder.getAccountComment_query(accountID);
+        database.submitQuery(query);
+    }
+
+    public static void getSongEmotion(String songID) throws SQLException {
+        DatabaseManager database = DatabaseManager.getInstance();
+        String query = QueryBuilder.getSongEmotion_query(songID);
+        database.submitQuery(query);
+    }
 
 
 }
