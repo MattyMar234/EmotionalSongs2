@@ -32,7 +32,8 @@ public interface SocketService
     public Object deletePlaylist(HashMap<String, Object> argsTable) throws Exception;
     public Object removeSongFromPlaylist(HashMap<String, Object> argsTable) throws Exception;
     public Object addSongToPlaylist(HashMap<String, Object> argsTable) throws Exception;
-    public Object getAccountsPlaylistsBy(HashMap<String, Object> argsTable) throws Exception;
+    public Object getAccountsPlaylists(HashMap<String, Object> argsTable) throws Exception;
+    public Object renamePlaylist(HashMap<String, Object> argsTable) throws Exception;
 
     //Comment
     public Object getAccountComments(HashMap<String, Object> argsTable) throws Exception;

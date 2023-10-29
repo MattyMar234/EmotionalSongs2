@@ -339,5 +339,37 @@ public class QueriesManager {
         database.submitInsertQuery(query);
     }
 
+    public static void removeSongFromPlaylist (String accountID, String playlistID, String songID) throws SQLException {
+        DatabaseManager database = DatabaseManager.getInstance();
+        String query = QueryBuilder.removeSongFromPlaylist_query(playlistID, songID);
+        database.submitQuery(query);
+    }
+
+    public static void renamePlaylist(String accountID, String playlistID, String newName) throws SQLException {
+        DatabaseManager database = DatabaseManager.getInstance();
+        String query = QueryBuilder.renamePlaylist_query(playlistID, newName);
+        database.submitQuery(query);
+    }
+
+    public static void addComment(String accountID, String songID, String comment) throws SQLException {
+        DatabaseManager database = DatabaseManager.getInstance();
+        String query = QueryBuilder.addComment_query(accountID, songID, comment);
+        database.submitInsertQuery(query);
+    }
+
+    public static void deleteComment(String accountID, String commentID) throws SQLException {
+        DatabaseManager database = DatabaseManager.getInstance();
+        String query = QueryBuilder.deleteComment_query(commentID);
+        database.submitQuery(query);
+    }
+
+    public static void getAccountComments(String accountID, String songID) throws SQLException{
+        DatabaseManager database = DatabaseManager.getInstance();
+        String query = QueryBuilder.getAccountComments_query(accountID, songID);
+        database.submitQuery(query);
+    }
+    
+
+
 }
 

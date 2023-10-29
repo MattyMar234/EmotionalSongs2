@@ -69,6 +69,11 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		serverFunctions.put(ServerServicesName.ADD_PLAYLIST, this::addPlaylist);
 		serverFunctions.put(ServerServicesName.GET_ACCOUNT_PLAYLIST, this::getAccountsPlaylists);
 		serverFunctions.put(ServerServicesName.ADD_SONG_PLAYLIST, this::addSongToPlaylist);
+		serverFunctions.put(ServerServicesName.REMOVE_SONG_PLAYLIST, this::removeSongFromPlaylist);
+		serverFunctions.put(ServerServicesName.RENAME_PLAYLIST, this::renamePlaylist);
+		serverFunctions.put(ServerServicesName.ADD_COMMENT, this::addComment);
+		serverFunctions.put(ServerServicesName.REMOVE_COMMENT, this::deleteComment);
+		serverFunctions.put(ServerServicesName.GET_COMMENTS_SONG, this::getAccountComments);
 
 
 		//hashMap che associa a ogni servizio i parametri richiesti
@@ -83,6 +88,11 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		functionParametreKeys.put(ServerServicesName.ADD_PLAYLIST, new String[]{"accountID", "playlistName"});
 		functionParametreKeys.put(ServerServicesName.GET_ACCOUNT_PLAYLIST, new String[]{"accountID"});
 		functionParametreKeys.put(ServerServicesName.ADD_SONG_PLAYLIST, new String[]{"accountID", "playlistID", "songID"});
+		functionParametreKeys.put(ServerServicesName.REMOVE_SONG_PLAYLIST, new String[]{"accountID", "playlistID", "songID"});
+		functionParametreKeys.put(ServerServicesName.RENAME_PLAYLIST, new String[]{"accountID", "playlistID", "newName"});
+		functionParametreKeys.put(ServerServicesName.ADD_COMMENT, new String[]{"accountID", "songID", "comment"});
+		functionParametreKeys.put(ServerServicesName.REMOVE_COMMENT, new String[]{"accountID", "songID", "commentID"});
+		functionParametreKeys.put(ServerServicesName.GET_COMMENTS_SONG, new String[]{"accountID", "songID",});
 		
 
 		try {
@@ -98,6 +108,11 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 			functionName.put(ServerServicesName.ADD_PLAYLIST, "addPlaylist");
 			functionName.put(ServerServicesName.GET_ACCOUNT_PLAYLIST, "getAccountsPlaylistsBy");
 			functionName.put(ServerServicesName.ADD_SONG_PLAYLIST, "addSongToPlaylist");
+			functionName.put(ServerServicesName.REMOVE_SONG_PLAYLIST, "removeSongFromPlaylist");
+			functionName.put(ServerServicesName.RENAME_PLAYLIST, "renamePlaylist");
+			functionName.put(ServerServicesName.ADD_COMMENT, "addComment");
+			functionName.put(ServerServicesName.REMOVE_COMMENT, "deleteComment");
+			functionName.put(ServerServicesName.GET_COMMENTS_SONG, "getAccountComments");
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -569,8 +584,13 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 
 	@Override
 	public Object removeSongFromPlaylist(final HashMap<String, Object> argsTable) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'removeSongFromPlaylist'");
+		try {
+			QueriesManager.removeSongFromPlaylist((String)argsTable.get("accountID"), (String)argsTable.get("playlistID"), (String)argsTable.get("songID"));
+			return null;        
+		} 
+		catch (Exception e) {
+			return e;
+		}
 	}
 
 	@Override
@@ -597,19 +617,45 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 
 	@Override
 	public Object getAccountComments(final HashMap<String, Object> argsTable) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getAccountComments'");
+		try {
+			QueriesManager.getAccountComments((String)argsTable.get("accountID"), (String)argsTable.get("songID"));
+			return null;
+		} 
+		catch (Exception e) {
+			return e;
+		}
 	}
 
 	@Override
 	public Object addComment(final HashMap<String, Object> argsTable) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'addComment'");
+		try {
+			QueriesManager.addComment((String)argsTable.get("accountID"), (String)argsTable.get("songID"), (String)argsTable.get("comment"));
+			return null;        
+		} 
+		catch (Exception e) {
+			return e;
+		}
 	}
 
 	@Override
 	public Object deleteComment(final HashMap<String, Object> argsTable) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'deleteComment'");
+		try {
+			QueriesManager.deleteComment((String)argsTable.get("accountID"), (String)argsTable.get("commentID"));
+			return null;        
+		} 
+		catch (Exception e) {
+			return e;
+		}
+	}
+
+	@Override
+	public Object renamePlaylist(final HashMap<String, Object> argsTable) {
+		try {
+			QueriesManager.renamePlaylist((String)argsTable.get("accountID"), (String)argsTable.get("playlistID"), (String)argsTable.get("newName"));
+			return null;        
+		} 
+		catch (Exception e) {
+			return e;
+		}
 	}
 }
