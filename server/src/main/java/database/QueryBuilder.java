@@ -472,4 +472,86 @@ public class QueryBuilder {
         //terminal.printQueryln(sb.toString());
         return sb.toString();
     }
+
+    public static String removeSongFromPlaylist_query(String playlistID, String songID) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("DELETE FROM " + Tabelle.PLAYLIST_SONGS + " WHERE ");
+        sb.append(Colonne.PLAYLIST_ID_REF.getName() + " = '" + playlistID + "' AND ");
+        sb.append(Colonne.SONG_ID_REF.getName() + " = '" + songID + "';");
+
+        //terminal.printQueryln(sb.toString());
+        return sb.toString();
+    }
+
+    public static String renamePlaylist_query(String playlistID, String newName) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("UPDATE " + Tabelle.PLAYLIST + " SET ");
+        sb.append(Colonne.NAME.getName() + " = '" + newName + "' WHERE ");
+        sb.append(Colonne.ID.getName() + " = '" + playlistID + "';");
+
+        //terminal.printQueryln(sb.toString());
+        return sb.toString();
+    }
+
+    public static String addComment_query(String accountID, String songID, String comment) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("INSERT INTO " + Tabelle.COMMENTO + " (");
+        sb.append(Colonne.ACCOUNT_ID_REF.getName() + ", ");
+        sb.append(Colonne.SONG_ID_REF.getName() + ", ");
+        sb.append(Colonne.COMMENTO.getName() + ") VALUES (");
+        sb.append("'" + accountID + "', ");
+        sb.append("'" + songID + "', ");
+        sb.append("'" + comment + "');");
+
+        //terminal.printQueryln(sb.toString());
+        return sb.toString();
+    }
+
+    public static String deleteComment_query(String commentID) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("DELETE FROM " + Tabelle.COMMENTO + " WHERE ");
+        sb.append(Colonne.ID.getName() + " = '" + commentID + "';");
+
+        //terminal.printQueryln(sb.toString());
+        return sb.toString();
+    }
+
+    public static String getAccountSongComment_query(String songID, String accountID) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM " + Tabelle.COMMENTO + " WHERE ");
+        sb.append(Colonne.SONG_ID_REF.getName() + " = '" + songID + "'AND");
+        sb.append(Colonne.ACCOUNT_ID_REF.getName() + " = '" + accountID + "';");
+
+
+        //terminal.printQueryln(sb.toString());
+        return sb.toString();
+    }
+
+    public static String getSongComment_query(String songID) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM " + Tabelle.COMMENTO + " WHERE ");
+        sb.append(Colonne.SONG_ID_REF.getName() + " = '" + songID + "';");
+
+        //terminal.printQueryln(sb.toString());
+        return sb.toString();
+    }
+
+    public static String getAccountComment_query(String accountID) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM " + Tabelle.COMMENTO + " WHERE ");
+        sb.append(Colonne.ACCOUNT_ID_REF.getName() + " = '" + accountID + "';");
+
+        //terminal.printQueryln(sb.toString());
+        return sb.toString();
+    }
+
+    public static String getSongEmotion_query(String songID) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM " + Tabelle.EMOZIONE + " WHERE ");
+        sb.append(Colonne.SONG_ID_REF.getName() + " = '" + songID + "';");
+
+        //terminal.printQueryln(sb.toString());
+        return sb.toString();
+    }
+
 }

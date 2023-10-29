@@ -69,11 +69,19 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		serverFunctions.put(ServerServicesName.ADD_PLAYLIST, this::addPlaylist);
 		serverFunctions.put(ServerServicesName.GET_ACCOUNT_PLAYLIST, this::getAccountsPlaylists);
 		serverFunctions.put(ServerServicesName.ADD_SONG_PLAYLIST, this::addSongToPlaylist);
+		serverFunctions.put(ServerServicesName.REMOVE_SONG_PLAYLIST, this::removeSongFromPlaylist);
+		serverFunctions.put(ServerServicesName.RENAME_PLAYLIST, this::renamePlaylist);
+		serverFunctions.put(ServerServicesName.ADD_COMMENT, this::addComment);
+		serverFunctions.put(ServerServicesName.REMOVE_COMMENT, this::deleteComment);
+		serverFunctions.put(ServerServicesName.GET_COMMENTS_SONG_FOR_ACCOUNT, this::getAccountSongComment);
+		serverFunctions.put(ServerServicesName.GET_COMMENTS_SONG, this::getSongComment);
+		serverFunctions.put(ServerServicesName.GET_COMMENTS_ACCOUNT, this::getAccountComment);
+		serverFunctions.put(ServerServicesName.GET_SONG_EMOTION, this::getSongEmotion);
 
 
 		//hashMap che associa a ogni servizio i parametri richiesti
-		functionParametreKeys.put(ServerServicesName.ADD_ACCOUNT, new String[] {"name", "username", "userID", "codiceFiscale", "email", "password", "civicNumber", "viaPiazza", "cap", "commune", "province"});
-		functionParametreKeys.put(ServerServicesName.GET_ACCOUNT, new String[]{"email", "password"});
+		functionParametreKeys.put(ServerServicesName.ADD_ACCOUNT, new String[] {"name", "username", "userID", "codiceFiscale", "Email", "password", "civicNumber", "viaPiazza", "cap", "commune", "province"});
+		functionParametreKeys.put(ServerServicesName.GET_ACCOUNT, new String[]{"Email", "password"});
 		functionParametreKeys.put(ServerServicesName.GET_MOST_POPULAR_SONGS, new String[]{"limit", "offset"});
 		functionParametreKeys.put(ServerServicesName.GET_RECENT_PUPLISCED_ALBUMS, new String[]{"limit", "offset", "threshold"});
 		functionParametreKeys.put(ServerServicesName.SEARCH_SONGS, new String[]{"searchString", "limit", "offset"});
@@ -83,6 +91,14 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		functionParametreKeys.put(ServerServicesName.ADD_PLAYLIST, new String[]{"accountID", "playlistName"});
 		functionParametreKeys.put(ServerServicesName.GET_ACCOUNT_PLAYLIST, new String[]{"accountID"});
 		functionParametreKeys.put(ServerServicesName.ADD_SONG_PLAYLIST, new String[]{"accountID", "playlistID", "songID"});
+		functionParametreKeys.put(ServerServicesName.REMOVE_SONG_PLAYLIST, new String[]{"accountID", "playlistID", "songID"});
+		functionParametreKeys.put(ServerServicesName.RENAME_PLAYLIST, new String[]{"accountID", "playlistID", "newName"});
+		functionParametreKeys.put(ServerServicesName.ADD_COMMENT, new String[]{"accountID", "songID", "comment"});
+		functionParametreKeys.put(ServerServicesName.REMOVE_COMMENT, new String[]{"accountID", "songID", "commentID"});
+		functionParametreKeys.put(ServerServicesName.GET_COMMENTS_SONG_FOR_ACCOUNT, new String[]{"accountID", "songID",});
+		functionParametreKeys.put(ServerServicesName.GET_COMMENTS_SONG, new String[]{"songID"});
+		functionParametreKeys.put(ServerServicesName.GET_COMMENTS_ACCOUNT, new String[]{"accountID"});
+		functionParametreKeys.put(ServerServicesName.GET_SONG_EMOTION, new String[]{"songID"});
 		
 
 		try {
@@ -98,6 +114,14 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 			functionName.put(ServerServicesName.ADD_PLAYLIST, "addPlaylist");
 			functionName.put(ServerServicesName.GET_ACCOUNT_PLAYLIST, "getAccountsPlaylistsBy");
 			functionName.put(ServerServicesName.ADD_SONG_PLAYLIST, "addSongToPlaylist");
+			functionName.put(ServerServicesName.REMOVE_SONG_PLAYLIST, "removeSongFromPlaylist");
+			functionName.put(ServerServicesName.RENAME_PLAYLIST, "renamePlaylist");
+			functionName.put(ServerServicesName.ADD_COMMENT, "addComment");
+			functionName.put(ServerServicesName.REMOVE_COMMENT, "deleteComment");
+			functionName.put(ServerServicesName.GET_COMMENTS_SONG_FOR_ACCOUNT, "getAccountComments");
+			functionName.put(ServerServicesName.GET_COMMENTS_SONG, "getSongComments");
+			functionName.put(ServerServicesName.GET_COMMENTS_ACCOUNT, "getAccountComments");
+			functionName.put(ServerServicesName.GET_SONG_EMOTION, "getSongEmotion");
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -411,7 +435,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	{
 		try { 
 			//cerco se esiste un account con quell'email
-			Account account = QueriesManager.getAccountByEmail((String) argsTable.get("email"));
+			Account account = QueriesManager.getAccountByEmail((String) argsTable.get("Email"));
 
 			//verifico se l'ho trovato
 			if(account == null)
@@ -569,8 +593,13 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 
 	@Override
 	public Object removeSongFromPlaylist(final HashMap<String, Object> argsTable) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'removeSongFromPlaylist'");
+		try {
+			QueriesManager.removeSongFromPlaylist((String)argsTable.get("accountID"), (String)argsTable.get("playlistID"), (String)argsTable.get("songID"));
+			return null;        
+		} 
+		catch (Exception e) {
+			return e;
+		}
 	}
 
 	@Override
@@ -596,20 +625,81 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	}
 
 	@Override
-	public Object getAccountComments(final HashMap<String, Object> argsTable) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getAccountComments'");
+	public Object getAccountSongComment(final HashMap<String, Object> argsTable) {
+		try {
+			QueriesManager.getAccountSongComment((String)argsTable.get("accountID"), (String)argsTable.get("songID"));
+			return null;
+		} 
+		catch (Exception e) {
+			return e;
+		}
 	}
 
 	@Override
 	public Object addComment(final HashMap<String, Object> argsTable) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'addComment'");
+		try {
+			QueriesManager.addComment((String)argsTable.get("accountID"), (String)argsTable.get("songID"), (String)argsTable.get("comment"));
+			return null;        
+		} 
+		catch (Exception e) {
+			return e;
+		}
 	}
 
 	@Override
 	public Object deleteComment(final HashMap<String, Object> argsTable) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'deleteComment'");
+		try {
+			QueriesManager.deleteComment((String)argsTable.get("accountID"), (String)argsTable.get("commentID"));
+			return null;        
+		} 
+		catch (Exception e) {
+			return e;
+		}
 	}
+
+	@Override
+	public Object renamePlaylist(final HashMap<String, Object> argsTable) {
+		try {
+			QueriesManager.renamePlaylist((String)argsTable.get("accountID"), (String)argsTable.get("playlistID"), (String)argsTable.get("newName"));
+			return null;        
+		} 
+		catch (Exception e) {
+			return e;
+		}
+	}
+
+	@Override
+	public Object getSongComment(final HashMap<String, Object> argsTable) {
+		try {
+			QueriesManager.getSongComment((String)argsTable.get("songID"));
+			return null;
+		} 
+		catch (Exception e) {
+			return e;     
+		} 
+	}
+
+	@Override
+	public Object getAccountComment(final HashMap<String, Object> argsTable) {
+		try {
+			QueriesManager.getAccountComment((String)argsTable.get("accountID"));
+			return null;
+		} 
+		catch (Exception e) {
+			return e;     
+		} 
+	}
+	
+	@Override
+	public Object getSongEmotion(final HashMap<String, Object> argsTable) {
+		try {
+			QueriesManager.getSongEmotion((String)argsTable.get("songID"));
+			return null;
+		} 
+		catch (Exception e) {
+			return e;     
+		} 
+	}
+	
+	
 }
