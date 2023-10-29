@@ -322,5 +322,22 @@ public class QueriesManager {
         database.submitInsertQuery(query);
     }
 
+    public static void getAccountsPlaylists(String accountID) throws SQLException {
+        DatabaseManager database = DatabaseManager.getInstance();
+        String query = QueryBuilder.getAccountsPlaylists_query(accountID);
+        ResultSet resultSet = database.submitQuery(query);
+
+        while (resultSet.next()) { 
+            System.out.println(resultSet.getString(Colonne.ID.getName()));
+            System.out.println(resultSet.getString(Colonne.NAME.getName()));
+        }
+    }
+
+    public static void addSongToPlaylist(String accountID, String playlistID, String songID) throws SQLException {
+        DatabaseManager database = DatabaseManager.getInstance();
+        String query = QueryBuilder.addSongToPlaylist_query(playlistID, songID);
+        database.submitInsertQuery(query);
+    }
+
 }
 
