@@ -28,6 +28,7 @@ import Exceptions.InvalidEmailException;
 import Exceptions.InvalidPasswordException;
 import database.QueriesManager;
 import database.PredefinedSQLCode.Colonne;
+import enumclass.ServerServicesName;
 import interfaces.SocketService;
 import objects.Account;
 import objects.Album;

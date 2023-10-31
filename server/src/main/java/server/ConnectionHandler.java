@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.security.InvalidParameterException;
 import java.util.HashMap;
 
+import enumclass.ServerServicesName;
 import objects.Packet;
 
 import java.io.ObjectOutputStream;
