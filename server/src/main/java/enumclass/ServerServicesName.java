@@ -1,4 +1,4 @@
-package server;
+package enumclass;
 
 public enum ServerServicesName {
 
