@@ -26,6 +26,7 @@ import objects.Account;
 import objects.Album;
 import objects.Song;
 import objects.Packet;
+import objects.Playlist;
 import utility.UtilityOS;
 
 import java.beans.EventHandler;
@@ -127,7 +128,7 @@ public class ConnectionManager implements ServerServices{
 				if(isConnected()) {
 					if(!testServerConnection()) {
 						disconnect();
-						SceneManager.getInstance().fireEvent(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, new ConnectionEvent(ConnectionEvent.DISCONNECTED));
+						SceneManager.getInstance().fireEvent(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, new ConnectionEvent(ConnectionEvent.DISCONNECTED));
 					}
 				}
 			}
@@ -426,7 +427,7 @@ public class ConnectionManager implements ServerServices{
 
 
 	public Account getAccount(String Email, String password) throws InvalidPasswordException, InvalidUserNameException, InvalidEmailException {
-		Object[] params = new Object[]{"email", Email,"password", password};
+		Object[] params = new Object[]{"Email", Email,"password", password};
 
 		try {
 			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_ACCOUNT.name(), params));
@@ -544,7 +545,7 @@ public class ConnectionManager implements ServerServices{
 	
 
 	@Override
-	public boolean addPlaylist(String playlistName, String userID) throws Exception {
+	public boolean addPlaylist(String playlistName, String userID, Object playlistImage) {
 		System.out.println("addPlaylist: playlistName = " + playlistName + " userID = " + userID);
 
 		Object[] params = new Object[]{"accountID", userID, "playlistName", playlistName};
@@ -555,7 +556,11 @@ public class ConnectionManager implements ServerServices{
 			if(result instanceof Exception)
 				throw (Exception) result;
 			
-			return true;
+			if(result instanceof Boolean) {
+				return (Boolean) result;
+			}
+			
+			throw new RuntimeException("Invalid result");
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -564,7 +569,7 @@ public class ConnectionManager implements ServerServices{
 	}
 
 	@Override
-	public boolean removePlaylist(String userID, String playlistID) throws Exception {
+	public boolean removePlaylist(String userID, String playlistID){
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unimplemented method 'removePlaylist'");
 	}
@@ -608,23 +613,16 @@ public class ConnectionManager implements ServerServices{
 	
 
 	@Override
-	public Object getAccountPlaylists(String userID) throws Exception {
+	public ArrayList<Playlist> getAccountPlaylists(String userID) throws Exception {
 		System.out.println("getAccountPlaylists: userID = " + userID);
 
 		Object[] params = new Object[]{"accountID", userID};
-
-		try {
-			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.ADD_PLAYLIST.name(), params));
-			
-			if(result instanceof Exception)
-				throw (Exception) result;
-			
-			return true;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+		Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_ACCOUNT_PLAYLIST.name(), params));
+		
+		if(result instanceof Exception)
+			throw (Exception) result;
+		
+		return (ArrayList<Playlist>)result;
 	}
 
 	@Override

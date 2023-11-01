@@ -10,6 +10,10 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import org.javatuples.Triplet;
 
+import database.PredefinedSQLCode.Colonne;
+import database.PredefinedSQLCode.Operazioni_SQL;
+import database.PredefinedSQLCode.Tabelle;
+import objects.Playlist;
 import server.App;
 import server.Terminal;
 
@@ -29,7 +33,7 @@ public class PredefinedSQLCode
     public static final Hashtable<Tabelle, String> createTable_Queries;
     public static final Hashtable<Tabelle, String> deleteTable_Queries;
 
-    private static final String ID_SIZE = "(22)";
+    private static final String ID_SIZE = "(64)";
     private static final String ACCOUNT_ID_SIZE = "(120)";
     
     public static enum ImageType {
@@ -149,7 +153,7 @@ public class PredefinedSQLCode
             return keyword;
         }
     }
-
+    //ALTER TABLE Playlist ALTER COLUMN ID TYPE VARCHAR(64);
 
     public static enum Colonne
     {

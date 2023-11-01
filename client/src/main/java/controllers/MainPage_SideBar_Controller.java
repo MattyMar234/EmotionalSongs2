@@ -2,50 +2,32 @@ package controllers;
 
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import application.Main;
 import application.SceneManager;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import interfaces.Injectable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import objects.Playlist;
-import utility.UtilityOS;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 
 /**
  * Questa classe grafica gestisce il menù laterale della pagina principale dell'applicazione
  */
-public class MainPage_SideBar_Controller extends ControllerBase implements Initializable
+public class MainPage_SideBar_Controller extends ControllerBase implements Initializable, Injectable
 {
     // ========================= Label ========================= //
 
@@ -104,6 +86,7 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
 
         if(Main.account == null) {
             userName.setText(Main.applicationLanguage == 0 ? "Accedi" : "Login");
+            playlistButton.setDisable(true);
         }
         else {
             userName.setText(Main.account.getNickname());
@@ -198,7 +181,7 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
     @FXML
     public void tryLogin(MouseEvent event) {
         if(Main.account == null) {
-            SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, SceneManager.ApplicationScene.ACCESS_PAGE);
+            SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.ACCESS_PAGE);
         }
     }
         
@@ -226,9 +209,8 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
     }
 
     @FXML
-    public void setHomePage(ActionEvent event) throws IOException
-    {
-        MainPage_ElementDisplayer_Controller element = (MainPage_ElementDisplayer_Controller) SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, SceneManager.ApplicationScene.MAIN_PAGE_HOME);
+    public void setHomePage(ActionEvent event) throws IOException {
+        SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.MAIN_PAGE_HOME);
     }
 
     @FXML
@@ -237,12 +219,11 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
         state = 2;
         ClearActiveButtons();
         //this.buttons.get(2).setStyle(ButtonColor);
-        MainPage_ElementDisplayer_Controller element = (MainPage_ElementDisplayer_Controller) SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE);
+        MainPage_ElementDisplayer_Controller element = (MainPage_ElementDisplayer_Controller) SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.MAIN_PAGE_PLAYLIST);
         
-        if(element != null) {
-            Object data = new Playlist[]{};
-            element.injectData(data);
-        }
+        /*if(element != null) {
+            element.injectData(ElementDisplayerMode.SHOW_USER_PLAYLISTS);
+        }*/
         
     }
 
@@ -283,6 +264,18 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
         /*if(result.isPresent() && result.get() == ButtonType.OK) {
             SwitchScene("AccessPage");
         } */
+    }
+
+
+    @Override
+    public void injectData(Object... data) {
+        
+    }
+
+
+    @Override
+    public void init(Object... data) {
+       
     }
 
     

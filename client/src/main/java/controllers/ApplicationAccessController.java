@@ -23,6 +23,7 @@ import application.SceneManager.ApplicationScene;
 import applicationEvents.ConnectionEvent;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import interfaces.Injectable;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -55,7 +56,7 @@ import javafx.scene.image.Image;
 /**
  * Questa classe gestisce l'accesso all'applicazione
  */
-public class ApplicationAccessController extends ControllerBase implements Initializable 
+public class ApplicationAccessController extends ControllerBase implements Initializable, Injectable 
 {
     private static ApplicationAccessController reference;
     private ObservableList<ImageView> imgs = FXCollections.observableArrayList();
@@ -113,7 +114,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
         super.addObjectText_Translations(connectButton, new String[] {"Connettiti", "Connect"});
         super.setTextsLanguage();
 
-        Stage stage = sceneManager.getWindowStage(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW);
+        Stage stage = sceneManager.getWindowStage(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);
 
         stage.addEventFilter(ConnectionEvent.DISCONNECTED, this::handleConnectionLostEvent);
         connectionStatus.setText(Main.applicationLanguage == 0 ? "Server non trovato" : "Server not found");
@@ -290,33 +291,33 @@ public class ApplicationAccessController extends ControllerBase implements Initi
     @FXML
     public void NoAccount(ActionEvent event) throws IOException {
         if (!connectionManager.isConnected()) {
-            Stage stage = sceneManager.getWindowStage(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW);
+            Stage stage = sceneManager.getWindowStage(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);
             stage.fireEvent(new ConnectionEvent(ConnectionEvent.SERVER_NOT_FOUND));
             return;
         }
 
         clearError();
-        sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, ApplicationScene.MAIN_PAGE_HOME);
+        sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, ApplicationScene.MAIN_PAGE_HOME);
       
     }
 
     @FXML
     public void CreateNewAccount(MouseEvent event) throws IOException {
         if (!connectionManager.isConnected()) {
-            Stage stage = sceneManager.getWindowStage(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW);
+            Stage stage = sceneManager.getWindowStage(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);
             stage.fireEvent(new ConnectionEvent(ConnectionEvent.SERVER_NOT_FOUND));
             return;
         }
 
         clearError();
-        sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, ApplicationScene.REGISTRATION_PAGE);
+        sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, ApplicationScene.REGISTRATION_PAGE);
     }
 
     @FXML
     public void accedi_Account(ActionEvent event) throws IOException 
     {
         if (!connectionManager.isConnected()) {
-            Stage stage = sceneManager.getWindowStage(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW);
+            Stage stage = sceneManager.getWindowStage(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);
             stage.fireEvent(new ConnectionEvent(ConnectionEvent.SERVER_NOT_FOUND));
             return;
         }
@@ -356,7 +357,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
 
             if(response != null) {
                 Main.account = response;
-                sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, ApplicationScene.MAIN_PAGE_HOME);
+                sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, ApplicationScene.MAIN_PAGE_HOME);
             }
         } 
         catch (InvalidUserNameException e) {
@@ -488,5 +489,15 @@ public class ApplicationAccessController extends ControllerBase implements Initi
         password.setId("");
 
 
+    }
+
+    @Override
+    public void injectData(Object... data) {
+        
+    }
+
+    @Override
+    public void init(Object... data) {
+        
     }
 }

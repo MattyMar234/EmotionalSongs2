@@ -4,27 +4,43 @@ import java.lang.reflect.Array;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 import database.PredefinedSQLCode.Colonne;
 import database.PredefinedSQLCode.Tabelle;
 import objects.Account;
 import objects.Album;
 import objects.MyImage;
+import objects.Playlist;
 import objects.Residenze;
 import objects.Song;
 import server.Terminal;
 
-public class QueriesManager {
+public class QueriesManager 
+{
+    private static DatabaseManager database = DatabaseManager.getInstance();
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    public static String generate_ID_from_Time() {
-        return Long.toHexString(new Date().getTime()).toUpperCase();
+
+
+    private static String generate_ID_from_Time() {
+        return DigestUtils.sha256Hex(Long.toHexString(new Date().getTime()).toUpperCase());
 	}
+
+    private static String getCurrentDate() {
+        Date today = Calendar.getInstance().getTime();
+        return dateFormat.format(today);
+    }
 
     /**
      * Mi restituisce un hashMap contenete tutte le infromazioni per costruire un oggeto.
@@ -94,13 +110,9 @@ public class QueriesManager {
 
         return result;
     }
-
-
-    
     
 
     public static Account getAccountByEmail(String Email) throws SQLException {
-        DatabaseManager database = DatabaseManager.getInstance();
         ResultSet resultSet = database.submitQuery(QueryBuilder.getAccountByEmail_query(Email));
 
         System.out.println(resultSet.getFetchSize());
@@ -121,7 +133,6 @@ public class QueriesManager {
     }
 
     public static Account getAccountByNickname(String nickname) throws SQLException {
-        DatabaseManager database = DatabaseManager.getInstance();
         ResultSet resultSet = database.submitQuery(QueryBuilder.getAccountByNickname_query(nickname));
         
         if (resultSet.next()) { 
@@ -139,7 +150,6 @@ public class QueriesManager {
     public static ArrayList<MyImage> getAlbumImages_by_ID(String ID) throws SQLException {
 
         ArrayList<MyImage> result = new ArrayList<MyImage>();
-        DatabaseManager database = DatabaseManager.getInstance();
 
         ResultSet resultSet = database.submitQuery(QueryBuilder.getAlbumImages_by_ID(ID));
 
@@ -153,7 +163,6 @@ public class QueriesManager {
 
     public static void addAccount_and_addResidence(HashMap<Colonne, Object> colonne_account, HashMap<Colonne, Object> colonne_residenza) throws SQLException {
 
-        DatabaseManager database = DatabaseManager.getInstance();
         String query = QueryBuilder.getResidenceId_Query((String)colonne_residenza.get(Colonne.VIA_PIAZZA), (int)colonne_residenza.get(Colonne.CIVIC_NUMER), (String)colonne_residenza.get(Colonne.COUNCIL_NAME), (String)colonne_residenza.get(Colonne.PROVINCE_NAME));
         String residence_id = "";
 
@@ -185,7 +194,6 @@ public class QueriesManager {
         */
         
         ArrayList<Song> result = new ArrayList<Song>();
-        DatabaseManager database = DatabaseManager.getInstance();
 
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM Canzone c ORDER BY c.popularity DESC ");
@@ -213,7 +221,6 @@ public class QueriesManager {
 
     public static ArrayList<Album> getRecentPublischedAlbum(long limit, long offset, int threshold) throws SQLException 
     {
-        DatabaseManager database = DatabaseManager.getInstance();
         ArrayList<Album> result = new ArrayList<Album>();
         String query = QueryBuilder.getRecentPublischedAlbum_query(limit, offset, threshold);
         
@@ -259,7 +266,6 @@ public class QueriesManager {
      * @throws SQLException
      */
     public static ArrayList<Song> searchSong(String search, long limit, long offset) throws SQLException {
-        DatabaseManager database = DatabaseManager.getInstance();
         ArrayList<Song> result = new ArrayList<Song>();
 
         String query = QueryBuilder.getSongSearch_query(search, limit, offset);
@@ -281,19 +287,16 @@ public class QueriesManager {
     }
 
     public static ArrayList<Song> searchSongByIDs(String[] IDs) throws SQLException {
-        DatabaseManager database = DatabaseManager.getInstance();
         String query = QueryBuilder.getSongByID_query(IDs);
         return buildSongObjects_From_resultSet(database.submitQuery(query), true);
     }
 
     public static ArrayList<Song> getAlbumSongs(String albumID) throws SQLException {
-        DatabaseManager database = DatabaseManager.getInstance();
         String query = QueryBuilder.getAlbumSongs_query(albumID);
         return buildSongObjects_From_resultSet(database.submitQuery(query), true);
     }
 
     public static ArrayList<Album> searchAlbum(String search, long limit, long offset) throws SQLException {
-        DatabaseManager database = DatabaseManager.getInstance();
         ArrayList<Album> result = new ArrayList<Album>();
 
         String query = QueryBuilder.getAlbumSearch_query(search, limit, offset);
@@ -313,76 +316,104 @@ public class QueriesManager {
 
 
         return result; 
-
     }
 
-    public static void addPlaylist(String accountID, String playlistName) throws SQLException {
-        DatabaseManager database = DatabaseManager.getInstance();
-        String query = QueryBuilder.addPlaylist_query(accountID, playlistName);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // OPERAZIONI SULLE PLAYLIST
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Operazione per creare una muova playlist
+     * @param accountID
+     * @param playlistName
+     * @throws SQLException
+     */
+    public static void addPlaylist(String accountID, String playlistName) throws SQLException  {
+        String query = QueryBuilder.addPlaylist_query(accountID, playlistName, getCurrentDate(), generate_ID_from_Time());
         database.submitInsertQuery(query);
     }
 
-    public static void getAccountsPlaylists(String accountID) throws SQLException {
-        DatabaseManager database = DatabaseManager.getInstance();
-        String query = QueryBuilder.getAccountsPlaylists_query(accountID);
+    /**
+     * Operazione per ottenere tutte le canzoni di una playlist
+     * @param playlistID
+     * @return array di stringhe contenenti gli ID delle canzoni
+     * @throws SQLException
+     */
+    public static String[] getPlaylistSongsID(String playlistID) throws SQLException {
+        String query = QueryBuilder.getPlaylistSongsID_query(playlistID);
         ResultSet resultSet = database.submitQuery(query);
+        String[] output = new String[resultSet.getFetchSize()];
+        int offset = 0;
 
         while (resultSet.next()) { 
-            System.out.println(resultSet.getString(Colonne.ID.getName()));
-            System.out.println(resultSet.getString(Colonne.NAME.getName()));
+            output[offset++] = resultSet.getString(Colonne.ID.getName());  
         }
+
+        return output;
+    }
+
+    
+    /**
+     * Operazione per ottenere tutte le playlist di un account
+     * @param accountID
+     * @return
+     * @throws SQLException
+     */
+    public static Object getAccountsPlaylists(String accountID) throws SQLException {
+        String query = QueryBuilder.getAccountsPlaylists_query(accountID);
+        ResultSet resultSet = database.submitQuery(query);
+        ArrayList<Playlist> list = new ArrayList<Playlist>();
+
+        while (resultSet.next()) { 
+            Playlist playlist = new Playlist(getHashMap_for_ClassConstructor(resultSet, Tabelle.PLAYLIST));
+            playlist.setSongsID(getPlaylistSongsID(playlist.getId()));
+            list.add(playlist); 
+        }
+
+        return list;
     }
 
     public static void addSongToPlaylist(String accountID, String playlistID, String songID) throws SQLException {
-        DatabaseManager database = DatabaseManager.getInstance();
         String query = QueryBuilder.addSongToPlaylist_query(playlistID, songID);
         database.submitInsertQuery(query);
     }
 
     public static void removeSongFromPlaylist (String accountID, String playlistID, String songID) throws SQLException {
-        DatabaseManager database = DatabaseManager.getInstance();
         String query = QueryBuilder.removeSongFromPlaylist_query(playlistID, songID);
         database.submitQuery(query);
     }
 
     public static void renamePlaylist(String accountID, String playlistID, String newName) throws SQLException {
-        DatabaseManager database = DatabaseManager.getInstance();
         String query = QueryBuilder.renamePlaylist_query(playlistID, newName);
         database.submitQuery(query);
     }
 
     public static void addComment(String accountID, String songID, String comment) throws SQLException {
-        DatabaseManager database = DatabaseManager.getInstance();
         String query = QueryBuilder.addComment_query(accountID, songID, comment);
         database.submitInsertQuery(query);
     }
 
     public static void deleteComment(String accountID, String commentID) throws SQLException {
-        DatabaseManager database = DatabaseManager.getInstance();
         String query = QueryBuilder.deleteComment_query(commentID);
         database.submitQuery(query);
     }
 
     public static void getAccountSongComment(String accountID, String songID) throws SQLException{
-        DatabaseManager database = DatabaseManager.getInstance();
         String query = QueryBuilder.getAccountSongComment_query(accountID, songID);
         database.submitQuery(query);
     }
 
     public static void getSongComment(String songID) throws SQLException {
-        DatabaseManager database = DatabaseManager.getInstance();
         String query = QueryBuilder.getSongComment_query(songID);
         database.submitQuery(query);
     }
     
     public static void getAccountComment(String accountID) throws SQLException {
-        DatabaseManager database = DatabaseManager.getInstance();
         String query = QueryBuilder.getAccountComment_query(accountID);
         database.submitQuery(query);
     }
 
     public static void getSongEmotion(String songID) throws SQLException {
-        DatabaseManager database = DatabaseManager.getInstance();
         String query = QueryBuilder.getSongEmotion_query(songID);
         database.submitQuery(query);
     }

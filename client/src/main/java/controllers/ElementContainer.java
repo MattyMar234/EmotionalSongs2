@@ -107,12 +107,12 @@ public class ElementContainer extends ControllerBase implements Initializable, I
     public void openLink(MouseEvent event) 
     {
         if(displayedElement instanceof Song) { 
-            sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE, displayedElement);
+            sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE, displayedElement);
         }
         else if(displayedElement instanceof Artist) {
         }
         else if(displayedElement instanceof Album) {
-            sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE, displayedElement);
+            sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE, displayedElement);
         }
     }
 }

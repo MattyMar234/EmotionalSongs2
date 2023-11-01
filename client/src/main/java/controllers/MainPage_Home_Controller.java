@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 
 import application.ConnectionManager;
 import application.SceneManager;
+import interfaces.Injectable;
 import interfaces.ServerServices;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -24,7 +25,7 @@ import objects.Song;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class MainPage_Home_Controller extends ControllerBase implements Initializable
+public class MainPage_Home_Controller extends ControllerBase implements Initializable, Injectable
 {
     @FXML public Button buttonBackward;
     @FXML public Button buttonForward;
@@ -106,6 +107,16 @@ public class MainPage_Home_Controller extends ControllerBase implements Initiali
             double ds = currentVal - controller.Hbox.widthProperty().get();
             controller.Hbox.widthProperty().add(ds);
         }
+    }
+
+    @Override
+    public void injectData(Object... data) {
+        
+    }
+
+    @Override
+    public void init(Object... data) {
+        
     }
     
 

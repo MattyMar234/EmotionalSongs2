@@ -22,7 +22,7 @@ public class DatabaseManager {
     /*Variabili connessione DB  */
     private static DatabaseManager database;
     private static Connection connection = null;
-    private static Statement statement   = null;
+    //private static Statement statement   = null;
 
     
     private DatabaseManager(){
@@ -89,11 +89,15 @@ public class DatabaseManager {
         return connection.isValid(2); //timeout
     }
 
+    private Statement createStatement() throws SQLException {
+        return connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+    }
+
 
 
     public ResultSet submitQuery(String sql) throws SQLException 
     {
-        Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        Statement statement = createStatement();
         if(statement.execute(sql)){
             return statement.getResultSet();
         }
@@ -102,7 +106,7 @@ public class DatabaseManager {
 
     public ResultSet submitQuery2(String sql) throws SQLException 
     {
-        Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        Statement statement = createStatement();
        
         if(statement.execute(sql)){
             ResultSet result = statement.getResultSet();
@@ -113,6 +117,8 @@ public class DatabaseManager {
     }
 
     public void submitInsertQuery(String sql) throws SQLException {
+        
+        Statement statement = createStatement();
         statement.execute(sql);
     }
 
@@ -138,9 +144,7 @@ public class DatabaseManager {
         return user;
     }
 
-    public Statement getStatement() {
-        return statement;
-    }
+    
 
     public Connection getConnection(){
         return connection;

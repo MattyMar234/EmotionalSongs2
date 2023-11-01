@@ -578,8 +578,9 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	@Override
 	public Object addPlaylist(final HashMap<String, Object> argsTable) {
 		try {
+			//Aggiungere eventuale immagine
 			QueriesManager.addPlaylist((String)argsTable.get("accountID"), (String)argsTable.get("playlistName"));
-			return null;        
+			return true;        
 		} 
 		catch (Exception e) {
 			return e;
@@ -617,8 +618,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	@Override
 	public Object getAccountsPlaylists(final HashMap<String, Object> argsTable) {
 		try {
-			QueriesManager.getAccountsPlaylists((String)argsTable.get("accountID") );
-			return null;
+			return QueriesManager.getAccountsPlaylists((String)argsTable.get("accountID") );
 		} 
 		catch (Exception e) {
 			return e;

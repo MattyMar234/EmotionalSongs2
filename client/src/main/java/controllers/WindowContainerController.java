@@ -3,10 +3,11 @@ package controllers;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import interfaces.Injectable;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.BorderPane;
 
-public class WindowContainerController extends ControllerBase implements Initializable
+public class WindowContainerController extends ControllerBase implements Initializable, Injectable
 {
     private static WindowContainerController reference;
     public BorderPane anchor;
@@ -25,6 +26,16 @@ public class WindowContainerController extends ControllerBase implements Initial
         //anchor.setMinWidth(800);
         //anchor.setMinHeight(900);
         anchor_for_injectScene = anchor;
+    }
+
+    @Override
+    public void injectData(Object... data) {
+        
+    }
+
+    @Override
+    public void init(Object... data) {
+        
     }
 
     /*public void setAccessPage() {

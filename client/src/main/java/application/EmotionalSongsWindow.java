@@ -73,13 +73,13 @@ public class EmotionalSongsWindow extends Application
         root.addEventFilter(ConnectionEvent.DISCONNECTED, this::handleConnectionLostEvent);
         root.addEventFilter(ConnectionEvent.SERVER_NOT_FOUND, this::handleInvalidConnectionEvent);
 
-        sceneManager.setStage(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, root);
-        sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, ApplicationScene.ACCESS_PAGE);
+        sceneManager.setStage(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, root);
+        sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, ApplicationScene.ACCESS_PAGE);
     }
 
 
     public void closeWindow() {
-        sceneManager.removeStage(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, getClass());
+        sceneManager.removeStage(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, getClass());
         root.close();
         System.exit(0);
     }
@@ -89,7 +89,7 @@ public class EmotionalSongsWindow extends Application
         System.out.println("Connection lost");
         this.showConnectionAlert();
         Platform.runLater(() -> {
-            SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, ApplicationScene.ACCESS_PAGE);
+            SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, ApplicationScene.ACCESS_PAGE);
         });
     }
 

@@ -16,6 +16,7 @@ import application.ConnectionManager;
 import application.Main;
 import application.SceneManager;
 import application.SceneManager.ApplicationScene;
+import interfaces.Injectable;
 import interfaces.ServerServices;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -42,7 +43,7 @@ import javafx.scene.image.ImageView;
 /**
  * Questa classe grafica gestisce la registrazione di un nuovo account nell'applicazione
  */
-public class NewUserRegistrationController extends ControllerBase implements Initializable 
+public class NewUserRegistrationController extends ControllerBase implements Initializable, Injectable 
 {
     @FXML public ImageView IMG1;
     @FXML public ImageView IMG10;
@@ -487,7 +488,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
         try {
             Account account = service.addAccount(name.getText(), surname.getText(), userID.getText(), codiceFiscale.getText(), email.getText(), password.getText(), civicNumber.getText(), viaPiazza.getText(), cap.getSelectionModel().getSelectedItem(), commune.getSelectionModel().getSelectedItem(), province.getSelectionModel().getSelectedItem());
             Main.account = account;
-            SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW,ApplicationScene.MAIN_PAGE_HOME);
+            SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW,ApplicationScene.MAIN_PAGE_HOME);
         
         } 
         catch (InvalidUserNameException e) {
@@ -517,7 +518,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
 
     @FXML
     public void TurnBack() throws IOException {
-       SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW,ApplicationScene.ACCESS_PAGE);
+       SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW,ApplicationScene.ACCESS_PAGE);
     }
 
     @FXML
@@ -613,5 +614,15 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
     @FXML
     public void selectProvince(ActionEvent event) {
 
+    }
+
+    @Override
+    public void injectData(Object... data) {
+        
+    }
+
+    @Override
+    public void init(Object... data) {
+       
     }
 }

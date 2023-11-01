@@ -35,8 +35,8 @@ public interface ServerServices {
     public ArrayList<Song> getAlbumSongs(String AlbumID) throws Exception;
     
     //playlist
-    public boolean addPlaylist(String playlistName, String userID) throws Exception;
-    public boolean removePlaylist(String userID, String playlistID) throws Exception;
+    public boolean addPlaylist(String playlistName, String userID, Object image);
+    public boolean removePlaylist(String userID, String playlistID);
     public boolean addSongToPlaylist(String userID, String playlistID, String songID) throws Exception;
     public boolean removeSongFromPlaylist(String userID, String playlistID, String songID) throws Exception;
     public Object getAccountPlaylists(String userID) throws Exception;

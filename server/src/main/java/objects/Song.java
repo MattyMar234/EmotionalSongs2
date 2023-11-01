@@ -45,7 +45,6 @@ public class Song implements Serializable
     }
 
     
-
     // Metodi getter e setter per gli attributi della canzone
     public String getId() {
         return id;

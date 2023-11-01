@@ -21,7 +21,7 @@ import database.PredefinedSQLCode.Operazioni_SQL;
  */
 public class QueryBuilder {
 
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    
     private static Terminal terminal = Terminal.getInstance();
 
     /**
@@ -441,23 +441,65 @@ public class QueryBuilder {
 
     }
 
-    public static String addPlaylist_query(String accountID,String playlistName){
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // OPERAZIONI SULLE PLAYLIST
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Query per creare una nuova playlist
+     * @param accountID
+     * @param playlistName
+     * @param date
+     * @param ID
+     * @return
+     */
+    public static String addPlaylist_query(String accountID,String playlistName, String date, String ID)
+    {
         StringBuilder sb = new StringBuilder();
         sb.append("INSERT INTO " + Tabelle.PLAYLIST + " (");
-        sb.append(Colonne.ACCOUNT_ID_REF.getName() + ", ");
-        sb.append(Colonne.NAME.getName() + ") VALUES (");
-        sb.append("'" + accountID + "', ");
-        sb.append("'" + playlistName + "');");
-
+        sb.append(Colonne.ID.getName() + ", ");
+        sb.append(Colonne.NAME.getName() + ", ");
+        sb.append(Colonne.CREATION_DATE.getName() + ", ");
+        sb.append(Colonne.ACCOUNT_ID_REF.getName());
+        sb.append(") VALUES (");
+        sb.append("'" + ID + "', ");
+        sb.append("'" + playlistName + "', ");
+        sb.append("'" + date + "', ");
+        sb.append("'" + accountID + "');");
+        
         //terminal.printQueryln(sb.toString());
         return sb.toString();
     }
 
+    /**
+     * Query per ottenere tutte le canzoni di una playlist
+     * @param playlistID
+     * @return
+     */
+    public static String getPlaylistSongsID_query(String playlistID) 
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT " + Tabelle.SONG + "." + Colonne.ID.getName());
+        sb.append(" FROM " + Tabelle.SONG);
+        sb.append(" JOIN " + Tabelle.PLAYLIST_SONGS);
+        sb.append(" ON " + Tabelle.SONG + "." + Colonne.ID.getName() + " = " + Tabelle.PLAYLIST_SONGS + "." + Colonne.SONG_ID_REF.getName());
+        sb.append(" WHERE " + Tabelle.PLAYLIST_SONGS + "." + Colonne.PLAYLIST_ID_REF.getName() + " = '" + playlistID + "';");
+        
+        terminal.printQueryln(sb.toString());
+        return sb.toString();
+    }
 
+    /**
+     * Query per ottenere tutte le playlist di un account
+     * @param accountID
+     * @return
+     */
     public static String getAccountsPlaylists_query(String accountID) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM " + Tabelle.PLAYLIST + " WHERE " + Colonne.ACCOUNT_ID_REF.getName() + " = '" + accountID + "';");
-
+        
+        terminal.printQueryln(sb.toString());
         return sb.toString();
     }
 

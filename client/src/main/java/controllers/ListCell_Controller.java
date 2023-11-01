@@ -76,8 +76,9 @@ public class ListCell_Controller implements Initializable, Injectable
             
         } 
         else if(element instanceof Playlist) {
-            label1.setText(String.valueOf("??"));
-            label2.setText("platlist title");
+            Playlist p = (Playlist)element;
+            label1.setText(p.getName());
+            label2.setText(p.getId());
         }
     }
 

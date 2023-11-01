@@ -10,6 +10,7 @@ import application.Main;
 import application.ObjectsCache;
 import application.SceneManager;
 import application.SceneManager.FXML_elements;
+import enumClasses.ElementDisplayerMode;
 import interfaces.Injectable;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -52,6 +53,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
 
     @FXML public ListView<Object> listView;
     private Object displayedElement;
+    private ElementDisplayerMode mode;
     private ObservableList<Object> ObservableList = FXCollections.observableArrayList();
 
 
@@ -70,34 +72,51 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
 
 
     @Override
-    public void injectData(Object... data) {
-        this.displayedElement = data[0];
+    public void injectData(Object... data) 
+    {
+        if(!(data[0] instanceof ElementDisplayerMode))
+            throw new RuntimeException("invalid configuration");
+        
+        this.mode = (ElementDisplayerMode)data[0];
+
+        if(data.length >= 2)
+            this.displayedElement = data[1];
 
         Platform.runLater(() -> {
             try {
-                if(displayedElement instanceof Song) {
-                    setupAsSong(data);  
-                    setImage_and_backgroundColor();
-                    setImageLink();
+                switch (mode) {
+                    case SHOW_ALBUM:
+                        if(displayedElement instanceof Album) {
+                            setupAsAlbum(data);
+                            setImage_and_backgroundColor();    
+                            setImageLink();
+                        }
+                        break;
+                    case SHOW_ASRTIST:
+                        if(displayedElement instanceof Artist) {
+                            setupAsArtist(data);  
+                            setImage_and_backgroundColor();  
+                            setImageLink();
+                        }
+                        break;
+                    case SHOW_PLAYLIST:
+                        if(displayedElement instanceof Playlist) {
+                            //setupAsArtist(data);   
+                            setImage_and_backgroundColor(); 
+                            setImageLink();
+                        }
+                        break;
+                    case SHOW_SONG:
+                        if(displayedElement instanceof Song) {
+                            setupAsSong(data);  
+                            setImage_and_backgroundColor();
+                            setImageLink();
+                        }
+                        break;
+                    case SHOW_USER_PLAYLISTS:
+                        setupAsPlaylistShower(data);
+                        break; 
                 }
-                else if(displayedElement instanceof Album) {
-                    setupAsAlbum(data);
-                    setImage_and_backgroundColor();    
-                    setImageLink();
-                }
-                else if(displayedElement instanceof Artist) {
-                    setupAsArtist(data);  
-                    setImage_and_backgroundColor();  
-                    setImageLink();
-                }
-                else if(displayedElement instanceof Playlist) {
-                    //setupAsArtist(data);   
-                    setImage_and_backgroundColor(); 
-                    setImageLink();
-                }
-                else if(displayedElement.getClass().isArray()) {
-                    setupAsPlaylistShower(data);
-                } 
             } 
             catch (Exception e) {
                 e.printStackTrace();
@@ -228,26 +247,30 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                 sceneManager.startWindow(SceneManager.ApplicationWinodws.PLAYLIST_CREATION_WINDOW, null);
             }
         });
-        
-        Object[] test = new Object[]{new Playlist(), new Playlist(), new Playlist()};
-        //carico le playlist
+
         new Thread(() -> {
             try {
-                for (Object p : test) //Object p : data
-                {
-                    Playlist playtlist = (Playlist)p;
-                    Platform.runLater(() -> {
-                        ListCell_Controller listCell = (ListCell_Controller) SceneManager.getInstance().injectElement(FXML_elements.LIST_ELEMENT, elementContainer);
-                        listCell.injectData(playtlist);
-                    });
+                ArrayList<Playlist> playlist_list = connectionManager.getAccountPlaylists(Main.account.getNickname());
+
+                //carico le playlist
+                try {
+                    for (Playlist p : playlist_list){
+
+                        Platform.runLater(() -> {
+                            ListCell_Controller listCell = (ListCell_Controller) SceneManager.getInstance().injectElement(FXML_elements.LIST_ELEMENT, elementContainer);
+                            listCell.injectData(p);
+                        });
+                    } 
                 } 
+                catch (Exception e) {
+                    System.out.println(e);
+                    e.printStackTrace();
+                }
             } 
             catch (Exception e) {
-                System.out.println(e);
                 e.printStackTrace();
             }
         }).start();
-
     }
 
 

@@ -24,6 +24,7 @@ import controllers.ApplicationAccessController;
 import controllers.ControllerBase;
 import controllers.MainPage_SideBar_Controller;
 import controllers.WindowContainerController;
+import enumClasses.ElementDisplayerMode;
 import interfaces.Injectable;
 
 import java.io.File;
@@ -66,7 +67,7 @@ public class SceneManager {
      * Classe enum per tener traccia delle finestre presenti nell'applicazione
      */
     public enum ApplicationWinodws {
-        EMOTIONL_SONGS_WINDOW(EmotionalSongsWindow.class),
+        EMOTIONALSONGS_WINDOW(EmotionalSongsWindow.class),
         PLAYLIST_CREATION_WINDOW(PlaylistCreationWindow.class);
         
         Class<?> windowManagerClass;
@@ -158,10 +159,10 @@ public class SceneManager {
     }
 
     private SceneManager() {
-        windows_currentScene.put(ApplicationWinodws.EMOTIONL_SONGS_WINDOW, null);
+        windows_currentScene.put(ApplicationWinodws.EMOTIONALSONGS_WINDOW, null);
         windows_currentScene.put(ApplicationWinodws.PLAYLIST_CREATION_WINDOW, null);
         
-        windows_currentSceneControllers.put(ApplicationWinodws.EMOTIONL_SONGS_WINDOW, new Stack<>());
+        windows_currentSceneControllers.put(ApplicationWinodws.EMOTIONALSONGS_WINDOW, new Stack<>());
         windows_currentSceneControllers.put(ApplicationWinodws.PLAYLIST_CREATION_WINDOW, new Stack<>());
     }
 
@@ -234,6 +235,18 @@ public class SceneManager {
             System.out.println(e);
             e.printStackTrace();
             System.exit(0);
+        }
+    }
+
+
+    public void closeWindow(ApplicationWinodws wName) {
+
+        if(wName == null)
+            return;
+
+        if(activeWindow.containsKey(wName)) {
+            //throw new RuntimeException("Window already started");
+            removeStage(wName,null);
         }
     }
     //============================================= METHODS =============================================//
@@ -402,7 +415,7 @@ public class SceneManager {
 
 
     public ControllerBase showScene(SceneAction sceneAction) {
-        return executeShowScene(ApplicationWinodws.EMOTIONL_SONGS_WINDOW,sceneAction.scena_name, sceneAction.args);
+        return executeShowScene(ApplicationWinodws.EMOTIONALSONGS_WINDOW,sceneAction.scena_name, sceneAction.args);
     }
 
     
@@ -421,8 +434,8 @@ public class SceneManager {
         Stage stage = this.windowsStage.get(window);
 
         //verifico se devo caricare una scena diversa da quella attuale
-        if(currentScene == sceneName)
-            return null;
+        //if(currentScene == sceneName)
+        //    return null;
 
         if(loadedController.size() == 0) {
             Pair<Scene,FXMLLoader> result = setStageScene(stage, SceneElemets.BASE_CONTAINER.file);
@@ -433,7 +446,7 @@ public class SceneManager {
         
         switch(window)
         {
-            case EMOTIONL_SONGS_WINDOW -> {
+            case EMOTIONALSONGS_WINDOW -> {
                 switch(sceneName) 
                 {
                     case ACCESS_PAGE:
@@ -509,11 +522,12 @@ public class SceneManager {
             }
         }
 
-
+        System.out.println("DIOOOOO");
+        System.out.println(sceneName);
 
         //==================================== verfica passaggio args... ====================================//
         //verifico se ho dei parametri da passare al controller
-        if(args.length > 0 ) {
+        if(args.length >= 0 ) {
             //verifico se implementa l'interfaccia
             // Inheritance testing:
             Class<?> interfaceType = Injectable.class;
@@ -521,7 +535,17 @@ public class SceneManager {
 
             if (interfaceType.isAssignableFrom(windows_currentSceneControllers.get(window).peek().getClass())) {
                 Injectable controller = (Injectable)windows_currentSceneControllers.get(window).peek();
-                controller.injectData(args);
+                
+                switch (sceneName) {
+                    case MAIN_PAGE_SHOW_PLAYLIST:   controller.injectData(ElementDisplayerMode.SHOW_PLAYLIST,args); break;
+                    case MAIN_PAGE_SHOW_ALBUM:      controller.injectData(ElementDisplayerMode.SHOW_ALBUM,args); break;
+                    case MAIN_PAGE_SHOW_SONG:       controller.injectData(ElementDisplayerMode.SHOW_SONG,args); break;
+                    case MAIN_PAGE_PLAYLIST:        System.out.println("hereeee"); controller.injectData(ElementDisplayerMode.SHOW_USER_PLAYLISTS,args); break;
+                
+                    default:
+                        controller.injectData(args);
+                        break;
+                }
             }
             else {
                 //se ho dei parametri che non posso passare

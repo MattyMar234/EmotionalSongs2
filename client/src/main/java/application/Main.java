@@ -51,7 +51,7 @@ public class Main
 
     public static void main(String[] args) 
     {
-        SceneManager.getInstance().startWindow(SceneManager.ApplicationWinodws.EMOTIONL_SONGS_WINDOW, args);
+        SceneManager.getInstance().startWindow(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, args);
         //ManagementFactory.getPlatformMXBean(PlatformLoggingMXBean.class).setLoggerLevel("javafx.css", "OFF");
 
         //String sha256hex = DigestUtils.sha256Hex("1234");
