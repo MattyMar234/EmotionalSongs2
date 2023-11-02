@@ -28,6 +28,85 @@ public class ConnectionHandler extends Thread {
         this.terminal = Terminal.getInstance();
     }
 
+    private class CommandsExecutor extends Thread {
+
+        private Packet packet;
+        private String clientIP;
+
+        public CommandsExecutor(Packet packet, String clientIP) {
+            this.packet = packet;
+            this.clientIP = clientIP;
+        }
+
+        private void writeOnSocket(String Id, Object data) throws IOException 
+        {
+            synchronized(ConnectionHandler.class) {
+                if(!clientSocket.isClosed()) {
+                    outputStream.writeObject(Id);
+                    outputStream.writeObject(data);    
+                }
+            }      
+        }
+
+
+        @Override
+        public void run() {
+            try {
+                ServerServicesName action = ServerServicesName.valueOf(packet.command);
+                HashMap<String, Object> params = new HashMap<>();
+
+                if(action == null)
+                    throw new InvalidParameterException("unknown socket function \""+ packet.command +"\"");
+
+                switch (action) 
+                {
+                    //se termino la connessiuone
+                    case DISCONNECT -> {
+                        synchronized(ConnectionHandler.class) {
+                            if(!run) return;
+                            writeOnSocket(packet.id, null);
+                            run = false;
+                        }
+                    }
+                    case PING -> {
+                        //new Thread(() -> {Terminal.getInstance().printInfoln("ping with " + Terminal.Color.MAGENTA_BRIGHT + clientIP + Terminal.Color.RESET);}).start();
+                        writeOnSocket(packet.id, null);
+                    }
+                    
+                    default -> {
+
+                        if(packet.parameters == null)
+                            throw new InvalidParameterException("packet.parameters is null");
+                        
+                        int parametreCount = packet.parameters.length;
+                    
+                        //riordino i dati e verifico la loro validità
+                        for(int i = 0; i < parametreCount - (parametreCount % 2); i+=2) {
+                            if(!(packet.parameters[i+0] instanceof String))
+                                throw new IllegalArgumentException("packet.parameters key must be a String object");
+                            
+                            params.put((String)packet.parameters[i+0], (Object)packet.parameters[i+1]);
+                        }
+
+                        Object result = manager.executeServerServiceFunction(action, params, clientIP);
+                        writeOnSocket(packet.id, result);
+                    }
+                }
+            } 
+            catch (InvalidParameterException e) {
+                terminal.printErrorln(e.getMessage());
+                try {writeOnSocket(packet.id, e);} catch (Exception k) {terminal.printErrorln(k.getMessage());}
+            }
+            catch (IllegalArgumentException e) {
+                terminal.printErrorln(e.getMessage());
+                try {writeOnSocket(packet.id, e);} catch (Exception k) {terminal.printErrorln(k.getMessage());}
+            }
+            catch (Exception e) {
+                terminal.printError(e.getMessage());
+            }
+        }
+    }
+
 
     @Override
     public void run() 
@@ -37,85 +116,23 @@ public class ConnectionHandler extends Thread {
             inputStream = new ObjectInputStream(clientSocket.getInputStream());
             outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
 
-
             while(run) 
             {
-                final Packet packet = (Packet) inputStream.readObject();      
-                ServerServicesName action = ServerServicesName.valueOf(packet.command);
-                HashMap<String, Object> params = new HashMap<>();
+                final Packet packet = (Packet) inputStream.readObject(); 
 
-                terminal.printInfoln("GET: " + action.toString());
+                new CommandsExecutor(packet, clientIP).start();
 
-                if(packet.parameters != null) {
-                    int parametreCount = packet.parameters.length;
-                
-                    //riordino i dati e verifico la loro validità
-                    for(int i = 0; i < parametreCount - (parametreCount % 2); i+=2) {
-                        if(packet.parameters[i] instanceof String) {
-                            params.put((String)packet.parameters[i], (Object)packet.parameters[i+1]);
-                        }
-                        else {
-                            outputStream.writeObject(new IllegalArgumentException("La chiave del parametro non è di tipo \"String\""));
-                            outputStream.flush();
-                            continue;
-                        }
-                    }
-                }
-                else {
-                    /*synchronized(this) {
-                       outputStream.writeObject(packet.id);
-                       outputStream.writeObject(new InvalidParameterException("packet.parameters is null"));
-                    }*/
-                }
+                new Thread(() -> {
+                    Terminal.getInstance().printInfoln("Host: " + Terminal.Color.MAGENTA_BRIGHT + clientIP + Terminal.Color.RESET + "  request: " + Terminal.Color.CYAN_BOLD_BRIGHT + ServerServicesName.valueOf(packet.command) + Terminal.Color.RESET);
+                }).start();
 
-                //se termino la connessiuone
-                if(action == ServerServicesName.DISCONNECT) {
-                    synchronized(this) {
-                       outputStream.writeObject(packet.id);
-                       outputStream.writeObject(null);
-                    }
-                    run = false;
-                }
-                //se voglio fare un test di ping
-                else if(action == ServerServicesName.PING) {
-                    new Thread(() -> {
-                        Terminal.getInstance().printInfoln("ping response with " + Terminal.Color.MAGENTA_BRIGHT + clientIP + Terminal.Color.RESET);
-                    });
-                    synchronized(this) {
-                       outputStream.writeObject(packet.id);
-                       outputStream.writeObject(null);
-                    }
-                }
-                //se devo eseguire una funzione
-                else if(action != null) {
-                    new Thread(() -> {
-                        Object result = manager.executeServerServiceFunction(action, params, clientIP);
-                        
-                        synchronized(ConnectionHandler.class) 
-                        {
-                            if(!clientSocket.isClosed()) {
-                                try {
-                                    outputStream.writeObject(packet.id);
-                                    outputStream.writeObject(result);
-                                } 
-                                catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    }).start();
-                }
-                else {
-                    terminal.printError("unknown socket function \""+ packet.command +"\"");
-                    synchronized(this) {
-                       outputStream.writeObject(packet.id);
-                       outputStream.writeObject(new InvalidParameterException());
-                    }
-                }
+                //Terminal.getInstance().printInfoln("ping response with " + Terminal.Color.MAGENTA_BRIGHT + clientIP + Terminal.Color.RESET);
             }
-        } catch (Exception e) {
-            terminal.printError(e.getMessage());
-            //e.printStackTrace();
+        } 
+        catch (Exception e) {
+            new Thread(() -> {
+                terminal.printError(e.getMessage());
+            }).start();
         }
         finally {
             if(clientSocket != null)

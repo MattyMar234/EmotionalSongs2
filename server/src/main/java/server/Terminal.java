@@ -605,7 +605,7 @@ public class Terminal extends Thread
         
 
         
-        if (type != MessageType.NONE && processedString.length() > terminalWidth) {
+        /*if (type != MessageType.NONE && processedString.length() > terminalWidth) {
             int spaceIndex = processedString.lastIndexOf(" ", terminalWidth);
 
             if (spaceIndex != -1) {
@@ -622,7 +622,7 @@ public class Terminal extends Thread
                     processedString += secondPart + '\n';
                 }
             }
-        }
+        }*/
                 
         //QUERY KEY:
         if(type == MessageType.QUERY) {

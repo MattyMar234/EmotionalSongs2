@@ -13,7 +13,7 @@ import javafx.stage.WindowEvent;
 
 public class PlaylistCreationWindow extends Application
 {
-    private final SceneManager sceneManager = SceneManager.getInstance();
+    private final SceneManager sceneManager = SceneManager.instance();
     private final ConnectionManager connectionManager = ConnectionManager.getConnectionManager();
     private Stage root;
 

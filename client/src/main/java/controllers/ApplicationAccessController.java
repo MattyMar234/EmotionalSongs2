@@ -60,7 +60,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
 {
     private static ApplicationAccessController reference;
     private ObservableList<ImageView> imgs = FXCollections.observableArrayList();
-    private SceneManager sceneManager = SceneManager.getInstance();
+    private SceneManager sceneManager = SceneManager.instance();
     private volatile boolean connectionParamsEvent = false;
     private boolean labelColor_state = false;
     

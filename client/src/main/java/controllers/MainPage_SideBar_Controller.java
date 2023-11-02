@@ -159,12 +159,12 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
 
     @FXML
     public void BackwardAction(MouseEvent event) {
-        Main.userActions.undo();
+        sceneManager.undo(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);
     }
 
     @FXML
     public void ForwardAction(MouseEvent event) {
-        Main.userActions.redo();
+        sceneManager.redo(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);
     }
 
 
@@ -181,7 +181,7 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
     @FXML
     public void tryLogin(MouseEvent event) {
         if(Main.account == null) {
-            SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.ACCESS_PAGE);
+            SceneManager.instance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.ACCESS_PAGE);
         }
     }
         
@@ -210,7 +210,7 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
 
     @FXML
     public void setHomePage(ActionEvent event) throws IOException {
-        SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.MAIN_PAGE_HOME);
+        SceneManager.instance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.MAIN_PAGE_HOME);
     }
 
     @FXML
@@ -219,7 +219,7 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
         state = 2;
         ClearActiveButtons();
         //this.buttons.get(2).setStyle(ButtonColor);
-        MainPage_ElementDisplayer_Controller element = (MainPage_ElementDisplayer_Controller) SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.MAIN_PAGE_PLAYLIST);
+        MainPage_ElementDisplayer_Controller element = (MainPage_ElementDisplayer_Controller) SceneManager.instance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.MAIN_PAGE_PLAYLIST);
         
         /*if(element != null) {
             element.injectData(ElementDisplayerMode.SHOW_USER_PLAYLISTS);

@@ -22,7 +22,7 @@ import objects.Song;
 
 public class ListCell_Controller implements Initializable, Injectable
 {
-    private static final SceneManager sceneManager = SceneManager.getInstance();
+    private static final SceneManager sceneManager = SceneManager.instance();
 
     @FXML public Label label1;
     @FXML public Label label2;

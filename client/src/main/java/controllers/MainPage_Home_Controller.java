@@ -40,7 +40,7 @@ public class MainPage_Home_Controller extends ControllerBase implements Initiali
 
     public MainPage_Home_Controller() {
         super();
-        sceneManager = SceneManager.getInstance();
+        sceneManager = SceneManager.instance();
     }
 
     @Override

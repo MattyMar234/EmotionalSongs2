@@ -36,12 +36,12 @@ public class RowContainerController extends ControllerBase implements Initializa
     public RowContainerController(Object list) {
         super();
         this.list = list;
-        sceneManager = SceneManager.getInstance();
+        sceneManager = SceneManager.instance();
     }
 
     public RowContainerController() {
         super();
-        sceneManager = SceneManager.getInstance();
+        sceneManager = SceneManager.instance();
     }
 
 

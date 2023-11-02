@@ -1,46 +1,29 @@
 package application;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.rmi.RemoteException;
+import java.security.InvalidParameterException;
+import java.time.zone.ZoneOffsetTransitionRule.TimeDefinition;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Optional;
-import java.util.Queue;
 
 import Exceptions.InvalidEmailException;
 import Exceptions.InvalidPasswordException;
 import Exceptions.InvalidUserNameException;
 import applicationEvents.ConnectionEvent;
 import enumClasses.ServerServicesName;
-import interfaces.ClientServices;
 import interfaces.ServerServices;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.application.Platform;
-import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Alert.AlertType;
-import javafx.util.Duration;
 import objects.Account;
 import objects.Album;
-import objects.Song;
 import objects.Packet;
 import objects.Playlist;
+import objects.Song;
+import utility.TimeFormatter;
 import utility.UtilityOS;
-
-import java.beans.EventHandler;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.rmi.RemoteException;
-import java.security.InvalidParameterException;
 
 
 public class ConnectionManager implements ServerServices{
@@ -74,7 +57,15 @@ public class ConnectionManager implements ServerServices{
 
 		@Override
 		public void run() {
-			while(true) {try {waitForPacket(); getPackets();} catch (Exception e) {e.printStackTrace();}}
+			while(true) {
+				try {
+					waitForPacket(); 
+					getPackets();
+				} 
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -121,22 +112,39 @@ public class ConnectionManager implements ServerServices{
 
 		new Thread(() -> {
 			Thread.currentThread().setName("PING sender");
+			
 			//Thread.currentThread().setDaemon(true);
 
 			while(true) {
-				try {Thread.sleep(1000);	} catch (InterruptedException e) {System.out.println(e);}
-				if(isConnected()) {
-					if(!testServerConnection()) {
-						disconnect();
-						SceneManager.getInstance().fireEvent(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, new ConnectionEvent(ConnectionEvent.DISCONNECTED));
+				double start = System.nanoTime();
+				
+				Thread t = new Thread(() -> {
+					if(isConnected()) {
+						if(!testServerConnection()) {
+							disconnect();
+							SceneManager.instance().fireEvent(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, new ConnectionEvent(ConnectionEvent.DISCONNECTED));
+						}
 					}
+				});
+
+				t.start();
+				try {
+					t.join(1000);
+				} catch (InterruptedException e) {
 				}
+
+				double dt = 2000 - (System.nanoTime() - start)/1000000;
+				if(dt < 0) dt = 0;
+				System.out.println((long)dt);
+
+				try {
+					Thread.sleep((long)dt);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
 			}
 		}).start();
-
-		/*Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
-		
-	}));*/
     }
 
 
@@ -347,13 +355,15 @@ public class ConnectionManager implements ServerServices{
 	private Object makeRequest(Packet task) throws IOException, InvalidParameterException 
 	{
 		final String myId = task.getId();
-		double start = System.nanoTime();
 
 		if(this.clientSocket == null)
 			throw new IOException("Non si è connessi con il server");
 
 		//invio i dati e sveglio il thread che gestisce la ricezzione dei risultati
 		try {
+			double start = System.nanoTime();
+			System.out.println(Thread.currentThread().getName() + " new Packet: " + task.getCommand());
+			
 			synchronized(this) {
 				outputStream.writeObject(task);
 				outputStream.flush();
@@ -364,6 +374,9 @@ public class ConnectionManager implements ServerServices{
 					try {wait();} catch (InterruptedException e) {}
 				}
 			}
+			double end = System.nanoTime();
+			System.out.println(myId + " Packet recived: " + task.getCommand() + " time: " + TimeFormatter.formatTime(end - start));
+
 		}
 		catch (Exception e) {
 			System.out.println(e);
@@ -381,9 +394,6 @@ public class ConnectionManager implements ServerServices{
 		if(result instanceof InvalidParameterException)
 			throw (InvalidParameterException) result;
 
-		System.out.println("result: " + Thread.currentThread().getName());
-		double end = System.nanoTime();
-		System.out.println(task.getCommand() + " time: " + (end - start)/1000000000 + "s" );
 		return result;
 	}
 
@@ -524,7 +534,7 @@ public class ConnectionManager implements ServerServices{
 	@Override
     public ArrayList<Song> getAlbumSongs(String AlbumID) throws Exception 
 	{
-		System.out.println("AlbumID:" + AlbumID);
+		//System.out.println("AlbumID:" + AlbumID);
 		Object[] params = new Object[]{"albumID", AlbumID};
 		ArrayList<Song> data = null;
 		

@@ -174,7 +174,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
 
     private void setupAsSong(Object... data) 
     { 
-        ((SongDetails_controller)SceneManager.getInstance().injectScene("SongDetails.fxml", elementContainer)).init();
+        ((SongDetails_controller)SceneManager.instance().injectScene("SongDetails.fxml", elementContainer)).init();
 
         final Song song = (Song) displayedElement;
         labelName.setText(song.getTitle());
@@ -212,7 +212,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                     System.out.println("loading element: " + song.getTitle());
                     
                     Platform.runLater(() -> {
-                        ListCell_Controller listCell = (ListCell_Controller) SceneManager.getInstance().injectElement(FXML_elements.LIST_ELEMENT, elementContainer);
+                        ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(FXML_elements.LIST_ELEMENT, elementContainer);
                         listCell.injectData(song);
                     });
                 } 
@@ -257,7 +257,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                     for (Playlist p : playlist_list){
 
                         Platform.runLater(() -> {
-                            ListCell_Controller listCell = (ListCell_Controller) SceneManager.getInstance().injectElement(FXML_elements.LIST_ELEMENT, elementContainer);
+                            ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(FXML_elements.LIST_ELEMENT, elementContainer);
                             listCell.injectData(p);
                         });
                     } 

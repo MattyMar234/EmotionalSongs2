@@ -59,9 +59,9 @@ public class SceneManager {
     private HashMap<ApplicationWinodws, Stack<ControllerBase>> windows_currentSceneControllers = new HashMap<>();
     private HashMap <ApplicationWinodws, Stage> windowsStage = new HashMap<>();
     private HashMap <ApplicationWinodws, Object> activeWindow = new HashMap<>();
+    private HashMap <ApplicationWinodws, ApplicationActions> windowUserActions = new HashMap<>();
 
-    private static SceneManager instance;
-
+    private static SceneManager classReference = null;
 
     /**
      * Classe enum per tener traccia delle finestre presenti nell'applicazione
@@ -152,18 +152,20 @@ public class SceneManager {
         CREATE_PLAYLIST;
     }
 
-    public static SceneManager getInstance() {
-        if (instance == null)
-            instance = new SceneManager();
-        return instance;
+    public static SceneManager instance() {
+        if (SceneManager.classReference == null) {
+            SceneManager.classReference = new SceneManager();
+        }
+        return SceneManager.classReference;
     }
 
     private SceneManager() {
-        windows_currentScene.put(ApplicationWinodws.EMOTIONALSONGS_WINDOW, null);
-        windows_currentScene.put(ApplicationWinodws.PLAYLIST_CREATION_WINDOW, null);
-        
-        windows_currentSceneControllers.put(ApplicationWinodws.EMOTIONALSONGS_WINDOW, new Stack<>());
-        windows_currentSceneControllers.put(ApplicationWinodws.PLAYLIST_CREATION_WINDOW, new Stack<>());
+
+        for (ApplicationWinodws availableWIndow : ApplicationWinodws.values()) {
+            windows_currentScene.put(availableWIndow, null);
+            windows_currentSceneControllers.put(availableWIndow, new Stack<>());
+            windowUserActions.put(availableWIndow, new ApplicationActions());
+        }
     }
 
     public ApplicationState getApplicationState() {
@@ -184,8 +186,11 @@ public class SceneManager {
 
         this.windowsStage.remove(window);
         this.activeWindow.remove(window);
+        
         windows_currentScene.put(window, null);
-        windows_currentSceneControllers.get(window).clear();        
+        windows_currentSceneControllers.get(window).clear();    
+        windows_currentSceneControllers.put(window, new Stack<>());
+        windowUserActions.put(window, new ApplicationActions());
     }
 
     public void fireEvent(ApplicationWinodws window, Event event) {
@@ -399,6 +404,16 @@ public class SceneManager {
         return loader.getController();
     }
 
+
+
+    public void undo(ApplicationWinodws window) {
+        windowUserActions.get(window).undo();
+    }
+
+    public void redo(ApplicationWinodws window) {
+        windowUserActions.get(window).redo();
+    }
+
  
 
     /**
@@ -408,8 +423,10 @@ public class SceneManager {
     */
     public ControllerBase setScene(ApplicationWinodws window, ApplicationScene sceneName, Object... args) 
     {
-        SceneAction action = new SceneAction(sceneName, args);
-        //Main.getInstance().userActions.addAction(action);
+        ApplicationScene currentScene = windows_currentScene.get(window);
+        if(currentScene != sceneName) {
+            windowUserActions.get(window).addAction(new SceneAction(sceneName, args));
+        }
         return executeShowScene(window,sceneName, args);
     } 
 
@@ -521,9 +538,6 @@ public class SceneManager {
                 throw new RuntimeException("Invalid window");
             }
         }
-
-        System.out.println("DIOOOOO");
-        System.out.println(sceneName);
 
         //==================================== verfica passaggio args... ====================================//
         //verifico se ho dei parametri da passare al controller

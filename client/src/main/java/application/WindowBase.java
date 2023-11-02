@@ -6,7 +6,7 @@ import javafx.stage.Stage;
 
 public abstract class WindowBase<Type> {
     
-    public static final SceneManager sceneManager = SceneManager.getInstance();
+    public static final SceneManager sceneManager = SceneManager.instance();
     public static final ConnectionManager connectionManager = ConnectionManager.getConnectionManager();
     public Stage root;
     

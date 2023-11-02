@@ -39,7 +39,6 @@ public class Main
     
     //================================[Variabili]================================//
     public static int applicationLanguage = 0;
-    public static ApplicationActions userActions = new ApplicationActions();
     public static Account account;
     
     private ConnectionManager connectionManager;
@@ -51,7 +50,7 @@ public class Main
 
     public static void main(String[] args) 
     {
-        SceneManager.getInstance().startWindow(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, args);
+        SceneManager.instance().startWindow(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, args);
         //ManagementFactory.getPlatformMXBean(PlatformLoggingMXBean.class).setLoggerLevel("javafx.css", "OFF");
 
         //String sha256hex = DigestUtils.sha256Hex("1234");

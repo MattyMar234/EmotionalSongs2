@@ -24,6 +24,13 @@ public class QueryBuilder {
     
     private static Terminal terminal = Terminal.getInstance();
 
+
+    private static void printQuery(final StringBuilder sb) {
+        new Thread(() -> {
+            terminal.printQueryln(sb.toString());
+        });
+    }
+
     /**
      * Questa funzione restituisce una stringa che rappresenta la query SQL per la realizzazione della tabella specificata.
      * @param tableName nome della tabella da creare
@@ -291,9 +298,11 @@ public class QueryBuilder {
         sb.append(" AND ");
         sb.append(PredefinedSQLCode.Colonne.PROVINCE_NAME.getName() + " = '" + provincia + "'");
     
-        terminal.printQueryln(sb.toString());
+        printQuery(sb);
         return sb.toString();
     }
+
+    
     
     public static String getAccountByEmail_query(String Email) {
         StringBuilder sb = new StringBuilder();
@@ -305,7 +314,7 @@ public class QueryBuilder {
         sb.append(" WHERE ");
         sb.append(Colonne.EMAIL.getName() + " = '" + Email + "';");
 
-        terminal.printQueryln(sb.toString());
+        printQuery(sb);
         return sb.toString();
 
     }
@@ -320,7 +329,7 @@ public class QueryBuilder {
         sb.append(" WHERE ");
         sb.append(Colonne.NICKNAME.getName() + " = '" + nickname + "';");
 
-        terminal.printQueryln(sb.toString());
+        printQuery(sb);
         return sb.toString();
     }
 
@@ -385,7 +394,7 @@ public class QueryBuilder {
         sb.append("SELECT * FROM " + PredefinedSQLCode.Tabelle.SONG.toString());
         sb.append(" WHERE " + PredefinedSQLCode.Colonne.ALBUM_ID_REF.getName() + " = '" + ID +"';");
 
-        //terminal.printQueryln(sb.toString());
+        //printQuery(sb);
         return sb.toString();
     }
 
@@ -421,7 +430,7 @@ public class QueryBuilder {
         sb.append(" ORDER BY c." + Colonne.TITLE.getName() + ", a." + Colonne.RELEASE_DATE.getName());   
         sb.append(" LIMIT " + limit + " OFFSET " + offset + ";");
 
-        //terminal.printQueryln(sb.toString());
+        //printQuery(sb);
         return sb.toString();
     }
 
@@ -436,7 +445,7 @@ public class QueryBuilder {
         sb.append(" ORDER BY a." + Colonne.NAME.getName() + ", a." + Colonne.RELEASE_DATE.getName());
         sb.append(" LIMIT " + limit + " OFFSET " + offset + ";");
 
-        //terminal.printQueryln(sb.toString());
+        //printQuery(sb);
         return sb.toString();
 
     }
@@ -468,7 +477,7 @@ public class QueryBuilder {
         sb.append("'" + date + "', ");
         sb.append("'" + accountID + "');");
         
-        //terminal.printQueryln(sb.toString());
+        //printQuery(sb);
         return sb.toString();
     }
 
@@ -486,7 +495,7 @@ public class QueryBuilder {
         sb.append(" ON " + Tabelle.SONG + "." + Colonne.ID.getName() + " = " + Tabelle.PLAYLIST_SONGS + "." + Colonne.SONG_ID_REF.getName());
         sb.append(" WHERE " + Tabelle.PLAYLIST_SONGS + "." + Colonne.PLAYLIST_ID_REF.getName() + " = '" + playlistID + "';");
         
-        terminal.printQueryln(sb.toString());
+        printQuery(sb);
         return sb.toString();
     }
 
@@ -499,7 +508,7 @@ public class QueryBuilder {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM " + Tabelle.PLAYLIST + " WHERE " + Colonne.ACCOUNT_ID_REF.getName() + " = '" + accountID + "';");
         
-        terminal.printQueryln(sb.toString());
+        printQuery(sb);
         return sb.toString();
     }
 
@@ -511,7 +520,7 @@ public class QueryBuilder {
         sb.append("'" + playlistID + "', ");
         sb.append("'" + songID + "');");
 
-        //terminal.printQueryln(sb.toString());
+        //printQuery(sb);
         return sb.toString();
     }
 
@@ -521,7 +530,7 @@ public class QueryBuilder {
         sb.append(Colonne.PLAYLIST_ID_REF.getName() + " = '" + playlistID + "' AND ");
         sb.append(Colonne.SONG_ID_REF.getName() + " = '" + songID + "';");
 
-        //terminal.printQueryln(sb.toString());
+        //printQuery(sb);
         return sb.toString();
     }
 
@@ -531,7 +540,7 @@ public class QueryBuilder {
         sb.append(Colonne.NAME.getName() + " = '" + newName + "' WHERE ");
         sb.append(Colonne.ID.getName() + " = '" + playlistID + "';");
 
-        //terminal.printQueryln(sb.toString());
+        //printQuery(sb);
         return sb.toString();
     }
 
@@ -545,7 +554,7 @@ public class QueryBuilder {
         sb.append("'" + songID + "', ");
         sb.append("'" + comment + "');");
 
-        //terminal.printQueryln(sb.toString());
+        //printQuery(sb);
         return sb.toString();
     }
 
@@ -554,7 +563,7 @@ public class QueryBuilder {
         sb.append("DELETE FROM " + Tabelle.COMMENTO + " WHERE ");
         sb.append(Colonne.ID.getName() + " = '" + commentID + "';");
 
-        //terminal.printQueryln(sb.toString());
+        //printQuery(sb);
         return sb.toString();
     }
 
@@ -565,7 +574,7 @@ public class QueryBuilder {
         sb.append(Colonne.ACCOUNT_ID_REF.getName() + " = '" + accountID + "';");
 
 
-        //terminal.printQueryln(sb.toString());
+        //printQuery(sb);
         return sb.toString();
     }
 
@@ -574,7 +583,7 @@ public class QueryBuilder {
         sb.append("SELECT * FROM " + Tabelle.COMMENTO + " WHERE ");
         sb.append(Colonne.SONG_ID_REF.getName() + " = '" + songID + "';");
 
-        //terminal.printQueryln(sb.toString());
+        //printQuery(sb);
         return sb.toString();
     }
 
@@ -583,7 +592,7 @@ public class QueryBuilder {
         sb.append("SELECT * FROM " + Tabelle.COMMENTO + " WHERE ");
         sb.append(Colonne.ACCOUNT_ID_REF.getName() + " = '" + accountID + "';");
 
-        //terminal.printQueryln(sb.toString());
+        //printQuery(sb);
         return sb.toString();
     }
 
@@ -592,7 +601,7 @@ public class QueryBuilder {
         sb.append("SELECT * FROM " + Tabelle.EMOZIONE + " WHERE ");
         sb.append(Colonne.SONG_ID_REF.getName() + " = '" + songID + "';");
 
-        //terminal.printQueryln(sb.toString());
+        //printQuery(sb);
         return sb.toString();
     }
 

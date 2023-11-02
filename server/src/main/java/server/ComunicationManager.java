@@ -33,6 +33,7 @@ import interfaces.SocketService;
 import objects.Account;
 import objects.Album;
 import objects.Song;
+import utility.TimeFormatter;
 import utility.WaithingAnimationThread;
 
 public class ComunicationManager extends Thread implements SocketService, Serializable
@@ -139,7 +140,8 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	public Object executeServerServiceFunction(final ServerServicesName name, final HashMap<String, Object> params, final String clientIP) 
 	{
 		//inizializzo il timer e ottengo il riferimento della funzione da richiamare
-		final double startTime = System.nanoTime();
+		double startTime = 0;
+		double end = 0;
 		Function<HashMap<String, Object>,Object> function = this.serverFunctions.get(name);
 		
 		//verifico se tutti i parametri sono corretti
@@ -149,8 +151,9 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		//eseguo le operazioni
 		try {
 			//printFunctionArgs(function, clientIP);	
+			startTime = System.nanoTime();
 			Object output =  function.apply(params);
-
+			end = System.nanoTime();
 			if(output instanceof Exception) {
 				throw (Exception) output;
 			}
@@ -162,7 +165,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 			return e; 
         }
 		finally {
-			printFunctionExecutionTime(functionName.get(name), clientIP, startTime);
+			printFunctionExecutionTime(functionName.get(name), clientIP,  end- startTime);
 		}
 	}
 
@@ -288,7 +291,9 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 
 	protected void removeClientSocket(ConnectionHandler connectionHandler) {
 		this.clientsThread.remove(connectionHandler);
-		terminal.printInfoln("host disconected: " + Terminal.Color.MAGENTA + connectionHandler.getSocket().getInetAddress().getHostAddress() + Terminal.Color.RESET);
+		new Thread(() -> {
+			terminal.printInfoln("host disconected: " + Terminal.Color.MAGENTA + connectionHandler.getSocket().getInetAddress().getHostAddress() + Terminal.Color.RESET);
+		}).start();
 	}
 // ==================================== UTILITY ====================================//
 
@@ -327,14 +332,10 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		return IPv4RegexPattern.matcher(ip).matches();
 	}
 
-	private void printFunctionExecutionTime(String function, String clientHost,double startTime) {
+	private void printFunctionExecutionTime(String function, String clientHost,double dt) {
 		new Thread(() ->{
 			//Method f = this.functionName.get(function);
-			
-
-			double estimatedTime = System.nanoTime() - startTime;
-			double seconds = (double)estimatedTime / 1000000000.0;
-			terminal.printInfoln(formatFunctionRequestTime(clientHost, function, seconds));
+			terminal.printInfoln(formatFunctionRequestTime(clientHost, function, dt));
 		}).start();
 	}
 
@@ -356,24 +357,32 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		return "Host " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET + " requested function:" + Terminal.Color.CYAN_BOLD_BRIGHT + "\"" + function + "\"" + Terminal.Color.RESET;
 	}
 
-	private String formatFunctionRequestTime(String clientHost, String function, double time) {
+	private String formatFunctionRequestTime(String clientHost, String function, double dt) {
 
 		String timeStr = "";
+		Terminal.Color color = null;
+		double seconds = (double)dt / 1000000000.0;
 
-		if(time <= 0.400) timeStr = " executed in " + Terminal.Color.GREEN_BOLD_BRIGHT + time + Terminal.Color.RESET + " seconds";
-		else if(time <= 0.800) timeStr = " executed in " + Terminal.Color.YELLOW_BOLD_BRIGHT + time + Terminal.Color.RESET + " seconds";
-		else if(time >= 0.800) timeStr = " executed in " + Terminal.Color.RED_BOLD_BRIGHT + time + Terminal.Color.RESET + " seconds";
+		if(seconds <= 0.400) 
+			color = Terminal.Color.GREEN_BOLD_BRIGHT;
+		else if(seconds <= 0.800) 
+			color = Terminal.Color.YELLOW_BOLD_BRIGHT;
+		else if(seconds >= 0.800) 
+			color = Terminal.Color.RED_BOLD_BRIGHT;
 
-		return "Host " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET + " function " + Terminal.Color.CYAN_BOLD_BRIGHT + "\"" + function + "\"" + Terminal.Color.RESET + timeStr;
+		timeStr = "  executed in " + color + TimeFormatter.formatTime(dt) + Terminal.Color.RESET;
+		return "Host: " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET + ", function " + Terminal.Color.CYAN_BOLD_BRIGHT + "\"" + function + "\"" + Terminal.Color.RESET + timeStr;
 	}
 
 
 	private void printError(Exception e) {
-		try {
-			Terminal.getInstance().printErrorln("Host " + Terminal.Color.MAGENTA + RemoteServer.getClientHost() + Terminal.Color.RESET + " error: " + e);
-		} catch (ServerNotActiveException e1) {
-			e1.printStackTrace();
-		}
+		new Thread(() -> {
+			try {
+				Terminal.getInstance().printErrorln("Host " + Terminal.Color.MAGENTA + RemoteServer.getClientHost() + Terminal.Color.RESET + " error: " + e);
+			} catch (ServerNotActiveException e1) {
+				e1.printStackTrace();
+			}
+		}).start();
 	}
 
 
@@ -385,7 +394,9 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		//verifico che ci siano tutti i parametri necessari
 		for (String str : keys) {
 			if (!argsTable.containsKey(str)) {
-				terminal.printErrorln("Missing argument: " + str);
+				new Thread(() -> {
+					terminal.printErrorln("Missing argument: " + str);
+				}).start();
 				return false;
 			}
 		}
@@ -531,7 +542,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	{
         try {
             ArrayList<Song> result = QueriesManager.getAlbumSongs((String)argsTable.get("albumID"));
-			terminal.printInfoln("element: " + result.size());
+			//terminal.printInfoln("element: " + result.size());
 			return result;
 		} 
 		catch (Exception e) {

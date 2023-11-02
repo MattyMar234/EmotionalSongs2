@@ -488,7 +488,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
         try {
             Account account = service.addAccount(name.getText(), surname.getText(), userID.getText(), codiceFiscale.getText(), email.getText(), password.getText(), civicNumber.getText(), viaPiazza.getText(), cap.getSelectionModel().getSelectedItem(), commune.getSelectionModel().getSelectedItem(), province.getSelectionModel().getSelectedItem());
             Main.account = account;
-            SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW,ApplicationScene.MAIN_PAGE_HOME);
+            SceneManager.instance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW,ApplicationScene.MAIN_PAGE_HOME);
         
         } 
         catch (InvalidUserNameException e) {
@@ -518,7 +518,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
 
     @FXML
     public void TurnBack() throws IOException {
-       SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW,ApplicationScene.ACCESS_PAGE);
+       SceneManager.instance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW,ApplicationScene.ACCESS_PAGE);
     }
 
     @FXML

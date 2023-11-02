@@ -17,7 +17,7 @@ import javafx.stage.WindowEvent;
 public class EmotionalSongsWindow extends Application
 {
     private static EmotionalSongsWindow classReference = null;
-    private final SceneManager sceneManager = SceneManager.getInstance();
+    private final SceneManager sceneManager = SceneManager.instance();
     private final ConnectionManager connectionManager = ConnectionManager.getConnectionManager();
     private Stage root;
 
@@ -89,7 +89,7 @@ public class EmotionalSongsWindow extends Application
         System.out.println("Connection lost");
         this.showConnectionAlert();
         Platform.runLater(() -> {
-            SceneManager.getInstance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, ApplicationScene.ACCESS_PAGE);
+            SceneManager.instance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, ApplicationScene.ACCESS_PAGE);
         });
     }
 

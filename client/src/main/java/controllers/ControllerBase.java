@@ -35,7 +35,7 @@ public abstract class ControllerBase {
     private HashMap<Object, String[]> ObjectsErrorVisualization = new HashMap<Object, String[]>();
     
     public final ConnectionManager connectionManager = ConnectionManager.getConnectionManager();
-    public final SceneManager sceneManager = SceneManager.getInstance();
+    public final SceneManager sceneManager = SceneManager.instance();
 
     public Object anchor_for_injectScene;
 

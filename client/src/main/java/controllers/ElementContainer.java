@@ -79,7 +79,7 @@ public class ElementContainer extends ControllerBase implements Initializable, I
         else if(displayedElement instanceof Album) 
         {
             Album album = (Album) displayedElement;
-            System.out.println(album);
+            //System.out.println(album);
             Platform.runLater(() -> {title.setText(album.getName());});
 
             Image img = ObjectsCache.getImage(album.getImage(MyImage.ImageSize.S300x300).getUrl());
