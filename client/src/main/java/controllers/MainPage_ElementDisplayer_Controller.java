@@ -11,6 +11,7 @@ import application.ObjectsCache;
 import application.SceneManager;
 import application.SceneManager.FXML_elements;
 import enumClasses.ElementDisplayerMode;
+import enumClasses.ListCell_DisplayMode;
 import interfaces.Injectable;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -76,42 +77,48 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     {
         if(!(data[0] instanceof ElementDisplayerMode))
             throw new RuntimeException("invalid configuration");
-        
+      
+        if(data.length < 2)
+            throw new RuntimeException("missing data");
+            
         this.mode = (ElementDisplayerMode)data[0];
-
-        if(data.length >= 2)
-            this.displayedElement = data[1];
+        this.displayedElement = data[1];
 
         Platform.runLater(() -> {
             try {
                 switch (mode) {
                     case SHOW_ALBUM:
-                        if(displayedElement instanceof Album) {
-                            setupAsAlbum(data);
-                            setImage_and_backgroundColor();    
-                            setImageLink();
-                        }
+                        if(!(displayedElement instanceof Album)) 
+                            throw new RuntimeException("obejct type must be \"Album\" type");
+                        setupAsAlbum(data);
+                        setImage_and_backgroundColor();    
+                        setImageLink();
                         break;
+                        
                     case SHOW_ARTIST:
-                        if(displayedElement instanceof Artist) {
-                            setupAsArtist(data);  
-                            setImage_and_backgroundColor();  
-                            setImageLink();
-                        }
+                        if(!(displayedElement instanceof Album)) 
+                            throw new RuntimeException("obejct type must be \"Artist\" type");
+                        
+                        setupAsArtist(data);  
+                        setImage_and_backgroundColor();  
+                        setImageLink();
                         break;
                     case SHOW_PLAYLIST:
-                        if(displayedElement instanceof Playlist) {
-                            //setupAsArtist(data);   
-                            setImage_and_backgroundColor(); 
-                            setImageLink();
-                        }
+                        if(!(displayedElement instanceof Playlist)) 
+                            throw new RuntimeException("obejct type must be \"Playlist\" type");
+                        
+                        //setupAsArtist(data);   
+                        setImage_and_backgroundColor(); 
+                        setImageLink();
                         break;
                     case SHOW_SONG:
-                        if(displayedElement instanceof Song) {
-                            setupAsSong(data);  
-                            setImage_and_backgroundColor();
-                            setImageLink();
-                        }
+                        if(!(displayedElement instanceof Song)) 
+                            throw new RuntimeException("obejct type must be \"Song\" type");
+                        
+                        setupAsSong(data);  
+                        setImage_and_backgroundColor();
+                        setImageLink();
+                        
                         break;
                     case SHOW_USER_PLAYLISTS:
                         setupAsPlaylistShower(data);
@@ -177,6 +184,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
         ((SongDetails_controller)SceneManager.instance().injectScene("SongDetails.fxml", elementContainer)).init();
 
         final Song song = (Song) displayedElement;
+        System.out.println(song);
         labelName.setText(song.getTitle());
         labelType.setText("Song");
 
@@ -213,7 +221,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                     
                     Platform.runLater(() -> {
                         ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(FXML_elements.LIST_ELEMENT, elementContainer);
-                        listCell.injectData(song);
+                        listCell.injectData(ListCell_DisplayMode.DISPLAY_SONG,song);
                     });
                 } 
             } 
@@ -258,7 +266,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
 
                         Platform.runLater(() -> {
                             ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(FXML_elements.LIST_ELEMENT, elementContainer);
-                            listCell.injectData(p);
+                            listCell.injectData(ListCell_DisplayMode.DISPLAY_PLAYLIST, p);
                         });
                     } 
                 } 

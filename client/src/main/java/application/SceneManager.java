@@ -56,6 +56,7 @@ public class SceneManager {
     private ApplicationState applicationState = null;
 
     private HashMap<ApplicationWinodws, ApplicationScene> windows_currentScene = new HashMap<>();
+    private HashMap<ApplicationWinodws, Object[]> windows_currentArgs = new HashMap<>();
     private HashMap<ApplicationWinodws, Stack<ControllerBase>> windows_currentSceneControllers = new HashMap<>();
     private HashMap <ApplicationWinodws, Stage> windowsStage = new HashMap<>();
     private HashMap <ApplicationWinodws, Object> activeWindow = new HashMap<>();
@@ -424,11 +425,44 @@ public class SceneManager {
     public ControllerBase setScene(ApplicationWinodws window, ApplicationScene sceneName, Object... args) 
     {
         ApplicationScene currentScene = windows_currentScene.get(window);
-        if(currentScene != sceneName) {
+        if((currentScene != sceneName) || differentParametre(window, args)) {
             windowUserActions.get(window).addAction(new SceneAction(sceneName, args));
         }
+       
+            
         return executeShowScene(window,sceneName, args);
-    } 
+    }
+    
+    /**
+     * Verifico se i parametri sono differenti
+     * @param window
+     * @param args
+     * @return
+     */
+    private boolean differentParametre(ApplicationWinodws window, Object[] args) {
+        Object[] currentArgs = windows_currentArgs.get(window);
+        boolean different = true;
+        
+        if(currentArgs == null && args == null)
+           return false;
+        
+        if((currentArgs == null && args != null) || (currentArgs != null && args == null))
+           return true;
+
+        if(currentArgs.length != args.length)
+            return true;
+        
+
+        for(int i = 0; i < currentArgs.length; i++) {
+            //verifico se hanno lo stesso contenuto
+            if(currentArgs[i].equals(args[i])) {
+                different = false;
+                break;
+            }
+        }
+
+        return different;
+    }
 
 
     public ControllerBase showScene(SceneAction sceneAction) {
@@ -568,6 +602,8 @@ public class SceneManager {
         }
 
         windows_currentScene.put(window, sceneName);
+        windows_currentArgs.put(window, args);
+
         return windows_currentSceneControllers.get(window).peek();
     }
 }

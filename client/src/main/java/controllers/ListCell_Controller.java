@@ -1,18 +1,31 @@
 package controllers;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import org.json.simple.ItemList;
+import org.kordamp.ikonli.javafx.FontIcon;
+
+import application.Main;
 import application.SceneManager;
 import application.SceneManager.FXML_elements;
+import enumClasses.ElementDisplayerMode;
+import enumClasses.ListCell_DisplayMode;
 import interfaces.Injectable;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -21,28 +34,32 @@ import objects.Comment;
 import objects.Playlist;
 import objects.Song;
 
-public class ListCell_Controller implements Initializable, Injectable
+public class ListCell_Controller extends ControllerBase implements Initializable, Injectable
 {
     private static final SceneManager sceneManager = SceneManager.instance();
 
     @FXML public Label label1;
     @FXML public Label label2;
     @FXML public Label timeLabel;
-    @FXML public MenuButton playlistMenuBtn;
+    @FXML public MenuButton actionButton;
     @FXML public AnchorPane anchor;
     @FXML public GridPane grid;
+
+    @FXML public FontIcon exspandButton;
+    @FXML public FontIcon spotifyButton;
 
 
     private FXMLLoader loaderFXML;
     private MainPage_ElementDisplayer_Controller displayer_Controller;
+    private ListCell_DisplayMode mode;
+    private Object element;
 
+    public ListCell_Controller() {
+        super();
+    }
 
     public ListCell_Controller(Object...args) {
         this.displayer_Controller = (MainPage_ElementDisplayer_Controller)args[0];
-    }
-
-    public ListCell_Controller() {
-        
     }
 
 
@@ -50,40 +67,120 @@ public class ListCell_Controller implements Initializable, Injectable
     public void initialize(URL location, ResourceBundle resources) {
         
     }
-
-
+    //SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene
+    
     @Override
     public void injectData(Object... data) 
     {
-        Object element = data[0];
+        if(!(data[0] instanceof ListCell_DisplayMode))
+            throw new RuntimeException("invalid configuration for list cell. Arg[0] must be a \"ListCell_DisplayMode\" type");
+        
+        this.mode = (ListCell_DisplayMode)data[0];
+        this.element = data[1];
 
-        if(element instanceof Song) {
-            try {
-                Song song = (Song)element;
-
-
-                    //set fxml tags
-                label1.setText(song.getTitle());
-                //label2.setText(song.get;
-                timeLabel.setText(convertTime(song.getDurationMs()));
-                grid.getRowConstraints().remove(1);
-
-                //setText(null);
-                //setGraphic(anchor);
-            } 
-            catch (Exception e) {
-                e.printStackTrace();
+        switch (mode) {
+            case DISPLAY_SONG -> {
+                setupAsSong();
+            }
+            case DISPLAY_COMMENT -> {
+                setupAsComment();
+            }
+            case DISPLAY_PLAYLIST -> {
+                setupAsPlaylist();
+            }
+            case DISPLAY_ALBUM -> {
+                setupAsAlbum();
             }
         }
-        else if(element instanceof Comment) {
-            
-        } 
-        else if(element instanceof Playlist) {
-            Playlist p = (Playlist)element;
-            label1.setText(p.getName());
-            label2.setText(p.getId());
-        }
     }
+
+    private void setupAsSong() {
+        final Song song = (Song)element;
+
+          
+        label1.setText(song.getTitle());
+        timeLabel.setText(convertTime(song.getDurationMs()));
+        //grid.getRowConstraints().remove(1);
+
+
+        spotifyButton.setOnMouseClicked(event -> 
+        {
+            try {
+                super.openLink(song.getSpotifyUrl());
+            } 
+            catch (IOException e) {
+                e.printStackTrace();
+            } 
+            catch (URISyntaxException e) {
+                System.out.println(e);
+                System.out.println("Invalid url " + song.getSpotifyUrl());
+                e.printStackTrace();
+            }
+        });
+
+        exspandButton.setOnMouseClicked(event -> {
+            System.out.println(song);
+            sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE, ElementDisplayerMode.SHOW_SONG, song);
+        });
+
+        if(Main.account != null) {
+            Menu pMenu = new Menu("Aggiungi ad una playlist");
+            actionButton.getItems().add(pMenu);
+
+            new Thread(() -> {
+                try {
+                    ArrayList<Playlist> playlist_list = connectionManager.getAccountPlaylists(Main.account.getNickname());
+                    Platform.runLater(() -> {
+                        for (Playlist playlist : playlist_list) {
+                            MenuItem item = new MenuItem(playlist.getName());
+                            pMenu.getItems().add(item);
+                            
+                            item.setOnAction(event -> {
+                                //connectionManager.addSongToPlaylist(null, null, null)
+                            });
+                        }
+                    });
+                } 
+                catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                
+            }).start();
+        }      
+    }
+
+    private void setupAsPlaylist() {
+        Playlist p = (Playlist)element;
+        label1.setText(p.getName());
+        label2.setText(p.getId());
+
+        MenuItem deleteItem = new MenuItem(Main.applicationLanguage == 0 ? "Elimina Playlist" : "Delete Playlist");
+        MenuItem renameItem = new MenuItem(Main.applicationLanguage == 0 ? "Rinomina Playlist" : "Rename Playlist");
+        actionButton.getItems().addAll(renameItem, deleteItem);
+
+        exspandButton.setVisible(false);
+        spotifyButton.setVisible(false);
+
+        renameItem.setOnAction(event -> {
+            
+        });
+
+        deleteItem.setOnAction(event -> {
+           //connectionManager. 
+        });
+
+    }
+
+    private void setupAsAlbum() {
+
+
+    }
+
+    private void setupAsComment() {
+
+    }
+
 
     public static String convertTime(long milliseconds) {
         long seconds = milliseconds / 1000;
@@ -149,15 +246,7 @@ public class ListCell_Controller implements Initializable, Injectable
 
     }*/
 
-    @FXML
-    public void showPlaylist(MouseEvent event) {
-        playlistMenuBtn.show(); // Show menu when mouse enters
-    }
-
-    @FXML
-    public void hidePlaylist(MouseEvent event) {
-        playlistMenuBtn.hide(); // Hide menu when mouse exits the button's area
-    }
+    
 
 
     
