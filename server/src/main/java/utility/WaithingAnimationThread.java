@@ -4,7 +4,7 @@ public class WaithingAnimationThread extends Thread
 {
     public enum Animation {
         SPIN(new String[]{"\b|", "\b/", "\b-", "\b\\"}, 150),
-        DOTS(new String[]{".", "..", "...", "...", ""}, 700);
+        DOTS(new String[]{".", "..", "...", ""}, 700);
 
         private final String[] frames;
         private int delay;
@@ -18,7 +18,8 @@ public class WaithingAnimationThread extends Thread
     private Animation animation;
     private int step = 0;
     private boolean pause = false;
-    private String clearingString = "";
+    private String clearingString1 = "";
+    private String clearingString2 = "";
     private String text = "";
     private boolean end = false;
     private boolean inPause = false;
@@ -45,6 +46,18 @@ public class WaithingAnimationThread extends Thread
     public void run() 
     {
         me = Thread.currentThread();
+
+        for(int k = 0; k < 2; k++ ) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < (int) text.length() + animation.frames.length; i++)
+                sb.append((k==1) ? " " : "\b"); 
+
+            if(k == 0)
+                clearingString1 = sb.toString();
+            else
+                clearingString2 = sb.toString();
+        } 
+
         while(true) {
             try {Thread.sleep(animation.delay);}catch (InterruptedException e) {}
 
@@ -78,10 +91,13 @@ public class WaithingAnimationThread extends Thread
     }
 
     public synchronized void clear() {
-        for(int k = 0; k < 3; k++ ) {
+        /*for(int k = 0; k < 3; k++ ) {
             for (int i = 0; i < (int) text.length() + animation.frames.length; i++)
                 System.out.print((k==1) ? " " : "\b"); 
-        } 
+        }*/
+        System.out.print(clearingString1); //\b
+        System.out.print(clearingString2); //space
+        System.out.print(clearingString1); //\b
         System.out.flush();
     }
 

@@ -56,7 +56,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	public ComunicationManager(int port) throws RemoteException {
 		this.terminal = Terminal.getInstance();
 		this.port = port;
-		setDaemon(true);
+		//setDaemon(true);
 		setPriority(MAX_PRIORITY);
 
 		//hashMap che associa a ogni servizio la sua funzione
@@ -139,10 +139,10 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	 */
 	public Object executeServerServiceFunction(final ServerServicesName name, final HashMap<String, Object> params, final String clientIP) 
 	{
-		//inizializzo il timer e ottengo il riferimento della funzione da richiamare
-		double startTime = 0;
-		double end = 0;
 		Function<HashMap<String, Object>,Object> function = this.serverFunctions.get(name);
+		double startTime = System.nanoTime();
+		double end = 0;
+		
 		
 		//verifico se tutti i parametri sono corretti
 		if(!testParametre(params, functionParametreKeys.get(name))) 
@@ -151,9 +151,9 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		//eseguo le operazioni
 		try {
 			//printFunctionArgs(function, clientIP);	
-			startTime = System.nanoTime();
+			
 			Object output =  function.apply(params);
-			end = System.nanoTime();
+			
 			if(output instanceof Exception) {
 				throw (Exception) output;
 			}
@@ -165,7 +165,8 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 			return e; 
         }
 		finally {
-			printFunctionExecutionTime(functionName.get(name), clientIP,  end- startTime);
+			end = System.nanoTime();
+			printFunctionExecutionTime(functionName.get(name), clientIP,  end - startTime);
 		}
 	}
 
@@ -332,7 +333,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		return IPv4RegexPattern.matcher(ip).matches();
 	}
 
-	private void printFunctionExecutionTime(String function, String clientHost,double dt) {
+	private void printFunctionExecutionTime(String function, String clientHost, double dt) {
 		new Thread(() ->{
 			//Method f = this.functionName.get(function);
 			terminal.printInfoln(formatFunctionRequestTime(clientHost, function, dt));
@@ -361,7 +362,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 
 		String timeStr = "";
 		Terminal.Color color = null;
-		double seconds = (double)dt / 1000000000.0;
+		double seconds = (double) (dt / 1000000000.0);
 
 		if(seconds <= 0.400) 
 			color = Terminal.Color.GREEN_BOLD_BRIGHT;

@@ -15,6 +15,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.MenuButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import objects.Album;
 import objects.Comment;
 import objects.Playlist;
@@ -29,6 +30,7 @@ public class ListCell_Controller implements Initializable, Injectable
     @FXML public Label timeLabel;
     @FXML public MenuButton playlistMenuBtn;
     @FXML public AnchorPane anchor;
+    @FXML public GridPane grid;
 
 
     private FXMLLoader loaderFXML;
@@ -61,9 +63,10 @@ public class ListCell_Controller implements Initializable, Injectable
 
 
                     //set fxml tags
-                label1.setText(String.valueOf("??"));
-                label2.setText(song.getTitle());
+                label1.setText(song.getTitle());
+                //label2.setText(song.get;
                 timeLabel.setText(convertTime(song.getDurationMs()));
+                grid.getRowConstraints().remove(1);
 
                 //setText(null);
                 //setGraphic(anchor);

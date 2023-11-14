@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 import application.Main;
 import application.ObjectsCache;
 import application.SceneManager;
+import enumClasses.ElementDisplayerMode;
 import interfaces.Injectable;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -107,12 +108,13 @@ public class ElementContainer extends ControllerBase implements Initializable, I
     public void openLink(MouseEvent event) 
     {
         if(displayedElement instanceof Song) { 
-            sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE, displayedElement);
+            sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE, ElementDisplayerMode.SHOW_SONG, displayedElement);
         }
         else if(displayedElement instanceof Artist) {
+            sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE, ElementDisplayerMode.SHOW_ARTIST, displayedElement);
         }
         else if(displayedElement instanceof Album) {
-            sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE, displayedElement);
+            sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE, ElementDisplayerMode.SHOW_ALBUM, displayedElement);
         }
     }
 }

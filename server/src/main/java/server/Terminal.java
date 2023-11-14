@@ -12,9 +12,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.io.IOException;
 import java.util.Hashtable;
+import java.util.LinkedList;
+
 import database.DatabaseManager;
 import java.awt.Desktop;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.Semaphore;
 import java.io.File;
 
 
@@ -24,15 +28,68 @@ public class Terminal extends Thread
 {
     //patter sigleton
     private static Terminal instance = null;
+    private static final Semaphore MUTEX_QUEUE = new Semaphore(1);
     
     private boolean fechUserInputs;
     private boolean ready;
     private boolean addTime = false;
     private App main;
+
+    //Threads
+    private TerminalPrinter terminalPrinterThread = null;
     private WaithingAnimationThread waithingThread = null;
+
     private jline.Terminal jlineTerminal = jline.TerminalFactory.get();
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
-    
+    private Queue<String> terminalMessageQueue = new LinkedList<>();
+
+
+
+    private class TerminalPrinter extends Thread 
+    {
+        public TerminalPrinter() {
+            super("TerminalPrinter");
+            setDaemon(addTime);
+            start();
+        }
+
+        @Override
+        public void run() 
+        {
+            while(true)
+            {
+                try {
+                    MUTEX_QUEUE.acquire();
+                    String[] array = new String[terminalMessageQueue.size()];
+                    int index = 0;
+
+                    while(terminalMessageQueue.size() > 0) {
+                        array[index++] = terminalMessageQueue.poll();
+                    }
+
+                    MUTEX_QUEUE.release();
+                    printOnTerminal(array);
+                
+                    while(true) {
+                        MUTEX_QUEUE.acquire();
+                        if(terminalMessageQueue.size() > 0) {
+                            MUTEX_QUEUE.release();
+                            break;
+                        }
+                        else {
+                            MUTEX_QUEUE.release();
+                            Thread.sleep(10);
+                        }
+                    }   
+                } 
+                catch (InterruptedException e) {
+                    e.printStackTrace();
+                } 
+            }
+        }
+    }
+
+
     public enum Color {
         //Color end string, color reset
         RESET("\033[0m"),
@@ -188,7 +245,8 @@ public class Terminal extends Thread
         jlineTerminal = jline.TerminalFactory.get();
         jlineTerminal.setEchoEnabled(true);
 
-        System.out.flush();   
+        System.out.flush(); 
+        this.terminalPrinterThread = new TerminalPrinter();
     }    
 
     public static Terminal getInstance() 
@@ -576,7 +634,28 @@ public class Terminal extends Thread
         printSeparator();
     }
 
-    private synchronized void printOnTerminal(MessageType type, String message, Color MessageColor) 
+    private synchronized void printOnTerminal(String... strArr) 
+    {
+        if(this.waithingThread != null) {
+            this.waithingThread.pause();
+
+            while(!this.waithingThread.isInPause());
+
+            for (String str : strArr) {
+                System.out.print(str);
+            }
+        
+            this.waithingThread.print();
+            this.waithingThread.restart();
+        }
+        else {
+            for (String str : strArr) {
+                System.out.print(str);
+            }
+        } 
+    }
+
+    private void addStringToPrint(MessageType type, String message, Color MessageColor) 
     {
 
         if(type == null)
@@ -588,14 +667,6 @@ public class Terminal extends Thread
         LocalDateTime now = LocalDateTime.now();
         int terminalWidth = this.jlineTerminal.getWidth();
         String processedString = "";
-
-
-        //avverto il thread
-        //synchronized(this) {
-            if(this.waithingThread != null) {
-                this.waithingThread.pause();
-            }
-        //}
 
     
         if(this.addTime) 
@@ -633,65 +704,61 @@ public class Terminal extends Thread
                     processedString = processedString.replaceAll(keywordString, Color.MAGENTA_BOLD_BRIGHT + keywordString + Color.RESET);
             }
         }
-        
-        //synchronized(this) {
-        if(this.waithingThread != null) {
-            while(!this.waithingThread.isInPause());
-            System.out.print(processedString);
-            this.waithingThread.print();
-            this.waithingThread.restart();
-        }
-        else {
-            System.out.print(processedString);
+
+        try {
+            MUTEX_QUEUE.acquire();
+            terminalMessageQueue.add(processedString);
+            MUTEX_QUEUE.release();
         } 
-        //}
-            
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        } 
     }
 
     public void println(String message) {
-        printOnTerminal(MessageType.NONE, message + "\n", null);
+        addStringToPrint(MessageType.NONE, message + "\n", null);
     }
 
     public void printInfoln(String message) {
-        printOnTerminal(MessageType.INFO, " " + message + "\n", null);
+        addStringToPrint(MessageType.INFO, " " + message + "\n", null);
     }
 
     public void printSuccesln(String message) {
-        printOnTerminal(MessageType.SUCCES, " " + message + "\n", null);
+        addStringToPrint(MessageType.SUCCES, " " + message + "\n", null);
     }
 
     public void printErrorln(String message) {
-        printOnTerminal(MessageType.ERROR, " " + message + "\n", null);
+        addStringToPrint(MessageType.ERROR, " " + message + "\n", null);
     }
 
     public void printRequestln(String message) {
-        printOnTerminal(MessageType.REQUEST, " " + message + "\n", null);
+        addStringToPrint(MessageType.REQUEST, " " + message + "\n", null);
     }
     public void printQueryln(String message) {
-        printOnTerminal(MessageType.QUERY, " " + message + "\n", null);
+        addStringToPrint(MessageType.QUERY, " " + message + "\n", null);
     }
 
 
     public void print(String message) {
-        printOnTerminal(MessageType.NONE, message, null);
+        addStringToPrint(MessageType.NONE, message, null);
     }
 
     public void printInfo(String message) {
-        printOnTerminal(MessageType.INFO, " " + message, null);
+        addStringToPrint(MessageType.INFO, " " + message, null);
     }
 
     public void printSucces(String message) {
-        printOnTerminal(MessageType.SUCCES, " " + message, null);
+        addStringToPrint(MessageType.SUCCES, " " + message, null);
     }
 
     public void printError(String message) {
-        printOnTerminal(MessageType.ERROR, " " + message, null);
+        addStringToPrint(MessageType.ERROR, " " + message, null);
     }
 
     public void printRequest(String message) {
-        printOnTerminal(MessageType.REQUEST, " " + message, null);
+        addStringToPrint(MessageType.REQUEST, " " + message, null);
     }
     public void printQuery(String message) {
-        printOnTerminal(MessageType.QUERY, " " + message, null);
+        addStringToPrint(MessageType.QUERY, " " + message, null);
     }
 }

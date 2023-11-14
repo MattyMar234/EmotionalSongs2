@@ -94,16 +94,29 @@
     -fx-background-color: #8259E3; /* Background color for hovered menu item */
 }
 
-.menubtn{
+.menubtn {
     -fx-alignment: CENTER-LEFT;
     -fx-pref-width:150;
     -fx-background-color: transparent;
 }
 
-.btnlistcell{
+.btnlistcell {
     -fx-background-color: transparent;
     -fx-cursor: hand; /* Hand cursor */
 }
+
+.listCellBackgound {
+    -fx-background-color: transparent;
+    -fx-border-width: 0 0 0 60;
+    -fx-border-width: 0.5px 0px 0px 0px;
+    -fx-border-color: rgb(70, 70, 70);
+
+}
+
+.listCellBackgound:hover {
+    -fx-background-color: rgba(81, 81, 81, 0.282);
+}
+
 /*---------------------------------------------*/
 
 

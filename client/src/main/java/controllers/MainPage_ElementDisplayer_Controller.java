@@ -92,7 +92,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                             setImageLink();
                         }
                         break;
-                    case SHOW_ASRTIST:
+                    case SHOW_ARTIST:
                         if(displayedElement instanceof Artist) {
                             setupAsArtist(data);  
                             setImage_and_backgroundColor();  
