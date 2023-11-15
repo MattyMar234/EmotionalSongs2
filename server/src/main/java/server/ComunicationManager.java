@@ -28,6 +28,7 @@ import Exceptions.InvalidEmailException;
 import Exceptions.InvalidPasswordException;
 import database.QueriesManager;
 import database.PredefinedSQLCode.Colonne;
+import enumclass.QueryParameter;
 import enumclass.ServerServicesName;
 import interfaces.SocketService;
 import objects.Account;
@@ -79,28 +80,30 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		serverFunctions.put(ServerServicesName.GET_COMMENTS_SONG, this::getSongComment);
 		serverFunctions.put(ServerServicesName.GET_COMMENTS_ACCOUNT, this::getAccountComment);
 		serverFunctions.put(ServerServicesName.GET_SONG_EMOTION, this::getSongEmotion);
+		serverFunctions.put(ServerServicesName.DELETE_PLAYLIST, this::deletePlaylist);
 
 
 		//hashMap che associa a ogni servizio i parametri richiesti
-		functionParametreKeys.put(ServerServicesName.ADD_ACCOUNT, new String[] {"name", "username", "userID", "codiceFiscale", "Email", "password", "civicNumber", "viaPiazza", "cap", "commune", "province"});
-		functionParametreKeys.put(ServerServicesName.GET_ACCOUNT, new String[]{"Email", "password"});
-		functionParametreKeys.put(ServerServicesName.GET_MOST_POPULAR_SONGS, new String[]{"limit", "offset"});
-		functionParametreKeys.put(ServerServicesName.GET_RECENT_PUPLISCED_ALBUMS, new String[]{"limit", "offset", "threshold"});
-		functionParametreKeys.put(ServerServicesName.SEARCH_SONGS, new String[]{"searchString", "limit", "offset"});
-		functionParametreKeys.put(ServerServicesName.SEARCH_ALBUMS, new String[]{"searchString", "limit", "offset"});
-		functionParametreKeys.put(ServerServicesName.GET_SONG_BY_IDS, new String[]{"IDs"});
-		functionParametreKeys.put(ServerServicesName.GET_ALBUM_SONGS, new String[]{"albumID"});
-		functionParametreKeys.put(ServerServicesName.ADD_PLAYLIST, new String[]{"accountID", "playlistName"});
-		functionParametreKeys.put(ServerServicesName.GET_ACCOUNT_PLAYLIST, new String[]{"accountID"});
-		functionParametreKeys.put(ServerServicesName.ADD_SONG_PLAYLIST, new String[]{"accountID", "playlistID", "songID"});
-		functionParametreKeys.put(ServerServicesName.REMOVE_SONG_PLAYLIST, new String[]{"accountID", "playlistID", "songID"});
-		functionParametreKeys.put(ServerServicesName.RENAME_PLAYLIST, new String[]{"accountID", "playlistID", "newName"});
-		functionParametreKeys.put(ServerServicesName.ADD_COMMENT, new String[]{"accountID", "songID", "comment"});
-		functionParametreKeys.put(ServerServicesName.REMOVE_COMMENT, new String[]{"accountID", "songID", "commentID"});
-		functionParametreKeys.put(ServerServicesName.GET_COMMENTS_SONG_FOR_ACCOUNT, new String[]{"accountID", "songID",});
-		functionParametreKeys.put(ServerServicesName.GET_COMMENTS_SONG, new String[]{"songID"});
-		functionParametreKeys.put(ServerServicesName.GET_COMMENTS_ACCOUNT, new String[]{"accountID"});
-		functionParametreKeys.put(ServerServicesName.GET_SONG_EMOTION, new String[]{"songID"});
+		functionParametreKeys.put(ServerServicesName.ADD_ACCOUNT, new String[] {QueryParameter.NAME.toString(), QueryParameter.USERNAME.toString(), QueryParameter.USER_ID.toString(), QueryParameter.CODICE_FISCALE.toString(), QueryParameter.EMAIL.toString(), QueryParameter.PASSWORD.toString(), QueryParameter.CIVIC_NUMBER.toString(), QueryParameter.VIA_PIAZZA.toString(), QueryParameter.CAP.toString(), QueryParameter.COMMUNE.toString(), QueryParameter.PROVINCE.toString()});  
+		functionParametreKeys.put(ServerServicesName.GET_ACCOUNT, new String[]{QueryParameter.EMAIL.toString(), QueryParameter.PASSWORD.toString()}); 
+		functionParametreKeys.put(ServerServicesName.GET_MOST_POPULAR_SONGS, new String[]{QueryParameter.LIMIT.toString(), QueryParameter.OFFSET.toString()});
+		functionParametreKeys.put(ServerServicesName.GET_RECENT_PUPLISCED_ALBUMS, new String[]{QueryParameter.LIMIT.toString(), QueryParameter.OFFSET.toString(), QueryParameter.THRESHOLD.toString()}); 
+		functionParametreKeys.put(ServerServicesName.SEARCH_SONGS, new String[]{QueryParameter.SEARCH_STRING.toString(), QueryParameter.LIMIT.toString(), QueryParameter.OFFSET.toString()}); 
+		functionParametreKeys.put(ServerServicesName.SEARCH_ALBUMS, new String[]{QueryParameter.SEARCH_STRING.toString(), QueryParameter.LIMIT.toString(), QueryParameter.OFFSET.toString()}); 
+		functionParametreKeys.put(ServerServicesName.GET_SONG_BY_IDS, new String[]{QueryParameter.IDS.toString()});
+		functionParametreKeys.put(ServerServicesName.GET_ALBUM_SONGS, new String[]{QueryParameter.ALBUM_ID.toString()}); 
+		functionParametreKeys.put(ServerServicesName.ADD_PLAYLIST, new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_NAME.toString()});
+		functionParametreKeys.put(ServerServicesName.GET_ACCOUNT_PLAYLIST, new String[]{QueryParameter.ACCOUNT_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.ADD_SONG_PLAYLIST, new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_ID.toString(), QueryParameter.SONG_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.REMOVE_SONG_PLAYLIST, new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_ID.toString(), QueryParameter.SONG_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.RENAME_PLAYLIST, new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_ID.toString(), QueryParameter.NEW_NAME.toString()});
+		functionParametreKeys.put(ServerServicesName.ADD_COMMENT, new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.SONG_ID.toString(), QueryParameter.COMMENT.toString()});
+		functionParametreKeys.put(ServerServicesName.REMOVE_COMMENT, new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.SONG_ID.toString() ,QueryParameter.COMMENT_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.GET_COMMENTS_SONG_FOR_ACCOUNT, new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.SONG_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.GET_COMMENTS_SONG, new String[]{QueryParameter.SONG_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.GET_COMMENTS_ACCOUNT, new String[]{QueryParameter.ACCOUNT_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.GET_SONG_EMOTION, new String[]{QueryParameter.SONG_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.DELETE_PLAYLIST, new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_ID.toString()});
 		
 
 		try {
@@ -124,6 +127,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 			functionName.put(ServerServicesName.GET_COMMENTS_SONG, "getSongComments");
 			functionName.put(ServerServicesName.GET_COMMENTS_ACCOUNT, "getAccountComments");
 			functionName.put(ServerServicesName.GET_SONG_EMOTION, "getSongEmotion");
+			functionName.put(ServerServicesName.DELETE_PLAYLIST, "deletePlaylist");
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -413,26 +417,26 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		HashMap<Colonne, Object> colonne_residenza = new HashMap<Colonne, Object>();
 
 		try {
-			colonne_account.put(Colonne.NAME, argsTable.get("name"));
-			colonne_account.put(Colonne.SURNAME, argsTable.get("username"));
-			colonne_account.put(Colonne.NICKNAME, argsTable.get("userID"));
-			colonne_account.put(Colonne.FISCAL_CODE, argsTable.get("codiceFiscale"));
-			colonne_account.put(Colonne.EMAIL, argsTable.get("email"));
-			colonne_account.put(Colonne.PASSWORD, DigestUtils.sha256Hex((String) argsTable.get("password")));
+			colonne_account.put(Colonne.NAME, argsTable.get(QueryParameter.NAME.toString()));
+			colonne_account.put(Colonne.SURNAME, argsTable.get(QueryParameter.USERNAME.toString()));
+			colonne_account.put(Colonne.NICKNAME, argsTable.get(QueryParameter.USER_ID.toString()));
+			colonne_account.put(Colonne.FISCAL_CODE, argsTable.get(QueryParameter.CODICE_FISCALE.toString()));
+			colonne_account.put(Colonne.EMAIL, argsTable.get(QueryParameter.EMAIL.toString()));
+			colonne_account.put(Colonne.PASSWORD, DigestUtils.sha256Hex((String) argsTable.get(QueryParameter.PASSWORD.toString())));
 			//colonne_account.put(Colonne.RESIDENCE_ID_REF, resd_ID);
 			
 			//colonne_residenza.put(Colonne.ID, resd_ID);
 			colonne_residenza.put(Colonne.VIA_PIAZZA, argsTable.get("viaPiazza"));
-			colonne_residenza.put(Colonne.CIVIC_NUMER, Integer.parseInt((String)argsTable.get("civicNumber")));
-			colonne_residenza.put(Colonne.PROVINCE_NAME, argsTable.get("province"));
-			colonne_residenza.put(Colonne.COUNCIL_NAME, argsTable.get("commune"));
-			colonne_residenza.put(Colonne.CAP, Integer.parseInt((String)argsTable.get("cap")));
+			colonne_residenza.put(Colonne.CIVIC_NUMER, Integer.parseInt((String)argsTable.get(QueryParameter.CIVIC_NUMBER.toString())));
+			colonne_residenza.put(Colonne.PROVINCE_NAME, argsTable.get(QueryParameter.PROVINCE.toString()));
+			colonne_residenza.put(Colonne.COUNCIL_NAME, argsTable.get(QueryParameter.COMMUNE.toString()));
+			colonne_residenza.put(Colonne.CAP, Integer.parseInt((String)argsTable.get(QueryParameter.CAP.toString())));
 
 			QueriesManager.addAccount_and_addResidence(colonne_account, colonne_residenza);
 
 			HashMap<String, Object> temp = new HashMap<String, Object>();
-			temp.put("email", argsTable.get("email"));
-			temp.put("password", argsTable.get("password"));
+			temp.put(QueryParameter.EMAIL.toString(), argsTable.get(QueryParameter.EMAIL.toString()));
+			temp.put(QueryParameter.PASSWORD.toString(), argsTable.get(QueryParameter.PASSWORD.toString()));
 
 			return getAccount(temp);
 		} 
@@ -448,14 +452,14 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	{
 		try { 
 			//cerco se esiste un account con quell'email
-			Account account = QueriesManager.getAccountByEmail((String) argsTable.get("Email"));
+			Account account = QueriesManager.getAccountByEmail((String) argsTable.get(QueryParameter.EMAIL.toString()));
 
 			//verifico se l'ho trovato
 			if(account == null)
 				return new InvalidEmailException();
 
 			//verifico se le password combaciano
-			if(!account.getPassword().equals(DigestUtils.sha256Hex((String) argsTable.get("password"))))
+			if(!account.getPassword().equals(DigestUtils.sha256Hex((String) argsTable.get(QueryParameter.PASSWORD.toString()))))
 				return new InvalidPasswordException();
 
 			return account;
@@ -472,7 +476,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	public Object getMostPopularSongs(final HashMap<String, Object> argsTable) 
 	{
 		try {
-			return QueriesManager.getTopPopularSongs((long)argsTable.get("limit"), (long)argsTable.get("offset"));
+			return QueriesManager.getTopPopularSongs((long)argsTable.get(QueryParameter.LIMIT.toString()), (long)argsTable.get(QueryParameter.OFFSET.toString()));
 		} 
 		catch (Exception e) {
 			return e;
@@ -486,7 +490,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	public Object searchSongs(final HashMap<String, Object> argsTable) 
 	{
         try {
-            ArrayList<Song> result = QueriesManager.searchSong((String)argsTable.get("searchString"), (long)argsTable.get("limit"), (long)argsTable.get("offset"));
+            ArrayList<Song> result = QueriesManager.searchSong((String)argsTable.get(QueryParameter.SEARCH_STRING.toString()), (long)argsTable.get(QueryParameter.LIMIT.toString()), (long)argsTable.get(QueryParameter.OFFSET.toString()));
 			return result;
 		} 
 		catch (Exception e) {
@@ -500,7 +504,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	public Object getRecentPublischedAlbum(final HashMap<String, Object> argsTable) 
 	{
 		try {
-			ArrayList<Album> result = QueriesManager.getRecentPublischedAlbum((long)argsTable.get("limit"), (long)argsTable.get("offset"), (int)argsTable.get("threshold"));
+			ArrayList<Album> result = QueriesManager.getRecentPublischedAlbum((long)argsTable.get(QueryParameter.LIMIT.toString()), (long)argsTable.get(QueryParameter.OFFSET.toString()), (int)argsTable.get(QueryParameter.THRESHOLD.toString()));
 			return result;
 		}
 		catch (Exception e) {
@@ -515,7 +519,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	public Object searchAlbums(final HashMap<String, Object> argsTable) 
 	{
         try {
-            ArrayList<Album> result = QueriesManager.searchAlbum((String)argsTable.get("searchString"), (long)argsTable.get("limit"), (long)argsTable.get("offset"));
+            ArrayList<Album> result = QueriesManager.searchAlbum((String)argsTable.get(QueryParameter.SEARCH_STRING.toString()), (long)argsTable.get(QueryParameter.LIMIT.toString()), (long)argsTable.get(QueryParameter.OFFSET.toString()));
 			return result;
 		} 
 		catch (Exception e) {
@@ -531,7 +535,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	@Override
 	public Object getSongByIDs(final HashMap<String, Object> argsTable) {
 		try {
-            return QueriesManager.searchSongByIDs((String[])argsTable.get("IDs"));
+            return QueriesManager.searchSongByIDs((String[])argsTable.get(QueryParameter.IDS.toString()));
 		} 
 		catch (Exception e) {
 			return e;
@@ -542,7 +546,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	public Object getAlbumsSongs(final HashMap<String, Object> argsTable) 
 	{
         try {
-            ArrayList<Song> result = QueriesManager.getAlbumSongs((String)argsTable.get("albumID"));
+            ArrayList<Song> result = QueriesManager.getAlbumSongs((String)argsTable.get(QueryParameter.ALBUM_ID.toString()));
 			//terminal.printInfoln("element: " + result.size());
 			return result;
 		} 
@@ -591,7 +595,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	public Object addPlaylist(final HashMap<String, Object> argsTable) {
 		try {
 			//Aggiungere eventuale immagine
-			QueriesManager.addPlaylist((String)argsTable.get("accountID"), (String)argsTable.get("playlistName"));
+			QueriesManager.addPlaylist((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString()), (String)argsTable.get(QueryParameter.PLAYLIST_ID.toString()));
 			return true;        
 		} 
 		catch (Exception e) {
@@ -601,14 +605,19 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 
 	@Override
 	public Object deletePlaylist(final HashMap<String, Object> argsTable) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'deletePlaylist'");
+		try {
+			QueriesManager.deletePlaylist((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString()), (String)argsTable.get(QueryParameter.PLAYLIST_ID.toString()));
+			return null;
+		} 
+		catch (Exception e) {
+			return e;     
+		} 
 	}
 
 	@Override
 	public Object removeSongFromPlaylist(final HashMap<String, Object> argsTable) {
 		try {
-			QueriesManager.removeSongFromPlaylist((String)argsTable.get("accountID"), (String)argsTable.get("playlistID"), (String)argsTable.get("songID"));
+			QueriesManager.removeSongFromPlaylist((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString()), (String)argsTable.get(QueryParameter.PLAYLIST_ID.toString()), (String)argsTable.get(QueryParameter.SONG_ID.toString()));
 			return null;        
 		} 
 		catch (Exception e) {
@@ -619,7 +628,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	@Override
 	public Object addSongToPlaylist(final HashMap<String, Object> argsTable) {
 		try {
-			QueriesManager.addSongToPlaylist((String)argsTable.get("accountID"), (String)argsTable.get("playlistID"), (String)argsTable.get("songID"));
+			QueriesManager.addSongToPlaylist((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString()), (String)argsTable.get(QueryParameter.PLAYLIST_ID.toString()), (String)argsTable.get(QueryParameter.SONG_ID.toString()));
 			return null;        
 		} 
 		catch (Exception e) {
@@ -630,7 +639,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	@Override
 	public Object getAccountsPlaylists(final HashMap<String, Object> argsTable) {
 		try {
-			return QueriesManager.getAccountsPlaylists((String)argsTable.get("accountID") );
+			return QueriesManager.getAccountsPlaylists((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString()));
 		} 
 		catch (Exception e) {
 			return e;
@@ -640,7 +649,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	@Override
 	public Object getAccountSongComment(final HashMap<String, Object> argsTable) {
 		try {
-			QueriesManager.getAccountSongComment((String)argsTable.get("accountID"), (String)argsTable.get("songID"));
+			QueriesManager.getAccountSongComment((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString()), (String)argsTable.get(QueryParameter.SONG_ID.toString()));
 			return null;
 		} 
 		catch (Exception e) {
@@ -651,7 +660,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	@Override
 	public Object addComment(final HashMap<String, Object> argsTable) {
 		try {
-			QueriesManager.addComment((String)argsTable.get("accountID"), (String)argsTable.get("songID"), (String)argsTable.get("comment"));
+			QueriesManager.addComment((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString()), (String)argsTable.get(QueryParameter.SONG_ID.toString()), (String)argsTable.get(QueryParameter.COMMENT.toString()));
 			return null;        
 		} 
 		catch (Exception e) {
@@ -662,7 +671,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	@Override
 	public Object deleteComment(final HashMap<String, Object> argsTable) {
 		try {
-			QueriesManager.deleteComment((String)argsTable.get("accountID"), (String)argsTable.get("commentID"));
+			QueriesManager.deleteComment((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString()), (String)argsTable.get(QueryParameter.COMMENT_ID.toString())); 
 			return null;        
 		} 
 		catch (Exception e) {
@@ -673,7 +682,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	@Override
 	public Object renamePlaylist(final HashMap<String, Object> argsTable) {
 		try {
-			QueriesManager.renamePlaylist((String)argsTable.get("accountID"), (String)argsTable.get("playlistID"), (String)argsTable.get("newName"));
+			QueriesManager.renamePlaylist((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString()), (String)argsTable.get(QueryParameter.PLAYLIST_ID.toString()), (String)argsTable.get(QueryParameter.NEW_NAME.toString()));
 			return null;        
 		} 
 		catch (Exception e) {
@@ -684,7 +693,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	@Override
 	public Object getSongComment(final HashMap<String, Object> argsTable) {
 		try {
-			QueriesManager.getSongComment((String)argsTable.get("songID"));
+			QueriesManager.getSongComment((String)argsTable.get(QueryParameter.SONG_ID.toString()));
 			return null;
 		} 
 		catch (Exception e) {
@@ -695,7 +704,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	@Override
 	public Object getAccountComment(final HashMap<String, Object> argsTable) {
 		try {
-			QueriesManager.getAccountComment((String)argsTable.get("accountID"));
+			QueriesManager.getAccountComment((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString()));
 			return null;
 		} 
 		catch (Exception e) {
@@ -706,13 +715,15 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	@Override
 	public Object getSongEmotion(final HashMap<String, Object> argsTable) {
 		try {
-			QueriesManager.getSongEmotion((String)argsTable.get("songID"));
+			QueriesManager.getSongEmotion((String)argsTable.get(QueryParameter.SONG_ID.toString()));
 			return null;
 		} 
 		catch (Exception e) {
 			return e;     
 		} 
 	}
+
+	
 	
 	
 }

@@ -605,4 +605,13 @@ public class QueryBuilder {
         return sb.toString();
     }
 
+    public static String deletePlaylist_query(String playlistID) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("DELETE FROM " + Tabelle.PLAYLIST + " WHERE ");
+        sb.append(Colonne.ID.getName() + " = '" + playlistID + "';");
+
+        //printQuery(sb);
+        return sb.toString();
+    }
+
 }
