@@ -130,13 +130,18 @@ public class ListCell_Controller extends ControllerBase implements Initializable
             new Thread(() -> {
                 try {
                     ArrayList<Playlist> playlist_list = connectionManager.getAccountPlaylists(Main.account.getNickname());
+                    
                     Platform.runLater(() -> {
                         for (Playlist playlist : playlist_list) {
                             MenuItem item = new MenuItem(playlist.getName());
                             pMenu.getItems().add(item);
                             
                             item.setOnAction(event -> {
-                                //connectionManager.addSongToPlaylist(null, null, null)
+                                try {
+                                    connectionManager.addSongToPlaylist(Main.account.getNickname(), playlist.getUserID(), song.getId());
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                             });
                         }
                     });
@@ -167,7 +172,7 @@ public class ListCell_Controller extends ControllerBase implements Initializable
         });
 
         deleteItem.setOnAction(event -> {
-           //connectionManager. 
+           connectionManager.deletePlaylist(Main.account.getNickname(), p.getId());
         });
 
     }

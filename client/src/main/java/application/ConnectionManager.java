@@ -7,7 +7,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.security.InvalidParameterException;
-import java.time.zone.ZoneOffsetTransitionRule.TimeDefinition;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -46,60 +45,7 @@ public class ConnectionManager implements ServerServices{
 	private int resultToWait = 0;
 	private PacketLintener_thread packetLintener;
 
-
 	
-
-	private class PacketLintener_thread extends Thread 
-	{
-		public PacketLintener_thread() {
-			super("PacketListener");
-			start();
-		}
-
-		@Override
-		public void run() {
-			while(true) {
-				try {
-					waitForPacket(); 
-					getPackets();
-				} 
-				catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-
-	private synchronized void waitForPacket() 
-	{
-		//se non ho nulla da attendere vado in wait
-		while(resultToWait == 0) {
-			try {wait();} catch (InterruptedException e) {}
-		}
-	}
-
-	private void getPackets() throws ClassNotFoundException, IOException 
-	{
-		try {
-			String id = (String) inputStream.readObject();
-			Object result = inputStream.readObject();
-
-			//salvo il risultato e avviso
-			synchronized(this) {
-				requestResult.put(id, result);
-				resultToWait--;
-				notifyAll();
-			}
-		} 
-		catch (Exception e) {
-			synchronized(this) {
-				disconnect();
-				notifyAll();
-			}
-		}
-		
-	}
 
     private ConnectionManager() {
 
@@ -353,49 +299,121 @@ public class ConnectionManager implements ServerServices{
 	 * @throws IOException Se si riscontrano problemi con la comunicazione con il server o con si è connessi.
 	 * @throws InvalidParameterException Se il task contiene dei parametri non corretti.
 	 */
-	private Object makeRequest(Packet task) throws IOException, InvalidParameterException 
+	private Object makeRequest(Packet task) throws Exception, InvalidParameterException 
 	{
 		final String myId = task.getId();
-
-		if(this.clientSocket == null)
-			throw new IOException("Non si è connessi con il server");
+		Object result = null;
 
 		//invio i dati e sveglio il thread che gestisce la ricezzione dei risultati
 		try {
+
+			if(this.clientSocket == null)
+				throw new RuntimeException("Non si è connessi con il server");
+
+
 			double start = System.nanoTime();
 			System.out.println(Thread.currentThread().getName() + " new Packet: " + task.getCommand());
 			
 			synchronized(this) {
+				requestResult.put(myId, result);
 				outputStream.writeObject(task);
 				outputStream.flush();
 				resultToWait++;
 				notifyAll();
 
-				while(clientSocket != null && !requestResult.containsKey(myId)) {
-					try {wait();} catch (InterruptedException e) {}
-				}
-			}
-			double end = System.nanoTime();
-			System.out.println(myId + " Packet recived: " + task.getCommand() + " time: " + TimeFormatter.formatTime(end - start));
+				while(requestResult.get(myId) == null) 
+				{
+					try {wait(1000);} catch (InterruptedException e) {}
+					
+					//se sono passati 10s da quando ho inviato i dati
+					if((System.nanoTime() - start)/1000000000 >= 10.0) {
+						requestResult.remove(myId);
+						resultToWait--;
+						notifyAll();
+						throw new RuntimeException("time out");
+					}
 
+					if(this.clientSocket == null)
+						throw new RuntimeException("Comunicazione con il server persa");
+				}
+
+				result = requestResult.get(myId);
+				requestResult.remove(myId);
+			}
+
+			double end = System.nanoTime();
+			System.out.println(myId + "-> Packet recived: " + task.getCommand() + " time: " + TimeFormatter.formatTime(end - start));
+		
+			//se ho mandato dei parametri non validi
+			if(result instanceof InvalidParameterException)
+				throw (InvalidParameterException) result;
+		
+		}
+		catch (RuntimeException e) {
+			System.out.println(myId + "-> Packet lost");
+			throw e;
 		}
 		catch (Exception e) {
+			System.out.println(myId + "-> Packet lost");
 			System.out.println(e);
 			throw e;
 		}
-		
-		if(this.clientSocket == null)
-			throw new IOException("Comunicazione con il server persa");
-		
-		
-		Object result = requestResult.get(myId);
-		requestResult.remove(myId);
-
-		//se ho mandato dei parametri non validi
-		if(result instanceof InvalidParameterException)
-			throw (InvalidParameterException) result;
-
 		return result;
+	}
+
+	private class PacketLintener_thread extends Thread 
+	{
+		public PacketLintener_thread() {
+			super("PacketListener");
+			start();
+		}
+
+		@Override
+		public void run() {
+			while(true) {
+				try {
+					waitForPacket(); 
+					getPackets();
+				} 
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+
+	private synchronized void waitForPacket() 
+	{
+		//se non ho nulla da attendere vado in wait
+		while(resultToWait == 0) {
+			try {wait();} catch (InterruptedException e) {}
+		}
+	}
+
+	private void getPackets() throws ClassNotFoundException, IOException 
+	{
+		try {
+			String id = (String) inputStream.readObject();
+			Object result = inputStream.readObject();
+
+			//salvo il risultato e avviso
+			synchronized(this) {
+
+				if(requestResult.containsKey(id) && requestResult.get(id) == null) {
+					requestResult.put(id, result);
+				}
+				notifyAll();
+				
+			}
+		} 
+		catch (Exception e) {
+			synchronized(this) {
+				disconnect();
+				notifyAll();
+			}
+		}
+		
 	}
 
 	
