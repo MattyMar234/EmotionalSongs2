@@ -418,6 +418,10 @@ public class QueriesManager
         database.submitQuery(query);
     }
 
+    public static void deletePlaylist(String accountID, String playlistID) throws SQLException {
+        String query = QueryBuilder.deletePlaylist_query(playlistID);
+        database.submitQuery(query);
+    }
 
 }
 

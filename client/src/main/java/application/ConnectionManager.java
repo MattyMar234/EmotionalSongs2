@@ -15,6 +15,7 @@ import Exceptions.InvalidEmailException;
 import Exceptions.InvalidPasswordException;
 import Exceptions.InvalidUserNameException;
 import applicationEvents.ConnectionEvent;
+import enumClasses.QueryParameter;
 import enumClasses.ServerServicesName;
 import interfaces.ServerServices;
 import objects.Account;
@@ -420,9 +421,9 @@ public class ConnectionManager implements ServerServices{
 	{
 		try {
 			Object[] params = new Object[]{
-				"name", name,"username", username,"userID", userID,	"codiceFiscale", codiceFiscale,	"Email", Email,	"password", password,
-				"civicNumber", civicNumber,"viaPiazza", viaPiazza,"cap", cap,"commune", commune,"province", province
-			};
+				QueryParameter.NAME.toString(), name, QueryParameter.USERNAME.toString(), username, QueryParameter.USER_ID.toString(), userID, QueryParameter.CODICE_FISCALE.toString(), codiceFiscale,	QueryParameter.EMAIL.toString(), Email,	QueryParameter.PASSWORD.toString(), password,
+				QueryParameter.CIVIC_NUMBER.toString(), civicNumber, QueryParameter.VIA_PIAZZA.toString(), viaPiazza, QueryParameter.CAP.toString(), cap, QueryParameter.COMMUNE.toString(), commune, QueryParameter.PROVINCE.toString(), province
+			}; 
 
 			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.ADD_ACCOUNT.name(), params));
 			return (Account) result;
@@ -437,7 +438,7 @@ public class ConnectionManager implements ServerServices{
 
 
 	public Account getAccount(String Email, String password) throws InvalidPasswordException, InvalidUserNameException, InvalidEmailException {
-		Object[] params = new Object[]{"Email", Email,"password", password};
+		Object[] params = new Object[]{QueryParameter.EMAIL.toString(), Email,QueryParameter.PASSWORD.toString(), password};
 
 		try {
 			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_ACCOUNT.name(), params));
@@ -454,7 +455,8 @@ public class ConnectionManager implements ServerServices{
 	public ArrayList<Song> getMostPopularSongs(long limit, long offset) throws Exception 
 	{
 		ArrayList<Song> data = null;
-		Object[] params = new Object[]{"limit", limit,"offset", offset};
+		Object[] params = new Object[]{QueryParameter.LIMIT.toString(), limit,QueryParameter.OFFSET.toString(), offset};
+		
 	
 		try {
 			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_MOST_POPULAR_SONGS.name(), params));
@@ -470,7 +472,7 @@ public class ConnectionManager implements ServerServices{
 	@SuppressWarnings("unchecked")
 	public ArrayList<Album> getRecentPublischedAlbum(long limit, long offset, int threshold) throws Exception {
 		ArrayList<Album> data = null;
-		Object[] params = new Object[]{"limit", limit,"offset", offset, "threshold", threshold};
+		Object[] params = new Object[]{QueryParameter.LIMIT.toString(), limit,QueryParameter.OFFSET.toString(), offset, "threshold", threshold};
 	
 		try {
 			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_RECENT_PUPLISCED_ALBUMS.name(), params));
@@ -486,7 +488,7 @@ public class ConnectionManager implements ServerServices{
 	@SuppressWarnings("unchecked")
 	public ArrayList<Song> searchSongs(String searchString, long limit, long offset) throws Exception 
 	{
-		Object[] params = new Object[]{"searchString", searchString, "limit", limit, "offset", offset};
+		Object[] params = new Object[]{QueryParameter.SEARCH_STRING.toString(), searchString, QueryParameter.LIMIT.toString(), limit, QueryParameter.OFFSET.toString(), offset}; 
 		ArrayList<Song> data = null;
 		
 		try {
@@ -502,7 +504,7 @@ public class ConnectionManager implements ServerServices{
 
 	@SuppressWarnings("unchecked")
 	public ArrayList<Album> searchAlbums(String searchString, long limit, long offset) throws Exception {
-		Object[] params = new Object[]{"searchString", searchString, "limit", limit, "offset", offset};
+		Object[] params = new Object[]{QueryParameter.SEARCH_STRING.toString(), searchString, QueryParameter.LIMIT.toString(), limit, QueryParameter.OFFSET.toString(), offset};
 		ArrayList<Album> data = null;
 		
 		try {
@@ -558,8 +560,9 @@ public class ConnectionManager implements ServerServices{
 	public boolean addPlaylist(String playlistName, String userID, Object playlistImage) {
 		System.out.println("addPlaylist: playlistName = " + playlistName + " userID = " + userID);
 
-		Object[] params = new Object[]{"accountID", userID, "playlistName", playlistName};
-
+		Object[] params = new Object[]{QueryParameter.ACCOUNT_ID.toString(), userID, QueryParameter.PLAYLIST_NAME.toString(), playlistName};
+		
+		 
 		try {
 			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.ADD_PLAYLIST.name(), params));
 			
@@ -579,16 +582,29 @@ public class ConnectionManager implements ServerServices{
 	}
 
 	@Override
-	public boolean removePlaylist(String userID, String playlistID){
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'removePlaylist'");
+	public boolean deletePlaylist(String userID, String playlistID){
+		System.out.println("removePlaylist: userID = " + userID + " playlistID = " + playlistID);
+
+		Object[] params = new Object[]{QueryParameter.ACCOUNT_ID.toString(), userID, QueryParameter.PLAYLIST_ID.toString(), playlistID}; 
+		try {
+			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.DELETE_PLAYLIST.name(), params));
+			
+			if(result instanceof Exception)
+				throw (Exception) result;
+			
+			return true;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	@Override
 	public boolean addSongToPlaylist(String userID, String playlistID, String songID) throws Exception {
 		System.out.println("addSongToPlaylist: userID = " + userID + " playlistID = " + playlistID + " songID = " + songID);
 		
-		Object[] params = new Object[]{"accountID", userID, "playlistID", playlistID, "songID", songID};
+		Object[] params = new Object[]{QueryParameter.ACCOUNT_ID.toString(), userID, QueryParameter.PLAYLIST_ID.toString(), playlistID, QueryParameter.SONG_ID.toString(), songID}; 
 		try {
 			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.ADD_SONG_PLAYLIST.name(), params));
 			
@@ -606,7 +622,7 @@ public class ConnectionManager implements ServerServices{
 	public boolean removeSongFromPlaylist(String userID, String playlistID, String songID) throws Exception {
 		System.out.println("removeSongFromPlaylist: userID = " + userID + " playlistID = " + playlistID + " songID = " + songID);
 
-		Object[] params = new Object[]{"accountID", userID, "playlistID", playlistID, "songID", songID};
+		Object[] params = new Object[]{QueryParameter.ACCOUNT_ID.toString(), userID, QueryParameter.PLAYLIST_ID.toString(), playlistID, QueryParameter.SONG_ID.toString(), songID};
 		try {
 			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.REMOVE_SONG_PLAYLIST.name(), params));
 			
@@ -626,7 +642,7 @@ public class ConnectionManager implements ServerServices{
 	public ArrayList<Playlist> getAccountPlaylists(String userID) throws Exception {
 		System.out.println("getAccountPlaylists: userID = " + userID);
 
-		Object[] params = new Object[]{"accountID", userID};
+		Object[] params = new Object[]{QueryParameter.ACCOUNT_ID.toString(), userID};
 		Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_ACCOUNT_PLAYLIST.name(), params));
 		
 		if(result instanceof Exception)

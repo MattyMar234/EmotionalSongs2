@@ -1,4 +1,4 @@
-package enumclass;
+package enumClasses;
 
 
 public enum QueryParameter {
