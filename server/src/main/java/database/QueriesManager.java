@@ -438,9 +438,21 @@ public class QueriesManager
         return buildSongObjects_From_resultSet(database.submitQuery(query), true);
     }
 
-    public static ArrayList<Song> getAlbumByID(String ID) throws SQLException {
+    public static ArrayList<Album> getAlbumByID(String ID) throws SQLException {
         String query = QueryBuilder.getAlbumByID_query(ID);
-        return buildSongObjects_From_resultSet(database.submitQuery(query), true);
+        ArrayList<Album> result = new ArrayList<Album>();
+
+        ResultSet resultSet = database.submitQuery(query);
+        while (resultSet.next()) { 
+            Album album = new Album(getHashMap_for_ClassConstructor(resultSet, Tabelle.ALBUM));
+            album.addImages(getAlbumImages_by_ID(album.getID()));
+            result.add(album);    
+        }
+
+        resultSet.close();
+
+        return result;
     }
+
 }
 

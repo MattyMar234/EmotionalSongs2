@@ -651,6 +651,17 @@ public class QueryBuilder {
         return sb.toString();
     }
 
+    public static String getArtistAlbum_query(String artistID) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM " + Tabelle.ALBUM + " WHERE ");
+        sb.append(Colonne.ARTIST_ID_REF.getName() + " = '" + artistID + "';");
+
+        //printQuery(sb);
+        return sb.toString();
+    }
+
+   
+
     
 
 }
