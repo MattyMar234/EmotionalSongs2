@@ -124,7 +124,7 @@ public class ListCell_Controller extends ControllerBase implements Initializable
         });
 
         if(Main.account != null) {
-            Menu pMenu = new Menu("Aggiungi ad una playlist");
+            Menu pMenu = new Menu(Main.applicationLanguage == 0 ? "Aggiungi ad una playlist" : "Add to a playlist");
             actionButton.getItems().add(pMenu);
 
             new Thread(() -> {
@@ -138,7 +138,7 @@ public class ListCell_Controller extends ControllerBase implements Initializable
                             
                             item.setOnAction(event -> {
                                 try {
-                                    connectionManager.addSongToPlaylist(Main.account.getNickname(), playlist.getUserID(), song.getId());
+                                    connectionManager.addSongToPlaylist(playlist.getUserID(), playlist.getId(), song.getId());
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -155,10 +155,13 @@ public class ListCell_Controller extends ControllerBase implements Initializable
         }      
     }
 
+    /**
+     * Funzione per configurare l'oggetto per visulizzare le informazioni di una playlist 
+     */
     private void setupAsPlaylist() {
-        Playlist p = (Playlist)element;
-        label1.setText(p.getName());
-        label2.setText(p.getId());
+        Playlist playlist = (Playlist)element;
+        label1.setText(playlist.getName());
+        label2.setText(playlist.getId());
 
         MenuItem deleteItem = new MenuItem(Main.applicationLanguage == 0 ? "Elimina Playlist" : "Delete Playlist");
         MenuItem renameItem = new MenuItem(Main.applicationLanguage == 0 ? "Rinomina Playlist" : "Rename Playlist");
@@ -167,12 +170,22 @@ public class ListCell_Controller extends ControllerBase implements Initializable
         exspandButton.setVisible(false);
         spotifyButton.setVisible(false);
 
+        //funzione 
         renameItem.setOnAction(event -> {
             
         });
 
+        //cancello la playlist
         deleteItem.setOnAction(event -> {
-           connectionManager.deletePlaylist(Main.account.getNickname(), p.getId());
+           if((boolean)connectionManager.deletePlaylist(Main.account.getNickname(), playlist.getId()));
+            sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.MAIN_PAGE_PLAYLIST);
+        });
+
+        grid.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>(){
+            @Override
+            public void handle(MouseEvent e){
+                sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE, ElementDisplayerMode.SHOW_PLAYLIST, playlist);
+            }
         });
 
     }

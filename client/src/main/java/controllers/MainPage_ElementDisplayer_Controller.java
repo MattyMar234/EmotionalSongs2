@@ -107,7 +107,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                         if(!(displayedElement instanceof Playlist)) 
                             throw new RuntimeException("obejct type must be \"Playlist\" type");
                         
-                        //setupAsArtist(data);   
+                        setupAsPlaylist(data);   
                         setImage_and_backgroundColor(); 
                         setImageLink();
                         break;
@@ -236,6 +236,38 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     {
         
 
+    }
+
+    private void setupAsPlaylist(Object... data)
+    {
+        
+        final Playlist playlist = (Playlist) displayedElement;
+        labelName.setText((Main.applicationLanguage == 0 ? "La mia playlist " : "My playlist ") + playlist.getName());
+        labelType.setText("Playlist");
+
+        new Thread(() -> {
+            try {
+                ArrayList<Song> song_list = connectionManager.getPlaylistSongs(playlist.getId());
+
+                //carico le playlist
+                try {
+                    for (Song song : song_list){
+
+                        Platform.runLater(() -> {
+                            ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(FXML_elements.LIST_ELEMENT, elementContainer);
+                            listCell.injectData(ListCell_DisplayMode.DISPLAY_SONG, song);
+                        });
+                    } 
+                } 
+                catch (Exception e) {
+                    System.out.println(e);
+                    e.printStackTrace();
+                }
+            } 
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private void setupAsPlaylistShower(Object... data) 

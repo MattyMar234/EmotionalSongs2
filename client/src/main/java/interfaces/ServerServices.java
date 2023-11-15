@@ -40,6 +40,6 @@ public interface ServerServices {
     public boolean addSongToPlaylist(String userID, String playlistID, String songID) throws Exception;
     public boolean removeSongFromPlaylist(String userID, String playlistID, String songID) throws Exception;
     public Object getAccountPlaylists(String userID) throws Exception;
-    public Object getPlaylistSongs(String userID, String playlistID) throws Exception;
+    public ArrayList<Song> getPlaylistSongs(String playlistID) throws Exception;
     public boolean renamePlaylist(String userID, String playlistID, String newName) throws Exception;
 }

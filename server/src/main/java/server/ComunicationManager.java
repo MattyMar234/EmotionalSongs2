@@ -170,6 +170,11 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 			//printFunctionArgs(function, clientIP);	
 			
 			Object output =  function.apply(params);
+
+			if(output instanceof SQLException) {
+				System.out.println((SQLException) output);
+				//terminal.printErrorln(((SQLException) output).toString());
+			}
 			
 			if(output instanceof Exception) {
 				throw (Exception) output;
@@ -544,7 +549,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	public Object deleteAccount(final HashMap<String, Object> argsTable) {
 		try {
 			QueriesManager.deleteAccount((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString()));
-			return null;
+			return true;
 		} 
 		catch (Exception e) {
 			return e;
@@ -642,7 +647,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	public Object deletePlaylist(final HashMap<String, Object> argsTable) {
 		try {
 			QueriesManager.deletePlaylist((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString()), (String)argsTable.get(QueryParameter.PLAYLIST_ID.toString()));
-			return null;
+			return true;
 		} 
 		catch (Exception e) {
 			return e;     
@@ -653,7 +658,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	public Object removeSongFromPlaylist(final HashMap<String, Object> argsTable) {
 		try {
 			QueriesManager.removeSongFromPlaylist((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString()), (String)argsTable.get(QueryParameter.PLAYLIST_ID.toString()), (String)argsTable.get(QueryParameter.SONG_ID.toString()));
-			return null;        
+			return true;        
 		} 
 		catch (Exception e) {
 			return e;
@@ -664,7 +669,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	public Object addSongToPlaylist(final HashMap<String, Object> argsTable) {
 		try {
 			QueriesManager.addSongToPlaylist((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString()), (String)argsTable.get(QueryParameter.PLAYLIST_ID.toString()), (String)argsTable.get(QueryParameter.SONG_ID.toString()));
-			return null;        
+			return true;        
 		} 
 		catch (Exception e) {
 			return e;

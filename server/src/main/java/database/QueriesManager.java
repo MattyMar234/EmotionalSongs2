@@ -366,7 +366,7 @@ public class QueriesManager
 
         while (resultSet.next()) { 
             Playlist playlist = new Playlist(getHashMap_for_ClassConstructor(resultSet, Tabelle.PLAYLIST));
-            playlist.setSongsID(getPlaylistSongsID(playlist.getId()));
+            //playlist.setSongsID(getPlaylistSongsID(playlist.getId()));
             list.add(playlist); 
         }
 
@@ -442,13 +442,5 @@ public class QueriesManager
         String query = QueryBuilder.getAlbumByID_query(ID);
         return buildSongObjects_From_resultSet(database.submitQuery(query), true);
     }
-    
-    
-
-
-
-
-
-
 }
 

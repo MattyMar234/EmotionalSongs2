@@ -240,8 +240,6 @@ public class ConnectionManager implements ServerServices{
 	 */
 	public synchronized void disconnect() 
 	{
-
-		//timeline.stop();
 		connected = false;
 		if(isConnected()) {
 			try {
@@ -252,7 +250,6 @@ public class ConnectionManager implements ServerServices{
 			}
 		}
 		
-		resultToWait = 0;
 		requestResult.clear();
 		clientSocket = null;
 		notifyAll();
@@ -318,23 +315,23 @@ public class ConnectionManager implements ServerServices{
 				requestResult.put(myId, result);
 				outputStream.writeObject(task);
 				outputStream.flush();
-				resultToWait++;
 				notifyAll();
 
-				while(requestResult.get(myId) == null) 
+				while(this.clientSocket != null && requestResult.get(myId) == null) 
 				{
 					try {wait(5000);} catch (InterruptedException e) {}
 					
 					//se sono passati 10s da quando ho inviato i dati
 					if((System.nanoTime() - start)/1000000000 >= 10.0) {
 						requestResult.remove(myId);
-						resultToWait--;
 						notifyAll();
 						throw new RuntimeException("time out");
 					}
+				}
 
-					if(this.clientSocket == null)
-						throw new RuntimeException("Comunicazione con il server persa");
+				if(this.clientSocket == null) {
+					System.out.println("");
+					throw new RuntimeException("Comunicazione con il server persa");
 				}
 
 				result = requestResult.get(myId);
@@ -386,7 +383,7 @@ public class ConnectionManager implements ServerServices{
 	private synchronized void waitForPacket() 
 	{
 		//se non ho nulla da attendere vado in wait
-		while(resultToWait == 0) {
+		while(requestResult.size() == 0) {
 			try {wait();} catch (InterruptedException e) {}
 		}
 	}
@@ -404,8 +401,8 @@ public class ConnectionManager implements ServerServices{
 					requestResult.put(id, result);
 				}
 				notifyAll();
-				
 			}
+			System.out.print("");
 		} 
 		catch (Exception e) {
 			synchronized(this) {
@@ -490,7 +487,7 @@ public class ConnectionManager implements ServerServices{
 	@SuppressWarnings("unchecked")
 	public ArrayList<Album> getRecentPublischedAlbum(long limit, long offset, int threshold) throws Exception {
 		ArrayList<Album> data = null;
-		Object[] params = new Object[]{QueryParameter.LIMIT.toString(), limit,QueryParameter.OFFSET.toString(), offset, "threshold", threshold};
+		Object[] params = new Object[]{QueryParameter.LIMIT.toString(), limit, QueryParameter.OFFSET.toString(), offset, QueryParameter.THRESHOLD.toString(), threshold};
 	
 		try {
 			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_RECENT_PUPLISCED_ALBUMS.name(), params));
@@ -555,7 +552,7 @@ public class ConnectionManager implements ServerServices{
     public ArrayList<Song> getAlbumSongs(String AlbumID) throws Exception 
 	{
 		//System.out.println("AlbumID:" + AlbumID);
-		Object[] params = new Object[]{"albumID", AlbumID};
+		Object[] params = new Object[]{QueryParameter.ALBUM_ID.toString(), AlbumID};
 		ArrayList<Song> data = null;
 		
 		try {
@@ -619,6 +616,7 @@ public class ConnectionManager implements ServerServices{
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean addSongToPlaylist(String userID, String playlistID, String songID) throws Exception {
 		System.out.println("addSongToPlaylist: userID = " + userID + " playlistID = " + playlistID + " songID = " + songID);
 		
@@ -637,6 +635,7 @@ public class ConnectionManager implements ServerServices{
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean removeSongFromPlaylist(String userID, String playlistID, String songID) throws Exception {
 		System.out.println("removeSongFromPlaylist: userID = " + userID + " playlistID = " + playlistID + " songID = " + songID);
 
@@ -657,6 +656,7 @@ public class ConnectionManager implements ServerServices{
 	
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public ArrayList<Playlist> getAccountPlaylists(String userID) throws Exception {
 		System.out.println("getAccountPlaylists: userID = " + userID);
 
@@ -670,9 +670,17 @@ public class ConnectionManager implements ServerServices{
 	}
 
 	@Override
-	public Object getPlaylistSongs(String userID, String playlistID) throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getPlaylistSongs'");
+	@SuppressWarnings("unchecked")
+	public ArrayList<Song> getPlaylistSongs(String playlistID) throws Exception {
+		System.out.println("getPlaylistSongs: playlistID = " + playlistID);
+
+		Object[] params = new Object[]{QueryParameter.PLAYLIST_ID.toString(), playlistID};
+		Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_PLAYLIST_SONGS.name(), params));
+		
+		if(result instanceof Exception)
+			throw (Exception) result;
+		
+		return (ArrayList<Song>)result;
 	}
 
 	@Override
