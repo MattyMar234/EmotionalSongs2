@@ -21,7 +21,7 @@ public interface SocketService
     public Object getRecentPublischedAlbum(HashMap<String, Object> argsTable) throws Exception;
     public Object searchAlbums(HashMap<String, Object> argsTable) throws Exception;
     public Object getAlbumByID(HashMap<String, Object> argsTable) throws Exception; 
-    public Object getArtistsAlbums(HashMap<String, Object> argsTable) throws Exception;
+    public Object getArtistAlbums(HashMap<String, Object> argsTable) throws Exception;
     
     //artisti
     public Object searchArtists(HashMap<String, Object> argsTable) throws Exception;
