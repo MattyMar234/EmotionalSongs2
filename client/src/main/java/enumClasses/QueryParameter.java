@@ -26,7 +26,8 @@ public enum QueryParameter
     SONG_ID("SongID"),
     NEW_NAME("NewName"),
     COMMENT("Commento"),
-    COMMENT_ID("CommentID");
+    COMMENT_ID("CommentID"),
+    ARTIST_ID("ID_Artista");
 
 
     private String text;

@@ -81,6 +81,11 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		serverFunctions.put(ServerServicesName.GET_COMMENTS_ACCOUNT, this::getAccountComment);
 		serverFunctions.put(ServerServicesName.GET_SONG_EMOTION, this::getSongEmotion);
 		serverFunctions.put(ServerServicesName.DELETE_PLAYLIST, this::deletePlaylist);
+		serverFunctions.put(ServerServicesName.DELETE_ACCOUNT, this::deleteAccount);
+		serverFunctions.put(ServerServicesName.GET_ARTIST_SONGS, this::getArtistSongs);		
+		serverFunctions.put(ServerServicesName.GET_PLAYLIST_SONGS, this::getPlaylistSongs);
+		serverFunctions.put(ServerServicesName.GET_ALBUM_BY_IDS, this::getAlbumByID);
+		
 
 
 		//hashMap che associa a ogni servizio i parametri richiesti
@@ -104,6 +109,10 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		functionParametreKeys.put(ServerServicesName.GET_COMMENTS_ACCOUNT, new String[]{QueryParameter.ACCOUNT_ID.toString()});
 		functionParametreKeys.put(ServerServicesName.GET_SONG_EMOTION, new String[]{QueryParameter.SONG_ID.toString()});
 		functionParametreKeys.put(ServerServicesName.DELETE_PLAYLIST, new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.DELETE_ACCOUNT, new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.GET_ARTIST_SONGS, new String[]{QueryParameter.ARTIST_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.GET_PLAYLIST_SONGS, new String[]{QueryParameter.PLAYLIST_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.GET_ALBUM_BY_IDS, new String[]{QueryParameter.IDS.toString()});
 		
 
 		try {
@@ -128,6 +137,10 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 			functionName.put(ServerServicesName.GET_COMMENTS_ACCOUNT, "getAccountComments");
 			functionName.put(ServerServicesName.GET_SONG_EMOTION, "getSongEmotion");
 			functionName.put(ServerServicesName.DELETE_PLAYLIST, "deletePlaylist");
+			functionName.put(ServerServicesName.DELETE_ACCOUNT, "deleteAccount");
+			functionName.put(ServerServicesName.GET_ARTIST_SONGS, "getArtistSongs");
+			functionName.put(ServerServicesName.GET_PLAYLIST_SONGS, "getPlaylistsSongs");
+			functionName.put(ServerServicesName.GET_ALBUM_BY_IDS, "getAlbumsByIDs");
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -529,7 +542,13 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 
 	@Override
 	public Object deleteAccount(final HashMap<String, Object> argsTable) {
-		throw new UnsupportedOperationException("Unimplemented method 'deleteAccount'");
+		try {
+			QueriesManager.deleteAccount((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString()));
+			return null;
+		} 
+		catch (Exception e) {
+			return e;
+		}
 	}
 
 	@Override
@@ -556,21 +575,37 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	}
 
 	@Override
-	public Object getArtistsSongs(final HashMap<String, Object> argsTable) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getArtistsSongs'");
+	public Object getArtistSongs(final HashMap<String, Object> argsTable) {
+		try {
+			ArrayList<Song> result = QueriesManager.getArtistSong((String)argsTable.get(QueryParameter.ARTIST_ID.toString()));
+			//terminal.printInfoln("element: " + result.size());
+			return result;
+		} 
+		catch (Exception e) {
+			return e;
+		}
 	}
 
 	@Override
-	public Object getPlaylistsSongs(final HashMap<String, Object> argsTable) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getPlaylistsSongs'");
+	public Object getPlaylistSongs(final HashMap<String, Object> argsTable) {
+		try {
+			ArrayList<Song> result = QueriesManager.getPlaylistSong((String)argsTable.get(QueryParameter.PLAYLIST_ID.toString()));
+			//terminal.printInfoln("element: " + result.size());
+			return result;
+		} 
+		catch (Exception e) {
+			return e;
+		}
 	}
 
 	@Override
-	public Object getAlbumsByIDs(final HashMap<String, Object> argsTable) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getAlbumsByIDs'");
+	public Object getAlbumByID(final HashMap<String, Object> argsTable) {
+		try {
+            return QueriesManager.getAlbumByID((String)argsTable.get(QueryParameter.IDS.toString()));
+		} 
+		catch (Exception e) {
+			return e;
+        }
 	}
 
 	@Override

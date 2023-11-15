@@ -14,13 +14,13 @@ public interface SocketService
     public Object searchSongs(HashMap<String, Object> argsTable) throws Exception;
     public Object getSongByIDs(HashMap<String, Object> argsTable) throws Exception;
     public Object getAlbumsSongs(HashMap<String, Object> argsTable) throws Exception;
-    public Object getArtistsSongs(HashMap<String, Object> argsTable) throws Exception;
-    public Object getPlaylistsSongs(HashMap<String, Object> argsTable) throws Exception;
+    public Object getArtistSongs(HashMap<String, Object> argsTable) throws Exception;
+    public Object getPlaylistSongs(HashMap<String, Object> argsTable) throws Exception;
 
     //album
     public Object getRecentPublischedAlbum(HashMap<String, Object> argsTable) throws Exception;
     public Object searchAlbums(HashMap<String, Object> argsTable) throws Exception;
-    public Object getAlbumsByIDs(HashMap<String, Object> argsTable) throws Exception; 
+    public Object getAlbumByID(HashMap<String, Object> argsTable) throws Exception; 
     public Object getArtistsAlbums(HashMap<String, Object> argsTable) throws Exception;
     
     //artisti

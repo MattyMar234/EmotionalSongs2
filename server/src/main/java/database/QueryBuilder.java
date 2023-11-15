@@ -614,4 +614,43 @@ public class QueryBuilder {
         return sb.toString();
     }
 
+    public static String deleteAccount_query(String accountID) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("DELETE FROM " + Tabelle.ACCOUNT + " WHERE ");
+        sb.append(Colonne.ID.getName() + " = '" + accountID + "';");
+
+        //printQuery(sb);
+        return sb.toString();
+    }
+
+    public static String getArtistSong_query(String artistID) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM " + Tabelle.SONG + " WHERE ");
+        sb.append(Colonne.ARTIST_ID_REF.getName() + " = '" + artistID + "';");
+
+        //printQuery(sb);
+        return sb.toString();
+    }
+
+    public static String getPlaylistSong_query(String playlistID) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM " + Tabelle.SONG + " WHERE ");
+        sb.append(Colonne.ID.getName() + " IN (SELECT " + Colonne.SONG_ID_REF.getName() + " FROM " + Tabelle.PLAYLIST_SONGS + " WHERE ");
+        sb.append(Colonne.PLAYLIST_ID_REF.getName() + " = '" + playlistID + "');");
+
+        //printQuery(sb);
+        return sb.toString();
+    }
+
+    public static String getAlbumByID_query(String ID) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM " + Tabelle.ALBUM + " WHERE ");
+        sb.append(Colonne.ID.getName() + " = '" + ID + "';");
+
+        //printQuery(sb);
+        return sb.toString();
+    }
+
+    
+
 }
