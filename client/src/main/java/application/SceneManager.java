@@ -58,9 +58,9 @@ public class SceneManager {
     private HashMap<ApplicationWinodws, ApplicationScene> windows_currentScene = new HashMap<>();
     private HashMap<ApplicationWinodws, Object[]> windows_currentArgs = new HashMap<>();
     private HashMap<ApplicationWinodws, Stack<ControllerBase>> windows_currentSceneControllers = new HashMap<>();
-    private HashMap <ApplicationWinodws, Stage> windowsStage = new HashMap<>();
-    private HashMap <ApplicationWinodws, Object> activeWindow = new HashMap<>();
-    private HashMap <ApplicationWinodws, ApplicationActions> windowUserActions = new HashMap<>();
+    private HashMap<ApplicationWinodws, Stage> windowsStage = new HashMap<>();
+    private HashMap<ApplicationWinodws, Object> activeWindow = new HashMap<>();
+    private HashMap<ApplicationWinodws, ApplicationActions> windowUserActions = new HashMap<>();
 
     private static SceneManager classReference = null;
 

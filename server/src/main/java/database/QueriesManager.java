@@ -366,7 +366,7 @@ public class QueriesManager
 
         while (resultSet.next()) { 
             Playlist playlist = new Playlist(getHashMap_for_ClassConstructor(resultSet, Tabelle.PLAYLIST));
-            playlist.setSongsID(getPlaylistSongsID(playlist.getId()));
+            //playlist.setSongsID(getPlaylistSongsID(playlist.getId()));
             list.add(playlist); 
         }
 
@@ -453,35 +453,6 @@ public class QueriesManager
 
         return result;
     }
-
-    public static ArrayList<Album> getArtistAlbums(String artistID) throws SQLException {
-        String query = QueryBuilder.getArtistAlbum_query(artistID);
-        ArrayList<Album> result = new ArrayList<Album>();
-
-        ResultSet resultSet = database.submitQuery(query);
-        while (resultSet.next()) { 
-            Album album = new Album(getHashMap_for_ClassConstructor(resultSet, Tabelle.ALBUM));
-            album.addImages(getAlbumImages_by_ID(album.getID()));
-            result.add(album);    
-        }
-
-        resultSet.close();
-
-        return result; 
-    }
-
-    
-
-    
-
-    
-    
-    
-
-
-
-
-
 
 }
 
