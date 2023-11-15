@@ -423,5 +423,32 @@ public class QueriesManager
         database.submitQuery(query);
     }
 
+    public static void deleteAccount(String accountID) throws SQLException {
+        String query = QueryBuilder.deleteAccount_query(accountID);
+        database.submitQuery(query);
+    }
+
+    public static ArrayList<Song> getArtistSong(String artistID) throws SQLException {
+        String query = QueryBuilder.getArtistSong_query(artistID);
+        return buildSongObjects_From_resultSet(database.submitQuery(query), true);
+    }
+
+    public static ArrayList<Song> getPlaylistSong(String playlistID) throws SQLException {
+        String query = QueryBuilder.getPlaylistSong_query(playlistID);
+        return buildSongObjects_From_resultSet(database.submitQuery(query), true);
+    }
+
+    public static ArrayList<Song> getAlbumByID(String ID) throws SQLException {
+        String query = QueryBuilder.getAlbumByID_query(ID);
+        return buildSongObjects_From_resultSet(database.submitQuery(query), true);
+    }
+    
+    
+
+
+
+
+
+
 }
 
