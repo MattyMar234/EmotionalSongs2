@@ -323,7 +323,7 @@ public class ConnectionManager implements ServerServices{
 
 				while(requestResult.get(myId) == null) 
 				{
-					try {wait(1000);} catch (InterruptedException e) {}
+					try {wait(5000);} catch (InterruptedException e) {}
 					
 					//se sono passati 10s da quando ho inviato i dati
 					if((System.nanoTime() - start)/1000000000 >= 10.0) {
@@ -422,7 +422,7 @@ public class ConnectionManager implements ServerServices{
 			makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.PING.name(), null));
 			return true;
 		} 
-		catch (IOException e) {
+		catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}

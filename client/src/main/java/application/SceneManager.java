@@ -429,7 +429,6 @@ public class SceneManager {
             windowUserActions.get(window).addAction(new SceneAction(sceneName, args));
         }
        
-            
         return executeShowScene(window,sceneName, args);
     }
     
