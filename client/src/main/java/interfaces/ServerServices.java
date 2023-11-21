@@ -15,7 +15,7 @@ public interface ServerServices {
     
     //public void addClient(ClientServices client) throws Exception;
     public void CloseComunication() throws Exception;
-    public boolean testConnection();
+    public boolean testConnection() throws Exception;
     
     //account
     public Account addAccount(String name, String username, String userID, String codiceFiscale, String Email, String password, String civicNumber, String viaPiazza, String cap, String commune, String province) throws RemoteException, InvalidUserNameException, InvalidEmailException;

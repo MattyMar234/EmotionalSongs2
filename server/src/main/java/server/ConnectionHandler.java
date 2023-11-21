@@ -64,13 +64,13 @@ public class ConnectionHandler extends Thread {
                     case DISCONNECT -> {
                         synchronized(ConnectionHandler.class) {
                             if(!run) return;
-                            writeOnSocket(packet.id, null);
+                            writeOnSocket(packet.id, true);
                             run = false;
                         }
                     }
                     case PING -> {
                         //new Thread(() -> {Terminal.getInstance().printInfoln("ping with " + Terminal.Color.MAGENTA_BRIGHT + clientIP + Terminal.Color.RESET);}).start();
-                        writeOnSocket(packet.id, null);
+                        writeOnSocket(packet.id, true);
                     }
                     
                     default -> {

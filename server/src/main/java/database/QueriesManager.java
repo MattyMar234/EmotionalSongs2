@@ -388,26 +388,55 @@ public class QueriesManager
         database.submitQuery(query);
     }
 
+    /**
+     * Funnzione per crecre un nuovo commento
+     * @param accountID
+     * @param songID
+     * @param comment
+     * @throws SQLException
+     */
     public static void addComment(String accountID, String songID, String comment) throws SQLException {
         String query = QueryBuilder.addComment_query(accountID, songID, comment);
         database.submitInsertQuery(query);
     }
 
+    /**
+     * Eliminare un commento
+     * @param accountID
+     * @param commentID
+     * @throws SQLException
+     */
     public static void deleteComment(String accountID, String commentID) throws SQLException {
         String query = QueryBuilder.deleteComment_query(commentID);
         database.submitQuery(query);
     }
 
+    /**
+     * Per Ottenere tutti i commenti di un utenet su quella canzone
+     * @param accountID
+     * @param songID
+     * @throws SQLException
+     */
     public static void getAccountSongComment(String accountID, String songID) throws SQLException{
         String query = QueryBuilder.getAccountSongComment_query(accountID, songID);
         database.submitQuery(query);
     }
 
+    /**
+     * Per ottenere tutti i commenti di una canzone
+     * @param songID 
+     * @throws SQLException
+     */
     public static void getSongComment(String songID) throws SQLException {
         String query = QueryBuilder.getSongComment_query(songID);
         database.submitQuery(query);
     }
     
+    /**
+     * Per ottenere tutti i commenti fatti da un account
+     * @param accountID
+     * @throws SQLException
+     */
     public static void getAccountComment(String accountID) throws SQLException {
         String query = QueryBuilder.getAccountComment_query(accountID);
         database.submitQuery(query);

@@ -58,29 +58,36 @@ public class ConnectionManager implements ServerServices{
         }
 
 		new Thread(() -> {
-			Thread.currentThread().setName("PING sender");
-			
+			Thread.currentThread().setName("Connettion Tester");
 			//Thread.currentThread().setDaemon(true);
 
-			while(true) {
-				double start = System.nanoTime();
-				
-				Thread t = new Thread(() -> {
-					if(isConnected()) {
-						if(!testServerConnection()) {
-							disconnect();
-							SceneManager.instance().fireEvent(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, new ConnectionEvent(ConnectionEvent.DISCONNECTED));
+			while(true) 
+			{
+				//verifico se non sono connesso
+				if(!isConnected()) {
+					//aspetto finechè non mi connetto con il server
+					synchronized(this) {
+						while(!isConnected()) {
+							try {
+								wait();
+							} 
+							catch (InterruptedException e) {
+							}
 						}
 					}
-				});
-
-				t.start();
-				try {
-					t.join(1000);
-				} catch (InterruptedException e) {
 				}
+				System.out.println("herree");
 
-				double dt = 2000 - (System.nanoTime() - start)/1000000;
+				double start = System.nanoTime();
+
+				//faccio un ping
+				if(!testServerConnection()) {
+					continue;
+				}
+				
+				//cronometro quanto ci ho messo
+				double dt = 1000 - (System.nanoTime() - start)/1000000;
+				Main.PING_TIME_us = (System.nanoTime() - start);
 				if(dt < 0) dt = 0;
 				System.out.println((long)dt);
 
@@ -89,7 +96,6 @@ public class ConnectionManager implements ServerServices{
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				
 			}
 		}).start();
     }
@@ -153,12 +159,10 @@ public class ConnectionManager implements ServerServices{
 	 */
 	public synchronized boolean testServerConnection() {
 		try {
-			if(isConnected() && clientSocket != null) {
+			if(isConnected() && clientSocket != null)
 				return testConnection();
-			} 
-			else {
+			else 
 				return false;
-			}
 		} 
 		catch (Exception e) {
 			System.out.println(e);
@@ -224,14 +228,26 @@ public class ConnectionManager implements ServerServices{
 		} catch (Exception e) {
 			connected = false;
 			System.out.println(e);
-			//e.printStackTrace();
-			return false;
 		}
+		notifyAll();
+		return false;
 	}
 
 
 	public boolean isConnected() {
 		return connected;
+	}
+
+	private synchronized void connetionLost()
+	{
+		if(!isConnected())
+			return;
+			
+		SceneManager.instance().fireEvent(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, new ConnectionEvent(ConnectionEvent.DISCONNECTED));
+		requestResult.clear();
+		connected = false;
+		clientSocket = null;
+		notifyAll();
 	}
 
 
@@ -240,20 +256,17 @@ public class ConnectionManager implements ServerServices{
 	 */
 	public synchronized void disconnect() 
 	{
-		connected = false;
-		if(isConnected()) {
+		if(clientSocket != null) {
 			try {
 				this.CloseComunication();
 			} catch (Exception e) {
-				System.out.println(e);
 				e.printStackTrace();
 			}
 		}
-		
 		requestResult.clear();
+		connected = false;
 		clientSocket = null;
 		notifyAll();
-		
 	}
 	
 	/**
@@ -312,10 +325,16 @@ public class ConnectionManager implements ServerServices{
 			System.out.println(Thread.currentThread().getName() + " new Packet: " + task.getCommand());
 			
 			synchronized(this) {
-				requestResult.put(myId, result);
-				outputStream.writeObject(task);
-				outputStream.flush();
-				notifyAll();
+				try {
+					outputStream.writeObject(task);
+					outputStream.flush();
+					requestResult.put(myId, result);
+					notifyAll();
+				} catch (java.net.SocketException e) {
+					connetionLost();
+					return null;
+				}
+				
 
 				while(this.clientSocket != null && requestResult.get(myId) == null) 
 				{
@@ -375,6 +394,7 @@ public class ConnectionManager implements ServerServices{
 				catch (Exception e) {
 					e.printStackTrace();
 				}
+				System.out.println("PacketListener");
 			}
 		}
 	}
@@ -388,7 +408,7 @@ public class ConnectionManager implements ServerServices{
 		}
 	}
 
-	private void getPackets() throws ClassNotFoundException, IOException 
+	private void getPackets() throws ClassNotFoundException 
 	{
 		try {
 			String id = (String) inputStream.readObject();
@@ -404,25 +424,20 @@ public class ConnectionManager implements ServerServices{
 			}
 			System.out.print("");
 		} 
+		catch (IOException e) {
+			connetionLost();
+		}
 		catch (Exception e) {
 			synchronized(this) {
-				disconnect();
 				notifyAll();
 			}
 		}
-		
 	}
 
 	
-	public boolean testConnection() {
-		try {
-			makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.PING.name(), null));
-			return true;
-		} 
-		catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+	public boolean testConnection() throws Exception {
+		makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.PING.name(), null));
+		return true;
 	}
 
 

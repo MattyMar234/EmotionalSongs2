@@ -184,7 +184,7 @@ public class PredefinedSQLCode
         TYPE("Type",                  "VARCHAR",  "(32)",     "NOT NULL"),
         ELEMENT("Element",            "INTEGER",  "",         "NOT NULL"),
         GENERE_MUSICALE("genre",      "VARCHAR",  "(64)",     "NOT NULL"),
-        COMMENTO("genre",             "VARCHAR",  "(256)",    ""),
+        COMMENTO("commento",          "VARCHAR",  "(256)",    ""),
         NICKNAME("nickname",          "VARCHAR",  "(120)",    "NOT NULL"),
         VIA_PIAZZA("Via_Piazza",      "VARCHAR",  "(120)",    "NOT NULL"),
         CIVIC_NUMER("civicNumber",    "INTEGER",  "",         "NOT NULL"),
@@ -231,7 +231,7 @@ public class PredefinedSQLCode
         SONG_AUTORS     ("AutoriCanzone"), 
         RESIDENZA       ("Residenza"), 
         ACCOUNT         ("Account"), 
-        COMMENTO        ("Commento"), 
+        //COMMENTO        ("Commento"), 
         EMOZIONE        ("Emozione"), 
         PLAYLIST        ("Playlist"), 
         //PROVINCIA       ("Provincia"), 
@@ -291,8 +291,8 @@ public class PredefinedSQLCode
         tablesAttributes.put(Tabelle.GENERI_MUSICALI,   new Colonne[] {Colonne.GENERE_MUSICALE});
         tablesAttributes.put(Tabelle.GENERI_ARTISTA,    new Colonne[] {Colonne.GENERE_MUSICALE, Colonne.ID});
         tablesAttributes.put(Tabelle.ALBUM,             new Colonne[] {Colonne.ID, Colonne.NAME, Colonne.RELEASE_DATE, Colonne.URL, Colonne.TYPE, Colonne.ELEMENT, Colonne.ARTIST_ID_REF});
-        tablesAttributes.put(Tabelle.COMMENTO,          new Colonne[] {Colonne.ID, Colonne.COMMENTO, Colonne.ACCOUNT_ID_REF, Colonne.EMOZIONE_ID_REF});
-        tablesAttributes.put(Tabelle.EMOZIONE,          new Colonne[] {Colonne.ID, Colonne.TYPE, Colonne.VALUE});
+        //tablesAttributes.put(Tabelle.COMMENTO,          new Colonne[] {Colonne.ID, Colonne.COMMENTO, Colonne.ACCOUNT_ID_REF, Colonne.EMOZIONE_ID_REF});
+        tablesAttributes.put(Tabelle.EMOZIONE,          new Colonne[] {Colonne.ID, Colonne.TYPE, Colonne.VALUE, Colonne.COMMENTO});
         tablesAttributes.put(Tabelle.PLAYLIST,          new Colonne[] {Colonne.ID, Colonne.NAME, Colonne.CREATION_DATE, Colonne.ACCOUNT_ID_REF});
         tablesAttributes.put(Tabelle.ACCOUNT,           new Colonne[] {Colonne.NAME, Colonne.NICKNAME, Colonne.SURNAME, Colonne.FISCAL_CODE, Colonne.EMAIL, Colonne.PASSWORD,Colonne.RESIDENCE_ID_REF});
         //tablesAttributes.put(Tabelle.COMUNE,            new Colonne[] {Colonne.NAME, Colonne.CAP});
@@ -313,7 +313,7 @@ public class PredefinedSQLCode
         tablesPrimaryKey.put(Tabelle.GENERI_MUSICALI,   new Colonne[] {Colonne.GENERE_MUSICALE});
         tablesPrimaryKey.put(Tabelle.GENERI_ARTISTA,    new Colonne[] {Colonne.GENERE_MUSICALE, Colonne.ID});
         tablesPrimaryKey.put(Tabelle.ALBUM,             new Colonne[] {Colonne.ID});
-        tablesPrimaryKey.put(Tabelle.COMMENTO,          new Colonne[] {Colonne.ID});
+        //tablesPrimaryKey.put(Tabelle.COMMENTO,          new Colonne[] {Colonne.ID});
         tablesPrimaryKey.put(Tabelle.EMOZIONE,          new Colonne[] {Colonne.ID});
         tablesPrimaryKey.put(Tabelle.PLAYLIST,          new Colonne[] {Colonne.ID});
         tablesPrimaryKey.put(Tabelle.ACCOUNT,           new Colonne[] {Colonne.NICKNAME}); //, Colonne.EMAIL
@@ -342,10 +342,10 @@ public class PredefinedSQLCode
             new Triplet<Colonne, Tabelle, Colonne> (Colonne.SONG_ID_REF, Tabelle.SONG, Colonne.ID)
         });
 
-        tablesForeignKey.put(Tabelle.COMMENTO,      new Object[] { 
+        /*tablesForeignKey.put(Tabelle.COMMENTO,      new Object[] { 
             new Triplet<Colonne, Tabelle, Colonne> (Colonne.ACCOUNT_ID_REF, Tabelle.ACCOUNT, Colonne.NICKNAME),
             new Triplet<Colonne, Tabelle, Colonne> (Colonne.EMOZIONE_ID_REF, Tabelle.EMOZIONE, Colonne.ID)
-        });
+        });*/
 
         tablesForeignKey.put(Tabelle.ALBUM_IMAGES,  new Object[] { new Triplet<Colonne, Tabelle, Colonne> (Colonne.ID, Tabelle.ALBUM, Colonne.ID)});
         tablesForeignKey.put(Tabelle.ARTIST_IMAGES, new Object[] { new Triplet<Colonne, Tabelle, Colonne> (Colonne.ID, Tabelle.ARTIST, Colonne.ID)});

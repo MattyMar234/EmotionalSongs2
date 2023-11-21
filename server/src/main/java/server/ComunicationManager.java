@@ -87,38 +87,38 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		serverFunctions.put(ServerServicesName.GET_ALBUM_BY_ID, this::getAlbumByID);
 		serverFunctions.put(ServerServicesName.GET_ARTIST_ALBUMS, this::getArtistAlbums);
 		serverFunctions.put(ServerServicesName.SEARCH_ARTIST, this::searchArtists);
-		serverFunctions.put(ServerServicesName.GET_ARTIST_BY_ID, this::getArtistByID);
+		//serverFunctions.put(ServerServicesName.GET_ARTIST_BY_ID, this::getArtistByID);
 		
 
 
 		//hashMap che associa a ogni servizio i parametri richiesti
-		functionParametreKeys.put(ServerServicesName.ADD_ACCOUNT, new String[] {QueryParameter.NAME.toString(), QueryParameter.USERNAME.toString(), QueryParameter.USER_ID.toString(), QueryParameter.CODICE_FISCALE.toString(), QueryParameter.EMAIL.toString(), QueryParameter.PASSWORD.toString(), QueryParameter.CIVIC_NUMBER.toString(), QueryParameter.VIA_PIAZZA.toString(), QueryParameter.CAP.toString(), QueryParameter.COMMUNE.toString(), QueryParameter.PROVINCE.toString()});  
-		functionParametreKeys.put(ServerServicesName.GET_ACCOUNT, new String[]{QueryParameter.EMAIL.toString(), QueryParameter.PASSWORD.toString()}); 
-		functionParametreKeys.put(ServerServicesName.GET_MOST_POPULAR_SONGS, new String[]{QueryParameter.LIMIT.toString(), QueryParameter.OFFSET.toString()});
-		functionParametreKeys.put(ServerServicesName.GET_RECENT_PUPLISCED_ALBUMS, new String[]{QueryParameter.LIMIT.toString(), QueryParameter.OFFSET.toString(), QueryParameter.THRESHOLD.toString()}); 
-		functionParametreKeys.put(ServerServicesName.SEARCH_SONGS, new String[]{QueryParameter.SEARCH_STRING.toString(), QueryParameter.LIMIT.toString(), QueryParameter.OFFSET.toString()}); 
-		functionParametreKeys.put(ServerServicesName.SEARCH_ALBUMS, new String[]{QueryParameter.SEARCH_STRING.toString(), QueryParameter.LIMIT.toString(), QueryParameter.OFFSET.toString()}); 
-		functionParametreKeys.put(ServerServicesName.GET_SONG_BY_IDS, new String[]{QueryParameter.IDS.toString()});
-		functionParametreKeys.put(ServerServicesName.GET_ALBUM_SONGS, new String[]{QueryParameter.ALBUM_ID.toString()}); 
-		functionParametreKeys.put(ServerServicesName.ADD_PLAYLIST, new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_NAME.toString()});
-		functionParametreKeys.put(ServerServicesName.GET_ACCOUNT_PLAYLIST, new String[]{QueryParameter.ACCOUNT_ID.toString()});
-		functionParametreKeys.put(ServerServicesName.ADD_SONG_PLAYLIST, new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_ID.toString(), QueryParameter.SONG_ID.toString()});
-		functionParametreKeys.put(ServerServicesName.REMOVE_SONG_PLAYLIST, new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_ID.toString(), QueryParameter.SONG_ID.toString()});
-		functionParametreKeys.put(ServerServicesName.RENAME_PLAYLIST, new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_ID.toString(), QueryParameter.NEW_NAME.toString()});
-		functionParametreKeys.put(ServerServicesName.ADD_COMMENT, new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.SONG_ID.toString(), QueryParameter.COMMENT.toString()});
-		functionParametreKeys.put(ServerServicesName.REMOVE_COMMENT, new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.SONG_ID.toString() ,QueryParameter.COMMENT_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.ADD_ACCOUNT, 					new String[] {QueryParameter.NAME.toString(), QueryParameter.USERNAME.toString(), QueryParameter.USER_ID.toString(), QueryParameter.CODICE_FISCALE.toString(), QueryParameter.EMAIL.toString(), QueryParameter.PASSWORD.toString(), QueryParameter.CIVIC_NUMBER.toString(), QueryParameter.VIA_PIAZZA.toString(), QueryParameter.CAP.toString(), QueryParameter.COMMUNE.toString(), QueryParameter.PROVINCE.toString()});  
+	functionParametreKeys.put(ServerServicesName.GET_ACCOUNT, 						new String[]{QueryParameter.EMAIL.toString(), QueryParameter.PASSWORD.toString()}); 
+		functionParametreKeys.put(ServerServicesName.GET_MOST_POPULAR_SONGS, 		new String[]{QueryParameter.LIMIT.toString(), QueryParameter.OFFSET.toString()});
+		functionParametreKeys.put(ServerServicesName.GET_RECENT_PUPLISCED_ALBUMS, 	new String[]{QueryParameter.LIMIT.toString(), QueryParameter.OFFSET.toString(), QueryParameter.THRESHOLD.toString()}); 
+		functionParametreKeys.put(ServerServicesName.SEARCH_SONGS, 					new String[]{QueryParameter.SEARCH_STRING.toString(), QueryParameter.LIMIT.toString(), QueryParameter.OFFSET.toString()}); 
+		functionParametreKeys.put(ServerServicesName.SEARCH_ALBUMS, 				new String[]{QueryParameter.SEARCH_STRING.toString(), QueryParameter.LIMIT.toString(), QueryParameter.OFFSET.toString()}); 
+		functionParametreKeys.put(ServerServicesName.GET_SONG_BY_IDS, 				new String[]{QueryParameter.IDS.toString()});
+		functionParametreKeys.put(ServerServicesName.GET_ALBUM_SONGS, 				new String[]{QueryParameter.ALBUM_ID.toString()}); 
+		functionParametreKeys.put(ServerServicesName.ADD_PLAYLIST, 					new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_NAME.toString()});
+		functionParametreKeys.put(ServerServicesName.GET_ACCOUNT_PLAYLIST, 			new String[]{QueryParameter.ACCOUNT_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.ADD_SONG_PLAYLIST, 			new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_ID.toString(), QueryParameter.SONG_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.REMOVE_SONG_PLAYLIST, 			new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_ID.toString(), QueryParameter.SONG_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.RENAME_PLAYLIST, 				new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_ID.toString(), QueryParameter.NEW_NAME.toString()});
+		functionParametreKeys.put(ServerServicesName.ADD_COMMENT, 					new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.SONG_ID.toString(), QueryParameter.COMMENT.toString()});
+		functionParametreKeys.put(ServerServicesName.REMOVE_COMMENT, 				new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.SONG_ID.toString() ,QueryParameter.COMMENT_ID.toString()});
 		functionParametreKeys.put(ServerServicesName.GET_COMMENTS_SONG_FOR_ACCOUNT, new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.SONG_ID.toString()});
-		functionParametreKeys.put(ServerServicesName.GET_COMMENTS_SONG, new String[]{QueryParameter.SONG_ID.toString()});
-		functionParametreKeys.put(ServerServicesName.GET_COMMENTS_ACCOUNT, new String[]{QueryParameter.ACCOUNT_ID.toString()});
-		functionParametreKeys.put(ServerServicesName.GET_SONG_EMOTION, new String[]{QueryParameter.SONG_ID.toString()});
-		functionParametreKeys.put(ServerServicesName.DELETE_PLAYLIST, new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_ID.toString()});
-		functionParametreKeys.put(ServerServicesName.DELETE_ACCOUNT, new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_ID.toString()});
-		functionParametreKeys.put(ServerServicesName.GET_ARTIST_SONGS, new String[]{QueryParameter.ARTIST_ID.toString()});
-		functionParametreKeys.put(ServerServicesName.GET_PLAYLIST_SONGS, new String[]{QueryParameter.PLAYLIST_ID.toString()});
-		functionParametreKeys.put(ServerServicesName.GET_ALBUM_BY_ID, new String[]{QueryParameter.IDS.toString()});
-		functionParametreKeys.put(ServerServicesName.GET_ARTIST_ALBUMS, new String[]{QueryParameter.ARTIST_ID.toString()});
-		functionParametreKeys.put(ServerServicesName.SEARCH_ARTIST, new String[]{QueryParameter.SEARCH_STRING.toString()});
-		functionParametreKeys.put(ServerServicesName.GET_ARTIST_BY_ID, new String[]{QueryParameter.ARTIST_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.GET_COMMENTS_SONG, 			new String[]{QueryParameter.SONG_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.GET_COMMENTS_ACCOUNT, 			new String[]{QueryParameter.ACCOUNT_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.GET_SONG_EMOTION, 				new String[]{QueryParameter.SONG_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.DELETE_PLAYLIST, 				new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.DELETE_ACCOUNT, 				new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.GET_ARTIST_SONGS, 				new String[]{QueryParameter.ARTIST_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.GET_PLAYLIST_SONGS, 			new String[]{QueryParameter.PLAYLIST_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.GET_ALBUM_BY_ID, 				new String[]{QueryParameter.IDS.toString()});
+		functionParametreKeys.put(ServerServicesName.GET_ARTIST_ALBUMS, 			new String[]{QueryParameter.ARTIST_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.SEARCH_ARTIST, 				new String[]{QueryParameter.SEARCH_STRING.toString()});
+		functionParametreKeys.put(ServerServicesName.GET_ARTIST_BY_ID, 				new String[]{QueryParameter.ARTIST_ID.toString()});
 		
 
 		try {
@@ -423,6 +423,10 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	//====================================== SOCKET SERVICES ======================================//
 	
 	private boolean testParametre(HashMap<String, Object> argsTable, String[] keys) {
+		
+		if(argsTable.size() != keys.length)
+			return false;
+		
 		//verifico che ci siano tutti i parametri necessari
 		for (String str : keys) {
 			if (!argsTable.containsKey(str)) {
@@ -625,9 +629,9 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	@Override
 	public Object getArtistAlbums(final HashMap<String, Object> argsTable) {
 		try {
-			ArrayList<Album> result = QueriesManager.getArtistAlbums((String)argsTable.get(QueryParameter.ARTIST_ID.toString()));
+			//ArrayList<Album> result = QueriesManager.getArtistAlbums((String)argsTable.get(QueryParameter.ARTIST_ID.toString()));
 			//terminal.printInfoln("element: " + result.size());
-			return result;
+			return null;
 		} 
 		catch (Exception e) {
 			return e;
@@ -638,6 +642,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	public Object searchArtists(final HashMap<String, Object> argsTable) {
 		try {
 			//da implementare
+			return null;
 		} 
 		catch (Exception e) {
 			return e;
@@ -645,9 +650,10 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	}
 
 	@Override
-	public Object getArtistByID(final HashMap<String, Object> argsTable) {
+	public Object getArtistsByIDs(HashMap<String, Object> argsTable) throws Exception {
 		try {
 			//da implementare
+			return null;
 		} 
 		catch (Exception e) {
 			return e;
@@ -658,7 +664,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	public Object addPlaylist(final HashMap<String, Object> argsTable) {
 		try {
 			//Aggiungere eventuale immagine
-			QueriesManager.addPlaylist((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString()), (String)argsTable.get(QueryParameter.PLAYLIST_ID.toString()));
+			QueriesManager.addPlaylist((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString()), (String)argsTable.get(QueryParameter.PLAYLIST_NAME.toString()));
 			return true;        
 		} 
 		catch (Exception e) {
@@ -785,6 +791,8 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 			return e;     
 		} 
 	}
+
+	
 
 	
 	

@@ -47,7 +47,7 @@ public class SceneManager {
     private static final String ElementDisplay_path = "MainPage_ElementDisplayer.fxml";
     private static final String BaseContainer_path = "ApplicationBase.fxml";
     private static final String Comment_path = "Comment.fxml";
-    private static final String SongListView_path = "SongListCell.fxml";
+    private static final String SongListView_path = "EditableListCell.fxml";
     private static final String PlaylistCreation_path = "PlaylistCreationPage.fxml";
 
     private int theme = 0;

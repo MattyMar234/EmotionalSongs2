@@ -165,6 +165,7 @@ public class ListCell_Controller extends ControllerBase implements Initializable
 
         MenuItem deleteItem = new MenuItem(Main.applicationLanguage == 0 ? "Elimina Playlist" : "Delete Playlist");
         MenuItem renameItem = new MenuItem(Main.applicationLanguage == 0 ? "Rinomina Playlist" : "Rename Playlist");
+
         actionButton.getItems().addAll(renameItem, deleteItem);
 
         exspandButton.setVisible(false);

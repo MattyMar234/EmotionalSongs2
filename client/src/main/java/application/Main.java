@@ -29,9 +29,10 @@ public class Main
     public static final String ApplicationDirectory = System.getProperty("user.dir");
     public static final String FXML_folder_path = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application"); //main\\resources\\pages-fxml
     public static final String CSS_file_folder = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\css"); //main\\resources\\pages-fxml
-    public static final String flagsFolder = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\image\\flags");
     public static final String LocationsPath = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\data\\comuni.json");
     public static final String ImageFolder = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\image");
+    public static final String flagsFolder = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\image\\flags");
+    public static final String emotionFolder = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\image\\emotion_icon");
     
     public static final ImageDownloader imageDownloader = new ImageDownloader();
     private static Main instance = null;
@@ -39,6 +40,7 @@ public class Main
     
     //================================[Variabili]================================//
     public static int applicationLanguage = 0;
+    public static double PING_TIME_us = 0;
     public static Account account;
     
     private ConnectionManager connectionManager;

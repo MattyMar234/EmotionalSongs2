@@ -101,29 +101,41 @@ public class ApplicationAccessController extends ControllerBase implements Initi
     public static ApplicationAccessController getActiveInstance() {
         return reference;
     }
+
+    private void setLanguageText_and_color() {
+
+        if(connectionManager.isConnected())  {
+            connectionStatus.setText(Main.applicationLanguage == 0 ? "Server trovato" : "Server found");
+            connectButton.setText(Main.applicationLanguage == 0 ? "Disconnettiti" : "Disconnect");
+            connectionStatus.setStyle("-fx-text-fill: #1ED760;");
+            connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #1ED760;");
+        }
+        else {
+            connectionStatus.setText(Main.applicationLanguage == 0 ? "Server non trovato" : "Server not found");
+            connectButton.setText(Main.applicationLanguage == 0 ? "Connettiti" : "Connect");
+            connectionStatus.setStyle("-fx-text-fill: #F14934;");
+            connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #F14934;");
+        }
+
+        userName.setText(Main.applicationLanguage == 0 ? "L'email oppure l'userID" : "Email or userID");
+        NoAccountButton.setText(Main.applicationLanguage == 0 ? "Continua senza Account" : "Continue without account");
+        LoginButton.setText(Main.applicationLanguage == 0 ? "Accedi all'Account": "Login");
+        NewAccount.setText(Main.applicationLanguage == 0 ? "Crea un Account" : "Create Account");
+        LabelField1.setText(Main.applicationLanguage == 0 ? "Nome utente o indirizzo e-mail" : "User name or e-mail address");
+        LabelField2.setText(Main.applicationLanguage == 0 ? "Password" : "Password");
+    }
     
     @Override
     public void initialize(URL location, ResourceBundle resources) 
     {
-        super.addObjectText_Translations(LabelField1, new String[] {"Nome utente o indirizzo e-mail", "User name or e-mail address"});
-        super.addObjectText_Translations(LabelField2, new String[] {"Password", "Password"});
-        super.addObjectText_Translations(NewAccount, new String[] {"Crea un Account", "Create Account"});
-        super.addObjectText_Translations(LoginButton, new String[] {"Accedi all'Account", "Login"});
-        super.addObjectText_Translations(NoAccountButton, new String[] {"Continua senza Account", "Continue without account"});
-        super.addObjectText_Translations(userName, new String[] {"L'email oppure l'userID", "Email or userID"});
-        super.addObjectText_Translations(connectButton, new String[] {"Connettiti", "Connect"});
-        super.setTextsLanguage();
+        setLanguageText_and_color();
 
         Stage stage = sceneManager.getWindowStage(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);
-
         stage.addEventFilter(ConnectionEvent.DISCONNECTED, this::handleConnectionLostEvent);
-        connectionStatus.setText(Main.applicationLanguage == 0 ? "Server non trovato" : "Server not found");
-        connectionStatus.setStyle("-fx-text-fill: #F14934;");
-        connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #F14934;");
-
-
-        this.LabelError_IMG1.setImage(super.AwesomeIcon_to_Image(FontAwesomeIcon.EXCLAMATION_CIRCLE, 80));
-        this.LabelError_IMG2.setImage(super.AwesomeIcon_to_Image(FontAwesomeIcon.EXCLAMATION_CIRCLE, 20));
+        
+        //////////da cambiare
+        //this.LabelError_IMG1.setImage(super.AwesomeIcon_to_Image(FontAwesomeIcon.EXCLAMATION_CIRCLE, 80));
+        //this.LabelError_IMG2.setImage(super.AwesomeIcon_to_Image(FontAwesomeIcon.EXCLAMATION_CIRCLE, 20));
 
         PORT.setText(Integer.toString(connectionManager.getPort()));
         IP.setText(connectionManager.getAddress());
@@ -155,9 +167,6 @@ public class ApplicationAccessController extends ControllerBase implements Initi
         }).start();*/
 
         
-
-
-    
         //carico tutte le immagini delle lingue
         File folder = new File(Main.flagsFolder);
         File[] listOfFiles = folder.listFiles();
@@ -404,34 +413,20 @@ public class ApplicationAccessController extends ControllerBase implements Initi
         if(!ok) {
             if(connectionManager.isConnected())
                 connectionManager.disconnect();
-
-            connectionStatus.setText(Main.applicationLanguage == 0 ? "Server non trovato" : "Server not found");
-            connectionStatus.setStyle("-fx-text-fill: #F14934;");
-            connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #F14934;");
+            setLanguageText_and_color();
             return;
         }
-        else if(connectionManager.isConnected()) 
-        {
+        
+        if(connectionManager.isConnected()) {
             connectionManager.disconnect();
-            connectionManager.setConnectionData(IP.getText(), Integer.parseInt(PORT.getText()));
-            if(connectionManager.connect()) {
-                connectionStatus.setText(Main.applicationLanguage == 0 ? "Server trovato" : "Server found");
-                connectionStatus.setStyle("-fx-text-fill: #1ED760;");
-                connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #1ED760;");
-            }
-            else {
-                connectionStatus.setText(Main.applicationLanguage == 0 ? "Server non trovato" : "Server not found");
-                connectionStatus.setStyle("-fx-text-fill: #F14934;");
-                connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #F14934;");
-                }
+            //connectionManager.setConnectionData(IP.getText(), Integer.parseInt(PORT.getText()));
+            //connectionManager.connect();
+            setLanguageText_and_color();
         }
         else {
             connectionManager.setConnectionData(IP.getText(), Integer.parseInt(PORT.getText()));
-            if(connectionManager.connect()) {
-                connectionStatus.setText(Main.applicationLanguage == 0 ? "Server trovato" : "Server found");
-                connectionStatus.setStyle("-fx-text-fill: #1ED760;");
-                connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #1ED760;");
-            }
+            connectionManager.connect();
+            setLanguageText_and_color();    
         }   
     }
     
