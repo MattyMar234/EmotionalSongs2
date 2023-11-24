@@ -153,7 +153,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
         if(!imgURL.equals("")) {
             
         }
-        img = ObjectsCache.getImage(imgURL);
+        img = (Image) ObjectsCache.getInstance().getItem(ObjectsCache.CacheObjectType.IMAGE,imgURL);
 
         if(img == null) {
             Main.imageDownloader.addImageToDownload(imgURL, image);  

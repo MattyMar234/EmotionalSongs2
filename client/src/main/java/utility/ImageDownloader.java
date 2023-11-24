@@ -64,7 +64,7 @@ public class ImageDownloader extends Thread
                     //System.out.println(node.url);
                     Image img = download_Image_From_Internet(node.url);
                     
-                    ObjectsCache.addImage(node.url, img);
+                    //ObjectsCache.addImage(node.url, img);
                     
                     Platform.runLater(() -> {node.image.setImage(img);});
                 }

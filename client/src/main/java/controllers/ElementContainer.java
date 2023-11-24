@@ -61,7 +61,8 @@ public class ElementContainer extends ControllerBase implements Initializable, I
             Song song = (Song) displayedElement;
             Platform.runLater(() -> {title.setText(song.getTitle());});
 
-            Image img = ObjectsCache.getImage(song.getImage(MyImage.ImageSize.S300x300).getUrl());
+            String imgUrl = song.getImage(MyImage.ImageSize.S300x300).getUrl();
+            Image img = (Image) ObjectsCache.getInstance().getItem(ObjectsCache.CacheObjectType.IMAGE,imgUrl);
 
             if(img == null) {
                 String imgURL = song.getImage(MyImage.ImageSize.S300x300).getUrl();
@@ -83,7 +84,9 @@ public class ElementContainer extends ControllerBase implements Initializable, I
             //System.out.println(album);
             Platform.runLater(() -> {title.setText(album.getName());});
 
-            Image img = ObjectsCache.getImage(album.getImage(MyImage.ImageSize.S300x300).getUrl());
+
+            String imgUrl = album.getImage(MyImage.ImageSize.S300x300).getUrl();
+            Image img = (Image) ObjectsCache.getInstance().getItem(ObjectsCache.CacheObjectType.IMAGE,imgUrl);
 
             if(img == null) {
                 String imgURL = album.getImage(MyImage.ImageSize.S300x300).getUrl();
