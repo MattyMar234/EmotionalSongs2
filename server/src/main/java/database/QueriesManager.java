@@ -33,7 +33,7 @@ public class QueriesManager
 
 
 
-    private static String generate_ID_from_Time() {
+    public static String generate_ID_from_Time() {
         return DigestUtils.sha256Hex(Long.toHexString(new Date().getTime()).toUpperCase());
 	}
 
@@ -395,20 +395,29 @@ public class QueriesManager
      * @param comment
      * @throws SQLException
      */
-    public static void addComment(String accountID, String songID, String comment) throws SQLException {
-        String query = QueryBuilder.addComment_query(accountID, songID, comment);
-        database.submitInsertQuery(query);
-    }
+    public static void addEmotion(HashMap<Colonne, Object> colonne) throws SQLException {
+        Colonne[] TableColonne = PredefinedSQLCode.tablesAttributes.get(PredefinedSQLCode.Tabelle.EMOZIONE);
+        Object[] data = new Object[colonne.size()];
+        int i = 0;
 
+        //devo disporre gli elementi in ordine
+        for (Colonne coll : TableColonne) {
+            data[i++] = colonne.get(coll);
+            //System.out.println("coll: " + coll.getName() + " -> " + colonne.get(coll));
+        }
+
+        String query = QueryBuilder.insert_query_creator(PredefinedSQLCode.Tabelle.EMOZIONE, data);
+        database.submitQuery(query);
+    }
+        
     /**
      * Eliminare un commento
      * @param accountID
      * @param commentID
      * @throws SQLException
      */
-    public static void deleteComment(String accountID, String commentID) throws SQLException {
-        String query = QueryBuilder.deleteComment_query(commentID);
-        database.submitQuery(query);
+    public static void deleteEmotion(String string) throws SQLException{
+        //da implementare
     }
 
     /**
@@ -482,6 +491,10 @@ public class QueriesManager
 
         return result;
     }
+
+    
+
+    
 
 }
 

@@ -231,7 +231,7 @@ public class PredefinedSQLCode
         SONG_AUTORS     ("AutoriCanzone"), 
         RESIDENZA       ("Residenza"), 
         ACCOUNT         ("Account"), 
-        //COMMENTO        ("Commento"), 
+        COMMENTO        ("Commento"), 
         EMOZIONE        ("Emozione"), 
         PLAYLIST        ("Playlist"), 
         //PROVINCIA       ("Provincia"), 
@@ -292,7 +292,7 @@ public class PredefinedSQLCode
         tablesAttributes.put(Tabelle.GENERI_ARTISTA,    new Colonne[] {Colonne.GENERE_MUSICALE, Colonne.ID});
         tablesAttributes.put(Tabelle.ALBUM,             new Colonne[] {Colonne.ID, Colonne.NAME, Colonne.RELEASE_DATE, Colonne.URL, Colonne.TYPE, Colonne.ELEMENT, Colonne.ARTIST_ID_REF});
         //tablesAttributes.put(Tabelle.COMMENTO,          new Colonne[] {Colonne.ID, Colonne.COMMENTO, Colonne.ACCOUNT_ID_REF, Colonne.EMOZIONE_ID_REF});
-        tablesAttributes.put(Tabelle.EMOZIONE,          new Colonne[] {Colonne.ID, Colonne.TYPE, Colonne.VALUE, Colonne.COMMENTO});
+        tablesAttributes.put(Tabelle.EMOZIONE,          new Colonne[] {Colonne.ID, Colonne.TYPE, Colonne.VALUE, Colonne.COMMENTO, Colonne.ACCOUNT_ID_REF, Colonne.SONG_ID_REF});
         tablesAttributes.put(Tabelle.PLAYLIST,          new Colonne[] {Colonne.ID, Colonne.NAME, Colonne.CREATION_DATE, Colonne.ACCOUNT_ID_REF});
         tablesAttributes.put(Tabelle.ACCOUNT,           new Colonne[] {Colonne.NAME, Colonne.NICKNAME, Colonne.SURNAME, Colonne.FISCAL_CODE, Colonne.EMAIL, Colonne.PASSWORD,Colonne.RESIDENCE_ID_REF});
         //tablesAttributes.put(Tabelle.COMUNE,            new Colonne[] {Colonne.NAME, Colonne.CAP});
@@ -346,11 +346,14 @@ public class PredefinedSQLCode
             new Triplet<Colonne, Tabelle, Colonne> (Colonne.ACCOUNT_ID_REF, Tabelle.ACCOUNT, Colonne.NICKNAME),
             new Triplet<Colonne, Tabelle, Colonne> (Colonne.EMOZIONE_ID_REF, Tabelle.EMOZIONE, Colonne.ID)
         });*/
-
+        
+        tablesForeignKey.put(Tabelle.EMOZIONE,      new Object[] { 
+            new Triplet<Colonne, Tabelle, Colonne> (Colonne.SONG_ID_REF, Tabelle.SONG, Colonne.ID),
+            new Triplet<Colonne, Tabelle, Colonne> (Colonne.ACCOUNT_ID_REF, Tabelle.ACCOUNT, Colonne.NICKNAME)
+        });
         tablesForeignKey.put(Tabelle.ALBUM_IMAGES,  new Object[] { new Triplet<Colonne, Tabelle, Colonne> (Colonne.ID, Tabelle.ALBUM, Colonne.ID)});
         tablesForeignKey.put(Tabelle.ARTIST_IMAGES, new Object[] { new Triplet<Colonne, Tabelle, Colonne> (Colonne.ID, Tabelle.ARTIST, Colonne.ID)});
         tablesForeignKey.put(Tabelle.SONG,          new Object[] { new Triplet<Colonne, Tabelle, Colonne> (Colonne.ALBUM_ID_REF, Tabelle.ALBUM, Colonne.ID)});
-        tablesForeignKey.put(Tabelle.EMOZIONE,      new Object[] { new Triplet<Colonne, Tabelle, Colonne> (Colonne.SONG_ID_REF, Tabelle.SONG, Colonne.ID)});
         tablesForeignKey.put(Tabelle.PLAYLIST,      new Object[] { new Triplet<Colonne, Tabelle, Colonne> (Colonne.ACCOUNT_ID_REF, Tabelle.ACCOUNT, Colonne.NICKNAME)});
         tablesForeignKey.put(Tabelle.ACCOUNT,       new Object[] { new Triplet<Colonne, Tabelle, Colonne> (Colonne.RESIDENCE_ID_REF, Tabelle.RESIDENZA, Colonne.ID)});
         tablesForeignKey.put(Tabelle.ALBUM,         new Object[] { new Triplet<Colonne, Tabelle, Colonne> (Colonne.ARTIST_ID_REF, Tabelle.ARTIST, Colonne.ID)});

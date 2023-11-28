@@ -74,11 +74,8 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		serverFunctions.put(ServerServicesName.ADD_SONG_PLAYLIST, this::addSongToPlaylist);
 		serverFunctions.put(ServerServicesName.REMOVE_SONG_PLAYLIST, this::removeSongFromPlaylist);
 		serverFunctions.put(ServerServicesName.RENAME_PLAYLIST, this::renamePlaylist);
-		serverFunctions.put(ServerServicesName.ADD_COMMENT, this::addComment);
-		serverFunctions.put(ServerServicesName.REMOVE_COMMENT, this::deleteComment);
-		serverFunctions.put(ServerServicesName.GET_COMMENTS_SONG_FOR_ACCOUNT, this::getAccountSongComment);
-		serverFunctions.put(ServerServicesName.GET_COMMENTS_SONG, this::getSongComment);
-		serverFunctions.put(ServerServicesName.GET_COMMENTS_ACCOUNT, this::getAccountComment);
+		serverFunctions.put(ServerServicesName.ADD_EMOTION, this::addEmotion);
+		serverFunctions.put(ServerServicesName.REMOVE_EMOTION, this::deleteEmotion);
 		serverFunctions.put(ServerServicesName.GET_SONG_EMOTION, this::getSongEmotion);
 		serverFunctions.put(ServerServicesName.DELETE_PLAYLIST, this::deletePlaylist);
 		serverFunctions.put(ServerServicesName.DELETE_ACCOUNT, this::deleteAccount);
@@ -93,7 +90,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 
 		//hashMap che associa a ogni servizio i parametri richiesti
 		functionParametreKeys.put(ServerServicesName.ADD_ACCOUNT, 					new String[] {QueryParameter.NAME.toString(), QueryParameter.USERNAME.toString(), QueryParameter.USER_ID.toString(), QueryParameter.CODICE_FISCALE.toString(), QueryParameter.EMAIL.toString(), QueryParameter.PASSWORD.toString(), QueryParameter.CIVIC_NUMBER.toString(), QueryParameter.VIA_PIAZZA.toString(), QueryParameter.CAP.toString(), QueryParameter.COMMUNE.toString(), QueryParameter.PROVINCE.toString()});  
-	functionParametreKeys.put(ServerServicesName.GET_ACCOUNT, 						new String[]{QueryParameter.EMAIL.toString(), QueryParameter.PASSWORD.toString()}); 
+	    functionParametreKeys.put(ServerServicesName.GET_ACCOUNT, 					new String[]{QueryParameter.EMAIL.toString(), QueryParameter.PASSWORD.toString()}); 
 		functionParametreKeys.put(ServerServicesName.GET_MOST_POPULAR_SONGS, 		new String[]{QueryParameter.LIMIT.toString(), QueryParameter.OFFSET.toString()});
 		functionParametreKeys.put(ServerServicesName.GET_RECENT_PUPLISCED_ALBUMS, 	new String[]{QueryParameter.LIMIT.toString(), QueryParameter.OFFSET.toString(), QueryParameter.THRESHOLD.toString()}); 
 		functionParametreKeys.put(ServerServicesName.SEARCH_SONGS, 					new String[]{QueryParameter.SEARCH_STRING.toString(), QueryParameter.LIMIT.toString(), QueryParameter.OFFSET.toString()}); 
@@ -105,8 +102,8 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		functionParametreKeys.put(ServerServicesName.ADD_SONG_PLAYLIST, 			new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_ID.toString(), QueryParameter.SONG_ID.toString()});
 		functionParametreKeys.put(ServerServicesName.REMOVE_SONG_PLAYLIST, 			new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_ID.toString(), QueryParameter.SONG_ID.toString()});
 		functionParametreKeys.put(ServerServicesName.RENAME_PLAYLIST, 				new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_ID.toString(), QueryParameter.NEW_NAME.toString()});
-		functionParametreKeys.put(ServerServicesName.ADD_COMMENT, 					new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.SONG_ID.toString(), QueryParameter.COMMENT.toString()});
-		functionParametreKeys.put(ServerServicesName.REMOVE_COMMENT, 				new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.SONG_ID.toString() ,QueryParameter.COMMENT_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.ADD_EMOTION, 					new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.SONG_ID.toString(), QueryParameter.EMOZIONE.toString(), QueryParameter.COMMENT.toString(), QueryParameter.VAL_EMOZIONE.toString()});
+		functionParametreKeys.put(ServerServicesName.REMOVE_EMOTION, 				new String[]{QueryParameter.IDS.toString()});
 		functionParametreKeys.put(ServerServicesName.GET_COMMENTS_SONG_FOR_ACCOUNT, new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.SONG_ID.toString()});
 		functionParametreKeys.put(ServerServicesName.GET_COMMENTS_SONG, 			new String[]{QueryParameter.SONG_ID.toString()});
 		functionParametreKeys.put(ServerServicesName.GET_COMMENTS_ACCOUNT, 			new String[]{QueryParameter.ACCOUNT_ID.toString()});
@@ -136,8 +133,8 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 			functionName.put(ServerServicesName.ADD_SONG_PLAYLIST, "addSongToPlaylist");
 			functionName.put(ServerServicesName.REMOVE_SONG_PLAYLIST, "removeSongFromPlaylist");
 			functionName.put(ServerServicesName.RENAME_PLAYLIST, "renamePlaylist");
-			functionName.put(ServerServicesName.ADD_COMMENT, "addComment");
-			functionName.put(ServerServicesName.REMOVE_COMMENT, "deleteComment");
+			functionName.put(ServerServicesName.ADD_EMOTION, "addEmotion");
+			functionName.put(ServerServicesName.REMOVE_EMOTION, "deleteComment");
 			functionName.put(ServerServicesName.GET_COMMENTS_SONG_FOR_ACCOUNT, "getAccountComments");
 			functionName.put(ServerServicesName.GET_COMMENTS_SONG, "getSongComments");
 			functionName.put(ServerServicesName.GET_COMMENTS_ACCOUNT, "getAccountComments");
@@ -715,37 +712,43 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		}
 	}
 
+
+
 	@Override
-	public Object getAccountSongComment(final HashMap<String, Object> argsTable) {
+	public Object addEmotion(final HashMap<String, Object> argsTable) {
 		try {
-			QueriesManager.getAccountSongComment((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString()), (String)argsTable.get(QueryParameter.SONG_ID.toString()));
-			return null;
+			HashMap<Colonne, Object> colonne = new HashMap<Colonne, Object>();
+			colonne.put(Colonne.ID, QueriesManager.generate_ID_from_Time());
+			colonne.put(Colonne.ACCOUNT_ID_REF, argsTable.get((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString())));
+			colonne.put(Colonne.SONG_ID_REF, argsTable.get((String)argsTable.get(QueryParameter.SONG_ID.toString())));
+			colonne.put(Colonne.TYPE, argsTable.get((String)argsTable.get(QueryParameter.EMOZIONE.toString())));
+			colonne.put(Colonne.COMMENTO, argsTable.get((String)argsTable.get(QueryParameter.COMMENT.toString())));
+			colonne.put(Colonne.VALUE, argsTable.get((String)argsTable.get(QueryParameter.VAL_EMOZIONE.toString())));
+
+			QueriesManager.addEmotion(colonne);
+
 		} 
+
 		catch (Exception e) {
 			return e;
 		}
+
+		return true;
 	}
 
 	@Override
-	public Object addComment(final HashMap<String, Object> argsTable) {
+	public Object deleteEmotion(final HashMap<String, Object> argsTable) {
 		try {
-			QueriesManager.addComment((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString()), (String)argsTable.get(QueryParameter.SONG_ID.toString()), (String)argsTable.get(QueryParameter.COMMENT.toString()));
-			return null;        
+			/*
+			QueriesManager.deleteEmotion((String[])argsTable.get(QueryParameter.IDS.toString()));
+			return true;
+			*/
 		} 
 		catch (Exception e) {
-			return e;
+			return e;     
 		}
-	}
 
-	@Override
-	public Object deleteComment(final HashMap<String, Object> argsTable) {
-		try {
-			QueriesManager.deleteComment((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString()), (String)argsTable.get(QueryParameter.COMMENT_ID.toString())); 
-			return null;        
-		} 
-		catch (Exception e) {
-			return e;
-		}
+		return true;
 	}
 
 	@Override
@@ -759,27 +762,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		}
 	}
 
-	@Override
-	public Object getSongComment(final HashMap<String, Object> argsTable) {
-		try {
-			QueriesManager.getSongComment((String)argsTable.get(QueryParameter.SONG_ID.toString()));
-			return null;
-		} 
-		catch (Exception e) {
-			return e;     
-		} 
-	}
-
-	@Override
-	public Object getAccountComment(final HashMap<String, Object> argsTable) {
-		try {
-			QueriesManager.getAccountComment((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString()));
-			return null;
-		} 
-		catch (Exception e) {
-			return e;     
-		} 
-	}
+	
 	
 	@Override
 	public Object getSongEmotion(final HashMap<String, Object> argsTable) {
