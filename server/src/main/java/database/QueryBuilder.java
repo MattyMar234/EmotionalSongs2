@@ -544,28 +544,6 @@ public class QueryBuilder {
         return sb.toString();
     }
 
-    public static String addComment_query(String accountID, String songID, String comment) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("INSERT INTO " + Tabelle.COMMENTO + " (");
-        sb.append(Colonne.ACCOUNT_ID_REF.getName() + ", ");
-        sb.append(Colonne.SONG_ID_REF.getName() + ", ");
-        sb.append(Colonne.COMMENTO.getName() + ") VALUES (");
-        sb.append("'" + accountID + "', ");
-        sb.append("'" + songID + "', ");
-        sb.append("'" + comment + "');");
-
-        //printQuery(sb);
-        return sb.toString();
-    }
-
-    public static String deleteComment_query(String commentID) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("DELETE FROM " + Tabelle.COMMENTO + " WHERE ");
-        sb.append(Colonne.ID.getName() + " = '" + commentID + "';");
-
-        //printQuery(sb);
-        return sb.toString();
-    }
 
     public static String getAccountSongComment_query(String songID, String accountID) {
         StringBuilder sb = new StringBuilder();

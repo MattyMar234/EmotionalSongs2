@@ -17,8 +17,8 @@ public enum ServerServicesName {
     ADD_SONG_PLAYLIST,
     REMOVE_SONG_PLAYLIST, 
     RENAME_PLAYLIST,
-    ADD_COMMENT,
-    REMOVE_COMMENT,
+    ADD_EMOTION,
+    REMOVE_EMOTION,
     GET_COMMENTS_SONG_FOR_ACCOUNT,
     GET_COMMENTS_SONG,
     GET_COMMENTS_ACCOUNT,
@@ -31,6 +31,7 @@ public enum ServerServicesName {
     GET_ARTIST_ALBUMS,
     SEARCH_ARTIST,
     GET_ARTIST_BY_ID,
+    
 
 
 }
