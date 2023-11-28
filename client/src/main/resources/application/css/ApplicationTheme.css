@@ -2,8 +2,12 @@
     -primary: #121212;
     -secondary: #1a1919;
     -tertiary: #8259e3;
+    -tertiary: #9783c4;
     -container1: #181818;
     -container1_H: #282828;
+    
+    -gray1:  #242424;
+    -gray1_transparent:  #2424247F;
 
 }
 
@@ -25,8 +29,19 @@
 }
 
 .button:hover {
-    -fx-cursor: hand;
-    
+    -fx-cursor: hand; 
+}
+
+.PrimaryButton {
+    -fx-background-color: -tertiary;
+    -fx-text-fill: #FFFFFF;
+    -fx-background-radius: 10px;
+}
+
+.PrimaryButton:hover {
+    -fx-scale-x: 1.02; /* Increase the X scale on hover */
+    -fx-scale-y: 1.02; /* Increase the Y scale on hover */
+    -fx-background-color: derive(-tertiary, 20%);
 }
 
 #GreenButton {
@@ -157,11 +172,22 @@
    
 }
 
+.bg_label {
+    -fx-font-size: 100;
+    -fx-text-fill:  #031e4d;
+    -fx-opacity: 0.3;
+}
+
 #error_label {
     -fx-text-fill:  #F14934;
     -fx-font-weight: lighter;
     -fx-font-size: 13.5;
    
+}
+
+/*AccessPage*/
+#NewAccountLabel:hover{
+    -fx-cursor: hand; 
 }
 
 /*======================== IMAGES/ICONS =====================*/
@@ -261,6 +287,13 @@
     -fx-background-color: #000000;
 }
 
+/*Comment Area*/
+#AnchorComment{
+    /*-fx-background-color: derive(#282828,50%);*/
+    -fx-background-color: -gray1_transparent;
+    -fx-background-radius: 10px; 
+}
+
 .RowContainer-Background {
     -fx-background-color: #242424;
 }
@@ -273,6 +306,24 @@
 .ElementContainer-Background:hover {
     -fx-background-color: #282828;
 }
+
+
+#mainStart{
+    -fx-background-color: linear-gradient(to bottom, #242424, #8259e3);
+}
+.border-10PX {
+    -fx-background-radius: 10px;
+}
+
+.Theme-color-1 {
+    -fx-background-color: #282828;
+}
+
+#chartDetailsContainer {
+    -fx-background-color: -gray1_transparent;
+    -fx-background-radius: 8px;
+}
+
 
 
 
@@ -370,5 +421,99 @@
     -fx-background-color: #8259E3; /* Thumb color */
     -fx-background-insets: 0, 2; /* Insets for the thumb */
     -fx-background-radius: 5px; /* Thumb border radius */
+}
+
+#detailsBtn {
+    -fx-background-color: transparent; /* Remove background */
+    -fx-padding: 0; /* Remove padding */
+    -fx-cursor: hand;
+}
+
+#detailsBtn .arrow {
+    visibility: collapse; /* Hide the arrow */
+}
+
+#detailsBtn > .menu-item {
+    -fx-background-color: #282828; /* Background color for menu items */
+    -fx-text-fill: white; /* Text color for menu items */
+}
+
+.context-menu{
+    -fx-background-color: #282828; /* Set the background to transparent */
+}
+
+.context-menu .menu-item:hover {
+    -fx-background-color: #8259E3; /* Background color for hovetransparent menu item */
+}
+
+.menubtn {
+    -fx-alignment: CENTER-LEFT;
+    -fx-pref-width:150;
+    -fx-background-color: transparent;
+}
+
+.btnlistcell {
+    -fx-background-color: transparent;
+    -fx-cursor: hand; /* Hand cursor */
+}
+
+.listCellBackgound {
+    -fx-background-color: transparent;
+    -fx-border-width: 0 0 0 60;
+    -fx-border-width: 0.5px 0px 0px 0px;
+    -fx-border-color: rgb(70, 70, 70);
+
+}
+
+.listCellBackgound:hover {
+    -fx-background-color: rgba(81, 81, 81, 0.282);
+}
+
+/*==================================== SLIDER ====================================*/
+.slider:horizontal .thumb{
+    -fx-background-color: -tertiary;
+}
+
+
+
+/*==================================== COMBO-BOX ====================================*/
+
+.combo-box{
+    -fx-background-color:  derive(#606060, 20%);
+    -fx-background-radius: 10px;
+}
+
+#comboBox{
+    -fx-background-color:  derive(-tertiary, 20%);
+    -fx-background-radius: 20px;
+}
+
+/*==================================== TEXT-FIELD ====================================*/
+
+.text-field-style1 { 
+    -fx-background-color:  derive(#606060, 20%);     
+    -fx-background-radius: 10px;     
+    -fx-prompt-text-fill:  #FFFFFF;     
+    -fx-text-fill: #FFFFFF; 
+}
+
+
+
+/*==================================== EXTRA ====================================*/
+
+.simpleText{
+    -fx-fill: #FFFFFF;
+}
+
+#bgheadphone{
+    -fx-fill:  derive(-tertiary 20%);
+}
+
+
+#commentArea{
+    -fx-background-color:  transparent;
+    -fx-text-fill: #000000;
+    -fx-prompt-text-fill:  #000000;
+
 }
 

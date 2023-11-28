@@ -30,19 +30,18 @@ public class ConnectionManager implements ServerServices{
 
     //Singleton pattern
     private static ConnectionManager manager;
+	private ObjectsCache cache = ObjectsCache.getInstance();
 
 	private String defaultHostAddress = "127.0.0.1";
 	private int defaultHostPort = 8090; 
-
     private String hostAddress;
     private int hostPort;
-	private boolean connected = false;
-
 	private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
 	private Socket clientSocket;
+	private boolean connected = false;
+
 	private HashMap<String, Object> requestResult = new HashMap<>();
-	private int resultToWait = 0;
 	private PacketLintener_thread packetLintener;
 
 	
@@ -76,7 +75,7 @@ public class ConnectionManager implements ServerServices{
 						}
 					}
 				}
-				System.out.println("herree");
+				
 
 				double start = System.nanoTime();
 
@@ -89,7 +88,7 @@ public class ConnectionManager implements ServerServices{
 				double dt = 1000 - (System.nanoTime() - start)/1000000;
 				Main.PING_TIME_us = (System.nanoTime() - start);
 				if(dt < 0) dt = 0;
-				System.out.println((long)dt);
+				//System.out.println((long)dt);
 
 				try {
 					Thread.sleep((long)dt);
@@ -230,6 +229,7 @@ public class ConnectionManager implements ServerServices{
 			System.out.println(e);
 		}
 		notifyAll();
+		SceneManager.instance().fireEvent(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, new ConnectionEvent(ConnectionEvent.CONNECTED));
 		return false;
 	}
 
@@ -322,7 +322,7 @@ public class ConnectionManager implements ServerServices{
 
 
 			double start = System.nanoTime();
-			System.out.println(Thread.currentThread().getName() + " new Packet: " + task.getCommand());
+			//System.out.println(Thread.currentThread().getName() + " new Packet: " + task.getCommand());
 			
 			synchronized(this) {
 				try {
@@ -358,7 +358,7 @@ public class ConnectionManager implements ServerServices{
 			}
 
 			double end = System.nanoTime();
-			System.out.println(myId + "-> Packet recived: " + task.getCommand() + " time: " + TimeFormatter.formatTime(end - start));
+			System.out.println(myId + "-> Packet recived: " + task.getServiceCommand() + " time: " + TimeFormatter.formatTime(end - start));
 		
 			//se ho mandato dei parametri non validi
 			if(result instanceof InvalidParameterException)
@@ -394,7 +394,6 @@ public class ConnectionManager implements ServerServices{
 				catch (Exception e) {
 					e.printStackTrace();
 				}
-				System.out.println("PacketListener");
 			}
 		}
 	}
@@ -445,6 +444,40 @@ public class ConnectionManager implements ServerServices{
 		makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.DISCONNECT.name(), null));
 	}
 
+	/**
+	 * Funzione per generare la chiave da utilizzare con la cache
+	 * @param p
+	 * @return
+	 */
+	private String generateKey(Packet p) 
+	{
+		String service = p.getServiceCommand();
+		Object[] parametre = p.getParameters();
+		String key = service;
+
+		for (int i = 0; i < parametre.length; i++) {
+			if(parametre[i].getClass() == Long.class) {
+				key += Long.toString((long)parametre[i]);
+			}
+			else if(parametre[i].getClass() == String.class) {
+				key += (String)parametre[i];
+			}
+			else if(parametre[i].getClass() == Integer.class) {
+				key += Integer.toString((int)parametre[i]);
+			}
+			else if(parametre[i].getClass() == Boolean.class) {
+				key += Boolean.toString((boolean)parametre[i]);
+			}
+			else if(parametre[i].getClass() == Double.class) {
+				key += Double.toString((double)parametre[i]);
+			}
+			else if(parametre[i].getClass() == Float.class) {
+				key += Float.toString((float)parametre[i]);
+			}
+		}
+		return key;
+	}
+
 
 
 	public Account addAccount(String name, String username, String userID, String codiceFiscale, String Email, String password, String civicNumber, String viaPiazza, String cap, String commune, String province) throws InvalidUserNameException, InvalidEmailException
@@ -484,34 +517,54 @@ public class ConnectionManager implements ServerServices{
 	@SuppressWarnings("unchecked")
 	public ArrayList<Song> getMostPopularSongs(long limit, long offset) throws Exception 
 	{
-		ArrayList<Song> data = null;
-		Object[] params = new Object[]{QueryParameter.LIMIT.toString(), limit,QueryParameter.OFFSET.toString(), offset};
-		
-	
 		try {
-			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_MOST_POPULAR_SONGS.name(), params));
-			data = (ArrayList<Song>) result;
+			Object[] params = new Object[]{QueryParameter.LIMIT.toString(), limit,QueryParameter.OFFSET.toString(), offset};
+			Packet p = new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_MOST_POPULAR_SONGS.name(), params);
+			
+			//verifico se il dato è già presente in cache
+			String key = generateKey(p);
+			Object cacheResult = cache.getItem(ObjectsCache.CacheObjectType.QUERY, key);
+
+			if(cacheResult != null) {
+				return (ArrayList<Song>) cacheResult;
+			}
+			
+			Object result = makeRequest(p);
+			cache.addItem(ObjectsCache.CacheObjectType.QUERY, key, result);
+			
+			return (ArrayList<Song>) result;
 		}
-		catch (IOException e) {
+		catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
-		return data;
+		
 	}
 
 
 	@SuppressWarnings("unchecked")
 	public ArrayList<Album> getRecentPublischedAlbum(long limit, long offset, int threshold) throws Exception {
-		ArrayList<Album> data = null;
-		Object[] params = new Object[]{QueryParameter.LIMIT.toString(), limit, QueryParameter.OFFSET.toString(), offset, QueryParameter.THRESHOLD.toString(), threshold};
-	
+		
 		try {
-			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_RECENT_PUPLISCED_ALBUMS.name(), params));
-			data = (ArrayList<Album>) result;
+			//verifico se il dato è già presente in cache
+			Object[] params = new Object[]{QueryParameter.LIMIT.toString(), limit, QueryParameter.OFFSET.toString(), offset, QueryParameter.THRESHOLD.toString(), threshold};
+			Packet p = new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_RECENT_PUPLISCED_ALBUMS.name(), params);
+			String key = generateKey(p);
+			Object cacheResult = cache.getItem(ObjectsCache.CacheObjectType.QUERY, key);
+
+			if(cacheResult != null) {
+				return (ArrayList<Album>) cacheResult;
+			}
+		
+			Object result = makeRequest(p);
+			
+			cache.addItem(ObjectsCache.CacheObjectType.QUERY, key, result);
+			return (ArrayList<Album>) result;
 		}
-		catch (IOException e) {
+		catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
-		return data;
 	}
 
 

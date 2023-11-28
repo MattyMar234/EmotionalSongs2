@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.MenuButton;
 import javafx.scene.layout.AnchorPane;
+import objects.Comment;
 import objects.Song;
 
 public class CommentListCell_Controller extends ListCell<Song> implements Initializable, Injectable {
@@ -19,6 +20,9 @@ public class CommentListCell_Controller extends ListCell<Song> implements Initia
     @FXML public Label label1;
     @FXML public Label label2;
     @FXML public MenuButton playlistMenuBtn;
+
+
+    private Comment comment;
 
 
 
@@ -35,7 +39,7 @@ public class CommentListCell_Controller extends ListCell<Song> implements Initia
     
     @Override
     public void injectData(Object... data) {
-       
+       this.comment = (Comment) data[0];
     }
 
     @Override

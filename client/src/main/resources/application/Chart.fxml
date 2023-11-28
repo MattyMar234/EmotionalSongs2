@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: transparent;" stylesheets="@css/ApplicationTheme.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.EmotionsChart">
+   <children>
+      <HBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <GridPane maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="800.0" HBox.hgrow="ALWAYS">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0" minWidth="600.0" prefWidth="400.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="400.0" prefWidth="200.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <AnchorPane id="chartDetailsContainer" maxWidth="550.0">
+                     <children>
+                        <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <AnchorPane prefHeight="24.0" prefWidth="214.0">
+                                 <children>
+                                    <Label fx:id="labelTotUsers" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="80.0" text="TOTALI: 1000" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                 </children>
+                              </AnchorPane>
+                              <HBox prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Label maxWidth="1.7976931348623157E308" prefWidth="30.0" text="CLR" textFill="WHITE" />
+                                    <Label maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="80.0" text="TIPO" textFill="WHITE" />
+                                    <Label maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="80.0" text="N. UTENTI" textFill="WHITE" />
+                                    <Label maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="20.0" text="M" textFill="WHITE" />
+                                 </children>
+                                 <padding>
+                                    <Insets left="5.0" />
+                                 </padding>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="200.0" spacing="10.0" style="-fx-background-color: derive(#242424,20%); -fx-background-radius: 20px;">
+                                 <children>
+                                    <Circle fill="#fcff1f" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+                                    <Label minWidth="-Infinity" prefWidth="80.0" text="Felicità" textFill="WHITE" />
+                                    <Label maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="80.0" text="300" textFill="WHITE" />
+                                    <Label maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="80.0" text="4.9" textFill="WHITE" />
+                                 </children>
+                                 <padding>
+                                    <Insets left="5.0" />
+                                 </padding>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="200.0" spacing="10.0" style="-fx-background-color: derive(#242424,20%); -fx-background-radius: 20px;">
+                                 <children>
+                                    <Circle fill="#fcff1f" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+                                    <Label minWidth="-Infinity" prefWidth="80.0" text="Felicità" textFill="WHITE" />
+                                    <Label maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="80.0" text="300" textFill="WHITE" />
+                                    <Label maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="80.0" text="4.9" textFill="WHITE" />
+                                 </children>
+                                 <padding>
+                                    <Insets left="5.0" />
+                                 </padding>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                     <GridPane.margin>
+                        <Insets bottom="20.0" left="20.0" top="20.0" />
+                     </GridPane.margin>
+                  </AnchorPane>
+                  <PieChart fx:id="chart" labelLineLength="0.0" labelsVisible="false" legendVisible="false" style="-fx-background-color: transparent;" GridPane.columnIndex="1" />
+               </children>
+            </GridPane>
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>

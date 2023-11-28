@@ -46,9 +46,12 @@ public class SceneManager {
     private static final String RegistrationPage_path = "UserRegistration.fxml";
     private static final String ElementDisplay_path = "MainPage_ElementDisplayer.fxml";
     private static final String BaseContainer_path = "ApplicationBase.fxml";
-    private static final String Comment_path = "Comment.fxml";
+    //private static final String Comment_path = "Comment.fxml";
     private static final String SongListView_path = "EditableListCell.fxml";
     private static final String PlaylistCreation_path = "PlaylistCreationPage.fxml";
+    private static final String CommentView = "CommentListCell.fxml";
+    private static final String CommentArea = "CommentArea.fxml";
+    private static final String EmotionChart = "Chart.fxml";
 
     private int theme = 0;
     private ArrayList<ControllerBase> loadedControllers = new ArrayList<>();
@@ -106,7 +109,7 @@ public class SceneManager {
         }
     }
 
-    private enum SceneElemets
+    public enum SceneElemets
     {
         BASE_CONTAINER(BaseContainer_path),
         REGISTRATION(RegistrationPage_path),
@@ -115,6 +118,9 @@ public class SceneManager {
         MAIN_HOME(MainPage_home_path),
         MAIN_EXPLORE(null),
         MAIN_DISPLAYER(ElementDisplay_path),
+        CHART(EmotionChart),
+        COMMENT_AREA(CommentArea),
+        COMMENT_VIEW(CommentView),
         PLAYLIST_CREATOR(PlaylistCreation_path);
 
         

@@ -660,6 +660,19 @@ public class QueryBuilder {
         return sb.toString();
     }
 
+
+
+
+    /*=======================================[Utility]=======================================*/
+    public static String editColumSize(PredefinedSQLCode.Tabelle table, PredefinedSQLCode.Colonne colum) 
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("ALTER TABLE " + table.toString());
+        sb.append(" ALTER COLUMN " + colum.getName());
+        sb.append(" TYPE " + colum.getType_and_Size() + ";");
+
+        return sb.toString();
+    }
    
 
     

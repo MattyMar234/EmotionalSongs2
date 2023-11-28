@@ -286,7 +286,25 @@ public class App extends JFrame
         else if(server != null) {
             server = null;
         } 
-    }  
+    } 
+    
+    
+    public void editColumSize(Colonne colum) throws SQLException  {
+        DatabaseManager db = DatabaseManager.getInstance();
+        Terminal terminal = Terminal.getInstance();
+        terminal.println("");
+
+        for (Tabelle table : PredefinedSQLCode.Tabelle.values())
+            for (Colonne coll : PredefinedSQLCode.tablesAttributes.get(table)) 
+                
+                if(coll == colum)
+                {
+                    String query = QueryBuilder.editColumSize(table, coll);
+                    terminal.printQueryln(query);
+                    database.submitQuery(query);
+                }
+    }
+
 
 
     public void DatabaseIntegrityTest() throws IOException, SQLException 
@@ -367,6 +385,7 @@ public class App extends JFrame
             }
         }
 
+
         if(missingColumns.size() > 0 && terminal.askYesNo("\nadd missing colums ?")) 
         {
             Loader loader = Loader.getInstance();
@@ -377,6 +396,8 @@ public class App extends JFrame
                 } 
             }
         }
+
+        editColumSize(PredefinedSQLCode.Colonne.ID);
     }
     
 }

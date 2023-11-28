@@ -32,6 +32,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import objects.Album;
 import objects.Artist;
+import objects.Comment;
 import objects.MyImage;
 import objects.Playlist;
 import objects.Song;
@@ -150,24 +151,43 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     }
 
     private void setImage_and_backgroundColor() {
+        
         if(!imgURL.equals("")) {
             
         }
+
         img = (Image) ObjectsCache.getInstance().getItem(ObjectsCache.CacheObjectType.IMAGE,imgURL);
 
         if(img == null) {
-            Main.imageDownloader.addImageToDownload(imgURL, image);  
+            new Thread(() -> {
+                try {
+                    //image = Main.imageDownloader.addImageToDownload(imgURL);  
+                    img = super.download_Image_From_Internet(imgURL);
+                    ObjectsCache.getInstance().addItem(ObjectsCache.CacheObjectType.IMAGE, imgURL, img);
+                    Color everegedColor = getAverageColor(img);
+
+                    everegedColor = brightenColor(everegedColor, 0.1);
+
+                    String color = ColorToHex(everegedColor);
+                    linearColorAnchorPane.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");");
+                    
+                    Platform.runLater(() -> {
+                        image.setImage(img);
+                    });
+                    
+                } 
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
         }
-        
-        
-        Color everegedColor = getAverageColor(img);
-
-        everegedColor = brightenColor(everegedColor, 0.1);
-
-        String color = ColorToHex(everegedColor);
-        linearColorAnchorPane.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");");
-        image.setImage(img);
-        
+        else {
+            Color everegedColor = getAverageColor(img);
+            everegedColor = brightenColor(everegedColor, 0.1);
+            String color = ColorToHex(everegedColor);
+            linearColorAnchorPane.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");");
+            image.setImage(img);
+        }   
     }
 
 
@@ -181,10 +201,17 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
 
     private void setupAsSong(Object... data) 
     { 
-        ((SongDetails_controller)SceneManager.instance().injectScene("SongDetails.fxml", elementContainer)).init();
+        SceneManager.instance().injectScene(SceneManager.SceneElemets.CHART.getElemetFilePath(), elementContainer);
+        SceneManager.instance().injectScene(SceneManager.SceneElemets.COMMENT_AREA.getElemetFilePath(), elementContainer);
+
+        for(int i = 0; i < 10; i++) {
+            CommentListCell_Controller controller = (CommentListCell_Controller)SceneManager.instance().injectScene(SceneManager.SceneElemets.COMMENT_VIEW.getElemetFilePath(), elementContainer);
+            controller.injectData(new Comment());
+        
+        }
 
         final Song song = (Song) displayedElement;
-        System.out.println(song);
+       
         labelName.setText(song.getTitle());
         labelType.setText("Song");
 

@@ -60,6 +60,10 @@ public class Main
         //String DeSha256hex = DigestUtils.256("2c1f6848fd51c5ff3a7d3c275bde7fc33c8e143138aa87e712f4a0470559ce40");
     }
 
+    /*
+     * Stage stage = sceneManager.getWindowStage(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);
+        stage.addEventFilter(ConnectionEvent.DISCONNECTED, this::handleConnectionLostEvent);
+     */
     
 
     

@@ -20,7 +20,11 @@ public class Packet implements Serializable
         return id;
     } 
 
-    public String getCommand() {
+    public String getServiceCommand() {
         return command;
+    }
+
+    public Object[] getParameters() {
+        return parameters;
     }
 }

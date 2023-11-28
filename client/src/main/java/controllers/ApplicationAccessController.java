@@ -69,15 +69,16 @@ public class ApplicationAccessController extends ControllerBase implements Initi
     @FXML public Label LabelField1;
     @FXML public Label LabelField2;
     @FXML public Label NewAccount;
+    @FXML public Label connectionStatus;
     
-    @FXML public ImageView LabelError_IMG1;
-    @FXML public ImageView LabelError_IMG2;
-    
-    @FXML public TextField userName;
-    @FXML public PasswordField password;
+    @FXML public FontIcon LabelError_IMG1;
+    @FXML public FontIcon LabelError_IMG2;
     
     @FXML public TextField IP;
     @FXML public TextField PORT;
+    @FXML public TextField userName;
+    @FXML public PasswordField password;
+    
     
     
     @FXML public Button connectButton;
@@ -85,11 +86,14 @@ public class ApplicationAccessController extends ControllerBase implements Initi
     @FXML public Button NoAccountButton;
 
     @FXML public AnchorPane pane1;
+    @FXML public AnchorPane mainStart;
+
     @FXML public CheckBox rememberCheckBox;
     @FXML public ComboBox<ImageView> flags;
  
-    @FXML public Label connectionStatus;
     @FXML public FontIcon connectionIcon;
+
+
 
     
 
@@ -117,12 +121,13 @@ public class ApplicationAccessController extends ControllerBase implements Initi
             connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #F14934;");
         }
 
-        userName.setText(Main.applicationLanguage == 0 ? "L'email oppure l'userID" : "Email or userID");
+        //LabeErrorlField1.setText(Main.applicationLanguage == 0 ? "L'email oppure l'userID" : "Email or userID");
+        //LabeErrorlField2.setText(Main.applicationLanguage == 0 ? "L'email oppure l'userID" : "Email or userID");
         NoAccountButton.setText(Main.applicationLanguage == 0 ? "Continua senza Account" : "Continue without account");
         LoginButton.setText(Main.applicationLanguage == 0 ? "Accedi all'Account": "Login");
         NewAccount.setText(Main.applicationLanguage == 0 ? "Crea un Account" : "Create Account");
-        LabelField1.setText(Main.applicationLanguage == 0 ? "Nome utente o indirizzo e-mail" : "User name or e-mail address");
-        LabelField2.setText(Main.applicationLanguage == 0 ? "Password" : "Password");
+        //LabelField1.setText(Main.applicationLanguage == 0 ? "Nome utente o indirizzo e-mail" : "User name or e-mail address");
+        //LabelField2.setText(Main.applicationLanguage == 0 ? "Password" : "Password");
     }
     
     @Override
@@ -132,10 +137,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
 
         Stage stage = sceneManager.getWindowStage(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);
         stage.addEventFilter(ConnectionEvent.DISCONNECTED, this::handleConnectionLostEvent);
-        
-        //////////da cambiare
-        //this.LabelError_IMG1.setImage(super.AwesomeIcon_to_Image(FontAwesomeIcon.EXCLAMATION_CIRCLE, 80));
-        //this.LabelError_IMG2.setImage(super.AwesomeIcon_to_Image(FontAwesomeIcon.EXCLAMATION_CIRCLE, 20));
+    
 
         PORT.setText(Integer.toString(connectionManager.getPort()));
         IP.setText(connectionManager.getAddress());
@@ -277,23 +279,9 @@ public class ApplicationAccessController extends ControllerBase implements Initi
     @FXML
     public void changeLanguage(ActionEvent event) 
     {
-        
         Main.applicationLanguage = flags.getSelectionModel().getSelectedIndex();
-        //System.out.println(EmotionalSongs.applicationLanguage);
-        
-    
         flags.getSelectionModel().select(Main.applicationLanguage);
-        //flags.getItems().clear();
-        //flags.getItems().addAll(imgs);
-        //flags.getSelectionModel().select(imgs.get(EmotionalSongs.applicationLanguage));
-        
-        
-
-        /*for(int  i = 0; i < flags.getItems().size(); i++) {
-            flags.getItems().get(0).setImage(imgs.get(i).getImage());
-        }*/
-
-        super.setTextsLanguage();
+        setLanguageText_and_color();
     }
 
 
@@ -311,14 +299,13 @@ public class ApplicationAccessController extends ControllerBase implements Initi
     }
 
     @FXML
-    public void CreateNewAccount(MouseEvent event) throws IOException {
+    public void CreateNewAccount(MouseEvent event) throws IOException 
+    {  
         if (!connectionManager.isConnected()) {
             Stage stage = sceneManager.getWindowStage(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);
             stage.fireEvent(new ConnectionEvent(ConnectionEvent.SERVER_NOT_FOUND));
             return;
         }
-
-        clearError();
         sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, ApplicationScene.REGISTRATION_PAGE);
     }
 

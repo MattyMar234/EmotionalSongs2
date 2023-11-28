@@ -16,6 +16,7 @@ import application.ConnectionManager;
 import application.Main;
 import application.SceneManager;
 import application.SceneManager.ApplicationScene;
+import applicationEvents.ConnectionEvent;
 import interfaces.Injectable;
 import interfaces.ServerServices;
 import javafx.collections.FXCollections;
@@ -59,9 +60,10 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
     @FXML public ImageView IMG8;
     @FXML public ImageView IMG9;
     @FXML public Label UserRegistration;
+    @FXML public Label BackButton;
 
     @FXML public Button confirmButton;
-    @FXML public Button BackButton;
+    @FXML public Button NoAccountButton;
 
     @FXML public Label testoNome;
     @FXML public Label testoCognome;
@@ -86,7 +88,6 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
     @FXML public TextField viaPiazza;
     @FXML public PasswordField password;
     @FXML public PasswordField password2;
-
 
 
     @FXML public ComboBox<String> cap;
@@ -344,15 +345,19 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
     
         super.setTextsLanguage();
 
+        BackButton.setText(Main.applicationLanguage == 0 ? "Ho già un account" : "I already have an account");
+        confirmButton.setText(Main.applicationLanguage == 0 ? "Registrati" : "Sig In");
+        NoAccountButton.setText(Main.applicationLanguage == 0 ? "Continua senza account" : "Continue without account");
+
 
         c1 = new AutoCompleteComboBoxListener<>(cap);
         c2 = new AutoCompleteComboBoxListener<>(commune);
         c3 = new AutoCompleteComboBoxListener<>(province);
 
-        ClearLabelError(labelID);
-        ClearLabelError(labelSing);
-        ClearLabelError(LabelEmail);
-        ClearLabelError(LabelPassword2);
+        //ClearLabelError(labelID);
+        //ClearLabelError(labelSing);
+        //ClearLabelError(LabelEmail);
+        //ClearLabelError(LabelPassword2);
 
         
         this.loader = new LocationsLoader((args) -> {
@@ -519,6 +524,11 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
     @FXML
     public void TurnBack() throws IOException {
        SceneManager.instance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW,ApplicationScene.ACCESS_PAGE);
+    }
+
+    @FXML
+    public void NoAccount(ActionEvent event) throws IOException {
+        sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, ApplicationScene.MAIN_PAGE_HOME); 
     }
 
     @FXML

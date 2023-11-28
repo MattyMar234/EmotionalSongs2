@@ -211,6 +211,9 @@ public class PredefinedSQLCode
         public String getType(){
             return this.type;
         }
+        public String getType_and_Size(){
+            return this.type + this.size;
+        }
 
         @Override
         public String toString() {

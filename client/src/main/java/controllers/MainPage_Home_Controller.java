@@ -57,7 +57,7 @@ public class MainPage_Home_Controller extends ControllerBase implements Initiali
             RowContainerController controller5 = (RowContainerController) sceneManager.injectScene("RowContainer.fxml", scrollPaneVBox, new RowContainerController());
             
             controller1.init("Top 10 song", 10, scrollPane.getPrefWidth());
-            controller2.init("Top 10 song", 10, scrollPane.getPrefWidth());
+            controller2.init("Top 10 Album", 10, scrollPane.getPrefWidth());
             controller3.init("Recent Publisched Album", 10, scrollPane.getPrefWidth());
             controller4.init("test ricerca canzoni", 10, scrollPane.getPrefWidth());
             controller5.init("test ricerca album", 10, scrollPane.getPrefWidth());

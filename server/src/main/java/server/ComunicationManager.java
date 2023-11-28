@@ -125,8 +125,8 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 			//hashMap che associa a ogni servizio il nome della sua funzione
 			functionName.put(ServerServicesName.ADD_ACCOUNT, "addAccount");
 			functionName.put(ServerServicesName.GET_ACCOUNT, "getAccount");
-			functionName.put(ServerServicesName.GET_MOST_POPULAR_SONGS, "getRecentPublischedAlbum");
-			functionName.put(ServerServicesName.GET_RECENT_PUPLISCED_ALBUMS, "getMostPopularSongs");
+			functionName.put(ServerServicesName.GET_MOST_POPULAR_SONGS, "getMostPopularSongs");
+			functionName.put(ServerServicesName.GET_RECENT_PUPLISCED_ALBUMS, "getRecentPublischedAlbum");
 			functionName.put(ServerServicesName.SEARCH_SONGS, "searchSongs");
 			functionName.put(ServerServicesName.SEARCH_ALBUMS, "searchAlbums");
 			functionName.put(ServerServicesName.GET_SONG_BY_IDS, "getSongByIDs");

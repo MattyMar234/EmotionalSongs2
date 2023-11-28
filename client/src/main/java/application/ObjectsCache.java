@@ -11,16 +11,32 @@ import objects.*;
 
 public class ObjectsCache 
 {
+    private static final boolean DEBUG = true;
+    
     public enum CacheObjectType 
     {
-        IMAGE(64, String.class),
-        SONG(120, Song.class),
+        //cache per le immagini scaricate
+        IMAGE(64, javafx.scene.image.Image.class), 
+        
+        //cache per gli oggetti "Song" creati
+        SONG(120, Song.class), 
+        
+        //cache per gli oggetti "playlist" creati
         PLAYLIST(32, Playlist.class),
+
+        //cache per gli oggetti "album" creati               
         ALBUM(64, Album.class),
+        
+        //cache per gli oggetti "artist" creati
         ARTIST(32, Artist.class),
+
+        //cache per tenere traccia di eventuali risultati
         QUERY(32, ServerServicesName.class);
 
-        private int cacheSize;
+        //grandezza della cache
+        private int cacheSize;  
+        
+        //tipo di dato ammesso
         private Class<?> classType;
 
         private CacheObjectType(int size, Class<?> classtype) {
@@ -40,13 +56,21 @@ public class ObjectsCache
     private class Cache 
     {
         private int maxElement;
+        private HashMap<String, Object> table = new HashMap<>(); 
+
+        //per tenere traccia dell'odine di inseriemneto 
         private Queue<String> queue = new LinkedList<>();
-        private HashMap<String, Object> table = new HashMap<>();
 
         public Cache(int maxElement) {
             this.maxElement = maxElement;
         }
 
+        /**
+         * Funzione per aggiungere un elemento nella cache
+         * @param key
+         * @param value
+         * @return
+         */
         public synchronized boolean addItem(String key, Object value) 
         {
             queue.add(key);             //aggiungo la chieve nella coda
@@ -62,10 +86,16 @@ public class ObjectsCache
             return true;
         }
 
+        /**
+         * Funzione per cercare un elemento nella cache
+         * @param key
+         * @return viene restituito l'oggetto se è presente, altreimenti "null".
+         */
         public synchronized Object getItem(String key) {
             return table.get(key);
         }
     }
+
 
     private static ObjectsCache classInstanceReff = null;
     private HashMap<CacheObjectType, Cache> Cache_HashMap = new HashMap<>();
@@ -103,19 +133,47 @@ public class ObjectsCache
 
 
     /**
-     * Funzione er aggiungere un oggetto nella cache
+     * Funzione per aggiungere un oggetto nella cache con selezione automatica
      * @param key La chiave di quell'oggetto
      * @param object L'oggetto da inserire
      * @return viene restituito "True" se l'operazione va a buon fine
      */
     public boolean addItem(String key, Object object) {
         for (CacheObjectType cahceType : CacheObjectType.values()) {
-            if(object.getClass() == cahceType.getClassType()) {
-                System.out.println("Object added on type:" + cahceType);
+            if(object.getClass() == cahceType.getClassType()) 
+            {
+                if(DEBUG)
+                    System.out.println("Object added on type:" + cahceType);
                 return this.Cache_HashMap.get(cahceType).addItem(key, object);
             }
         }
-        throw new RuntimeException("Tipo di dato non ammesso pr le cache.\nTipo di dato: " + object.getClass());
+        throw new RuntimeException("Tipo di dato non ammesso per le cache.\nTipo di dato: " + object.getClass());
+    }
+
+    /**
+     * Funzione per aggiungere un oggetto in una cache specifica
+     * @param key La chiave di quell'oggetto
+     * @param object L'oggetto da inserire
+     * @return viene restituito "True" se l'operazione va a buon fine
+     */
+    public boolean addItem(CacheObjectType cacheType, String key, Object object) 
+    {
+        //ignoro il tipo di dato se devo salvare il risultato di una query
+        if(cacheType == CacheObjectType.QUERY) {
+            if(DEBUG)
+                System.out.println("Object added on type:" + cacheType);
+            return this.Cache_HashMap.get(cacheType).addItem(key, object);
+        }
+
+        //se il tipo di dato passa non combacia con il tipo i dato che richiede la cache
+        if(cacheType.getClassType() != object.getClass()) {
+            throw new RuntimeException("Tipo di dato non ammesso pr le cache.\nTipo di dato: " + object.getClass());
+        }
+        
+        if(DEBUG)
+            System.out.println("Object added on type:" + cacheType);
+        return this.Cache_HashMap.get(cacheType).addItem(key, object);
+    
     }
 }
 
