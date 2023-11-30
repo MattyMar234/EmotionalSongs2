@@ -30,10 +30,14 @@ public class QueriesManager
 {
     private static DatabaseManager database = DatabaseManager.getInstance();
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private static double generate_ID_from_Time_last_call = System.currentTimeMillis();
 
 
 
-    public static String generate_ID_from_Time() {
+    public synchronized static String generate_ID_from_Time() {
+        while(System.currentTimeMillis() - QueriesManager.generate_ID_from_Time_last_call < 1000);
+        generate_ID_from_Time_last_call = System.currentTimeMillis();
+
         return DigestUtils.sha256Hex(Long.toHexString(new Date().getTime()).toUpperCase());
 	}
 
@@ -395,18 +399,8 @@ public class QueriesManager
      * @param comment
      * @throws SQLException
      */
-    public static void addEmotion(HashMap<Colonne, Object> colonne) throws SQLException {
-        Colonne[] TableColonne = PredefinedSQLCode.tablesAttributes.get(PredefinedSQLCode.Tabelle.EMOZIONE);
-        Object[] data = new Object[colonne.size()];
-        int i = 0;
-
-        //devo disporre gli elementi in ordine
-        for (Colonne coll : TableColonne) {
-            data[i++] = colonne.get(coll);
-            //System.out.println("coll: " + coll.getName() + " -> " + colonne.get(coll));
-        }
-
-        String query = QueryBuilder.insert_query_creator(PredefinedSQLCode.Tabelle.EMOZIONE, data);
+    public static void addEmotion(HashMap<Colonne, Object> ColonneValore) throws SQLException {
+        String query = QueryBuilder.insert_query_creator(PredefinedSQLCode.Tabelle.EMOZIONE, ColonneValore);
         database.submitQuery(query);
     }
         
@@ -420,36 +414,7 @@ public class QueriesManager
         //da implementare
     }
 
-    /**
-     * Per Ottenere tutti i commenti di un utenet su quella canzone
-     * @param accountID
-     * @param songID
-     * @throws SQLException
-     */
-    public static void getAccountSongComment(String accountID, String songID) throws SQLException{
-        String query = QueryBuilder.getAccountSongComment_query(accountID, songID);
-        database.submitQuery(query);
-    }
-
-    /**
-     * Per ottenere tutti i commenti di una canzone
-     * @param songID 
-     * @throws SQLException
-     */
-    public static void getSongComment(String songID) throws SQLException {
-        String query = QueryBuilder.getSongComment_query(songID);
-        database.submitQuery(query);
-    }
-    
-    /**
-     * Per ottenere tutti i commenti fatti da un account
-     * @param accountID
-     * @throws SQLException
-     */
-    public static void getAccountComment(String accountID) throws SQLException {
-        String query = QueryBuilder.getAccountComment_query(accountID);
-        database.submitQuery(query);
-    }
+   
 
     public static void getSongEmotion(String songID) throws SQLException {
         String query = QueryBuilder.getSongEmotion_query(songID);

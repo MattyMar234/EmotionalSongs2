@@ -131,7 +131,7 @@ public class ConnectionHandler extends Thread {
         } 
         catch (Exception e) {
             new Thread(() -> {
-                terminal.printError(e.getMessage());
+                terminal.printErrorln(e.getMessage());
             }).start();
         }
         finally {

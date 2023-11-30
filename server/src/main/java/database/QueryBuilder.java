@@ -19,11 +19,9 @@ import database.PredefinedSQLCode.Operazioni_SQL;
 /**
  * Questa classe offre dei metodi per creare delle query SQL
  */
-public class QueryBuilder {
-
-    
+public class QueryBuilder 
+{
     private static Terminal terminal = Terminal.getInstance();
-
 
     private static void printQuery(final StringBuilder sb) {
         new Thread(() -> {
@@ -44,7 +42,6 @@ public class QueryBuilder {
         Object[] foreignKey = PredefinedSQLCode.tablesForeignKey.get(tableName);
 
         final int char_per_elemnt = 14;
-        
         
         sb.append(Operazioni_SQL.CREATE.toString() + " ");
         sb.append(tableName.toString());
@@ -100,122 +97,128 @@ public class QueryBuilder {
             sb.deleteCharAt(sb.length()-1);
         }
 
-
         sb.append("\n);\n");
         return sb.toString();
     }
 
 
-    public static String insert_query_creator(final Tabelle tableName, HashMap<Colonne, Object> colonne) {
-
-        Colonne[] TableColonne = PredefinedSQLCode.tablesAttributes.get(tableName);
-        Object[] data = new Object[colonne.size()];
+   /**
+     * Questa funzione genera la query per inserire un elemento in una tabella
+     * @param tableName Nome della tabella
+     * @param colonne  Un'HashMap contenete coppie (colonna - valore)
+     * @return La stringa che rappresenta la query
+     */
+    public static String insert_query_creator(final Tabelle tableName, HashMap<Colonne, Object> informazioni)
+    {
+        Colonne[] colonne = PredefinedSQLCode.tablesAttributes.get(tableName);
+        Object[] dati = new Object[informazioni.size()];
         int i = 0;
 
         //devo disporre gli elementi in ordine
-        for (Colonne coll : TableColonne) {
-            data[i++] = colonne.get(coll);
-            //System.out.println("coll: " + coll.getName() + " -> " + colonne.get(coll));
+        for (Colonne coll : colonne) {
+            dati[i++] = informazioni.get(coll);
         }
 
-        return insert_query_creator(tableName, data);
+        return insert_query_creator(tableName, dati);
     }
 
-    /**
-     * genera la query per la creazione e inserimento di un entry nella tabella
-     * @param tableName nome della tabella in cui inserire la nuova entry
-     * @param dati lista dei valori degli attributi
-     */
-    public static String insert_query_creator(final Tabelle tableName, final Object... dati) 
+    private static void convert_and_addType(StringBuilder sb, Colonne type, Object obj)
     {
-        StringBuilder sb = new StringBuilder();
-        Colonne[] colonne = PredefinedSQLCode.tablesAttributes.get(tableName);
+        switch (type.getType()) 
+        {
+            case "INTEGER":          
+            case "INT":              
+            case "SMALLINT":         
+            case "TINYINT":          
+                sb.append((int) obj);
+                break;
 
+            case "BIGINT":    
+                sb.append((long) obj);
+                break;   
+
+            case "DECIMAL":          
+            case "NUMERIC":          
+                sb.append((BigDecimal) obj);
+                break;
+
+            case "FLOAT":   
+            case "DOUBLE PRECISION":
+                sb.append((float) obj);
+                break;      
+
+            case "CHAR":              
+                sb.append("'" + (char) obj + "'");
+                break;
+
+            case "VARCHAR":  
+            case "TEXT":             
+                sb.append("'" + ((String) obj).replace('\'', ' ') + "'");    
+                break;
+
+            case "BOOLEAN":          
+                sb.append((Boolean) obj);    
+                break;
+
+            case "TIME":             
+            case "TIMESTAMP":
+            case "DATE":             
+
+                String date = ((String) obj);
+
+                for(int j = 1; j < 3; j++) {
+                    if(date.split("-").length == j) {
+                        String val = Integer.toString((int)(Math.random()*11*j + 1*j));
+                        date +=   (val.length() < 2 ? "-0" + val : "-" +val);
+                    }
+                }
+
+                String yearString = date.substring(0, 4);
+                int year = Integer.parseInt(yearString);
+
+                if (year < 1500) {
+                    yearString = "2000";
+                }
+
+                String modifiedDate = yearString + date.substring(4);
+        
+                sb.append("'" + modifiedDate + "'");  
+                break;    
+                                                        
+            default:
+                throw new IllegalArgumentException("Unsupported SQL type: " + type.getType());
+        }
+    }
+
+    protected static String insert_query_creator(final Tabelle tableName, final Object... dati) 
+    {
+        Colonne[] colonne = PredefinedSQLCode.tablesAttributes.get(tableName);
+        StringBuilder sb = new StringBuilder();
+        
+        //verifico se ho il numero corretto di parametri
         if(dati.length > colonne.length)
             throw new IllegalArgumentException("too many parameters for insert query");
         if(dati.length < colonne.length)
             throw new IllegalArgumentException("few parameters for insert query.\nparametre: " + dati.length);
-
-
+        
         sb.append(Operazioni_SQL.INSERT.toString() + " ");
         sb.append(tableName.toString());
-        
         sb.append("(");
+
         for(Colonne colonna: colonne) {
             sb.append(colonna.getName());
             sb.append(", ");
         }
+
         sb.deleteCharAt(sb.length()-1);
         sb.deleteCharAt(sb.length()-1);
         sb.append(") VALUES (");
 
-        for(int i=0; i<dati.length; i++) {
-            //System.out.println(colonne[i].name()  + "  " + colonne[i].getType());
+        for(int i = 0; i < dati.length; i++) {
             try {
-                switch (colonne[i].getType()) {
-                    case "INTEGER":          if (dati[i] instanceof Integer)    sb.append((int) dati[i]);                   else throw new ClassCastException(); break;
-                    case "INT":              if (dati[i] instanceof Integer)    sb.append((int) dati[i]);                   else throw new ClassCastException(); break;
-                    case "SMALLINT":         if (dati[i] instanceof Integer)    sb.append((int) dati[i]);                 else throw new ClassCastException(); break;
-                    case "TINYINT":          if (dati[i] instanceof Integer)    sb.append((int) dati[i]);                  else throw new ClassCastException(); break;
-                    case "DECIMAL":          if (dati[i] instanceof BigDecimal) sb.append((BigDecimal) dati[i]);            else throw new ClassCastException(); break;
-                    case "NUMERIC":          if (dati[i] instanceof BigDecimal) sb.append((BigDecimal) dati[i]);            else throw new ClassCastException(); break;
-                    case "FLOAT":            if (dati[i] instanceof Float)      sb.append((float) dati[i]);                 else throw new ClassCastException(); break;
-                    case "DOUBLE PRECISION": if (dati[i] instanceof Double)     sb.append((double) dati[i]);                else throw new ClassCastException(); break;
-                    case "CHAR":             if (dati[i] instanceof Character)  sb.append("'" + (char) dati[i] + "'");      else throw new ClassCastException(); break;
-                    case "VARCHAR":          if (dati[i] instanceof String)     sb.append("'" + ((String) dati[i]).replace('\'', ' ') + "'");    else throw new ClassCastException(); break;
-                    case "TEXT":             if (dati[i] instanceof String)     sb.append("'" + ((String) dati[i]).replace('\'', ' ') + "'");    else throw new ClassCastException(); break;
-                    case "TIME":             
-                    case "TIMESTAMP":
-                    case "DATE":             
-                        if (dati[i] instanceof String) {
-                            String date = ((String) dati[i]);
-
-                            for(int j = 1; j < 3; j++) {
-                                if(date.split("-").length == j) {
-                                    String val = Integer.toString((int)(Math.random()*11*j + 1*j));
-                                    date +=   (val.length() < 2 ? "-0" + val : "-" +val);
-                                }
-                            }
-
-                            String yearString = date.substring(0, 4);
-                            int year = Integer.parseInt(yearString);
-
-                            if (year < 1500) {
-                                yearString = "2000";
-                            }
-
-                            String modifiedDate = yearString + date.substring(4);
-                    
-                            sb.append("'" + modifiedDate + "'");  
-                            break;    
-                        }
-                        else {
-                            throw new ClassCastException(); 
-                        }
-
-                    case "BOOLEAN":          
-                        if (dati[i] instanceof Boolean) {
-                            sb.append((Boolean) dati[i]);    
-                            break;
-                        }
-                        else 
-                            throw new ClassCastException(); 
-
-                    case "BIGINT":           
-                        try {
-                            if (dati[i] instanceof Long) 
-                                sb.append((long) dati[i]);                      
-                            else
-                                throw new ClassCastException(); break;
-                        }
-                        catch (java.lang.ClassCastException e) {
-                            sb.append((int) dati[i]);
-                            break;
-                        }                                                
-                    default:
-                        throw new IllegalArgumentException("Unsupported SQL type: " + colonne[i].getType());
-                } 
-            } catch (Exception e) {
+                convert_and_addType(sb, colonne[i], dati[i]);
+            } 
+            catch (Exception e) {
                 e.printStackTrace();
                 System.out.println(e + "class found:" + dati[i].getClass().getName());
                 System.exit(0);
@@ -226,6 +229,73 @@ public class QueryBuilder {
         sb.deleteCharAt(sb.length()-1);
         sb.deleteCharAt(sb.length()-1);
         sb.append(");");
+
+        printQuery(sb);
+        return sb.toString();
+    }
+
+
+    public static String deleteQueryCreator_by_primaryKey(Tabelle tabella, Object...keys)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("DELETE FROM " + tabella + " WHERE ");
+
+        Colonne[] pkeyColl = PredefinedSQLCode.tablesPrimaryKey.get(tabella);
+
+        for(int i = 0; i < pkeyColl.length; i++) {
+            sb.append(pkeyColl[i].getName() + " = " );
+            convert_and_addType(sb, pkeyColl[i], keys[i]);
+
+            if(i == pkeyColl.length - 1)
+                break;
+
+            sb.append(" AND ");
+        }
+        sb.append(";");
+
+        printQuery(sb);
+        return sb.toString();
+    }
+
+    public static String deleteQueryCreator_custom_key(Tabelle tabella, Colonne[] coll, Object[] key)
+    {
+        boolean allFound = true;
+        Colonne[] tableColums = PredefinedSQLCode.tablesAttributes.get(tabella);
+        
+        for(int i = 0; i < coll.length; i++) {
+            boolean found = false;
+            for(Colonne c : tableColums) {
+                if(c.equals(coll[i])) {
+                    found = true;
+                    break;
+                }
+            }
+            if(!found) {
+                allFound = false;
+                break;
+            }
+        }
+
+        if(!allFound) {
+            throw new RuntimeException("La tabella" + tabella + " non contiene le colonne richieste");
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("DELETE FROM " + tabella + " WHERE ");
+
+        for(int i = 0; i < coll.length; i++) 
+        {
+            sb.append(coll[i].getName() + " = " );
+            convert_and_addType(sb, coll[i], key[i]);
+
+            if(i == coll.length - 1)
+                break;
+
+            sb.append(" AND ");
+        }
+        sb.append(";");
+        
+        printQuery(sb);
         return sb.toString();
     }
 
@@ -252,15 +322,11 @@ public class QueryBuilder {
         sb.append(colonna.toString());
 
         if(found) {
-
-
             sb.append(", ADD CONSTRAINT ");
             sb.append(colonna.name());
             sb.append(" UNIQUE (");
             sb.append(colonna.name());
             sb.append(");");
-
-            
         }
         
         return sb.toString();
@@ -545,35 +611,7 @@ public class QueryBuilder {
     }
 
 
-    public static String getAccountSongComment_query(String songID, String accountID) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT * FROM " + Tabelle.COMMENTO + " WHERE ");
-        sb.append(Colonne.SONG_ID_REF.getName() + " = '" + songID + "'AND");
-        sb.append(Colonne.ACCOUNT_ID_REF.getName() + " = '" + accountID + "';");
-
-
-        //printQuery(sb);
-        return sb.toString();
-    }
-
-    public static String getSongComment_query(String songID) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT * FROM " + Tabelle.COMMENTO + " WHERE ");
-        sb.append(Colonne.SONG_ID_REF.getName() + " = '" + songID + "';");
-
-        //printQuery(sb);
-        return sb.toString();
-    }
-
-    public static String getAccountComment_query(String accountID) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT * FROM " + Tabelle.COMMENTO + " WHERE ");
-        sb.append(Colonne.ACCOUNT_ID_REF.getName() + " = '" + accountID + "';");
-
-        //printQuery(sb);
-        return sb.toString();
-    }
-
+   
     public static String getSongEmotion_query(String songID) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM " + Tabelle.EMOZIONE + " WHERE ");

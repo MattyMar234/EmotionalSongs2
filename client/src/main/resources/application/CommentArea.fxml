@@ -33,16 +33,16 @@
                            <children>
                               <AnchorPane prefHeight="200.0" prefWidth="200.0">
                                  <children>
-                                    <ComboBox prefHeight="26.0" prefWidth="200.0" promptText="Emozione" visibleRowCount="3" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="5.0" />
-                                    <Slider blockIncrement="1.0" majorTickUnit="1.0" max="5.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                                    <ComboBox fx:id="emotionCombox" prefHeight="26.0" prefWidth="200.0" promptText="Emozione" visibleRowCount="3" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="5.0" />
+                                    <Slider fx:id="slider" blockIncrement="1.0" majorTickUnit="1.0" max="5.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
                                  </children>
                               </AnchorPane>
                               <HBox alignment="CENTER_LEFT" GridPane.rowIndex="1">
                                  <children>
-                                    <TextArea id="commentArea" maxWidth="-Infinity" minWidth="-Infinity" opacity="0.75" prefWidth="483.0" promptText="Aggiungi un commento..." wrapText="true" HBox.hgrow="ALWAYS" />
+                                    <TextArea id="commentArea" fx:id="textArea" maxWidth="-Infinity" minWidth="-Infinity" opacity="0.75" prefWidth="483.0" promptText="Aggiungi un commento..." wrapText="true" HBox.hgrow="ALWAYS" />
                                     <VBox alignment="CENTER" HBox.hgrow="NEVER">
                                        <children>
-                                          <FontIcon iconColor="#8259e3" iconLiteral="mdi2s-send" iconSize="24" wrappingWidth="32.0" />
+                                          <FontIcon fx:id="sendIcon" iconColor="#8259e3" iconLiteral="mdi2s-send" iconSize="24" onMouseClicked="#createEmotion" wrappingWidth="32.0" />
                                        </children>
                                     </VBox>
                                  </children>

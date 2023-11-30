@@ -36,125 +36,7 @@ public class PredefinedSQLCode
     private static final String ID_SIZE = "(64)";
     private static final String ACCOUNT_ID_SIZE = "(120)";
     
-    public static enum ImageType {
-        ARTIST("artist"),
-        ALBUM("album"),
-        SONG("album");
-
-        private String type;
-
-        private ImageType(String type) {
-            this.type = type;
-        }
-
-        @Override
-        public String toString() {
-            return this.type;
-        }
-    }
-
-
-    public enum SQLKeyword {
-        NUMERIC("NUMERIC"),
-        DECIMAL("DECIMAL"),
-        SMALLINT("SMALLINT"),
-        INTEGER("INTEGER"),
-        TIMESTAMP("TIMESTAMP"),
-        VARCHAR("VARCHAR"),
-        NVARCHAR("NVARCHAR"),
-        VARBINARY("VARBINARY"),
-        DOUBLE("DOUBLE"),
-        BOOLEAN("BOOLEAN"),
-        FLOAT("FLOAT"),
-        CHAR("CHAR"),
-        BLOB("BLOB"),
-        CLOB("CLOB"),
-        DATE("DATE"),
-        TIME("TIME"),
-        TEXT("TEXT"),
-        BIT("BIT"),
-        JOIN("JOIN"),
-        LEFT("LEFT"),
-        RIGHT("RIGHT"),
-        OUTER("OUTER"),
-        INNER("INNER"),
-        EXISTS("EXISTS"),
-        HAVING("HAVING"),
-        SELECT("SELECT"),
-        WHERE("WHERE"),
-        UPDATE("UPDATE"),
-        DELETE("DELETE"),
-        INSERT("INSERT"),
-        ALTER("ALTER"),
-        CREATE("CREATE"),
-        DROP("DROP"),
-        INDEX("INDEX"),
-        CONSTRAINT("CONSTRAINT"),
-        PRIMARY("PRIMARY"),
-        FOREIGN("FOREIGN"),
-        REFERENCES("REFERENCES"),
-        TABLE("TABLE"),
-        VIEW("VIEW"),
-        PROCEDURE("PROCEDURE"),
-        FUNCTION("FUNCTION"),
-        DECLARE("DECLARE"),
-        OFFSET("OFFSET"),
-        SET("SET"),
-        BEGIN("BEGIN"),
-        COMMIT("COMMIT"),
-        ROLLBACK("ROLLBACK"),
-        GRANT("GRANT"),
-        REVOKE("REVOKE"),
-        USER("USER"),
-        DATABASE("DATABASE"),
-        CURSOR("CURSOR"),
-        SHOW("SHOW"),
-        MAX("MAX"),
-        MIN("MIN"),
-        AVG("AVG"),
-        COUNT("COUNT"),
-        SUM("SUM"),
-        DISTINCT("DISTINCT"),
-        ORDER("ORDER"),
-        BIGINT("BIGINT"),
-        BY("BY"),
-        GROUP("GROUP"),
-        ASC("ASC"),
-        DESC("DESC"),
-        FOR("FOR"),
-        IF("IF"),
-        KEY("KEY"),
-        WHEN("WHEN"),
-        THEN("THEN"),
-        ELSE("ELSE"),
-        END("END"),
-        ALL("ALL"),
-        AS("AS"),
-        ON("ON"),
-        AND("AND"),
-        OR("OR"),
-        NOT("NOT"),
-        IN("IN"),
-        BETWEEN("BETWEEN"),
-        LIKE("LIKE"),
-        IS("IS"),
-        LIMIT("LIMIT"),
-        FROM("FROM"),
-        CASCADE("CASCADE"),
-        NULL("NULL");
-
-        private final String keyword;
-
-        SQLKeyword(String keyword) {
-            this.keyword = keyword;
-        }
-
-        public String getKeyword() {
-            return keyword;
-        }
-    }
-    //ALTER TABLE Playlist ALTER COLUMN ID TYPE VARCHAR(64);
-
+   
     public static enum Colonne
     {
         ID("ID",                      "VARCHAR",  ID_SIZE,         "NOT NULL"),
@@ -176,7 +58,7 @@ public class PredefinedSQLCode
         TITLE("title",                "VARCHAR",  "(340)",    "NOT NULL"),
         POPULARITY("popularity",      "SMALLINT", "",         "NOT NULL"),
         YEAR("Year",                  "INTEGER",  "",         "NOT NULL"),
-        VALUE("Year",                 "INTEGER",  "",         "NOT NULL"),
+        VALUE("Value",                 "INTEGER",  "",         "NOT NULL"),
         FOLLOWERS("followers",        "BIGINT",   "",         "NOT NULL"),
         DURATION("Duration_ms",       "BIGINT",   "",         "NOT NULL"),
         RELEASE_DATE("Release_date",  "DATE",     "",         "NOT NULL"),
@@ -234,7 +116,7 @@ public class PredefinedSQLCode
         SONG_AUTORS     ("AutoriCanzone"), 
         RESIDENZA       ("Residenza"), 
         ACCOUNT         ("Account"), 
-        COMMENTO        ("Commento"), 
+        //COMMENTO        ("Commento"), 
         EMOZIONE        ("Emozione"), 
         PLAYLIST        ("Playlist"), 
         //PROVINCIA       ("Provincia"), 
@@ -308,8 +190,6 @@ public class PredefinedSQLCode
 
         
 
-        
-        
         //======================= [Lista delle chiavi primarie] =======================//
         tablesPrimaryKey.put(Tabelle.ARTIST,            new Colonne[] {Colonne.ID});
         tablesPrimaryKey.put(Tabelle.SONG,              new Colonne[] {Colonne.ID});
@@ -354,6 +234,7 @@ public class PredefinedSQLCode
             new Triplet<Colonne, Tabelle, Colonne> (Colonne.SONG_ID_REF, Tabelle.SONG, Colonne.ID),
             new Triplet<Colonne, Tabelle, Colonne> (Colonne.ACCOUNT_ID_REF, Tabelle.ACCOUNT, Colonne.NICKNAME)
         });
+        
         tablesForeignKey.put(Tabelle.ALBUM_IMAGES,  new Object[] { new Triplet<Colonne, Tabelle, Colonne> (Colonne.ID, Tabelle.ALBUM, Colonne.ID)});
         tablesForeignKey.put(Tabelle.ARTIST_IMAGES, new Object[] { new Triplet<Colonne, Tabelle, Colonne> (Colonne.ID, Tabelle.ARTIST, Colonne.ID)});
         tablesForeignKey.put(Tabelle.SONG,          new Object[] { new Triplet<Colonne, Tabelle, Colonne> (Colonne.ALBUM_ID_REF, Tabelle.ALBUM, Colonne.ID)});

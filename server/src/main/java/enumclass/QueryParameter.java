@@ -39,8 +39,8 @@ public enum QueryParameter
     }
 
     
-    @Override
+    /*@Override
     public String toString() {
         return text;
-    }
+    }*/
 }

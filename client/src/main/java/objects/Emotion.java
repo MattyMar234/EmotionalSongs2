@@ -21,6 +21,10 @@ public class Emotion {
 
         }
 
+        /**
+         * Restituisce il nome dell'emozione e non il tipo
+         * @return
+         */
         public String getName() {
             switch (this) {
                 case AMAZEMENT:

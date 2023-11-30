@@ -201,8 +201,11 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
 
     private void setupAsSong(Object... data) 
     { 
+        final Song song = (Song) displayedElement;
+        
         SceneManager.instance().injectScene(SceneManager.SceneElemets.CHART.getElemetFilePath(), elementContainer);
-        SceneManager.instance().injectScene(SceneManager.SceneElemets.COMMENT_AREA.getElemetFilePath(), elementContainer);
+        CommentArea commentArea = (CommentArea)SceneManager.instance().injectScene(SceneManager.SceneElemets.COMMENT_AREA.getElemetFilePath(), elementContainer);
+        commentArea.injectData(song);
 
         for(int i = 0; i < 10; i++) {
             CommentListCell_Controller controller = (CommentListCell_Controller)SceneManager.instance().injectScene(SceneManager.SceneElemets.COMMENT_VIEW.getElemetFilePath(), elementContainer);
@@ -210,7 +213,6 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
         
         }
 
-        final Song song = (Song) displayedElement;
        
         labelName.setText(song.getTitle());
         labelType.setText("Song");

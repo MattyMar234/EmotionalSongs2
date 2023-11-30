@@ -44,6 +44,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	private HashMap<ServerServicesName, String[]> functionParametreKeys = new HashMap<>();
 	//private HashMap<Function<HashMap<String, Object>,Object>, Method> functionName = new HashMap<>();
 	private HashMap<ServerServicesName, String> functionName = new HashMap<>();
+	private HashMap<QueryParameter, Colonne> QueryParametre_to_Colonne = new HashMap<>();
 
 	private Terminal terminal;
 	private boolean exit = false;
@@ -74,9 +75,11 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		serverFunctions.put(ServerServicesName.ADD_SONG_PLAYLIST, this::addSongToPlaylist);
 		serverFunctions.put(ServerServicesName.REMOVE_SONG_PLAYLIST, this::removeSongFromPlaylist);
 		serverFunctions.put(ServerServicesName.RENAME_PLAYLIST, this::renamePlaylist);
+
 		serverFunctions.put(ServerServicesName.ADD_EMOTION, this::addEmotion);
 		serverFunctions.put(ServerServicesName.REMOVE_EMOTION, this::deleteEmotion);
 		serverFunctions.put(ServerServicesName.GET_SONG_EMOTION, this::getSongEmotion);
+
 		serverFunctions.put(ServerServicesName.DELETE_PLAYLIST, this::deletePlaylist);
 		serverFunctions.put(ServerServicesName.DELETE_ACCOUNT, this::deleteAccount);
 		serverFunctions.put(ServerServicesName.GET_ARTIST_SONGS, this::getArtistSongs);		
@@ -151,6 +154,29 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		catch(Exception e) {
 			e.printStackTrace();
 		}
+
+		QueryParametre_to_Colonne.put(QueryParameter.ACCOUNT_ID, Colonne.ACCOUNT_ID_REF);
+		QueryParametre_to_Colonne.put(QueryParameter.SONG_ID, Colonne.SONG_ID_REF);
+		QueryParametre_to_Colonne.put(QueryParameter.EMOZIONE, Colonne.TYPE);
+		QueryParametre_to_Colonne.put(QueryParameter.COMMENT, Colonne.COMMENTO);
+		QueryParametre_to_Colonne.put(QueryParameter.VAL_EMOZIONE, Colonne.VALUE);
+
+	}
+
+	private HashMap<Colonne, Object> convertFromQueryParametre2Colonne(final HashMap<String, Object> argsTable, boolean addID_colum)
+	{
+		HashMap<Colonne, Object> ColonneValore = new HashMap<Colonne, Object>();
+
+		for(String key : argsTable.keySet()) {
+			//System.out.println(key);
+			ColonneValore.put(QueryParametre_to_Colonne.get(QueryParameter.valueOf(key)), argsTable.get(key));
+		}
+			
+
+		if(addID_colum)
+			ColonneValore.put(Colonne.ID, QueriesManager.generate_ID_from_Time());
+
+		return ColonneValore;
 	}
 
 	/**
@@ -204,6 +230,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	{
 		ServerSocket server = null;
 		String IP = "";
+
 
 		try(final DatagramSocket socket = new DatagramSocket()){
 			socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
@@ -717,22 +744,11 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	@Override
 	public Object addEmotion(final HashMap<String, Object> argsTable) {
 		try {
-			HashMap<Colonne, Object> colonne = new HashMap<Colonne, Object>();
-			colonne.put(Colonne.ID, QueriesManager.generate_ID_from_Time());
-			colonne.put(Colonne.ACCOUNT_ID_REF, argsTable.get((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString())));
-			colonne.put(Colonne.SONG_ID_REF, argsTable.get((String)argsTable.get(QueryParameter.SONG_ID.toString())));
-			colonne.put(Colonne.TYPE, argsTable.get((String)argsTable.get(QueryParameter.EMOZIONE.toString())));
-			colonne.put(Colonne.COMMENTO, argsTable.get((String)argsTable.get(QueryParameter.COMMENT.toString())));
-			colonne.put(Colonne.VALUE, argsTable.get((String)argsTable.get(QueryParameter.VAL_EMOZIONE.toString())));
-
-			QueriesManager.addEmotion(colonne);
-
+			QueriesManager.addEmotion(convertFromQueryParametre2Colonne(argsTable, true));
 		} 
-
 		catch (Exception e) {
 			return e;
 		}
-
 		return true;
 	}
 

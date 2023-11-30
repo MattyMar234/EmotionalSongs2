@@ -27,7 +27,9 @@ public enum QueryParameter
     NEW_NAME("NewName"),
     COMMENT("Commento"),
     COMMENT_ID("CommentID"),
-    ARTIST_ID("ID_Artista");
+    ARTIST_ID("ID_Artista"),
+    EMOZIONE("Emozione"),
+    VAL_EMOZIONE("Val_Emozione");
 
 
     private String text;
@@ -37,8 +39,8 @@ public enum QueryParameter
     }
 
     
-    @Override
+    /*@Override
     public String toString() {
         return text;
-    }
+    }*/
 }

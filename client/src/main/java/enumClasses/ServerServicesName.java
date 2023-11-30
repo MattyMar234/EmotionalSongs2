@@ -27,9 +27,11 @@ public enum ServerServicesName {
     DELETE_ACCOUNT,
     GET_ARTIST_SONGS,
     GET_PLAYLIST_SONGS,
-    GET_ALBUM_BY_IDS,
+    GET_ALBUM_BY_ID,
     GET_ARTIST_ALBUMS,
     SEARCH_ARTIST,
-    GET_ARTIST_BY_ID
+    GET_ARTIST_BY_ID,
     
+
+
 }

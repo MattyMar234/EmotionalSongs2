@@ -42,4 +42,10 @@ public interface ServerServices {
     public Object getAccountPlaylists(String userID) throws Exception;
     public ArrayList<Song> getPlaylistSongs(String playlistID) throws Exception;
     public boolean renamePlaylist(String userID, String playlistID, String newName) throws Exception;
+
+    //Emotion
+    public boolean addEmotion(String userID, String songID, String emotionType, int value, String comment) throws Exception;
+    public boolean removeEmotion(String id) throws Exception;
+    public Object getEmotions(String songID) throws Exception;
 }
+

@@ -757,6 +757,44 @@ public class ConnectionManager implements ServerServices{
 		throw new UnsupportedOperationException("Unimplemented method 'renamePlaylist'");
 	}
 
+
+
+	@Override
+	public boolean addEmotion(String userID, String songID, String emotionType, int value, String comment) throws Exception {
+		System.out.println("addEmotion: userID=" + userID + " songID=" + songID + " emotionType=" + emotionType + " value="+ value + " comment=" + comment);
+
+		Object[] params = new Object[]{
+			QueryParameter.ACCOUNT_ID.toString(), userID,
+			QueryParameter.SONG_ID.toString(), songID,
+			QueryParameter.EMOZIONE.toString(), emotionType,
+			QueryParameter.VAL_EMOZIONE.toString(), value,
+			QueryParameter.COMMENT.toString(), comment
+		};
+
+		Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.ADD_EMOTION.name(), params));
+		
+		if(result instanceof Exception)
+			throw (Exception) result;
+		
+		return (boolean)result;
+	}
+
+
+
+	@Override
+	public boolean removeEmotion(String id) throws Exception {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'removeEmotion'");
+	}
+
+
+
+	@Override
+	public Object getEmotions(String songID) throws Exception {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'getEmotions'");
+	}
+
 }
 
 

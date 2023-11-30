@@ -1,18 +1,18 @@
 package server;
 
-import database.PredefinedSQLCode.SQLKeyword;
 import database.PredefinedSQLCode.Tabelle;
+import java.time.format.DateTimeFormatter;
 import utility.WaithingAnimationThread;
 import database.PredefinedSQLCode;
 import utility.AsciiArtGenerator;
 import java.io.InputStreamReader;
+import java.time.LocalDateTime;
 import java.io.BufferedReader;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import enumclass.SQLKeyword;
+import java.util.LinkedList;
 import java.io.IOException;
 import java.util.Hashtable;
-import java.util.LinkedList;
 
 import database.DatabaseManager;
 import java.awt.Desktop;
@@ -286,11 +286,17 @@ public class Terminal extends Thread
                 printErrorln("The database is not connected");
             }   
         } catch (Exception e) {
-            System.out.println(e);
+            Terminal.getInstance().printErrorln(e.toString());
+
+            for (StackTraceElement stack : e.getStackTrace()) {
+                Terminal.getInstance().printErrorln(stack.toString());
+            }
         }
         finally {
             printSeparator();
         }
+
+        
         
 
         while(this.fechUserInputs) 

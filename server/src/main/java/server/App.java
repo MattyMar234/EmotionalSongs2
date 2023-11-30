@@ -86,9 +86,6 @@ public class App extends JFrame
         new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor(); 
 
         System.getProperties().setProperty("java.security.policy", FILE_POLICY_PATH);
-
-        
-
         new App(args);
     }
 
@@ -101,11 +98,6 @@ public class App extends JFrame
 
         loadSettings();
         setDatabaseConnection();
-
-        
-        /*for (Tabelle s : PredefinedSQLCode.Tabelle.values()) {
-            terminal.printInfo_ln(s.toString());
-        }*/
 
         
         terminal.printSeparator();
