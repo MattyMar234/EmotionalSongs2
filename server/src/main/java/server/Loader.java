@@ -16,8 +16,8 @@ import database.PredefinedSQLCode;
 import database.QueryBuilder;
 import database.PredefinedSQLCode.Colonne;
 import database.PredefinedSQLCode.Tabelle;
-import me.tongfei.progressbar.ProgressBar;
-import me.tongfei.progressbar.ProgressBarStyle;
+//import me.tongfei.progressbar.ProgressBar;
+//import me.tongfei.progressbar.ProgressBarStyle;
 import server.Terminal.MessageType;
 import server.Terminal;
 import utility.FileElementCounter;
@@ -187,9 +187,9 @@ public class Loader {
             terminal.stopWaithing();
             terminal.printInfoln("Files found: " + fileCount);
 
-            ProgressBar progressBar = new ProgressBar(MessageType.INFO.toString() +  " Loading " + key, fileCount, ProgressBarStyle.ASCII);
-            progressBar.start();
-            progressBar.stepTo(0);
+            //ProgressBar progressBar = new ProgressBar(MessageType.INFO.toString() +  " Loading " + key, fileCount, ProgressBarStyle.ASCII);
+            //progressBar.start();
+            //progressBar.stepTo(0);
 
             //do il tempo di caricare la barra
             try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
@@ -304,14 +304,14 @@ public class Loader {
                             }
                         }
                     }
-                    progressBar.step();
+                    //progressBar.step();
                 }   
             }, filesQueue, 50);
             
             for(int i = 0; i < thraedList.length; i++) 
                 try {thraedList[i].join();} catch (InterruptedException e) {e.printStackTrace();}
             
-            progressBar.stop();
+            //progressBar.stop();
         }
         //System.out.println("-----------------------------------------------------------------------------------------\n");
         return 0;  

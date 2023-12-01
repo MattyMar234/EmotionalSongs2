@@ -30,6 +30,13 @@
     </dependency>
 
     <dependency>
+      <groupId>javax.persistence</groupId>
+      <artifactId>javax.persistence-api</artifactId>
+      <version>2.2</version>
+  </dependency>
+
+    
+    <dependency>
       <groupId>me.tongfei</groupId>
       <artifactId>progressbar</artifactId>
       <version>0.5.5</version>
@@ -48,11 +55,26 @@
         <version>1.16.0</version>
     </dependency>
 
+    <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>2.16.0</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
     <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>2.12.4</version>
+        <version>2.16.0</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
+  <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>2.16.0</version>
+  </dependency>
+
+
 
     <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
     <dependency>
@@ -60,22 +82,26 @@
         <artifactId>postgresql</artifactId>
         <version>42.6.0</version>
     </dependency>
+
+    
   </dependencies>
   <!-- ======================= [DIPENDENZE/LIBRERIE] ====================== -->
 
   <build>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
-        <!--plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
-          <configuration>
-            <source>1.8</source>
-            <target>1.8</target>
-          </configuration>
-        </plugin-->
-        <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.0</version> <!-- Assicurati che sia la versione più recente -->
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>server.App</mainClass> <!-- Sostituisci con la tua classe principale -->
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.1.0</version>
@@ -115,6 +141,5 @@
           <version>3.0.0</version>
         </plugin>
       </plugins>
-    </pluginManagement>
   </build>
 </project>

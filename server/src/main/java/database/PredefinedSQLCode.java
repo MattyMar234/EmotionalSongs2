@@ -17,7 +17,7 @@ import objects.Playlist;
 import server.App;
 import server.Terminal;
 
-import javax.imageio.spi.RegisterableService;
+//import javax.imageio.spi.RegisterableService;
 
 
 /**
