@@ -2,6 +2,7 @@ package controllers;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -9,6 +10,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import application.Main;
 import application.SceneManager;
 import application.SceneManager.FXML_elements;
+import application.SceneManager.SceneElemets;
 import enumClasses.ListCell_DisplayMode;
 import interfaces.Injectable;
 import javafx.application.Platform;
@@ -19,10 +21,14 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import objects.Emotion;
 import objects.Song;
+import utility.UtilityOS;
 
 public class MainPage_Search_Controller extends ControllerBase implements Initializable, Injectable
 {
@@ -52,17 +58,23 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
     
     @FXML public VBox elementContainer;
 
+    @FXML public AnchorPane linearGradien_background_lower;
+    @FXML public AnchorPane linearGradien_background_upper;
 
 
-
-
-    
-
-    
     @Override
     public void initialize(URL location, ResourceBundle resources) 
     {
-        
+        Random random = new Random();
+        int number = random.nextInt(22) + 1;
+        Image image = new Image(UtilityOS.formatPath(Main.ImageFolder + "\\colored_icon\\" + number + ".png"));  
+        Color everegedColor = getAverageColor(image, -0.26f);
+
+        //everegedColor = brightenColor(everegedColor, 0.1);
+
+        String color = ColorToHex(everegedColor);
+        this.linearGradien_background_upper.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");"); 
+        this.linearGradien_background_lower.setStyle("-fx-background-color: #030300;"); 
     }
     
     @Override
@@ -128,6 +140,7 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
             final Object list =  result[1];
             totalResult = (long) result[0];
             availablePage = totalResult / MAX_ELEMENT_FOR_PAGE;
+            int rowIndex = 1;
 
             if(totalResult % MAX_ELEMENT_FOR_PAGE != 0) {
                 availablePage++;
@@ -158,14 +171,25 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
             
             elementContainer.getChildren().clear();
             
+            Platform.runLater(() -> {
+                ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_HEADER, elementContainer);
+                listCell.injectData(ListCell_DisplayMode.SONG_HEADER);
+            });
+
+            
+
             for (Object object : (ArrayList<Object>)list) 
             {
-                new Thread(() -> {
-                    Platform.runLater(() -> {
-                        ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(FXML_elements.LIST_ELEMENT, elementContainer);
-                        listCell.injectData(ListCell_DisplayMode.DISPLAY_SONG, object, true);
-                    });
-                }).start();
+                
+                final int final_rowIndex = rowIndex++;
+                //new Thread(() -> {
+                    //synchronized(MainPage_Search_Controller.class) {
+                        Platform.runLater(() -> {
+                            ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_ELEMENT, elementContainer);
+                            listCell.injectData(ListCell_DisplayMode.DISPLAY_SONG, object, true, final_rowIndex + currentPage*MAX_ELEMENT_FOR_PAGE);
+                        });
+                    //}
+               // }).start();
             }
 
         } 

@@ -22,9 +22,11 @@ import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import utility.UtilityOS;
 
 import java.util.HashMap;
@@ -46,6 +48,66 @@ public abstract class ControllerBase {
 
     public ControllerBase() {
         
+    }
+
+    protected static Color getAverageColor(Image image, float brightnessFactor) {
+        // Create a PixelReader to read pixel data
+        PixelReader pixelReader = image.getPixelReader();
+
+        int width = (int) image.getWidth();
+        int height = (int) image.getHeight();
+
+        // Initialize variables for calculating average color components
+        double totalRed = 0;
+        double totalGreen = 0;
+        double totalBlue = 0;
+        //double pixelCount = 0;
+        // Iterate through all pixels and accumulate color components
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                Color color = pixelReader.getColor(x, y);
+
+                /*if(color.getRed() > 32 && color.getGreen() > 32 && color.getBlue() > 32 ) {
+                    totalRed += color.getRed();
+                    totalGreen += color.getGreen();
+                    totalBlue += color.getBlue();
+                    pixelCount++;
+                }*/
+
+                double Red   = (double)Math.min(255, Math.max(0, color.getRed()   + (brightnessFactor * color.getRed())));
+                double Green = (double)Math.min(255, Math.max(0, color.getGreen() + (brightnessFactor * color.getGreen())));
+                double Blue  = (double)Math.min(255, Math.max(0, color.getBlue()  + (brightnessFactor * color.getBlue())));
+
+               
+                   
+                totalRed += Red;
+                totalGreen += Green;
+                totalBlue += Blue;
+            }
+        }
+
+        // Calculate average color components
+        double pixelCount = width * height;
+        double averageRed = totalRed / pixelCount;
+        double averageGreen = totalGreen / pixelCount;
+        double averageBlue = totalBlue / pixelCount;
+
+        // Create a color from the average components
+        return new Color(averageRed, averageGreen, averageBlue, 1);
+    }
+
+
+    protected static Color brightenColor(Color originalColor, double factor) {
+        double r = Math.min(originalColor.getRed() + factor, 1.0);
+        double g = Math.min(originalColor.getGreen() + factor, 1.0);
+        double b = Math.min(originalColor.getBlue() + factor, 1.0);
+
+        return new Color(r, g, b, originalColor.getOpacity());
+    }
+    
+
+    protected String ColorToHex(Color color) {
+        return String.format("#%02X%02X%02X", (int)(color.getRed() * 255), (int)(color.getGreen() * 255), (int)(color.getBlue() * 255));
     }
 
     protected Image download_Image_From_Internet(String imageURL, boolean setDefaultImage) throws IOException 

@@ -6,82 +6,111 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <AnchorPane prefHeight="691.0" prefWidth="757.0" stylesheets="@css/ApplicationTheme.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainPage_Search_Controller">
    <children>
-      <BorderPane layoutX="40.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="0.0">
-         <bottom>
-            <AnchorPane prefHeight="60.0" prefWidth="677.0" BorderPane.alignment="CENTER">
+      <StackPane layoutX="40.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <HBox alignment="CENTER" layoutX="635.0" layoutY="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="200.0" minHeight="200.0" prefHeight="200.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
                      <children>
-                        <Button mnemonicParsing="false" onAction="#back_page" style="-fx-background-color: transparent;">
-                           <graphic>
-                              <FontIcon iconColor="WHITE" iconLiteral="mdi2c-chevron-left" iconSize="24" />
-                           </graphic>
-                        </Button>
-                        <Label fx:id="pageIndex" alignment="CENTER" text="n di m" textAlignment="JUSTIFY" />
-                        <Button fx:id="nextPage_Button" mnemonicParsing="false" onAction="#next_page" style="-fx-background-color: transparent;">
-                           <graphic>
-                              <FontIcon iconColor="WHITE" iconLiteral="mdi2c-chevron-right" iconSize="24" />
-                           </graphic>
-                        </Button>
+                        <AnchorPane fx:id="linearGradien_background_upper" prefHeight="200.0" prefWidth="200.0" />
+                        <AnchorPane fx:id="linearGradien_background_lower" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" />
                      </children>
-                  </HBox>
+                  </GridPane>
                </children>
+               <StackPane.margin>
+                  <Insets />
+               </StackPane.margin>
             </AnchorPane>
-         </bottom>
-         <center>
-            <AnchorPane BorderPane.alignment="CENTER">
-               <children>
-                  <AnchorPane layoutX="4.099999904632568" layoutY="0.09999990463256836" AnchorPane.leftAnchor="4.099999904632568" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="8.0">
+            <BorderPane>
+               <center>
+                  <AnchorPane BorderPane.alignment="CENTER">
                      <children>
-                        <HBox alignment="CENTER" minHeight="-Infinity" prefHeight="40.0" prefWidth="200.0" spacing="20.0">
+                        <AnchorPane layoutX="4.099999904632568" layoutY="0.09999990463256836" AnchorPane.leftAnchor="4.099999904632568" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="8.0">
                            <children>
-                              <Button fx:id="allButtonFilter" minWidth="-Infinity" mnemonicParsing="false" onAction="#allButton_click" prefWidth="75.0" styleClass="filterbutton" text="Tutti" />
-                              <Button fx:id="songButtonFilter" minWidth="-Infinity" mnemonicParsing="false" onAction="#songButton_click" prefWidth="75.0" styleClass="filterbutton" text="Canzoni" />
-                              <Button fx:id="albumButtonFilter" minWidth="-Infinity" mnemonicParsing="false" onAction="#playlistButton_click" prefWidth="75.0" styleClass="filterbutton" text="Playlist" />
-                              <Button fx:id="artistButtonFilter" minWidth="-Infinity" mnemonicParsing="false" onAction="#artistButton_click" prefWidth="75.0" styleClass="filterbutton" text="Artisti" />
-                           </children>
-                        </HBox>
-                     </children>
-                  </AnchorPane>
-                  <Label id="filterlabel" fx:id="resultLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="4.099999904632568" layoutY="50.09999990463257" text="I migliori risultati" textAlignment="JUSTIFY" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="60.0">
-                     <padding>
-                        <Insets left="20.0" />
-                     </padding>
-                  </Label>
-                  <ScrollPane fitToWidth="true" layoutX="4.099999904632568" layoutY="80.09999990463257" prefHeight="541.0" prefWidth="717.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="92.0">
-                     <content>
-                        <AnchorPane>
-                           <children>
-                              <VBox fx:id="elementContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: trasparent;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <HBox alignment="CENTER" minHeight="-Infinity" prefHeight="40.0" prefWidth="200.0" spacing="20.0">
                                  <children>
-                                    <AnchorPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="80.0" prefWidth="647.0" style="-fx-background-color: transparent;">
-                                       <children>
-                                          <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                             <children>
-                                                <AnchorPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="1.0" prefWidth="200.0" style="-fx-background-color: #A0A0A0;">
-                                                   <VBox.margin>
-                                                      <Insets left="20.0" right="20.0" />
-                                                   </VBox.margin>
-                                                </AnchorPane>
-                                             </children>
-                                          </VBox>
-                                       </children>
-                                    </AnchorPane>
+                                    <Button fx:id="allButtonFilter" minWidth="-Infinity" mnemonicParsing="false" onAction="#allButton_click" prefWidth="75.0" styleClass="filterbutton" text="Tutti" />
+                                    <Button fx:id="songButtonFilter" minWidth="-Infinity" mnemonicParsing="false" onAction="#songButton_click" prefWidth="75.0" styleClass="filterbutton" text="Canzoni" />
+                                    <Button fx:id="albumButtonFilter" minWidth="-Infinity" mnemonicParsing="false" onAction="#playlistButton_click" prefWidth="75.0" styleClass="filterbutton" text="Playlist" />
+                                    <Button fx:id="artistButtonFilter" minWidth="-Infinity" mnemonicParsing="false" onAction="#artistButton_click" prefWidth="75.0" styleClass="filterbutton" text="Artisti" />
                                  </children>
-                              </VBox>
+                              </HBox>
                            </children>
                         </AnchorPane>
-                     </content>
-                  </ScrollPane>
-               </children>
-            </AnchorPane>
-         </center>
-      </BorderPane>
+                        <Label id="filterlabel" fx:id="resultLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="4.099999904632568" layoutY="50.09999990463257" styleClass="Label-Style2" text="I migliori risultati" textAlignment="JUSTIFY" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="90.0">
+                           <padding>
+                              <Insets left="20.0" />
+                           </padding>
+                        </Label>
+                        <AnchorPane prefHeight="35.0" prefWidth="677.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="80.0">
+                           <children>
+                              <HBox alignment="CENTER" layoutX="635.0" layoutY="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <Button mnemonicParsing="false" onAction="#back_page" style="-fx-background-color: transparent;">
+                                       <graphic>
+                                          <FontIcon iconColor="WHITE" iconLiteral="mdi2c-chevron-left" iconSize="24" />
+                                       </graphic>
+                                    </Button>
+                                    <Label fx:id="pageIndex" alignment="CENTER" styleClass="Label-Style2" text="n di m" textAlignment="JUSTIFY" />
+                                    <Button fx:id="nextPage_Button" mnemonicParsing="false" onAction="#next_page" style="-fx-background-color: transparent;">
+                                       <graphic>
+                                          <FontIcon iconColor="WHITE" iconLiteral="mdi2c-chevron-right" iconSize="24" />
+                                       </graphic>
+                                    </Button>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </AnchorPane>
+                        <ScrollPane fitToWidth="true" layoutX="4.099999904632568" layoutY="80.09999990463257" prefHeight="541.0" prefWidth="717.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="150.0">
+                           <content>
+                              <AnchorPane>
+                                 <children>
+                                    <VBox fx:id="elementContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: trasparent;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <AnchorPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="80.0" prefWidth="647.0" style="-fx-background-color: transparent;">
+                                             <children>
+                                                <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <AnchorPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="1.0" prefWidth="200.0" style="-fx-background-color: #A0A0A0;">
+                                                         <VBox.margin>
+                                                            <Insets left="20.0" right="20.0" />
+                                                         </VBox.margin>
+                                                      </AnchorPane>
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </AnchorPane>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                        </ScrollPane>
+                     </children>
+                  </AnchorPane>
+               </center>
+               <StackPane.margin>
+                  <Insets left="20.0" right="20.0" />
+               </StackPane.margin>
+            </BorderPane>
+         </children>
+      </StackPane>
    </children>
 </AnchorPane>

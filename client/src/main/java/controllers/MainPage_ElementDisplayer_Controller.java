@@ -10,6 +10,7 @@ import application.Main;
 import application.ObjectsCache;
 import application.SceneManager;
 import application.SceneManager.FXML_elements;
+import application.SceneManager.SceneElemets;
 import enumClasses.ElementDisplayerMode;
 import enumClasses.ListCell_DisplayMode;
 import interfaces.Injectable;
@@ -270,7 +271,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                     System.out.println("loading element: " + song.getTitle());
                     
                     Platform.runLater(() -> {
-                        ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(FXML_elements.LIST_ELEMENT, elementContainer);
+                        ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_ELEMENT, elementContainer);
                         listCell.injectData(ListCell_DisplayMode.DISPLAY_SONG,song);
                     });
                 } 
@@ -304,7 +305,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                     for (Song song : song_list){
 
                         Platform.runLater(() -> {
-                            ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(FXML_elements.LIST_ELEMENT, elementContainer);
+                            ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_ELEMENT, elementContainer);
                             listCell.injectData(ListCell_DisplayMode.DISPLAY_SONG, song);
                         });
                     } 
@@ -347,7 +348,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                     for (Playlist p : playlist_list){
 
                         Platform.runLater(() -> {
-                            ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(FXML_elements.LIST_ELEMENT, elementContainer);
+                            ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_ELEMENT, elementContainer);
                             listCell.injectData(ListCell_DisplayMode.DISPLAY_PLAYLIST, p);
                         });
                     } 
@@ -415,9 +416,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     }
     
 
-    private String ColorToHex(Color color) {
-        return String.format("#%02X%02X%02X", (int)(color.getRed() * 255), (int)(color.getGreen() * 255), (int)(color.getBlue() * 255));
-    }
+    
 
     
     

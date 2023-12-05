@@ -31,6 +31,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import objects.Album;
 import objects.Comment;
 import objects.Playlist;
@@ -44,6 +45,8 @@ public class ListCell_Controller extends ControllerBase implements Initializable
     @FXML public Label label1;
     @FXML public Label label2;
     @FXML public Label timeLabel;
+    @FXML public Label labelNumber;
+
     @FXML public MenuButton actionButton;
     @FXML public AnchorPane anchor;
     @FXML public GridPane grid;
@@ -53,12 +56,21 @@ public class ListCell_Controller extends ControllerBase implements Initializable
 
     @FXML public ImageView image;
 
+    //Utilizzate nell'header
+    @FXML public VBox header_container1;
+    @FXML public VBox header_container2;
+    @FXML public VBox header_container3;
+    @FXML public VBox header_container4;
+    @FXML public VBox header_container5;
+    @FXML public VBox header_container6;
+
 
     private FXMLLoader loaderFXML;
     private MainPage_ElementDisplayer_Controller displayer_Controller;
     private ListCell_DisplayMode mode;
     private Object element;
-    private Object[] args;
+    private long rowNumber = 0;
+
 
     public ListCell_Controller() {
         super();
@@ -82,24 +94,54 @@ public class ListCell_Controller extends ControllerBase implements Initializable
             throw new RuntimeException("invalid configuration for list cell. Arg[0] must be a \"ListCell_DisplayMode\" type");
         
         this.mode = (ListCell_DisplayMode)data[0];
-        this.element = data[1];
-        this.args = data;
 
-
-        switch (mode) {
-            case DISPLAY_SONG -> {
-                setupAsSong();
-            }
-            case DISPLAY_COMMENT -> {
-                setupAsComment();
-            }
-            case DISPLAY_PLAYLIST -> {
-                setupAsPlaylist();
-            }
-            case DISPLAY_ALBUM -> {
-                setupAsAlbum();
-            }
+        if(data.length >= 2) {
+            this.element = data[1];
         }
+
+        if(data.length >= 4) {
+            this.rowNumber = (long) data[3];
+        }
+            
+        
+    
+        switch (mode) {
+            case DISPLAY_SONG ->      setupAsSong();
+            case DISPLAY_COMMENT ->   setupAsComment();
+            case DISPLAY_PLAYLIST ->  setupAsPlaylist();
+            case DISPLAY_ALBUM ->     setupAsAlbum();
+            case SONG_HEADER ->       setupAsSongHeader();
+            case ALBUM_HEADER -> throw new UnsupportedOperationException("Unimplemented case: " + mode);
+            case COMMENT_HEADER -> throw new UnsupportedOperationException("Unimplemented case: " + mode);
+            case PLAYLIST_HEADER -> throw new UnsupportedOperationException("Unimplemented case: " + mode);
+            default -> throw new IllegalArgumentException("Unexpected value: " + mode);
+        }
+    }
+
+
+    private void setupAsSongHeader()
+    {
+        Label numerLabel = new Label("#");
+        Label imageLable = new Label(Main.applicationLanguage == 0 ? "Immagine" : "Image");
+        Label titleLable = new Label(Main.applicationLanguage == 0 ? "Titolo" : "Title");
+        Label artistLable = new Label(Main.applicationLanguage == 0 ? "Artista" : "Artist");
+        FontIcon clockImage = new FontIcon("mdi2c-clock-outline");
+        Label azioniLable = new Label(Main.applicationLanguage == 0 ? "Azioni" : "Actions");
+        
+        numerLabel.getStyleClass().add("Label-Style1");
+        imageLable.getStyleClass().add("Label-Style1");
+        titleLable.getStyleClass().add("Label-Style1");
+        artistLable.getStyleClass().add("Label-Style1");
+        azioniLable.getStyleClass().add("Label-Style1");
+        clockImage.getStyleClass().add("generic-fontIcon-style");
+        
+        header_container1.getChildren().add(numerLabel);
+        header_container2.getChildren().add(imageLable);
+        header_container3.getChildren().add(titleLable);
+        header_container4.getChildren().add(artistLable);
+        header_container5.getChildren().add(clockImage);
+        header_container6.getChildren().add(azioniLable);
+
     }
 
     private void setupAsSong() {
@@ -108,6 +150,7 @@ public class ListCell_Controller extends ControllerBase implements Initializable
           
         label1.setText(song.getTitle());
         timeLabel.setText(convertTime(song.getDurationMs()));
+        labelNumber.setText(String.valueOf(rowNumber));
         //grid.getRowConstraints().remove(1);
 
         new Thread(() -> {
@@ -190,6 +233,8 @@ public class ListCell_Controller extends ControllerBase implements Initializable
 
         exspandButton.setVisible(false);
         spotifyButton.setVisible(false);
+
+        labelNumber.setText(String.valueOf(rowNumber));
 
         //funzione 
         renameItem.setOnAction(event -> {

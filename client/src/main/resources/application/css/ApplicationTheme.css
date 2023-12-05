@@ -224,6 +224,11 @@
     -fx-icon-size: 30;
 }
 
+.generic-fontIcon-style {
+    -fx-fill: #FFFFFF;
+    -fx-icon-size: 24;
+}
+
 /*======================== FIELDS =====================*/
 .text-field, .password-field {
     

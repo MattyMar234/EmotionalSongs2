@@ -47,7 +47,8 @@ public class SceneManager {
     private static final String ElementDisplay_path = "MainPage_ElementDisplayer.fxml";
     private static final String BaseContainer_path = "ApplicationBase.fxml";
     //private static final String Comment_path = "Comment.fxml";
-    private static final String SongListView_path = "EditableListCell.fxml";
+    private static final String EditableListCell = "EditableListCell.fxml";
+    private static final String EditableListCell_header = "EditableListCell_Header.fxml";
     private static final String PlaylistCreation_path = "PlaylistCreationPage.fxml";
     private static final String CommentView = "CommentListCell.fxml";
     private static final String CommentArea = "CommentArea.fxml";
@@ -97,7 +98,8 @@ public class SceneManager {
 
     public enum FXML_elements {
 
-        LIST_ELEMENT(SongListView_path);
+        //EDITABLE_LIST_CELL_ELEMENT(EditableListCell);
+        ;
 
         private String file;
     
@@ -123,7 +125,10 @@ public class SceneManager {
         CHART(EmotionChart),
         COMMENT_AREA(CommentArea),
         COMMENT_VIEW(CommentView),
+        EDITABLE_LIST_CELL_ELEMENT(EditableListCell),
+        EDITABLE_LIST_CELL_HEADER(EditableListCell_header),
         PLAYLIST_CREATOR(PlaylistCreation_path);
+        
 
         
 
@@ -354,11 +359,11 @@ public class SceneManager {
     * @param anchor Il riferimento dell'anchor (anchorPane o BorderPane)
     * @return riferimento della classe controller del file fxml caricato.
     */ 
-    public Object injectElement(FXML_elements element, Object anchor) {
+    public Object injectElement(SceneElemets element, Object anchor) {
 
         FXMLLoader loader = null;
         try {
-            loader = get_FXML_File_Loader(element.getPath());
+            loader = get_FXML_File_Loader(element.getElemetFilePath());
             Node view = loader.load();
             inject_FXML_code(view, anchor);
         } 
@@ -608,7 +613,7 @@ public class SceneManager {
                     case MAIN_PAGE_SHOW_PLAYLIST:   controller.injectData(ElementDisplayerMode.SHOW_PLAYLIST,args); break;
                     case MAIN_PAGE_SHOW_ALBUM:      controller.injectData(ElementDisplayerMode.SHOW_ALBUM,args); break;
                     case MAIN_PAGE_SHOW_SONG:       controller.injectData(ElementDisplayerMode.SHOW_SONG,args); break;
-                    case MAIN_PAGE_PLAYLIST:        System.out.println("hereeee"); controller.injectData(ElementDisplayerMode.SHOW_USER_PLAYLISTS,args); break;
+                    case MAIN_PAGE_PLAYLIST:        controller.injectData(ElementDisplayerMode.SHOW_USER_PLAYLISTS,args); break;
                 
                     default:
                         controller.injectData(args);
