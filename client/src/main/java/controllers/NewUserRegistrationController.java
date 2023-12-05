@@ -35,10 +35,10 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import objects.Account;
-import utility.Commune;
+import objects.Commune;
+import objects.Province;
+import objects.Region;
 import utility.LocationsLoader;
-import utility.Province;
-import utility.Region;
 import javafx.scene.image.ImageView;
 
 /**

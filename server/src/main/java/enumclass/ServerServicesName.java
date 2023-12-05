@@ -30,7 +30,7 @@ public enum ServerServicesName {
     GET_ALBUM_BY_ID,
     GET_ARTIST_ALBUMS,
     SEARCH_ARTIST,
-    GET_ARTIST_BY_ID,
+    GET_ARTIST_BY_ID;
     
 
 

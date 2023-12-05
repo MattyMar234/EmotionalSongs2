@@ -2,6 +2,7 @@ package controllers;
 
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
@@ -39,16 +40,31 @@ public class ElementContainer extends ControllerBase implements Initializable, I
     @Override
     public void initialize(URL location, ResourceBundle resources) 
     {
-        Random random = new Random();
-        int number = random.nextInt(22) + 1;
+        //Random random = new Random();
+        //int number = random.nextInt(22) + 1;
 
         this.title.setText("?");
-        image.setImage(UtilityOS.getImage(Main.ImageFolder + "\\colored_icon\\" + number + ".png"));    
+        image.setImage(null);    
     }
 
     @Override
     public void init(Object... data) {
         
+    }
+
+
+    private void setImage(final String imgURL) {
+        new Thread(() -> {
+            try {
+                final Image img = download_Image_From_Internet(imgURL, true);
+                Platform.runLater(() -> {
+                    image.setImage(img);
+                });
+            }   
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     
@@ -59,21 +75,13 @@ public class ElementContainer extends ControllerBase implements Initializable, I
         if(displayedElement instanceof Song) 
         {
             Song song = (Song) displayedElement;
-            Platform.runLater(() -> {title.setText(song.getTitle());});
-
             String imgUrl = song.getImage(MyImage.ImageSize.S300x300).getUrl();
-            Image img = (Image) ObjectsCache.getInstance().getItem(ObjectsCache.CacheObjectType.IMAGE,imgUrl);
+            
+            Platform.runLater(() -> {
+                title.setText(song.getTitle());
+            });
 
-            if(img == null) {
-                String imgURL = song.getImage(MyImage.ImageSize.S300x300).getUrl();
-                Main.imageDownloader.addImageToDownload(imgURL, image);
-                //EmotionalSongs.imageDownloader.addImageToDownload(song.getImage(MyImage.ImageSize.S300x300).getUrl(), image);
-            }
-            else {
-                Platform.runLater(() -> {image.setImage(img);});
-                
-            }
-    
+            setImage(imgUrl);
         } 
         else if(displayedElement instanceof Artist) {
 

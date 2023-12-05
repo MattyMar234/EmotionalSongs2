@@ -44,6 +44,22 @@
     -fx-background-color: derive(-tertiary, 20%);
 }
 
+
+.filterbutton{
+    -fx-background-color:  transparent;
+    -fx-text-fill: #FFFFFF;
+    -fx-border-color: -tertiary;
+    -fx-border-width:  0 0 2 0;
+
+}
+
+#filterlabel{
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+
+}
+
 #GreenButton {
     -fx-background-color: #1ED760;
     -fx-text-fill: #000000;
@@ -378,6 +394,9 @@
 -fx-background-color: transparent;
 }
 
+
+/*==================================== GRAFICO ====================================*/
+
 .chart-legend {
     -fx-background-color:  #bfaeee;
     -fx-stroke: #ffffff;
@@ -388,6 +407,35 @@
     -fx-fill: white;
     -fx-font-size: 14;
     
+}
+
+
+.default-color0.chart-pie{
+    -fx-pie-color: #800080;
+}
+.default-color1.chart-pie{
+    -fx-pie-color: #228B22;
+}
+.default-color2.chart-pie{
+    -fx-pie-color: #FFB6C1;
+}
+.default-color3.chart-pie{
+    -fx-pie-color: #704214;
+}
+.default-color4.chart-pie{
+    -fx-pie-color: #E6E6FA;
+}
+.default-color5.chart-pie{
+    -fx-pie-color: #FFA500;
+}
+.default-color6.chart-pie{
+    -fx-pie-color: #FFFF00;
+}
+.default-color7.chart-pie{
+    -fx-pie-color: #58423F;
+}
+.default-color8.chart-pie{
+    -fx-pie-color: #4682B4;
 }
 
 

@@ -52,6 +52,7 @@ public class SceneManager {
     private static final String CommentView = "CommentListCell.fxml";
     private static final String CommentArea = "CommentArea.fxml";
     private static final String EmotionChart = "Chart.fxml";
+    private static final String ElementDisplayerSearch = "MainPage_ElementDisplayerSearch.fxml";
 
     private int theme = 0;
     private ArrayList<ControllerBase> loadedControllers = new ArrayList<>();
@@ -118,6 +119,7 @@ public class SceneManager {
         MAIN_HOME(MainPage_home_path),
         MAIN_EXPLORE(null),
         MAIN_DISPLAYER(ElementDisplay_path),
+        MAIN_SEARCH_DISPLAYER(ElementDisplayerSearch),
         CHART(EmotionChart),
         COMMENT_AREA(CommentArea),
         COMMENT_VIEW(CommentView),
@@ -153,8 +155,9 @@ public class SceneManager {
         MAIN_PAGE_PLAYLIST,
         MAIN_PAGE_SHOW_SONG,
         MAIN_PAGE_SHOW_ALBUM,
-        DISPLAY_ELEMENT_PAGE,
         MAIN_PAGE_SHOW_PLAYLIST,
+        MAIN_PAGE_SEARCH,
+        DISPLAY_ELEMENT_PAGE,
 
         CREATE_PLAYLIST;
     }
@@ -533,6 +536,20 @@ public class SceneManager {
                         loadedController.push((ControllerBase)injectScene(SceneElemets.MAIN_HOME.file, loadedController.peek().anchor_for_injectScene));
                         break;
 
+                    case MAIN_PAGE_SEARCH:
+                        while(loadedController.size() > 2) loadedController.pop();
+
+                        if(loadedController.size() == 1) {
+                           loadedController.push((ControllerBase)injectScene(SceneElemets.MAIN_SIDEBAR.file, loadedController.peek().anchor_for_injectScene)); 
+                        }
+                        else if(!(loadedController.peek() instanceof MainPage_SideBar_Controller)) {
+                            loadedController.pop();
+                            loadedController.push((ControllerBase)injectScene(SceneElemets.MAIN_SIDEBAR.file, loadedController.peek().anchor_for_injectScene));
+                        }
+                        loadedController.push((ControllerBase)injectScene(SceneElemets.MAIN_SEARCH_DISPLAYER.file, loadedController.peek().anchor_for_injectScene));
+
+                        break;
+
                     case MAIN_PAGE_SHOW_PLAYLIST:
                     case MAIN_PAGE_SHOW_ALBUM:
                     case MAIN_PAGE_SHOW_SONG:
@@ -549,8 +566,6 @@ public class SceneManager {
                         }
                         loadedController.push((ControllerBase)injectScene(SceneElemets.MAIN_DISPLAYER.file, loadedController.peek().anchor_for_injectScene));
                         break;
-                    
-                    
                     
                     default:
                         throw new RuntimeException("Invalid window scene");   

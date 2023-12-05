@@ -52,7 +52,7 @@ public class SongDetails_controller extends ControllerBase implements Initializa
             }
         });
 
-        for(Emotion.EmotionType e : Emotion.EmotionType.values()) {
+        for(enumClasses.EmotionType e : enumClasses.EmotionType.values()) {
             emotionComboBox.getItems().add(e.getName());
         }
 

@@ -27,4 +27,5 @@ module application.client {
     exports interfaces;
     exports applicationEvents;
     exports objects;
+    exports enumClasses;
 }

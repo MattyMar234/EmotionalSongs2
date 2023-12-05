@@ -545,7 +545,13 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	public Object searchSongs(final HashMap<String, Object> argsTable) 
 	{
         try {
-            ArrayList<Song> result = QueriesManager.searchSong((String)argsTable.get(QueryParameter.SEARCH_STRING.toString()), (long)argsTable.get(QueryParameter.LIMIT.toString()), (long)argsTable.get(QueryParameter.OFFSET.toString()));
+			String key = (String)argsTable.get(QueryParameter.SEARCH_STRING.toString());
+			long limit = (long)argsTable.get(QueryParameter.LIMIT.toString());
+			long offset = (long)argsTable.get(QueryParameter.OFFSET.toString());
+
+            Object[] result = QueriesManager.searchSong_and_countElement(key, limit, offset);
+		
+			
 			return result;
 		} 
 		catch (Exception e) {
@@ -740,6 +746,9 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	}
 
 
+	/////////////////////////////////////////////////////////////////////////////////
+	//EMOTION
+	/////////////////////////////////////////////////////////////////////////////////
 
 	@Override
 	public Object addEmotion(final HashMap<String, Object> argsTable) {
@@ -750,6 +759,17 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 			return e;
 		}
 		return true;
+	}
+
+
+	@Override
+	public Object getSongEmotion(final HashMap<String, Object> argsTable) {
+		try {
+			return QueriesManager.getSongEmotion((String)argsTable.get(QueryParameter.SONG_ID.toString()));
+		} 
+		catch (Exception e) {
+			return e;     
+		} 
 	}
 
 	@Override
@@ -780,16 +800,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 
 	
 	
-	@Override
-	public Object getSongEmotion(final HashMap<String, Object> argsTable) {
-		try {
-			QueriesManager.getSongEmotion((String)argsTable.get(QueryParameter.SONG_ID.toString()));
-			return null;
-		} 
-		catch (Exception e) {
-			return e;     
-		} 
-	}
+	
 
 	
 

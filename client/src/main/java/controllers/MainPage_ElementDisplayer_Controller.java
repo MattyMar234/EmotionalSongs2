@@ -33,6 +33,7 @@ import javafx.scene.paint.Color;
 import objects.Album;
 import objects.Artist;
 import objects.Comment;
+import objects.Emotion;
 import objects.MyImage;
 import objects.Playlist;
 import objects.Song;
@@ -62,6 +63,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     private Image img = null;
     private String imgURL = "";
     private String spotifyUrl = "";
+    
 
     
     
@@ -69,6 +71,8 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     public void initialize(URL location, ResourceBundle resources) {
         actionButton.setDisable(true);
         actionButton.setVisible(false);
+
+        linearColorAnchorPane.setStyle("-fx-background-color: linear-gradient(to top, #030300, #060600);");
     }
 
 
@@ -132,6 +136,11 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
         });
     }
 
+    protected void refreshData()
+    {
+
+    }
+
     private void setImageLink() {
         final String url = spotifyUrl;
         image.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -162,8 +171,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
             new Thread(() -> {
                 try {
                     //image = Main.imageDownloader.addImageToDownload(imgURL);  
-                    img = super.download_Image_From_Internet(imgURL);
-                    ObjectsCache.getInstance().addItem(ObjectsCache.CacheObjectType.IMAGE, imgURL, img);
+                    img = super.download_Image_From_Internet(imgURL, true);
                     Color everegedColor = getAverageColor(img);
 
                     everegedColor = brightenColor(everegedColor, 0.1);
@@ -203,15 +211,28 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     { 
         final Song song = (Song) displayedElement;
         
-        SceneManager.instance().injectScene(SceneManager.SceneElemets.CHART.getElemetFilePath(), elementContainer);
-        CommentArea commentArea = (CommentArea)SceneManager.instance().injectScene(SceneManager.SceneElemets.COMMENT_AREA.getElemetFilePath(), elementContainer);
-        commentArea.injectData(song);
 
-        for(int i = 0; i < 10; i++) {
-            CommentListCell_Controller controller = (CommentListCell_Controller)SceneManager.instance().injectScene(SceneManager.SceneElemets.COMMENT_VIEW.getElemetFilePath(), elementContainer);
-            controller.injectData(new Comment());
-        
+
+        try {
+            ArrayList<Emotion> list = connectionManager.getEmotions(song.getId());
+
+            EmotionsChart emotionsChart = (EmotionsChart) SceneManager.instance().injectScene(SceneManager.SceneElemets.CHART.getElemetFilePath(), elementContainer);
+            emotionsChart.injectData(list);
+            
+            CommentArea commentArea = (CommentArea)SceneManager.instance().injectScene(SceneManager.SceneElemets.COMMENT_AREA.getElemetFilePath(), elementContainer);
+            commentArea.injectData(song);
+
+            for (Emotion emotion : list) {
+                CommentListCell_Controller controller = (CommentListCell_Controller)SceneManager.instance().injectScene(SceneManager.SceneElemets.COMMENT_VIEW.getElemetFilePath(), elementContainer);
+                controller.injectData(emotion);
+            }
+        } 
+        catch (Exception e) {
+           System.out.println(e);
+            e.printStackTrace();
         }
+
+        
 
        
         labelName.setText(song.getTitle());

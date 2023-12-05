@@ -13,6 +13,7 @@ import java.net.URL;
 
 import application.ConnectionManager;
 import application.Main;
+import application.ObjectsCache;
 import application.SceneManager;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
@@ -24,8 +25,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import utility.UtilityOS;
 
 import java.util.HashMap;
+import java.util.Random;
+
 import javax.imageio.ImageIO;
 
 public abstract class ControllerBase {
@@ -44,19 +48,45 @@ public abstract class ControllerBase {
         
     }
 
-    protected Image download_Image_From_Internet(String imageURL) throws IOException 
+    protected Image download_Image_From_Internet(String imageURL, boolean setDefaultImage) throws IOException 
     {
-        //return new Image(imageURL);
-        URL url = new URL(imageURL);
-        HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-        int responseCode = httpURLConnection.getResponseCode();
+        Image image = (Image) ObjectsCache.getInstance().getItem(ObjectsCache.CacheObjectType.IMAGE, imageURL);
 
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            try (InputStream inputStream = httpURLConnection.getInputStream()) {
-                return new Image(new ByteArrayInputStream(inputStream.readAllBytes()));
+        if(image != null)
+            return image;
+        
+        try {
+            //return new Image(imageURL);
+            //throw new IOException();
+            
+            
+            URL url = new URL(imageURL);
+            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+            int responseCode = httpURLConnection.getResponseCode();
+    
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                try (InputStream inputStream = httpURLConnection.getInputStream()) {
+                    image = new Image(new ByteArrayInputStream(inputStream.readAllBytes()));
+                    return image;
+                }
+            } else {
+                throw new IOException("Errore durante il download. Codice di risposta: " + responseCode);
             }
-        } else {
-            throw new IOException("Errore durante il download. Codice di risposta: " + responseCode);
+        } 
+        catch (IOException e) {
+            if(setDefaultImage) {
+                Random random = new Random();
+                int number = random.nextInt(22) + 1;
+                image = new Image(UtilityOS.formatPath(Main.ImageFolder + "\\colored_icon\\" + number + ".png"));  
+                return image;
+            }
+            throw e;
+        }
+        //alla fine aggiungo l'immagine alla cache
+        finally {
+            if(image != null) {
+                ObjectsCache.getInstance().addItem(ObjectsCache.CacheObjectType.IMAGE, imageURL, image, false);
+            }
         }
     }
 

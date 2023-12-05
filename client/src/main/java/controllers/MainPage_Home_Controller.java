@@ -65,8 +65,9 @@ public class MainPage_Home_Controller extends ControllerBase implements Initiali
             new Thread(() -> {try{controller1.InjectData(services.getMostPopularSongs(10, 0), "Top 10 song");}catch (Exception e) {}}).start();
             new Thread(() -> {try{controller2.InjectData(services.getMostPopularSongs(10, 10), "Top 10 song");}catch (Exception e) {}}).start();
             new Thread(() -> {try{controller3.InjectData(services.getRecentPublischedAlbum(10,0,30), "Recent Publisched Album");}catch (Exception e) {}}).start();
-            new Thread(() -> {try{controller4.InjectData(services.searchSongs("Master of Puppets",10,0), "test ricerca canzoni");}catch (Exception e) {}}).start();
-            new Thread(() -> {try{controller5.InjectData(services.searchAlbums("Metallica", 10, 0), "test ricerca album");}catch (Exception e) {}}).start();
+            
+            //new Thread(() -> {try{controller4.InjectData(services.searchSongs("Master of Puppets",10,0), "test ricerca canzoni");}catch (Exception e) {}}).start();
+            //new Thread(() -> {try{controller5.InjectData(services.searchAlbums("Metallica", 10, 0), "test ricerca album");}catch (Exception e) {}}).start();
         
             
         } 

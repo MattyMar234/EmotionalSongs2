@@ -25,8 +25,10 @@ public interface ServerServices {
     public ArrayList<Song>  getMostPopularSongs(long limit, long offset) throws Exception;
     public ArrayList<Album> getRecentPublischedAlbum(long limit, long offset, int threshold) throws Exception;
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //ricerca
-    public ArrayList<Song> searchSongs(String searchString, long limit, long offset) throws Exception;
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public Object[] searchSongs(String searchString, long limit, long offset) throws Exception;
     public ArrayList<Album> searchAlbums(String searchString, long limit, long offset) throws Exception;
     //public ArrayList<Artist> searchArtists(String searchString, long limit, long offset) throws RemoteException;
 

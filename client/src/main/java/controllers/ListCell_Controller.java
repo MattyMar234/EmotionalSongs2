@@ -26,6 +26,8 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -33,6 +35,7 @@ import objects.Album;
 import objects.Comment;
 import objects.Playlist;
 import objects.Song;
+import objects.MyImage.ImageSize;
 
 public class ListCell_Controller extends ControllerBase implements Initializable, Injectable
 {
@@ -48,11 +51,14 @@ public class ListCell_Controller extends ControllerBase implements Initializable
     @FXML public FontIcon exspandButton;
     @FXML public FontIcon spotifyButton;
 
+    @FXML public ImageView image;
+
 
     private FXMLLoader loaderFXML;
     private MainPage_ElementDisplayer_Controller displayer_Controller;
     private ListCell_DisplayMode mode;
     private Object element;
+    private Object[] args;
 
     public ListCell_Controller() {
         super();
@@ -77,6 +83,8 @@ public class ListCell_Controller extends ControllerBase implements Initializable
         
         this.mode = (ListCell_DisplayMode)data[0];
         this.element = data[1];
+        this.args = data;
+
 
         switch (mode) {
             case DISPLAY_SONG -> {
@@ -101,6 +109,18 @@ public class ListCell_Controller extends ControllerBase implements Initializable
         label1.setText(song.getTitle());
         timeLabel.setText(convertTime(song.getDurationMs()));
         //grid.getRowConstraints().remove(1);
+
+        new Thread(() -> {
+            
+            try {
+                Image img = super.download_Image_From_Internet(song.getImage(ImageSize.S64x64).getUrl(), true);
+                Platform.runLater(() -> {
+                    image.setImage(img);
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            } 
+        }).start();
 
 
         spotifyButton.setOnMouseClicked(event -> 

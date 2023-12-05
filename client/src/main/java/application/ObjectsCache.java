@@ -16,22 +16,22 @@ public class ObjectsCache
     public enum CacheObjectType 
     {
         //cache per le immagini scaricate
-        IMAGE(64, javafx.scene.image.Image.class), 
+        IMAGE(200, javafx.scene.image.Image.class), 
         
         //cache per gli oggetti "Song" creati
-        SONG(120, Song.class), 
+        SONG(1000, Song.class), 
         
         //cache per gli oggetti "playlist" creati
         PLAYLIST(32, Playlist.class),
 
         //cache per gli oggetti "album" creati               
-        ALBUM(64, Album.class),
+        ALBUM(250, Album.class),
         
         //cache per gli oggetti "artist" creati
-        ARTIST(32, Artist.class),
+        ARTIST(250, Artist.class),
 
         //cache per tenere traccia di eventuali risultati
-        QUERY(32, ServerServicesName.class);
+        QUERY(40, ServerServicesName.class);
 
         //grandezza della cache
         private int cacheSize;  
@@ -56,13 +56,18 @@ public class ObjectsCache
     private class Cache 
     {
         private int maxElement;
-        private HashMap<String, Object> table = new HashMap<>(); 
-
-        //per tenere traccia dell'odine di inseriemneto 
-        private Queue<String> queue = new LinkedList<>();
+        private HashMap<String, Object> table = new HashMap<>();    //tabella dove salvo i dati
+        private Queue<String> removableKey_queue = new LinkedList<>();           //per tenere traccia dell'odine di inseriemneto e degli elementi che posso eliminare
+        
 
         public Cache(int maxElement) {
             this.maxElement = maxElement;
+        }
+
+        public boolean clearCache() {
+            table.clear();
+            removableKey_queue.clear();
+            return true;
         }
 
         /**
@@ -71,15 +76,20 @@ public class ObjectsCache
          * @param value
          * @return
          */
-        public synchronized boolean addItem(String key, Object value) 
+        public synchronized boolean addItem(String key, Object value, boolean keepInMemory) 
         {
-            queue.add(key);             //aggiungo la chieve nella coda
-            table.put(key, value);      //salvo i dati nella tabella
+            //se l'elemento deve essere "statico", non lo salvo nella coda
+            if(!keepInMemory)
+                //aggiungo la chieve nella coda
+                removableKey_queue.add(key);             
+            
+            //salvo i dati nella tabella
+            table.put(key, value);      
             
             //Se ho raggiunto il numero massimo di elementi che posso avere,
             //rimuovo l'ultimo elemento che ho inserito
-            if(queue.size() > this.maxElement) {
-                table.remove(queue.peek());
+            if(removableKey_queue.size() > this.maxElement) {
+                table.remove(removableKey_queue.peek());
             }
 
             //se tutto va a buon fine
@@ -131,6 +141,25 @@ public class ObjectsCache
         return this.Cache_HashMap.get(itemType).getItem(key);
     }
 
+    /**
+     * Funzione per eliminare i dati di tutte le cache
+     * @return
+     */
+    public boolean clearAllCache() {
+        for (CacheObjectType cahceType : CacheObjectType.values()) {
+            boolean result = this.Cache_HashMap.get(cahceType).clearCache();
+
+            if(!result) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /*public boolean setKeepInMemory(CacheObjectType cacheType, String key, Object object, boolean keepInMemory) {
+
+    }*/
+
 
     /**
      * Funzione per aggiungere un oggetto nella cache con selezione automatica
@@ -138,13 +167,13 @@ public class ObjectsCache
      * @param object L'oggetto da inserire
      * @return viene restituito "True" se l'operazione va a buon fine
      */
-    public boolean addItem(String key, Object object) {
+    public boolean addItem(String key, Object object, boolean keepInMemory) {
         for (CacheObjectType cahceType : CacheObjectType.values()) {
             if(object.getClass() == cahceType.getClassType()) 
             {
                 if(DEBUG)
                     System.out.println("Object added on type:" + cahceType);
-                return this.Cache_HashMap.get(cahceType).addItem(key, object);
+                return this.Cache_HashMap.get(cahceType).addItem(key, object, keepInMemory);
             }
         }
         throw new RuntimeException("Tipo di dato non ammesso per le cache.\nTipo di dato: " + object.getClass());
@@ -156,13 +185,13 @@ public class ObjectsCache
      * @param object L'oggetto da inserire
      * @return viene restituito "True" se l'operazione va a buon fine
      */
-    public boolean addItem(CacheObjectType cacheType, String key, Object object) 
+    public boolean addItem(CacheObjectType cacheType, String key, Object object, boolean keepInMemory) 
     {
         //ignoro il tipo di dato se devo salvare il risultato di una query
         if(cacheType == CacheObjectType.QUERY) {
             if(DEBUG)
                 System.out.println("Object added on type:" + cacheType);
-            return this.Cache_HashMap.get(cacheType).addItem(key, object);
+            return this.Cache_HashMap.get(cacheType).addItem(key, object, keepInMemory);
         }
 
         //se il tipo di dato passa non combacia con il tipo i dato che richiede la cache
@@ -172,7 +201,7 @@ public class ObjectsCache
         
         if(DEBUG)
             System.out.println("Object added on type:" + cacheType);
-        return this.Cache_HashMap.get(cacheType).addItem(key, object);
+        return this.Cache_HashMap.get(cacheType).addItem(key, object, keepInMemory);
     
     }
 }

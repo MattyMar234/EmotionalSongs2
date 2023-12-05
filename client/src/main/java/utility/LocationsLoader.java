@@ -9,6 +9,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import application.Main;
+import objects.Commune;
+import objects.Province;
+import objects.Region;
 
 
 

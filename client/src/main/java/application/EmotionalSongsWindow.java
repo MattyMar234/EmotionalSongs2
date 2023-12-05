@@ -72,6 +72,7 @@ public class EmotionalSongsWindow extends Application
 
         root.addEventFilter(ConnectionEvent.DISCONNECTED, this::handleConnectionLostEvent);
         root.addEventFilter(ConnectionEvent.SERVER_NOT_FOUND, this::handleInvalidConnectionEvent);
+        root.addEventFilter(ConnectionEvent.CONNECTED, this::handleConnectedEvent);
 
         sceneManager.setStage(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, root);
         sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, ApplicationScene.ACCESS_PAGE);
@@ -87,10 +88,31 @@ public class EmotionalSongsWindow extends Application
 
     public void handleConnectionLostEvent(ConnectionEvent event) {
         System.out.println("Connection lost");
+        ObjectsCache.getInstance().clearAllCache();
+        
         this.showConnectionAlert();
         Platform.runLater(() -> {
             SceneManager.instance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, ApplicationScene.ACCESS_PAGE);
         });
+    }
+
+    public void handleConnectedEvent(ConnectionEvent event) {
+        System.out.println("Host connected");
+
+        new Thread(() -> {
+            try {ConnectionManager.getConnectionManager().getMostPopularSongs(10, 0);} 
+            catch (Exception e) {e.printStackTrace();}
+        }).start();
+
+        new Thread(() -> {
+            try {ConnectionManager.getConnectionManager().getRecentPublischedAlbum(10,0,30);} 
+            catch (Exception e) {e.printStackTrace();}
+        }).start();
+       
+
+        
+            
+        
     }
 
     public void handleInvalidConnectionEvent(ConnectionEvent event) {

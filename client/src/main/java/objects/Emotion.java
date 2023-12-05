@@ -1,63 +1,57 @@
 package objects;
 
+import java.io.Serializable;
+
 import application.Main;
+import enumClasses.EmotionType;
 
-public class Emotion {
+public class Emotion implements Serializable {
 
-
-    public enum EmotionType {
-
-        AMAZEMENT, 
-        SOLEMNITY, 
-        TENDERNESS, 
-        NOSTALGIA, 
-        CALMNESS, 
-        POWER,
-        JOY,
-        TENSION,  
-        SADNESS;
-
-        private EmotionType() {
-
-        }
-
-        /**
-         * Restituisce il nome dell'emozione e non il tipo
-         * @return
-         */
-        public String getName() {
-            switch (this) {
-                case AMAZEMENT:
-                    return (Main.applicationLanguage == 0 ? "Stupore" : "Amazement");
-
-                case SOLEMNITY:
-                    return (Main.applicationLanguage == 0 ? "Solennit\u00E0" : "Solemnity");
-                    
-                case TENDERNESS:
-                    return (Main.applicationLanguage == 0 ? "Tenerezza" : "Tenderness");
-                    
-                case NOSTALGIA:
-                    return (Main.applicationLanguage == 0 ? "Nostalgia" : "Nostalgia");
-                    
-                case CALMNESS:
-                    return (Main.applicationLanguage == 0 ? "Calma" : "Calmness");
-                    
-                case POWER:
-                    return (Main.applicationLanguage == 0 ? "Forza" : "Power");
-                    
-                case JOY:
-                    return (Main.applicationLanguage == 0 ? "Gioia" : "Joy");
-                    
-                case TENSION:
-                    return (Main.applicationLanguage == 0 ? "Tensione" : "Tension");
-                    
-                case SADNESS:
-                    return (Main.applicationLanguage == 0 ? "Tristezza" : "Sadness");
-                    
-                default:
-                    return "";
-            }
-        }
-    }
+    private static final long serialVersionUID = 1L;
     
+    private String ID;
+    private String emotionType;
+    private int emotionValue;
+    private String emotionDate;
+    private String comment;
+
+    private String ID_Song;
+    private String ID_Account;
+
+
+    @Override
+    public String toString() {
+        return "Emotion [ID=" + ID + ", emotionType=" + emotionType + ", emotionValue=" + emotionValue
+            + ", emotionDate=" + emotionDate + ", comment=" + comment + ", ID_Song=" + ID_Song + ", ID_Account="
+            + ID_Account + "]";
+    }
+
+
+    public String getID() {
+        return ID;
+    }
+
+    public EmotionType getEmotionType() {
+        return EmotionType.valueOf(this.emotionType);
+    }
+
+    public int getEmotionValue() {
+        return emotionValue;
+    }
+
+    public String getEmotionDate() {
+        return emotionDate;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public String getID_Song() {
+        return ID_Song;
+    }
+
+    public String getID_Account() {
+        return ID_Account;
+    } 
 }

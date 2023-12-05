@@ -19,6 +19,7 @@ import enumClasses.ServerServicesName;
 import interfaces.ServerServices;
 import objects.Account;
 import objects.Album;
+import objects.Emotion;
 import objects.Packet;
 import objects.Playlist;
 import objects.Song;
@@ -222,6 +223,7 @@ public class ConnectionManager implements ServerServices{
 			//timeline.play();
 			connected = true;
 			notifyAll();
+			SceneManager.instance().fireEvent(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, new ConnectionEvent(ConnectionEvent.CONNECTED));
 			return true;
 
 		} catch (Exception e) {
@@ -229,7 +231,6 @@ public class ConnectionManager implements ServerServices{
 			System.out.println(e);
 		}
 		notifyAll();
-		SceneManager.instance().fireEvent(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, new ConnectionEvent(ConnectionEvent.CONNECTED));
 		return false;
 	}
 
@@ -530,7 +531,7 @@ public class ConnectionManager implements ServerServices{
 			}
 			
 			Object result = makeRequest(p);
-			cache.addItem(ObjectsCache.CacheObjectType.QUERY, key, result);
+			cache.addItem(ObjectsCache.CacheObjectType.QUERY, key, result, true);
 			
 			return (ArrayList<Song>) result;
 		}
@@ -558,7 +559,7 @@ public class ConnectionManager implements ServerServices{
 		
 			Object result = makeRequest(p);
 			
-			cache.addItem(ObjectsCache.CacheObjectType.QUERY, key, result);
+			cache.addItem(ObjectsCache.CacheObjectType.QUERY, key, result, true);
 			return (ArrayList<Album>) result;
 		}
 		catch (Exception e) {
@@ -569,35 +570,71 @@ public class ConnectionManager implements ServerServices{
 
 
 	@SuppressWarnings("unchecked")
-	public ArrayList<Song> searchSongs(String searchString, long limit, long offset) throws Exception 
+	public Object[] searchSongs(String searchString, long limit, long offset) throws Exception 
 	{
-		Object[] params = new Object[]{QueryParameter.SEARCH_STRING.toString(), searchString, QueryParameter.LIMIT.toString(), limit, QueryParameter.OFFSET.toString(), offset}; 
-		ArrayList<Song> data = null;
-		
 		try {
-			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.SEARCH_SONGS.name(), params));
-			data = (ArrayList<Song>) result;
+			Object[] params = new Object[]{QueryParameter.SEARCH_STRING.toString(), searchString, QueryParameter.LIMIT.toString(), limit, QueryParameter.OFFSET.toString(), offset}; 
+			Packet p = new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.SEARCH_SONGS.name(), params);
+			
+			String key = generateKey(p);
+			Object cacheResult = cache.getItem(ObjectsCache.CacheObjectType.QUERY, key);
+
+			if(cacheResult != null) {
+				return (Object[]) cacheResult;
+				
+			}
+			
+			Object[] result = (Object[])makeRequest(p);
+			cache.addItem(ObjectsCache.CacheObjectType.QUERY, key, result, false);
+			ArrayList<Song> output = (ArrayList<Song>) result[1];
+
+			//aggiungo tutte le canzoni nella cache
+			for (Song song : output) {
+				if(cache.getItem(ObjectsCache.CacheObjectType.SONG, song.getId()) == null) {
+					cache.addItem(ObjectsCache.CacheObjectType.SONG, song.getId(), song, false);
+				}
+			}
+
+			return result;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
-		return data;
 	}
 	
 
 	@SuppressWarnings("unchecked")
 	public ArrayList<Album> searchAlbums(String searchString, long limit, long offset) throws Exception {
-		Object[] params = new Object[]{QueryParameter.SEARCH_STRING.toString(), searchString, QueryParameter.LIMIT.toString(), limit, QueryParameter.OFFSET.toString(), offset};
-		ArrayList<Album> data = null;
-		
 		try {
-			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.SEARCH_SONGS.name(), params));
-			data = (ArrayList<Album>) result;
+			Object[] params = new Object[]{QueryParameter.SEARCH_STRING.toString(), searchString, QueryParameter.LIMIT.toString(), limit, QueryParameter.OFFSET.toString(), offset};
+			Packet p = new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.SEARCH_ALBUMS.name(), params);
+			
+			String key = generateKey(p);
+			Object cacheResult = cache.getItem(ObjectsCache.CacheObjectType.QUERY, key);
+
+			if(cacheResult != null) {
+				return (ArrayList<Album>) cacheResult;
+			}
+		
+			Object result = makeRequest(p);
+			cache.addItem(ObjectsCache.CacheObjectType.QUERY, key, result, false);
+
+			ArrayList<Album> output = (ArrayList<Album>) result;
+
+			//aggiungo tutte le canzoni nella cache
+			for (Album album : output) {
+				if(cache.getItem(ObjectsCache.CacheObjectType.ALBUM, album.getID()) == null) {
+					cache.addItem(ObjectsCache.CacheObjectType.ALBUM, album.getID(), album, true);
+				}
+			}
+			return output;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
-		return data;
+		
 	}
 
 
@@ -790,9 +827,20 @@ public class ConnectionManager implements ServerServices{
 
 
 	@Override
-	public Object getEmotions(String songID) throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getEmotions'");
+	@SuppressWarnings("unchecked")
+	public ArrayList<Emotion> getEmotions(String songID) throws Exception {
+		System.out.println("getEmotions: songID=" + songID);
+
+		Object[] params = new Object[]{
+			QueryParameter.SONG_ID.toString(), songID,
+		};
+
+		Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_SONG_EMOTION.name(), params));
+		
+		if(result instanceof Exception)
+			throw (Exception) result;
+		
+		return (ArrayList<Emotion>)result;
 	}
 
 }

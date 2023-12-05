@@ -58,7 +58,7 @@ public class PredefinedSQLCode
         TITLE("title",                "VARCHAR",  "(340)",    "NOT NULL"),
         POPULARITY("popularity",      "SMALLINT", "",         "NOT NULL"),
         YEAR("Year",                  "INTEGER",  "",         "NOT NULL"),
-        VALUE("Value",                 "INTEGER",  "",         "NOT NULL"),
+        VALUE("Value",                "INTEGER",  "",         "NOT NULL"),
         FOLLOWERS("followers",        "BIGINT",   "",         "NOT NULL"),
         DURATION("Duration_ms",       "BIGINT",   "",         "NOT NULL"),
         RELEASE_DATE("Release_date",  "DATE",     "",         "NOT NULL"),

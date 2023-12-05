@@ -491,10 +491,23 @@ public class QueryBuilder
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT c.* ");
         sb.append("FROM " + Tabelle.SONG + " c JOIN " + Tabelle.ALBUM + " a ON c."+ Colonne.ALBUM_ID_REF.getName() + " = a."+ Colonne.ID.getName());
-        sb.append(" WHERE c." + Colonne.TITLE.getName() + " LIKE '" + search + "%'");
+        sb.append(" WHERE c." + Colonne.TITLE.getName() + " LIKE '%" + search + "%'");
         //sb.append(" OR a."+ Colonne.RELEASE_DATE.getName() +" LIKE '" + search + "%'");   
         sb.append(" ORDER BY c." + Colonne.TITLE.getName() + ", a." + Colonne.RELEASE_DATE.getName());   
         sb.append(" LIMIT " + limit + " OFFSET " + offset + ";");
+
+        //printQuery(sb);
+        return sb.toString();
+    }
+
+    public static String getSongSearch_Count_query(String search) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT count(c.*) ");
+        sb.append("FROM " + Tabelle.SONG + " c JOIN " + Tabelle.ALBUM + " a ON c."+ Colonne.ALBUM_ID_REF.getName() + " = a."+ Colonne.ID.getName());
+        sb.append(" WHERE c." + Colonne.TITLE.getName() + " LIKE '%" + search + "%'");
+        //sb.append(" OR a."+ Colonne.RELEASE_DATE.getName() +" LIKE '" + search + "%'");   
+        //sb.append(" ORDER BY c." + Colonne.TITLE.getName() + ", a." + Colonne.RELEASE_DATE.getName());   
+        sb.append(";");
 
         //printQuery(sb);
         return sb.toString();

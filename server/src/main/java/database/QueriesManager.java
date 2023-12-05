@@ -20,6 +20,7 @@ import database.PredefinedSQLCode.Colonne;
 import database.PredefinedSQLCode.Tabelle;
 import objects.Account;
 import objects.Album;
+import objects.Emotion;
 import objects.MyImage;
 import objects.Playlist;
 import objects.Residenze;
@@ -154,7 +155,6 @@ public class QueriesManager
     public static ArrayList<MyImage> getAlbumImages_by_ID(String ID) throws SQLException {
 
         ArrayList<MyImage> result = new ArrayList<MyImage>();
-
         ResultSet resultSet = database.submitQuery(QueryBuilder.getAlbumImages_by_ID(ID));
 
         while (resultSet.next()) { 
@@ -262,32 +262,38 @@ public class QueriesManager
     }
 
     /**
-     * Cerca tutte le canzoni che contengono nel titolo la parola passata come parametro
-     * @param search la parola da cercare nel titolo delle canzoni
+     * Cerca tutte le canzoni che contengono nel titolo la parola passata come parametro e restituisce anche il numero di elementi
+     * @param search_key la parola da cercare nel titolo delle canzoni
      * @param limit numero di record massimi che si vuole avere come risultato
      * @param offset numero di record da saltare
      * @return una lista di Song che contengono nel titolo la parola passata come parametro
      * @throws SQLException
      */
-    public static ArrayList<Song> searchSong(String search, long limit, long offset) throws SQLException {
-        ArrayList<Song> result = new ArrayList<Song>();
+    public static Object[] searchSong_and_countElement(String search_key, long limit, long offset) throws SQLException 
+    {
+        
+        ArrayList<Song> pageElement = new ArrayList<Song>();
+        long total_element = 0;
 
-        String query = QueryBuilder.getSongSearch_query(search, limit, offset);
-        ResultSet resultSet = database.submitQuery(query);
+        String query = QueryBuilder.getSongSearch_query(search_key, limit, offset);
+        ResultSet resultSet1 = database.submitQuery(query);
 
-        while (resultSet.next()) { 
-            Song song = new Song(getHashMap_for_ClassConstructor(resultSet, Tabelle.SONG));
+        while (resultSet1.next()) { 
+            Song song = new Song(getHashMap_for_ClassConstructor(resultSet1, Tabelle.SONG));
             song.addImages(getAlbumImages_by_ID(song.getAlbumId()));
-            result.add(song);    
+            pageElement.add(song);    
         }
 
-        resultSet.close();
+        resultSet1.close();
+      
+        String query_result = QueryBuilder.getSongSearch_Count_query(search_key);
+        ResultSet resultSet2 = database.submitQuery(query_result);
 
-        /*for (Song song : result) {
-            song.addImages(getAlbumImages_by_ID(song.getAlbumId()));
-        }*/
-
-        return result; 
+        resultSet2.next();
+        total_element = (long) resultSet2.getObject("count");
+        resultSet2.close();
+    
+        return new Object[] {total_element, pageElement}; 
     }
 
     public static ArrayList<Song> searchSongByIDs(String[] IDs) throws SQLException {
@@ -416,10 +422,20 @@ public class QueriesManager
 
    
 
-    public static void getSongEmotion(String songID) throws SQLException {
+    public static Object getSongEmotion(String songID) throws SQLException 
+    {
         String query = QueryBuilder.getSongEmotion_query(songID);
-        database.submitQuery(query);
+        ResultSet resultSet = database.submitQuery(query);
+        ArrayList<Emotion> list = new ArrayList<Emotion>();
+
+        while (resultSet.next()) { 
+            Emotion playlist = new Emotion(getHashMap_for_ClassConstructor(resultSet, Tabelle.EMOZIONE));
+            list.add(playlist); 
+        }
+        return list;
     }
+
+
 
     public static void deletePlaylist(String accountID, String playlistID) throws SQLException {
         String query = QueryBuilder.deletePlaylist_query(playlistID);

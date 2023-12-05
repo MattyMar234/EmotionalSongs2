@@ -12,6 +12,7 @@ import application.Main;
 import application.SceneManager;
 import interfaces.Injectable;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -54,7 +55,6 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
     @FXML public FontIcon userImage;
     @FXML public Label userName;
 
-
     @FXML public ImageView logo;
     
     
@@ -92,57 +92,9 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
             userName.setText(Main.account.getNickname());
         }
 
-        
 
-        
-
-
-        /*ClearActiveButtons();
-        this.buttons.get(1).setStyle(ButtonColor);
-
-        int index =  0;
-        for(Button b : this.buttons)
-        {
-            final int n = index++;
-
-            b.setOnMouseEntered(e -> {
-                if(state == n) {
-                    b.setStyle(ButtonColor);//b.setStyle("-fx-background-color: #f18100f6");
-                }
-                else {
-                    b.setStyle("-fx-background-color: #9c9c9c66;" + "-fx-text-fill:#ffffff;");
-                }
-
-
-            });
-
-            b.setOnMouseExited(e -> {
-                if(state == n) {
-                    b.setStyle(ButtonColor);
-                }
-                else {
-                    b.setStyle("-fx-background-color: transparent;" + "-fx-text-fill:#798AA6");
-                }
-            });
-        }  */
-
-        /*if(this.application.ConnectedAccount instanceof UnregisteredAccount) {
-            this.playlistButton.setDisable(true);
-            this.profileButton.setText("Sign In");
-        }*/
-
-        /*try {
-            SetReposityPage();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }*/
     }
 
-    
-
-
-    
 
     private void ClearActiveButtons() {
 
@@ -150,11 +102,7 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
         for(Button b : this.buttons) {
             b.setStyle("-fx-background-color: transparent;");
         }
-
-
     }
-
-
     // -------------------------------- eventi -------------------------------- //
 
     @FXML
@@ -175,7 +123,14 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
 
     @FXML
     public void search(KeyEvent event) {
+        //character = a, text = , code = UNDEFINED]
 
+        if(((int)event.getCharacter().charAt(0)) == 13) {
+            String key = searchField.getText().replace("\n", "").replace("\r", "").replace("\t", "");
+            sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.MAIN_PAGE_SEARCH, this, key);
+        }
+
+        
     }
 
     @FXML

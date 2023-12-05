@@ -113,7 +113,7 @@
                                                 <Insets left="8.0" />
                                              </HBox.margin>
                                           </FontIcon>
-                                          <VBox prefHeight="32.0" prefWidth="230.0">
+                                          <VBox prefHeight="35.0" prefWidth="270.0">
                                              <children>
                                                 <TextField fx:id="searchField" maxHeight="-Infinity" onKeyTyped="#search" prefHeight="30.0" prefWidth="228.0" promptText="Serach..." styleClass="search-text-field" />
                                              </children>
