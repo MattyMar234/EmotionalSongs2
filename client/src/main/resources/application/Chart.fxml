@@ -4,74 +4,85 @@
 <?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Circle?>
 
 <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: transparent;" stylesheets="@css/ApplicationTheme.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.EmotionsChart">
    <children>
-      <HBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <AnchorPane id="chartDetailsContainer" prefHeight="360.0" AnchorPane.bottomAnchor="32.0" AnchorPane.leftAnchor="32.0" AnchorPane.rightAnchor="32.0" AnchorPane.topAnchor="32.0">
          <children>
-            <AnchorPane id="chartDetailsContainer" prefHeight="360.0">
+            <HBox alignment="CENTER" prefHeight="100.0" AnchorPane.bottomAnchor="32.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <HBox prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <AnchorPane maxWidth="-Infinity" minHeight="500.0" minWidth="-Infinity" prefWidth="500.0">
                      <children>
-                        <AnchorPane maxWidth="300.0" minWidth="300.0">
+                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="0.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
-                              <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                              <AnchorPane prefHeight="24.0" prefWidth="214.0">
                                  <children>
-                                    <AnchorPane prefHeight="24.0" prefWidth="214.0">
-                                       <children>
-                                          <Label fx:id="labelTotUsers" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="80.0" text="TOTALI: 1000" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                       </children>
-                                    </AnchorPane>
-                                    <HBox prefWidth="200.0" spacing="5.0">
-                                       <children>
-                                          <Label maxWidth="1.7976931348623157E308" prefWidth="30.0" text="CLR" textFill="WHITE" />
-                                          <Label maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="80.0" text="TIPO" textFill="WHITE" />
-                                          <Label maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="80.0" text="N. UTENTI" textFill="WHITE" />
-                                          <Label maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="20.0" text="M" textFill="WHITE" />
-                                       </children>
-                                       <padding>
-                                          <Insets left="5.0" />
-                                       </padding>
-                                    </HBox>
-                                    <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="200.0" spacing="10.0" style="-fx-background-color: derive(#242424,20%); -fx-background-radius: 20px;">
-                                       <children>
-                                          <Circle fill="#fcff1f" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-                                          <Label minWidth="-Infinity" prefWidth="80.0" text="Felicità" textFill="WHITE" />
-                                          <Label maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="80.0" text="300" textFill="WHITE" />
-                                          <Label maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="80.0" text="4.9" textFill="WHITE" />
-                                       </children>
-                                       <padding>
-                                          <Insets left="5.0" />
-                                       </padding>
-                                    </HBox>
-                                    <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="200.0" spacing="10.0" style="-fx-background-color: derive(#242424,20%); -fx-background-radius: 20px;">
-                                       <children>
-                                          <Circle fill="#fcff1f" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-                                          <Label minWidth="-Infinity" prefWidth="80.0" text="Felicità" textFill="WHITE" />
-                                          <Label maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="80.0" text="300" textFill="WHITE" />
-                                          <Label maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="80.0" text="4.9" textFill="WHITE" />
-                                       </children>
-                                       <padding>
-                                          <Insets left="5.0" />
-                                       </padding>
-                                    </HBox>
+                                    <Label fx:id="labelTotUsers" alignment="CENTER" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="80.0" text="TOTALI: 1000" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                  </children>
-                              </VBox>
+                              </AnchorPane>
+                              <AnchorPane>
+                                 <children>
+                                    <VBox fx:id="Vbox_keys" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <GridPane prefHeight="30.0" prefWidth="367.0">
+                                             <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                             </columnConstraints>
+                                             <rowConstraints>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                             </rowConstraints>
+                                             <children>
+                                                <AnchorPane>
+                                                   <children>
+                                                      <Label alignment="CENTER" minWidth="-Infinity" prefWidth="80.0" text="Colore" textAlignment="JUSTIFY" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                   </children>
+                                                </AnchorPane>
+                                                <AnchorPane GridPane.columnIndex="1">
+                                                   <children>
+                                                      <Label alignment="CENTER" minWidth="-Infinity" prefWidth="80.0" text="Emozione" textAlignment="JUSTIFY" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                   </children>
+                                                </AnchorPane>
+                                                <AnchorPane GridPane.columnIndex="2">
+                                                   <children>
+                                                      <Label alignment="CENTER" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="80.0" text="Commenti" textAlignment="JUSTIFY" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                   </children>
+                                                </AnchorPane>
+                                                <AnchorPane GridPane.columnIndex="3">
+                                                   <children>
+                                                      <Label alignment="CENTER" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="80.0" text="Media" textAlignment="JUSTIFY" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                   </children>
+                                                </AnchorPane>
+                                             </children>
+                                          </GridPane>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </AnchorPane>
                            </children>
-                        </AnchorPane>
-                        <PieChart fx:id="chart" labelLineLength="12.0" labelsVisible="false" legendVisible="false" maxWidth="400.0" minWidth="400.0">
-                           <HBox.margin>
-                              <Insets left="40.0" />
-                           </HBox.margin>
-                        </PieChart>
+                           <opaqueInsets>
+                              <Insets bottom="20.0" />
+                           </opaqueInsets>
+                        </VBox>
                      </children>
-                  </HBox>
+                  </AnchorPane>
+                  <Pane maxWidth="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="100.0" />
+                  <AnchorPane>
+                     <children>
+                        <PieChart fx:id="chart" labelLineLength="12.0" labelsVisible="false" legendVisible="false" maxWidth="400.0" minWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
                </children>
-            </AnchorPane>
+            </HBox>
          </children>
-      </HBox>
+      </AnchorPane>
    </children>
 </AnchorPane>

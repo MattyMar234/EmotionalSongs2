@@ -54,6 +54,8 @@ public class SceneManager {
     private static final String CommentArea = "CommentArea.fxml";
     private static final String EmotionChart = "Chart.fxml";
     private static final String ElementDisplayerSearch = "MainPage_ElementDisplayerSearch.fxml";
+    private static final String Chart_element = "Chart_DataDisplayer.fxml";
+
 
     private int theme = 0;
     private ArrayList<ControllerBase> loadedControllers = new ArrayList<>();
@@ -127,7 +129,8 @@ public class SceneManager {
         COMMENT_VIEW(CommentView),
         EDITABLE_LIST_CELL_ELEMENT(EditableListCell),
         EDITABLE_LIST_CELL_HEADER(EditableListCell_header),
-        PLAYLIST_CREATOR(PlaylistCreation_path);
+        PLAYLIST_CREATOR(PlaylistCreation_path),
+        CHART_KEYS(Chart_element);
         
 
         
@@ -581,8 +584,8 @@ public class SceneManager {
                 switch(sceneName) 
                 {
                     case CREATE_PLAYLIST:
-                        stage.setMinWidth(512);
-                        stage.setMinHeight(350);
+                        stage.setMinWidth(500);
+                        stage.setMinHeight(240);
 
                         while(loadedController.size() > 1) loadedController.pop();
                         loadedController.push((ControllerBase)injectScene(SceneElemets.PLAYLIST_CREATOR.file, loadedController.peek().anchor_for_injectScene));                     

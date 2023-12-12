@@ -7,53 +7,77 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="691.0" prefWidth="757.0" stylesheets="@css/ApplicationTheme.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainPage_ElementDisplayer_Controller">
    <children>
-      <AnchorPane fx:id="linearColorAnchorPane" minHeight="-Infinity" prefHeight="551.0" prefWidth="647.0" style="-fx-background-color: linear-gradient(to top, #030300, #eeea00);" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-      <AnchorPane fx:id="blackColorAnchorPane" layoutY="551.0" prefHeight="140.0" prefWidth="647.0" style="-fx-background-color: #030300;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="551.0" />
-      <ScrollPane fitToWidth="true" layoutY="150.0" prefHeight="541.0" prefWidth="647.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <content>
-            <VBox fx:id="elementContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: trasparent;">
+      <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <AnchorPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="280.0" prefWidth="647.0" style="-fx-background-color: trasparent;">
+                  <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="200.0" minHeight="200.0" prefHeight="200.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
                      <children>
-                        <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="70.0">
-                           <children>
-                              <Label fx:id="labelType" prefHeight="28.0" prefWidth="438.0" styleClass="Label-Style1" text="Label" />
-                              <Label fx:id="labelName" prefHeight="46.0" prefWidth="452.0" styleClass="Label-DisplayedeElement-Title" text="Label">
-                                 <font>
-                                    <Font name="System Bold" size="40.0" />
-                                 </font>
-                              </Label>
-                              <Label fx:id="objectsLabel" prefHeight="34.0" prefWidth="456.0" text="Label" />
-                           </children>
-                        </VBox>
-                        <ImageView fx:id="image" fitHeight="180.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="70.0">
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </ImageView>
+                        <AnchorPane fx:id="linearGradien_background_upper" prefHeight="200.0" prefWidth="200.0" />
+                        <AnchorPane fx:id="linearGradien_background_lower" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" />
                      </children>
-                  </AnchorPane>
-                  <AnchorPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="80.0" prefWidth="647.0" style="-fx-background-color: transparent;">
-                     <children>
-                        <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <children>
-                              <AnchorPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="1.0" prefWidth="200.0" style="-fx-background-color: #A0A0A0;">
-                                 <VBox.margin>
-                                    <Insets left="20.0" right="20.0" />
-                                 </VBox.margin>
-                              </AnchorPane>
-                           </children>
-                        </VBox>
-                        <Button fx:id="actionButton" mnemonicParsing="false" text="Button" AnchorPane.rightAnchor="24.0" AnchorPane.topAnchor="12.0" />
-                     </children></AnchorPane>
+                  </GridPane>
                </children>
-            </VBox>
-         </content>
-      </ScrollPane>
+            </AnchorPane>
+            <ScrollPane fitToWidth="true" prefHeight="541.0" prefWidth="647.0" style="-fx-background-color: transparent;">
+               <content>
+                  <VBox fx:id="elementContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: trasparent;">
+                     <children>
+                        <AnchorPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="280.0" prefWidth="647.0" style="-fx-background-color: trasparent;">
+                           <children>
+                              <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="70.0">
+                                 <children>
+                                    <Label fx:id="labelType" prefHeight="28.0" prefWidth="438.0" styleClass="Label-Style1" text="Label" />
+                                    <Label fx:id="labelName" prefHeight="46.0" prefWidth="452.0" styleClass="Label-DisplayedeElement-Title" text="Label">
+                                       <font>
+                                          <Font name="System Bold" size="40.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="objectsLabel" prefHeight="34.0" prefWidth="456.0" text="Label" />
+                                 </children>
+                              </VBox>
+                              <ImageView fx:id="image" fitHeight="180.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="70.0">
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </ImageView>
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="80.0" prefWidth="647.0" style="-fx-background-color: transparent;">
+                           <children>
+                              <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <AnchorPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="1.0" prefWidth="200.0" style="-fx-background-color: #A0A0A0;">
+                                       <VBox.margin>
+                                          <Insets left="20.0" right="20.0" />
+                                       </VBox.margin>
+                                    </AnchorPane>
+                                 </children>
+                              </VBox>
+                              <Button fx:id="actionButton" mnemonicParsing="false" text="Button" AnchorPane.rightAnchor="24.0" AnchorPane.topAnchor="12.0" />
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </VBox>
+               </content>
+            </ScrollPane>
+         </children>
+      </StackPane>
    </children>
 </AnchorPane>

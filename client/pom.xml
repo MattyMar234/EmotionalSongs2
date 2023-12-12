@@ -110,6 +110,10 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/javax.media/jai_core -->
+
+
     </dependencies>
 
     <build>

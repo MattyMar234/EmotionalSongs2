@@ -52,8 +52,6 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     @FXML public VBox elementContainer;
     @FXML public Button actionButton;
 
-    @FXML public AnchorPane linearColorAnchorPane;
-    @FXML public AnchorPane blackColorAnchorPane;
 
     @FXML public ListView<Object> listView;
     private Object displayedElement;
@@ -73,7 +71,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
         actionButton.setDisable(true);
         actionButton.setVisible(false);
 
-        linearColorAnchorPane.setStyle("-fx-background-color: linear-gradient(to top, #030300, #060600);");
+        linearGradien_background_upper.setStyle("-fx-background-color: linear-gradient(to top, #030300, #060600);");
     }
 
 
@@ -178,7 +176,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                     everegedColor = brightenColor(everegedColor, 0.1);
 
                     String color = ColorToHex(everegedColor);
-                    linearColorAnchorPane.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");");
+                    linearGradien_background_upper.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");");
                     
                     Platform.runLater(() -> {
                         image.setImage(img);
@@ -194,7 +192,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
             Color everegedColor = getAverageColor(img);
             everegedColor = brightenColor(everegedColor, 0.1);
             String color = ColorToHex(everegedColor);
-            linearColorAnchorPane.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");");
+            linearGradien_background_upper.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");");
             image.setImage(img);
         }   
     }
@@ -292,6 +290,9 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     private void setupAsPlaylist(Object... data)
     {
         
+        setBackgroundLinearColor(ControllerBase.backgroundImageIndex);
+        image.setImage(new Image(UtilityOS.formatPath(Main.ImageFolder + "\\icon\\playlistIcon.png")));
+
         final Playlist playlist = (Playlist) displayedElement;
         labelName.setText((Main.applicationLanguage == 0 ? "La mia playlist " : "My playlist ") + playlist.getName());
         labelType.setText("Playlist");
@@ -323,10 +324,12 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
 
     private void setupAsPlaylistShower(Object... data) 
     {
+        setBackgroundLinearColor(ControllerBase.backgroundImageIndex);
         labelName.setText("Le tue playlist");
         labelType.setText("");
+
         image.setImage(new Image(UtilityOS.formatPath(Main.ImageFolder + "\\icon\\playlistIcon.png")));
-        linearColorAnchorPane.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ "#050500" +");");
+        //linearGradien_background_upper.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ "#050500" +");");
 
         actionButton.setDisable(false);
         actionButton.setVisible(true);

@@ -58,23 +58,12 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
     
     @FXML public VBox elementContainer;
 
-    @FXML public AnchorPane linearGradien_background_lower;
-    @FXML public AnchorPane linearGradien_background_upper;
+    
 
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) 
-    {
-        Random random = new Random();
-        int number = random.nextInt(22) + 1;
-        Image image = new Image(UtilityOS.formatPath(Main.ImageFolder + "\\colored_icon\\" + number + ".png"));  
-        Color everegedColor = getAverageColor(image, -0.26f);
-
-        //everegedColor = brightenColor(everegedColor, 0.1);
-
-        String color = ColorToHex(everegedColor);
-        this.linearGradien_background_upper.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");"); 
-        this.linearGradien_background_lower.setStyle("-fx-background-color: #030300;"); 
+    public void initialize(URL location, ResourceBundle resources) {
+        setBackgroundLinearColor(ControllerBase.backgroundImageIndex);
     }
     
     @Override

@@ -18,12 +18,14 @@ import application.SceneManager;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -36,18 +38,50 @@ import javax.imageio.ImageIO;
 
 public abstract class ControllerBase {
 
+    protected static final int backgroundImageIndex = 10;
     private Main MainClassReference;
     private HashMap<Object, String[]> windowObjectsTexts = new HashMap<Object, String[]>();
     private HashMap<Object, String[]> ObjectsErrorVisualization = new HashMap<Object, String[]>();
     
+
     public final ConnectionManager connectionManager = ConnectionManager.getConnectionManager();
     public final SceneManager sceneManager = SceneManager.instance();
 
     public Object anchor_for_injectScene;
 
+    @FXML public AnchorPane linearGradien_background_lower;
+    @FXML public AnchorPane linearGradien_background_upper;
+
 
     public ControllerBase() {
         
+    }
+
+    protected void setBackgroundLinearColor(int...val) 
+    {
+        int number;
+
+        if(linearGradien_background_lower == null || linearGradien_background_upper == null)
+            return;
+
+        if(val.length == 0) {
+            Random random = new Random();
+            number = random.nextInt(22) + 1;
+        }
+        else {
+            number = val[0] % 22;
+        }
+
+        
+        Image image = new Image(UtilityOS.formatPath(Main.ImageFolder + "\\colored_icon\\" + number + ".png"));  
+        Color everegedColor = getAverageColor(image, -0.26f);
+
+        //everegedColor = brightenColor(everegedColor, 0.1);
+
+        String color = ColorToHex(everegedColor);
+        this.linearGradien_background_upper.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");"); 
+        this.linearGradien_background_lower.setStyle("-fx-background-color: #030300;"); 
+            
     }
 
     protected static Color getAverageColor(Image image, float brightnessFactor) {

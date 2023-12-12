@@ -316,7 +316,8 @@
 }
 
 .RowContainer-Background {
-    -fx-background-color: #242424;
+    /*-fx-background-color: #242424;*/
+    -fx-background-color: transparent;
 }
 
 .ElementContainer-Background {
@@ -440,6 +441,9 @@
     -fx-pie-color: #58423F;
 }
 .default-color8.chart-pie{
+    -fx-pie-color: #4682B4;
+}
+.default-color9.chart-pie{
     -fx-pie-color: #4682B4;
 }
 

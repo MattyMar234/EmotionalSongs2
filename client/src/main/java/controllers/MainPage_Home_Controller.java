@@ -46,6 +46,8 @@ public class MainPage_Home_Controller extends ControllerBase implements Initiali
     @Override
     public void initialize(URL location, ResourceBundle resources) 
     {
+        setBackgroundLinearColor(ControllerBase.backgroundImageIndex);
+        
         ConnectionManager services = ConnectionManager.getConnectionManager();
 
         try {

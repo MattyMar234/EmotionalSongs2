@@ -58,14 +58,27 @@ public enum EmotionType {
         }
     }
 
+    public String getColorHexValue() {
+        return color;
+    }
+
     public Image getEmotionImage() {
         return new Image(this.image.getUrl());
     }
 
+    /**
+     * 
+     * @param semicolum
+     * @return -fx-fill: color
+     */
     public String getStyleColor(boolean semicolum) {
         return "-fx-fill: " + color + (semicolum ? ";" : "");
     }
 
+    /**
+     * @param semicolum
+     * @return-fx-pie-color: color
+     */
     public String getPieColor(boolean semicolum) {
         return "-fx-pie-color: " + color + (semicolum ? ";" : "");
     }
