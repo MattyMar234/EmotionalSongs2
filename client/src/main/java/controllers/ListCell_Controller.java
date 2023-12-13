@@ -113,9 +113,36 @@ public class ListCell_Controller extends ControllerBase implements Initializable
             case SONG_HEADER ->       setupAsSongHeader();
             case ALBUM_HEADER -> throw new UnsupportedOperationException("Unimplemented case: " + mode);
             case COMMENT_HEADER -> throw new UnsupportedOperationException("Unimplemented case: " + mode);
-            case PLAYLIST_HEADER -> throw new UnsupportedOperationException("Unimplemented case: " + mode);
+            case PLAYLIST_HEADER ->   setupAsPlaylistHeader();
             default -> throw new IllegalArgumentException("Unexpected value: " + mode);
         }
+    }
+
+
+    private void setupAsPlaylistHeader()
+    {
+        Label numerLabel = new Label("#");
+        Label imageLable = new Label(Main.applicationLanguage == 0 ? "Immagine" : "Image");
+        Label titleLable = new Label(Main.applicationLanguage == 0 ? "Titolo" : "Title");
+        Label artistLable = new Label(Main.applicationLanguage == 0 ? "" : "");
+        //FontIcon clockImage = new FontIcon("mdi2c-clock-outline");
+        Label timeLabel = new Label(Main.applicationLanguage == 0 ? "Canzoni presenti" : "Songs present");
+        Label azioniLable = new Label(Main.applicationLanguage == 0 ? "Azioni" : "Actions");
+        
+        numerLabel.getStyleClass().add("Label-Style1");
+        imageLable.getStyleClass().add("Label-Style1");
+        titleLable.getStyleClass().add("Label-Style1");
+        artistLable.getStyleClass().add("Label-Style1");
+        azioniLable.getStyleClass().add("Label-Style1");
+        timeLabel.getStyleClass().add("Label-Style1");
+        //clockImage.getStyleClass().add("generic-fontIcon-style");
+        
+        header_container1.getChildren().add(numerLabel);
+        header_container2.getChildren().add(imageLable);
+        header_container3.getChildren().add(titleLable);
+        header_container4.getChildren().add(artistLable);
+        header_container5.getChildren().add(timeLabel);
+        header_container6.getChildren().add(azioniLable);
     }
 
 
@@ -224,8 +251,19 @@ public class ListCell_Controller extends ControllerBase implements Initializable
     private void setupAsPlaylist() {
         Playlist playlist = (Playlist)element;
         label1.setText(playlist.getName());
-        label2.setText(playlist.getId());
+        //label2.setText(playlist.getId());
 
+        ArrayList<Song> result;
+        try {
+            result = connectionManager.getPlaylistSongs(playlist.getId());
+            timeLabel.setText(Integer.toString(result.size()));
+        } 
+        catch (Exception e) {
+            timeLabel.setText("0");
+            e.printStackTrace();
+        }
+
+    
         MenuItem deleteItem = new MenuItem(Main.applicationLanguage == 0 ? "Elimina Playlist" : "Delete Playlist");
         MenuItem renameItem = new MenuItem(Main.applicationLanguage == 0 ? "Rinomina Playlist" : "Rename Playlist");
 

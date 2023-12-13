@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import Exceptions.InvalidEmailException;
 import Exceptions.InvalidPasswordException;
 import Exceptions.InvalidUserNameException;
 import application.ConnectionManager;
@@ -360,9 +361,17 @@ public class ApplicationAccessController extends ControllerBase implements Initi
             this.LabeErrorlField1.setVisible(true);
             this.LabelError_IMG1.setVisible(true);
             userName.setId("text-field_error");
-            String target = e.getMessage().split(" not found")[0];
+            //String target = e.getMessage().split(" not found")[0];
             
-            this.LabeErrorlField1.setText(Main.applicationLanguage == 0 ? target + " non trovato." : e.getMessage()+".");
+            this.LabeErrorlField1.setText(Main.applicationLanguage == 0 ? "Utente non trovato" : "User not found");
+        }
+        catch(InvalidEmailException e) {
+            this.LabeErrorlField1.setVisible(true);
+            this.LabelError_IMG1.setVisible(true);
+            userName.setId("text-field_error");
+            //String target = e.getMessage().split(" not found")[0];
+            
+            this.LabeErrorlField1.setText(Main.applicationLanguage == 0 ? "Utente non trovato" : "User not found");
         }
         catch (InvalidPasswordException e) {
             this.LabeErrorlField2.setVisible(true);

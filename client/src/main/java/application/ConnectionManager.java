@@ -506,8 +506,25 @@ public class ConnectionManager implements ServerServices{
 
 		try {
 			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_ACCOUNT.name(), params));
+			
+			if(result instanceof String) {
+				switch (enumClasses.ErrorString.valueOf((String)result)) {
+					case INVALID_PASSWORD -> throw new InvalidPasswordException();
+					case INVALID_EMAIL -> throw new InvalidEmailException();
+				}
+			}
+			
 			return (Account) result;
 		} 
+		catch(InvalidPasswordException e) {
+			throw e;
+		}
+		catch(InvalidUserNameException e) {
+			throw e;
+		}
+		catch(InvalidEmailException e) {
+			throw e;
+		}
 		catch (Exception e) {
 			System.out.println(e);
 			e.printStackTrace();

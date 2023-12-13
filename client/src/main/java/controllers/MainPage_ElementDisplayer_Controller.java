@@ -112,8 +112,8 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                             throw new RuntimeException("obejct type must be \"Playlist\" type");
                         
                         setupAsPlaylist(data);   
-                        setImage_and_backgroundColor(); 
-                        setImageLink();
+                        //setImage_and_backgroundColor(); 
+                        //setImageLink();
                         break;
                     case SHOW_SONG:
                         if(!(displayedElement instanceof Song)) 
@@ -171,10 +171,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                 try {
                     //image = Main.imageDownloader.addImageToDownload(imgURL);  
                     img = super.download_Image_From_Internet(imgURL, true);
-                    Color everegedColor = getAverageColor(img);
-
-                    everegedColor = brightenColor(everegedColor, 0.1);
-
+                    Color everegedColor = getAverageColor(img, 0.3f);
                     String color = ColorToHex(everegedColor);
                     linearGradien_background_upper.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");");
                     
@@ -189,8 +186,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
             }).start();
         }
         else {
-            Color everegedColor = getAverageColor(img);
-            everegedColor = brightenColor(everegedColor, 0.1);
+            Color everegedColor = getAverageColor(img, 0.3f);
             String color = ColorToHex(everegedColor);
             linearGradien_background_upper.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");");
             image.setImage(img);
@@ -210,19 +206,20 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     { 
         final Song song = (Song) displayedElement;
         
-
-
         try {
             ArrayList<Emotion> list = connectionManager.getEmotions(song.getId());
 
-            EmotionsChart emotionsChart = (EmotionsChart) SceneManager.instance().injectScene(SceneManager.SceneElemets.CHART.getElemetFilePath(), elementContainer);
-            emotionsChart.injectData(list);
-            
+            if(list.size() != 0) {
+                EmotionsChart emotionsChart = (EmotionsChart) SceneManager.instance().injectScene(SceneManager.SceneElemets.CHART.getElemetFilePath(), elementContainer);
+                emotionsChart.injectData(list);
+            }
+
             CommentArea commentArea = (CommentArea)SceneManager.instance().injectScene(SceneManager.SceneElemets.COMMENT_AREA.getElemetFilePath(), elementContainer);
             commentArea.injectData(song);
 
             for (Emotion emotion : list) {
-                CommentListCell_Controller controller = (CommentListCell_Controller)SceneManager.instance().injectScene(SceneManager.SceneElemets.COMMENT_VIEW.getElemetFilePath(), elementContainer);
+                boolean canBeDeleted = emotion.getID_Account().equals(Main.account.getNickname());
+                CommentListCell_Controller controller = (CommentListCell_Controller)SceneManager.instance().injectScene(SceneManager.SceneElemets.COMMENT_VIEW.getElemetFilePath(), elementContainer, canBeDeleted);
                 controller.injectData(emotion);
             }
         } 
@@ -231,9 +228,6 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
             e.printStackTrace();
         }
 
-        
-
-       
         labelName.setText(song.getTitle());
         labelType.setText("Song");
 
@@ -263,15 +257,22 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                 //ObservableList.addAll(songs);
                 ArrayList<Song> songs = connectionManager.getAlbumSongs(album.getID());
                 
-                System.out.println("element: " + songs.size());
-                for (Song song : songs) {
-
+            
+                Platform.runLater(() -> {
+                    ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_HEADER, elementContainer);
+                    listCell.injectData(ListCell_DisplayMode.SONG_HEADER);
+                });
+                long i = 1;
+                for (Song song : songs) 
+                {
+                    final long j = i;
                     System.out.println("loading element: " + song.getTitle());
-                    
+                
                     Platform.runLater(() -> {
                         ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_ELEMENT, elementContainer);
-                        listCell.injectData(ListCell_DisplayMode.DISPLAY_SONG,song);
+                        listCell.injectData(ListCell_DisplayMode.DISPLAY_SONG, song, null, j);
                     });
+                    i++;
                 } 
             } 
             catch (Exception e) {
@@ -289,26 +290,36 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
 
     private void setupAsPlaylist(Object... data)
     {
-        
         setBackgroundLinearColor(ControllerBase.backgroundImageIndex);
         image.setImage(new Image(UtilityOS.formatPath(Main.ImageFolder + "\\icon\\playlistIcon.png")));
 
         final Playlist playlist = (Playlist) displayedElement;
         labelName.setText((Main.applicationLanguage == 0 ? "La mia playlist " : "My playlist ") + playlist.getName());
         labelType.setText("Playlist");
+        objectsLabel.setText(Main.account.getNickname());
+        
 
         new Thread(() -> {
             try {
                 ArrayList<Song> song_list = connectionManager.getPlaylistSongs(playlist.getId());
 
+            
+                Platform.runLater(() -> {
+                    ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_HEADER, elementContainer);
+                    listCell.injectData(ListCell_DisplayMode.SONG_HEADER);
+                });
+
                 //carico le playlist
                 try {
+                    long i = 1;
                     for (Song song : song_list){
-
+                        final long j = i;
                         Platform.runLater(() -> {
+                            
                             ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_ELEMENT, elementContainer);
-                            listCell.injectData(ListCell_DisplayMode.DISPLAY_SONG, song);
+                            listCell.injectData(ListCell_DisplayMode.DISPLAY_SONG, song, null, j);
                         });
+                        i++;
                     } 
                 } 
                 catch (Exception e) {
@@ -325,15 +336,16 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     private void setupAsPlaylistShower(Object... data) 
     {
         setBackgroundLinearColor(ControllerBase.backgroundImageIndex);
-        labelName.setText("Le tue playlist");
-        labelType.setText("");
-
         image.setImage(new Image(UtilityOS.formatPath(Main.ImageFolder + "\\icon\\playlistIcon.png")));
+        labelName.setText(Main.applicationLanguage == 0 ? "Le tue playlist" : "Your playlist");
+        labelType.setText("");
+        objectsLabel.setText("");
+        
         //linearGradien_background_upper.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ "#050500" +");");
 
         actionButton.setDisable(false);
         actionButton.setVisible(true);
-        actionButton.setText("Crea una nuova playlist");
+        actionButton.setText(Main.applicationLanguage == 0 ? "Crea una nuova playlist" : "Create a new playlist");
 
         actionButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
@@ -346,14 +358,22 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
             try {
                 ArrayList<Playlist> playlist_list = connectionManager.getAccountPlaylists(Main.account.getNickname());
 
+            
+                Platform.runLater(() -> {
+                    ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_HEADER, elementContainer);
+                    listCell.injectData(ListCell_DisplayMode.PLAYLIST_HEADER);
+                });
+
                 //carico le playlist
                 try {
+                    long i = 1;
                     for (Playlist p : playlist_list){
-
+                        final long j = i;
                         Platform.runLater(() -> {
                             ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_ELEMENT, elementContainer);
-                            listCell.injectData(ListCell_DisplayMode.DISPLAY_PLAYLIST, p);
+                            listCell.injectData(ListCell_DisplayMode.DISPLAY_PLAYLIST, p, null, j);
                         });
+                        i++;
                     } 
                 } 
                 catch (Exception e) {
@@ -368,46 +388,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     }
 
 
-    public static Color getAverageColor(Image image) {
-        // Create a PixelReader to read pixel data
-        PixelReader pixelReader = image.getPixelReader();
-
-        int width = (int) image.getWidth();
-        int height = (int) image.getHeight();
-
-        // Initialize variables for calculating average color components
-        double totalRed = 0;
-        double totalGreen = 0;
-        double totalBlue = 0;
-        //double pixelCount = 0;
-        // Iterate through all pixels and accumulate color components
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                Color color = pixelReader.getColor(x, y);
-
-                /*if(color.getRed() > 32 && color.getGreen() > 32 && color.getBlue() > 32 ) {
-                    totalRed += color.getRed();
-                    totalGreen += color.getGreen();
-                    totalBlue += color.getBlue();
-                    pixelCount++;
-                }*/
-
-                totalRed += color.getRed();
-                totalGreen += color.getGreen();
-                totalBlue += color.getBlue();
-                    
-            }
-        }
-
-        // Calculate average color components
-        double pixelCount = width * height;
-        double averageRed = totalRed / pixelCount;
-        double averageGreen = totalGreen / pixelCount;
-        double averageBlue = totalBlue / pixelCount;
-
-        // Create a color from the average components
-        return new Color(averageRed, averageGreen, averageBlue, 1);
-    }
+    
 
 
     public static Color brightenColor(Color originalColor, double factor) {
@@ -417,10 +398,5 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
 
         return new Color(r, g, b, originalColor.getOpacity());
     }
-    
 
-    
-
-    
-    
 }

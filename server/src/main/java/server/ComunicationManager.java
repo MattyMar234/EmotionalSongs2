@@ -511,11 +511,11 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 
 			//verifico se l'ho trovato
 			if(account == null)
-				return new InvalidEmailException();
+				return enumclass.ErrorString.INVALID_EMAIL.name();
 
 			//verifico se le password combaciano
 			if(!account.getPassword().equals(DigestUtils.sha256Hex((String) argsTable.get(QueryParameter.PASSWORD.toString()))))
-				return new InvalidPasswordException();
+				return enumclass.ErrorString.INVALID_PASSWORD.name();
 
 			return account;
 		} 
