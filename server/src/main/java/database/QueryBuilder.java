@@ -22,8 +22,18 @@ import database.PredefinedSQLCode.Operazioni_SQL;
 public class QueryBuilder 
 {
     private static Terminal terminal = Terminal.getInstance();
+    private static boolean queryDebug = false;
+
+    public static void setQueryDebug(boolean mode) {
+        queryDebug = mode;
+        Terminal.getInstance().printInfoln(mode ? "DynamicQueryDebug: true" : "DynamicQueryDebug: false");
+    }
 
     private static void printQuery(final StringBuilder sb) {
+        
+        if(!queryDebug)
+            return;
+        
         new Thread(() -> {
             terminal.printQueryln(sb.toString());
         });
@@ -105,7 +115,6 @@ public class QueryBuilder
    /**
      * Questa funzione genera la query per inserire un elemento in una tabella
      * @param tableName Nome della tabella
-     * @param colonne  Un'HashMap contenete coppie (colonna - valore)
      * @return La stringa che rappresenta la query
      */
     public static String insert_query_creator(final Tabelle tableName, HashMap<Colonne, Object> informazioni)
@@ -231,6 +240,32 @@ public class QueryBuilder
         sb.append(");");
 
         printQuery(sb);
+        return sb.toString();
+    }
+
+    public static String exportQuery(String table, String path) {
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("COPY ");
+        sb.append(table);
+        sb.append(" TO ");
+        sb.append("\'" + path + "\'");
+        sb.append(" DELIMITER ',' CSV HEADER;");
+
+        return sb.toString();
+    }
+
+    public static String importQuery(String table, String path, String headerFileCSV) {
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("COPY ");
+        sb.append(table);
+        sb.append(" (");
+        sb.append(headerFileCSV);
+        sb.append(") FROM ");
+        sb.append("\'" + path + "\'");
+        sb.append(" DELIMITER ',' CSV HEADER;");
+
         return sb.toString();
     }
 
@@ -418,7 +453,7 @@ public class QueryBuilder
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT c.* FROM  " + Tabelle.SONG + " c JOIN " + Tabelle.ALBUM + " a ON c.ID_Album = a.ID WHERE a.ID = \'" + albumID + "\'");
         
-        //terminal.printQuery_ln(sb.toString());
+        printQuery(sb);
         return sb.toString();
     }
 
@@ -428,7 +463,7 @@ public class QueryBuilder
         sb.append("SELECT * FROM " + PredefinedSQLCode.Tabelle.ALBUM_IMAGES.toString());
         sb.append(" WHERE " + PredefinedSQLCode.Colonne.ID.getName() + " = '" + ID +"';");
 
-        //terminal.printQuery_ln(sb.toString());
+        printQuery(sb);
         return sb.toString();
     }
 
@@ -446,7 +481,7 @@ public class QueryBuilder
             sb.append(PredefinedSQLCode.Colonne.ID.getName() + " = '" + IDs[i] + (i < IDs.length - 1 ? "' OR " : "';"));
         } 
 
-        //terminal.printQuery_ln(sb.toString());
+        printQuery(sb);
         return sb.toString();
     }
 
@@ -460,7 +495,7 @@ public class QueryBuilder
         sb.append("SELECT * FROM " + PredefinedSQLCode.Tabelle.SONG.toString());
         sb.append(" WHERE " + PredefinedSQLCode.Colonne.ALBUM_ID_REF.getName() + " = '" + ID +"';");
 
-        //printQuery(sb);
+        printQuery(sb);
         return sb.toString();
     }
 
@@ -480,7 +515,7 @@ public class QueryBuilder
         sb.append(" WHERE " + Colonne.ELEMENT.getName() + " >= " + threshold + " ORDER BY " + Colonne.RELEASE_DATE.getName() + " DESC) ");      
         sb.append(" ORDER BY a." + Colonne.RELEASE_DATE.getName() + " DESC LIMIT " + limit + " OFFSET " + offset + ";");
         
-        //terminal.printQuery_ln(sb.toString());
+        printQuery(sb);
         return sb.toString();
 
     }
@@ -496,7 +531,7 @@ public class QueryBuilder
         sb.append(" ORDER BY c." + Colonne.TITLE.getName() + ", a." + Colonne.RELEASE_DATE.getName());   
         sb.append(" LIMIT " + limit + " OFFSET " + offset + ";");
 
-        //printQuery(sb);
+        printQuery(sb);
         return sb.toString();
     }
 
@@ -509,7 +544,7 @@ public class QueryBuilder
         //sb.append(" ORDER BY c." + Colonne.TITLE.getName() + ", a." + Colonne.RELEASE_DATE.getName());   
         sb.append(";");
 
-        //printQuery(sb);
+        printQuery(sb);
         return sb.toString();
     }
 
@@ -524,7 +559,7 @@ public class QueryBuilder
         sb.append(" ORDER BY a." + Colonne.NAME.getName() + ", a." + Colonne.RELEASE_DATE.getName());
         sb.append(" LIMIT " + limit + " OFFSET " + offset + ";");
 
-        //printQuery(sb);
+        printQuery(sb);
         return sb.toString();
 
     }
@@ -556,7 +591,7 @@ public class QueryBuilder
         sb.append("'" + date + "', ");
         sb.append("'" + accountID + "');");
         
-        //printQuery(sb);
+        printQuery(sb);
         return sb.toString();
     }
 
@@ -599,7 +634,7 @@ public class QueryBuilder
         sb.append("'" + playlistID + "', ");
         sb.append("'" + songID + "');");
 
-        //printQuery(sb);
+        printQuery(sb);
         return sb.toString();
     }
 
@@ -609,7 +644,7 @@ public class QueryBuilder
         sb.append(Colonne.PLAYLIST_ID_REF.getName() + " = '" + playlistID + "' AND ");
         sb.append(Colonne.SONG_ID_REF.getName() + " = '" + songID + "';");
 
-        //printQuery(sb);
+        printQuery(sb);
         return sb.toString();
     }
 
@@ -619,7 +654,7 @@ public class QueryBuilder
         sb.append(Colonne.NAME.getName() + " = '" + newName + "' WHERE ");
         sb.append(Colonne.ID.getName() + " = '" + playlistID + "';");
 
-        //printQuery(sb);
+        printQuery(sb);
         return sb.toString();
     }
 
@@ -630,7 +665,7 @@ public class QueryBuilder
         sb.append("SELECT * FROM " + Tabelle.EMOZIONE + " WHERE ");
         sb.append(Colonne.SONG_ID_REF.getName() + " = '" + songID + "';");
 
-        //printQuery(sb);
+        printQuery(sb);
         return sb.toString();
     }
 
@@ -639,7 +674,7 @@ public class QueryBuilder
         sb.append("DELETE FROM " + Tabelle.PLAYLIST + " WHERE ");
         sb.append(Colonne.ID.getName() + " = '" + playlistID + "';");
 
-        //printQuery(sb);
+        printQuery(sb);
         return sb.toString();
     }
 
@@ -648,7 +683,7 @@ public class QueryBuilder
         sb.append("DELETE FROM " + Tabelle.ACCOUNT + " WHERE ");
         sb.append(Colonne.ID.getName() + " = '" + accountID + "';");
 
-        //printQuery(sb);
+        printQuery(sb);
         return sb.toString();
     }
 
@@ -657,7 +692,7 @@ public class QueryBuilder
         sb.append("SELECT * FROM " + Tabelle.SONG + " WHERE ");
         sb.append(Colonne.ARTIST_ID_REF.getName() + " = '" + artistID + "';");
 
-        //printQuery(sb);
+        printQuery(sb);
         return sb.toString();
     }
 
@@ -667,7 +702,7 @@ public class QueryBuilder
         sb.append(Colonne.ID.getName() + " IN (SELECT " + Colonne.SONG_ID_REF.getName() + " FROM " + Tabelle.PLAYLIST_SONGS + " WHERE ");
         sb.append(Colonne.PLAYLIST_ID_REF.getName() + " = '" + playlistID + "');");
 
-        //printQuery(sb);
+        printQuery(sb);
         return sb.toString();
     }
 
@@ -676,7 +711,7 @@ public class QueryBuilder
         sb.append("SELECT * FROM " + Tabelle.ALBUM + " WHERE ");
         sb.append(Colonne.ID.getName() + " = '" + ID + "';");
 
-        //printQuery(sb);
+        printQuery(sb);
         return sb.toString();
     }
 
@@ -685,12 +720,19 @@ public class QueryBuilder
         sb.append("SELECT * FROM " + Tabelle.ALBUM + " WHERE ");
         sb.append(Colonne.ARTIST_ID_REF.getName() + " = '" + artistID + "';");
 
-        //printQuery(sb);
+        printQuery(sb);
         return sb.toString();
     }
 
+    // public static String deleteEmotion_query(String emotionID)
+    // {
+    //     dele
 
+        
 
+    //     printQuery(sb);
+    //     return sb.toString();
+    // }
 
     /*=======================================[Utility]=======================================*/
     public static String editColumSize(PredefinedSQLCode.Tabelle table, PredefinedSQLCode.Colonne colum) 

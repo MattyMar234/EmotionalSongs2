@@ -274,7 +274,7 @@ public class PredefinedSQLCode
         return output;
     }
 
-    public static void crea_INSER_query_ed_esegui(HashMap<String, Object> data, Tabelle t, App main) 
+    public static void crea_INSER_query_ed_esegui(HashMap<String, Object> data, Tabelle t, App main, boolean... enable) 
     {
         String query = "";
         try 
@@ -290,6 +290,11 @@ public class PredefinedSQLCode
         } 
         catch (SQLException e) 
         {
+            if(enable.length > 0 && enable[0] == true) {
+                System.out.println(e);
+                return;
+            }
+               
             if(e.getMessage().toLowerCase().contains("duplicate") || e.getMessage().toLowerCase().contains("duplicato")) {
                 //System.out.println("hereee");
             }
@@ -301,8 +306,7 @@ public class PredefinedSQLCode
                 System.out.println("error: " + Terminal.Color.RED_BOLD_BRIGHT + e.getMessage() + Terminal.Color.RESET);
                 System.out.println("Query: " + Terminal.Color.CYAN_BOLD_BRIGHT + query + Terminal.Color.RESET);
                 //System.exit(0);
-            }
+            } 
         }
-        
     }
 }

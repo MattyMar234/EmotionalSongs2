@@ -1,24 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.text.Text?>
-<VBox id="maincontainer"
-      alignment="TOP_CENTER"
-      xmlns="http://javafx.com/javafx/18"
-      xmlns:fx="http://javafx.com/fxml/1"
-      stylesheets="@styles/about.css"  >
-    <VBox       alignment="CENTER"
-                id="textcontent" >
-        <Text text="Emotional Songs 2.0"/>
-        <Text text="Aggiungere descrizione..."/>
-
-
-    </VBox>
-
-
-</VBox>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: transparent;" stylesheets="@css/ApplicationTheme.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.AboutController">
+   <children>
+      <BorderPane layoutX="5.0" layoutY="5.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+         <center>
+            <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="557.0" spacing="10.0">
+               <children>
+                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                  <Label text="Questo software è stato sviluppato da:" textFill="WHITE" />
+                  <Label text="Matteo Mariani" textFill="WHITE" />
+                  <Label text="Francesco Vulcano" textFill="WHITE" />
+                  <Label text="Michele Arduini" textFill="WHITE" />
+                  <Label text="Angrea Giani" textFill="WHITE" />
+               </children>
+            </VBox>
+         </center>
+         <bottom>
+            <Label text="Università degli Studi dell'Insubria - Varese - 2023-2024" textFill="WHITE" BorderPane.alignment="CENTER" />
+         </bottom>
+      </BorderPane>
+   </children>
+</AnchorPane>

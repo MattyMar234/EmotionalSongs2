@@ -18,7 +18,7 @@ public enum QueryParameter
     OFFSET("Offset"),
     THRESHOLD("Threshold"),
     SEARCH_STRING("SearchString"),
-    IDS("IDs"),
+    ID("IDs"),
     ALBUM_ID("AlbumID"),
     ACCOUNT_ID("AccountID"),
     PLAYLIST_NAME("PlaylistName"),

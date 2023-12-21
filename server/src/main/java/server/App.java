@@ -40,18 +40,22 @@ public class App extends JFrame
 
     private static App instance;
 
-    private static enum jsonDataName {
+    private static enum JsonDataName {
 
-        SERVER_PORT("Port_server"),
-        DATABASE_PORT("Port_database"),
-        DATABASE_IP("IP_database"),
-        DATABASE_PW("Pw_database"),
-        DATABASE_USER("User_database"),
-        DATABASE_NAME("Name_database");
+        SERVER_PORT("Port_server"    , 8090),
+        DATABASE_PORT("Port_database", 5432),
+        DATABASE_IP("IP_database"    , "127.0.0.1"),
+        DATABASE_PW("Pw_database"    , "admin"),
+        DATABASE_USER("User_database", "postgres"),
+        DATABASE_NAME("Name_database", "EmotionalSongs"),
+        AUTO_START("Auto_Start"      , false);
+
         private String s;
+        private Object defoultValue;
 
-        private jsonDataName(String s) {
+        private JsonDataName(String s, Object defoultValue) {
             this.s = s;
+            this.defoultValue = defoultValue;
         }
 
         @Override
@@ -131,11 +135,11 @@ public class App extends JFrame
             database.connect();
             if(database.testConnection() && database.connect()) {
                 terminal.printSuccesln("Database found and connection established");
-                databaseConnected = true;
+                databaseConnected = database.isConnected();
             }
             else {
                 terminal.printErrorln(Terminal.Color.RED_BOLD_BRIGHT + "Database not responding" + Terminal.Color.RESET);
-                databaseConnected = false;
+                databaseConnected = database.isConnected();
             } 
         } 
         catch (Exception e) {
@@ -149,7 +153,7 @@ public class App extends JFrame
      * @return
      */
     public boolean isDatabaseConnected() {
-        return databaseConnected;
+        return database.isConnected();
     }
 
     /**
@@ -159,27 +163,35 @@ public class App extends JFrame
     private boolean checkSettings() 
     {
         Terminal terminal = Terminal.getInstance();
-        
-        
         Path folder = Paths.get(App.SETTINGS_DIRECTORY);
         Path file = Paths.get(App.FILE_SETTINGS_PATH);
 
         try {
             if(!Files.exists(folder)) {
                 Files.createDirectory(folder);
-            } 
-            if(!Files.exists(file) || Files.size(file) <= 12) {
-                
                 terminal.printErrorln("settings file not found");
                 initializeSettings();
-            }
-           
-            return true;
-            
-        } catch (Exception e) {
+                return false;
+            } 
+            if(!Files.exists(file) || Files.size(file) <= 12) {
+                terminal.printErrorln("settings file not found");
+                initializeSettings();
+                return false;
+            }  
+        } 
+        catch (Exception e) {
             e.printStackTrace();
-            return false;
+            terminal.printErrorln(e.toString());
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+            System.exit(0);
         }
+
+        return true;
     }
 
     /**
@@ -191,18 +203,21 @@ public class App extends JFrame
         Terminal terminal = Terminal.getInstance();
         terminal.printInfoln("Loading settings");
 
-        if(!checkSettings())
+        if(!checkSettings()) {
+            terminal.printSuccesln("Loading completed");
             return;
+        }
+            
 
         JsonNode node = JsonParser.readJsonFile(FILE_SETTINGS_PATH);
 
-        this.port = node.get(jsonDataName.SERVER_PORT.toString()).asInt();
-        this.DB_port = node.get(jsonDataName.DATABASE_PORT.toString()).asInt();
-        this.DB_IP = node.get(jsonDataName.DATABASE_IP.toString()).asText();
-        this.DB_password = node.get(jsonDataName.DATABASE_PW.toString()).asText();
-        this.DB_user = node.get(jsonDataName.DATABASE_USER.toString()).asText();
-        this.DB_name = node.get(jsonDataName.DATABASE_NAME.toString()).asText();
-        this.autoRun = node.get("ServerAutoRUN").asBoolean();
+        this.port = node.get(JsonDataName.SERVER_PORT.toString()).asInt();
+        this.DB_port = node.get(JsonDataName.DATABASE_PORT.toString()).asInt();
+        this.DB_IP = node.get(JsonDataName.DATABASE_IP.toString()).asText();
+        this.DB_password = node.get(JsonDataName.DATABASE_PW.toString()).asText();
+        this.DB_user = node.get(JsonDataName.DATABASE_USER.toString()).asText();
+        this.DB_name = node.get(JsonDataName.DATABASE_NAME.toString()).asText();
+        this.autoRun = node.get(JsonDataName.AUTO_START.toString()).asBoolean();
 
         terminal.printSuccesln("Loading completed");
 
@@ -217,20 +232,32 @@ public class App extends JFrame
         Terminal terminal = Terminal.getInstance();
         terminal.printInfoln("setup default settings");
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode data = objectMapper.createObjectNode();
+        // ObjectMapper objectMapper = new ObjectMapper();
+        // JsonNode data = objectMapper.createObjectNode();
 
-        ((ObjectNode) data).put(jsonDataName.SERVER_PORT.toString(), 8090);
-        ((ObjectNode) data).put(jsonDataName.DATABASE_IP.toString(), "localhost");
-        ((ObjectNode) data).put(jsonDataName.DATABASE_PORT.toString(), 5432);
-        ((ObjectNode) data).put(jsonDataName.DATABASE_PW.toString(), "admin");
-        ((ObjectNode) data).put(jsonDataName.DATABASE_USER.toString(), "postgres");
-        ((ObjectNode) data).put(jsonDataName.DATABASE_NAME.toString(), "EmotionalSongs");
-        ((ObjectNode) data).put("ServerAutoRUN", false);
+        // for (JsonDataName jsonDataName : JsonDataName.values()) {
+        //     Object dato = jsonDataName.defoultValue;
 
-        JsonParser.writeJsonFile(FILE_SETTINGS_PATH, data);
-        loadSettings();
+        //     if(dato instanceof String)
+        //         ((ObjectNode) data).put(jsonDataName.toString(), (String) dato);
+        //     else if(dato instanceof Integer)
+        //         ((ObjectNode) data).put(jsonDataName.toString(), (Integer) dato);
+        //     else if(dato instanceof Boolean)
+        //         ((ObjectNode) data).put(jsonDataName.toString(), (Boolean) dato);
+        // }
+
+        this.DB_IP = (String) JsonDataName.DATABASE_IP.defoultValue;
+        this.DB_port = (Integer) JsonDataName.DATABASE_PORT.defoultValue;
+        this.DB_password = (String) JsonDataName.DATABASE_PW.defoultValue;
+        this.DB_user = (String) JsonDataName.DATABASE_USER.defoultValue;
+        this.DB_name = (String) JsonDataName.DATABASE_NAME.defoultValue;
+        this.port = (Integer) JsonDataName.SERVER_PORT.defoultValue;
+        this.autoRun = (Boolean) JsonDataName.AUTO_START.defoultValue;
+
+        //JsonParser.writeJsonFile(FILE_SETTINGS_PATH, data);
+        //loadSettings();
         saveSettings();
+        terminal.printInfoln("settings saved");
     }
 
     /**
@@ -240,13 +267,13 @@ public class App extends JFrame
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode data = objectMapper.createObjectNode();
 
-        ((ObjectNode) data).put(jsonDataName.SERVER_PORT.toString(), this.port);
-        ((ObjectNode) data).put(jsonDataName.DATABASE_IP.toString(), this.DB_IP);
-        ((ObjectNode) data).put(jsonDataName.DATABASE_PORT.toString(), this.DB_port);
-        ((ObjectNode) data).put(jsonDataName.DATABASE_PW.toString(), this.DB_password);
-        ((ObjectNode) data).put(jsonDataName.DATABASE_USER.toString(), this.DB_user);
-        ((ObjectNode) data).put(jsonDataName.DATABASE_NAME.toString(), this.DB_name);
-        ((ObjectNode) data).put("ServerAutoRUN", false);
+        ((ObjectNode) data).put(JsonDataName.SERVER_PORT.toString()  , this.port);
+        ((ObjectNode) data).put(JsonDataName.DATABASE_IP.toString()  , this.DB_IP);
+        ((ObjectNode) data).put(JsonDataName.DATABASE_PORT.toString(), this.DB_port);
+        ((ObjectNode) data).put(JsonDataName.DATABASE_PW.toString()  , this.DB_password);
+        ((ObjectNode) data).put(JsonDataName.DATABASE_USER.toString(), this.DB_user);
+        ((ObjectNode) data).put(JsonDataName.DATABASE_NAME.toString(), this.DB_name);
+        ((ObjectNode) data).put(JsonDataName.AUTO_START.toString()   , this.autoRun);
 
         JsonParser.writeJsonFile(FILE_SETTINGS_PATH, data);
     }

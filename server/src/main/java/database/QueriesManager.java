@@ -400,9 +400,6 @@ public class QueriesManager
 
     /**
      * Funnzione per crecre un nuovo commento
-     * @param accountID
-     * @param songID
-     * @param comment
      * @throws SQLException
      */
     public static void addEmotion(HashMap<Colonne, Object> ColonneValore) throws SQLException {
@@ -412,14 +409,15 @@ public class QueriesManager
         
     /**
      * Eliminare un commento
-     * @param accountID
-     * @param commentID
      * @throws SQLException
      */
-    public static void deleteEmotion(String string) throws SQLException{
-        //da implementare
+    public static void deleteEmotion(String emotionID) throws SQLException{
+        
+        String query = QueryBuilder.deleteQueryCreator_by_primaryKey(Tabelle.EMOZIONE, emotionID);
+        database.submitQuery(query);
     }
 
+    
    
 
     public static Object getSongEmotion(String songID) throws SQLException 

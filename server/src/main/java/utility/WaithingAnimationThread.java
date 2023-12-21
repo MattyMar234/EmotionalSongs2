@@ -77,8 +77,9 @@ public class WaithingAnimationThread extends Thread
                 try {wait();} catch (InterruptedException e) {}
                 this.inPause = false;
             }
-        } else {
-
+        } 
+        else 
+        {
             clear();
             System.out.print(text + animation.frames[(step = (++step % animation.frames.length))]);
             System.out.flush();
@@ -107,7 +108,7 @@ public class WaithingAnimationThread extends Thread
 
     public synchronized void restart() {
         pause = false;
-        notify();
+        notifyAll();
     } 
 
     public synchronized void terminate() {

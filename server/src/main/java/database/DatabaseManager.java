@@ -48,7 +48,7 @@ public class DatabaseManager {
 
         jdbcOptions = new Properties();
         jdbcOptions.put("user", user);
-        jdbcOptions.put("password", password);
+        jdbcOptions.put("password", this.password);
         /*jdbcOptions.put("serverTimezone", "UTC");
         jdbcOptions.put("useSSL", "false");
         jdbcOptions.put("useUnicode", "true");
@@ -80,6 +80,7 @@ public class DatabaseManager {
             return;
 
         connection.close();
+        connection = null;
     }
 
 
@@ -148,6 +149,10 @@ public class DatabaseManager {
 
     public Connection getConnection(){
         return connection;
+    }
+
+    public boolean isConnected() {
+        return connection != null;
     }
 
 }

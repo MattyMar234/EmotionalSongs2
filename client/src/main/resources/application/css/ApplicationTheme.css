@@ -32,6 +32,7 @@
     -fx-cursor: hand; 
 }
 
+
 .PrimaryButton {
     -fx-background-color: -tertiary;
     -fx-text-fill: #FFFFFF;
@@ -41,7 +42,23 @@
 .PrimaryButton:hover {
     -fx-scale-x: 1.02; /* Increase the X scale on hover */
     -fx-scale-y: 1.02; /* Increase the Y scale on hover */
+    -fx-cursor: hand; 
     -fx-background-color: derive(-tertiary, 20%);
+}
+
+
+.secondary-button{
+    -fx-background-color: transparent;
+    -fx-border-radius: 5;
+    -fx-border-width:2;
+    -fx-border-color: #FF0000;
+    -fx-text-fill: #FF0000; 
+}
+
+.secondary-button:hover {
+    -fx-scale-x: 1.02; /* Increase the X scale on hover */
+    -fx-scale-y: 1.02; /* Increase the Y scale on hover */
+    -fx-cursor: hand; 
 }
 
 

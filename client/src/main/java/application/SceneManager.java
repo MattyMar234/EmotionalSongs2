@@ -55,6 +55,8 @@ public class SceneManager {
     private static final String EmotionChart = "Chart.fxml";
     private static final String ElementDisplayerSearch = "MainPage_ElementDisplayerSearch.fxml";
     private static final String Chart_element = "Chart_DataDisplayer.fxml";
+    private static final String aboutPage = "about.fxml";
+    private static final String UserPage = "userinfo.fxml";
 
 
     private int theme = 0;
@@ -119,6 +121,8 @@ public class SceneManager {
         BASE_CONTAINER(BaseContainer_path),
         REGISTRATION(RegistrationPage_path),
         ACCESS(AccessPage_path),
+        ABOUT_PAGE(aboutPage),
+        USER_PAGE(UserPage),
         MAIN_SIDEBAR(MainPage_SideBar_path),
         MAIN_HOME(MainPage_home_path),
         MAIN_EXPLORE(null),
@@ -165,6 +169,8 @@ public class SceneManager {
         MAIN_PAGE_SHOW_ALBUM,
         MAIN_PAGE_SHOW_PLAYLIST,
         MAIN_PAGE_SEARCH,
+        MAIN_PAGE_ABOUT,
+        MAIN_PAGE_USER,
         DISPLAY_ELEMENT_PAGE,
 
         CREATE_PLAYLIST;
@@ -517,6 +523,9 @@ public class SceneManager {
                 switch(sceneName) 
                 {
                     case ACCESS_PAGE:
+
+                        Main.account = null;
+
                         while(loadedController.size() > 1) loadedController.pop();
                         loadedController.push((ControllerBase)injectScene(SceneElemets.ACCESS.file, loadedController.peek().anchor_for_injectScene));
                         stage.setMinWidth(800);
@@ -555,6 +564,34 @@ public class SceneManager {
                             loadedController.push((ControllerBase)injectScene(SceneElemets.MAIN_SIDEBAR.file, loadedController.peek().anchor_for_injectScene));
                         }
                         loadedController.push((ControllerBase)injectScene(SceneElemets.MAIN_SEARCH_DISPLAYER.file, loadedController.peek().anchor_for_injectScene));
+
+                        break;
+
+                    case MAIN_PAGE_ABOUT:
+                        while(loadedController.size() > 2) loadedController.pop();
+
+                        if(loadedController.size() == 1) {
+                           loadedController.push((ControllerBase)injectScene(SceneElemets.MAIN_SIDEBAR.file, loadedController.peek().anchor_for_injectScene)); 
+                        }
+                        else if(!(loadedController.peek() instanceof MainPage_SideBar_Controller)) {
+                            loadedController.pop();
+                            loadedController.push((ControllerBase)injectScene(SceneElemets.MAIN_SIDEBAR.file, loadedController.peek().anchor_for_injectScene));
+                        }
+                        loadedController.push((ControllerBase)injectScene(SceneElemets.ABOUT_PAGE.file, loadedController.peek().anchor_for_injectScene));
+                        break;
+
+                    case MAIN_PAGE_USER:
+
+                        while(loadedController.size() > 2) loadedController.pop();
+
+                        if(loadedController.size() == 1) {
+                           loadedController.push((ControllerBase)injectScene(SceneElemets.MAIN_SIDEBAR.file, loadedController.peek().anchor_for_injectScene)); 
+                        }
+                        else if(!(loadedController.peek() instanceof MainPage_SideBar_Controller)) {
+                            loadedController.pop();
+                            loadedController.push((ControllerBase)injectScene(SceneElemets.MAIN_SIDEBAR.file, loadedController.peek().anchor_for_injectScene));
+                        }
+                        loadedController.push((ControllerBase)injectScene(SceneElemets.USER_PAGE.file, loadedController.peek().anchor_for_injectScene));
 
                         break;
 

@@ -52,6 +52,7 @@ public interface SocketService
     public Object getSongEmotion(HashMap<String, Object> argsTable) throws Exception;
     public Object addEmotion(final HashMap<String, Object> argsTable) throws Exception;
     public Object deleteEmotion(final HashMap<String, Object> argsTable) throws Exception;
+    public Object getAccountEmotion(final HashMap<String, Object> argsTable) throws Exception;
     
 
     /////////////////////////////////////////////////////////////////////////////////

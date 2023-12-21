@@ -1,15 +1,31 @@
 package server;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.swing.JFileChooser;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvException;
 
 import Parser.JsonParser;
 import database.PredefinedSQLCode;
@@ -30,6 +46,14 @@ public class Loader {
     private static Loader instance;
     private Terminal terminal;
     private App main;
+    private FileType filesType = FileType.CSV;
+    private int progressBarsLastValue = -1;
+    private long lastprogressBarUpdate = 0;
+    
+
+    private enum FileType {
+        JSON, CSV
+    }
 
     //pattern singleton
     public static Loader getInstance() {
@@ -70,67 +94,135 @@ public class Loader {
         }
     }
 
+    private void makeProgressBar(long index, long total) 
+    {
+        final double step = terminal.getTerminalColumns() - 32;
+        StringBuilder sb = new StringBuilder();
+
+        long startTime = System.currentTimeMillis();
+        double progressPercentage = (double) index / total;
+        int progressBars = (int) (progressPercentage * step); // Lunghezza della barra di avanzamento
+
+        if(progressBarsLastValue == progressBars && startTime - lastprogressBarUpdate < 1000)
+            return;
+
+        lastprogressBarUpdate = System.currentTimeMillis();
+
+        // Calcola il tempo trascorso
+        long currentTime = System.currentTimeMillis();
+        long elapsedTime = currentTime - startTime;
+
+        // Calcola il tempo stimato rimanente
+        long estimatedRemainingTime = (long) ((1.0 - progressPercentage) * elapsedTime / progressPercentage);
+        progressBarsLastValue = progressBars;
+
+        // Stampa la barra di avanzamento nel terminale
+        sb.append("\rLoading: [" + Terminal.Color.GREEN_BOLD_BRIGHT);
+        
+        for (int j = 0; j < progressBars; j++)
+            sb.append("#");
+
+        sb.append(Terminal.Color.RESET);
+
+        for (int j = progressBars; j < step; j++)
+            sb.append(" ");
+            
+        sb.append("] " + Terminal.Color.YELLOW_BOLD_BRIGHT + (int) (progressPercentage * 100) + "%  " +  Terminal.Color.BLUE_BOLD_BRIGHT + Long.toString(index) + Terminal.Color.RESET +"/" + Terminal.Color.BLUE_BOLD_BRIGHT + Long.toString(total) + Terminal.Color.RESET);
+
+        for (int i = 0; i < sb.length() + 20; i++) {
+            System.out.print("\b");
+        }
+        
+        System.out.print(sb.toString());
+    }
+
+    // Formatta il tempo in ore, minuti e secondi
+    private String formatTime(long millis) {
+        long hours = millis / 3600000;
+        long minutes = (millis % 3600000) / 60000;
+        long seconds = (millis % 60000) / 1000;
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
+
     @SuppressWarnings({"rawtypes","unchecked"})
     public int loadApplicationData() throws IOException, SQLException
     {
         HashMap<String, File> foldersPath = new HashMap<String, File>();
         File database__data_folder;
         
-        final boolean test = false;
-        final String ARTIST = "Artists";
-        final String ALBUM = "Album";
-        final String TRACKS = "Tracks";
-        final String[] folders = {ARTIST, ALBUM, TRACKS};
-
-
-
-        terminal.printInfoln("start database configuration");
-        
-        
         //==================================== SELEZIONE DEI FILE ====================================//
-        if(!test) {
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
-            final JFileChooser fileChooser = new JFileChooser(OS_utility.formatPath(System.getProperty("user.home") + "/Desktop"));
-            fileChooser.setVisible(true);
-            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        terminal.printInfoln("\nStart database initalizzation...\n");
+        Terminal.getInstance().println("Dataset Folder Path:");
+        Terminal.getInstance().printArrow();
+        database__data_folder = new File(OS_utility.formatPath(in.readLine()));
+        //in.close();
+        
+        //database__data_folder = new File("C:\Users\Utente\Desktop\DataSet");
+        
 
 
-            switch(fileChooser.showOpenDialog(null))
-            {
-                case JFileChooser.CANCEL_OPTION:
-                    terminal.printInfoln("database configuration ended");
-                    return 0;
+        // final JFileChooser fileChooser = new JFileChooser(OS_utility.formatPath(System.getProperty("user.home") + "/Desktop"));
+        // fileChooser.setVisible(true);
+        // fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-                case JFileChooser.APPROVE_OPTION:
-                    database__data_folder = new File(fileChooser.getSelectedFile().getAbsolutePath());
-                    terminal.printInfoln("select folder: " + database__data_folder);
-                    break;
 
-                default:
-                    terminal.printErrorln("FileDialog Error");
-                    return 0;
-            }
+        // switch(fileChooser.showOpenDialog(null))
+        // {
+        //     case JFileChooser.CANCEL_OPTION:
+        //         terminal.printInfoln("database configuration ended");
+        //         return 0;
+
+        //     case JFileChooser.APPROVE_OPTION:
+        //         database__data_folder = new File(fileChooser.getSelectedFile().getAbsolutePath());
+        //         terminal.printInfoln("select folder: " + database__data_folder);
+        //         break;
+
+        //     default:
+        //         terminal.printErrorln("FileDialog Error");
+        //         return 0;
+        // }
+        
+        //===================================== CARICO I DATI =====================================//
+        
+        //creo le tabelle
+        buildTables(false);
+
+
+        if(filesType == FileType.JSON) {
+            return load_JSON(foldersPath, database__data_folder);
         }
-        else {
-            database__data_folder = new File("C:\\Users\\Utente\\Desktop\\Dataset Progetto\\Output");
+        else if(filesType == FileType.CSV) {
+            return load_CSV(foldersPath, database__data_folder);
         }
         
-        //==================================== VALIDITA' FILE ====================================//
-        //verifico la validità della cartella
-        
+        return -1;
+    }
+
+    private int load_CSV(HashMap<String, File> foldersPath, File database__data_folder) 
+    {
+        final String ARTIST = "Artists.csv";
+        final String ALBUM = "Album.csv";
+        final String TRACKS = "Tracks.csv";
+        final String[] files = {ARTIST, ALBUM, TRACKS};
+
+        HashMap<String, Integer> file_line_count = new HashMap<>();
+
+
         if (database__data_folder.isDirectory()) {
             boolean tuttePresenti = true;
 
-            for (String cartella : folders) {
-                File subFolder = new File(database__data_folder, cartella);
+            for (String file_name : files) {
+                File file = new File(database__data_folder, file_name);
 
-                if (!subFolder.exists() || !subFolder.isDirectory()) {
+                if (!file.exists() || file.isDirectory()) {
                     tuttePresenti = false;
-                    terminal.printErrorln(cartella + " folder not found");
+                    terminal.printErrorln("file " + file_name + " not found");
                 } 
                 else {
-                    foldersPath.put(cartella, subFolder);
-                    terminal.printSuccesln(cartella + " folder found");
+                    foldersPath.put(file_name, file);
+                    terminal.printSuccesln("file " + file_name + " found");
                 }
             }
 
@@ -140,7 +232,7 @@ public class Loader {
                 return 0;
             }
             else {
-                terminal.printSuccesln("All folders found\n");
+                terminal.printSuccesln("All file found\n");
             }
         }
         else {
@@ -149,23 +241,340 @@ public class Loader {
             return 0;
         }
 
-        //===================================== CARICO I DATI =====================================//
+
+        //conto le linee che ha ogni file
+        for (String current_File : files) {
+            try (BufferedReader br = new BufferedReader(new FileReader(foldersPath.get(current_File)))) {
+                int lineCount = 0;
+                
+
+                while (br.readLine() != null) {
+                    lineCount++;
+                }
+
+                file_line_count.put(current_File, lineCount - 1); //tolgo l'header
+                terminal.printInfoln("Element found in " + current_File + ": " + (lineCount - 1));
+                
+            } catch (IOException e) {
+                terminal.printErrorln(Terminal.Color.RED_BOLD_BRIGHT + e.toString() + Terminal.Color.RESET);
+                terminal.printInfoln("Database configuration ended\n");
+                return 0;
+            }
+        }
+
+        final String[] toRemove = {"[","]","\'"," "};
         
-        //creo le tabelle
-        buildTables(false);
-        
-        for(String key : folders) 
+
+
+        for (String current_File : files) 
+        { 
+            terminal.println("");
+            switch (current_File) 
+            {         
+                case ARTIST -> {
+                    terminal.printInfoln("loading Artist...");
+                }
+
+                case ALBUM -> {
+                    terminal.printInfoln("loading Album...");
+                }
+
+                case TRACKS -> {
+                    terminal.printInfoln("loading tracks...");
+                }
+            }
+
+            try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();} 
+
+            long index = 0;
+            try (CSVReader csvReader = new CSVReader(new FileReader(foldersPath.get(current_File)))) 
+            {
+                String[] record;
+                long currentIndex = 0;
+
+                final int numThreads = 8; // Numero di thread da utilizzare
+                ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+                
+
+                while ((record = csvReader.readNext()) != null) 
+                {
+                    final String[] finalRecord = record;
+                    final String file = current_File;
+
+                    //salto l'header
+                    if(index == 0) {
+                        index++;
+                        continue;
+                    }
+
+                    makeProgressBar(currentIndex++, file_line_count.get(current_File));
+  
+                    // Aspetta finché ci sono meno di n thread attivi
+                    while (((ThreadPoolExecutor) executorService).getActiveCount() >= numThreads) {
+                        try {Thread.sleep(1);} catch (InterruptedException e) {e.printStackTrace();} 
+                    }
+                    final long newIndex = currentIndex;
+                    executorService.submit(() -> {
+                        
+                        try {
+                            switch (file) {
+                                case ARTIST -> {
+
+                                    if(true) {
+                                        break;
+                                    }
+                                    
+                                
+                                    //ottengo i dati di ogni record
+                                    String spotifyUrl = finalRecord[0];
+                                    int popularity = 50;
+                                    long followers = 10000;
+                                    try {popularity = Integer.parseInt(finalRecord[1]);}catch(Exception e) {}
+                                    try {followers = Long.parseLong(finalRecord[2]);}catch(Exception e) {}
+                                    String genresString = finalRecord[3];
+                                    String imagesString = finalRecord[4];
+                                    String artistId = finalRecord[5];
+                                    String type = finalRecord[6];
+                                    String name = finalRecord[7];
+                                
+                                
+                                    //creo l'hahMap per le informazioni dell'artista
+                                    HashMap<String, Object> artistInfo = new HashMap<>();
+
+                                    //estraggo i dai delle immagini
+                                    JSONArray image_node_list = new JSONArray(imagesString);
+                                    
+                                    //aggiungo le immagini
+                                    for (int i = 0; i < image_node_list.length(); i++) 
+                                    {
+                                        HashMap<String, Object> image = new HashMap<String, Object>();
+                                        JSONObject imageNode = image_node_list.getJSONObject(i);
+                                        
+                                        String imageUrl = (String)imageNode.get("url");
+                                        String height   = (String)Integer.toString((int)imageNode.get("height"));
+                                        String width    = (String)Integer.toString((int)imageNode.get("width"));
+                                    
+                                        image.put(PredefinedSQLCode.Colonne.ID.getName(), artistId);
+                                        image.put(PredefinedSQLCode.Colonne.IMAGE_SIZE.getName(), height + "x" + width);
+                                        image.put(PredefinedSQLCode.Colonne.URL.getName(), imageUrl);
+                
+                                        PredefinedSQLCode.crea_INSER_query_ed_esegui(image, PredefinedSQLCode.Tabelle.ARTIST_IMAGES, this.main);
+                                    }
+
+                                    artistInfo.put(PredefinedSQLCode.Colonne.NAME.getName(), name);
+                                    artistInfo.put(PredefinedSQLCode.Colonne.POPULARITY.getName(), popularity);
+                                    artistInfo.put(PredefinedSQLCode.Colonne.FOLLOWERS.getName(), followers);
+                                    artistInfo.put(PredefinedSQLCode.Colonne.URL.getName(), spotifyUrl);
+                                    artistInfo.put(PredefinedSQLCode.Colonne.ID.getName(), artistId);
+                                
+                                    //ARTIST data
+                                    PredefinedSQLCode.crea_INSER_query_ed_esegui(artistInfo, PredefinedSQLCode.Tabelle.ARTIST, this.main);
+                                
+                                    
+                                    //creo la lista dei generi
+                                    for (String str : toRemove) {
+                                        genresString = genresString.replace(str, "");
+                                    }
+
+                                    String[] genresList = genresString.split(",");
+                                    
+                                    //GENRES e Artist Genres
+                                    for(String o : genresList) {
+
+                                        HashMap<String, Object> table1 = new HashMap<String, Object>();
+                                        table1.put(PredefinedSQLCode.Colonne.GENERE_MUSICALE.getName(), o);
+
+                                        HashMap<String, Object> table2 = new HashMap<String, Object>();
+                                        table2.put(PredefinedSQLCode.Colonne.GENERE_MUSICALE.getName(), o);
+                                        table2.put(PredefinedSQLCode.Colonne.ID.getName(), artistId);
+
+                                        PredefinedSQLCode.crea_INSER_query_ed_esegui(table1, PredefinedSQLCode.Tabelle.GENERI_MUSICALI, this.main);
+                                        PredefinedSQLCode.crea_INSER_query_ed_esegui(table2, PredefinedSQLCode.Tabelle.GENERI_ARTISTA, this.main);   
+                                    } 
+                                }
+
+                                case ALBUM -> {
+
+                                    if(true) {
+                                        break;
+                                    }
+
+                                    String id = finalRecord[0];
+                                    int element = 0;
+                                    try {element = Integer.parseInt(finalRecord[1]);} catch (Exception e) {}
+                                    String spotifyUrl = finalRecord[2];
+                                    String imagesString = finalRecord[3];
+                                    String name = finalRecord[4];
+                                    String releaseDate = finalRecord[5];
+                                    String type = finalRecord[6];
+                                    String artistsIdString = finalRecord[7];
+
+                                    HashMap<String, Object> albumInfo = new HashMap<>();
+
+                                    //crelo la lista degli autori dell'album
+                                    for (String str : toRemove) {
+                                        artistsIdString = artistsIdString.replace(str, "");
+                                    }
+
+                                    //seleziono solo quello in posizione 0
+                                    String genresList = artistsIdString.split(",")[0];
+
+                                    albumInfo.put(PredefinedSQLCode.Colonne.ID.getName(), id);
+                                    albumInfo.put(PredefinedSQLCode.Colonne.TYPE.getName(), "album");
+                                    albumInfo.put(PredefinedSQLCode.Colonne.NAME.getName(), name);
+                                    albumInfo.put(PredefinedSQLCode.Colonne.RELEASE_DATE.getName(), releaseDate);
+                                    albumInfo.put(PredefinedSQLCode.Colonne.URL.getName(), spotifyUrl);
+                                    albumInfo.put(PredefinedSQLCode.Colonne.ARTIST_ID_REF.getName(), genresList);
+                                    albumInfo.put(PredefinedSQLCode.Colonne.ELEMENT.getName(), element);
+                                    
+                                    PredefinedSQLCode.crea_INSER_query_ed_esegui(albumInfo, PredefinedSQLCode.Tabelle.ALBUM, this.main); 
+
+
+                                    //estraggo i dai delle immagini
+                                    JSONArray image_node_list = new JSONArray(imagesString);
+                                    
+                                    //aggiungo le immagini
+                                    for (int i = 0; i < image_node_list.length(); i++) 
+                                    {
+                                        HashMap<String, Object> image = new HashMap<String, Object>();
+                                        JSONObject imageNode = image_node_list.getJSONObject(i);
+                                        
+                                        String imageUrl = (String)imageNode.get("url");
+                                        String height   = (String)Integer.toString((int)imageNode.get("height"));
+                                        String width    = (String)Integer.toString((int)imageNode.get("width"));
+                                    
+                                        image.put(PredefinedSQLCode.Colonne.ID.getName(), id);
+                                        image.put(PredefinedSQLCode.Colonne.IMAGE_SIZE.getName(), height + "x" + width);
+                                        image.put(PredefinedSQLCode.Colonne.URL.getName(), imageUrl);
+                
+                                        PredefinedSQLCode.crea_INSER_query_ed_esegui(image, PredefinedSQLCode.Tabelle.ALBUM_IMAGES, this.main);
+                                    }
+                                }
+
+                                case TRACKS -> {
+
+                                    HashMap<String, Object> trackInfo = new HashMap<>();
+
+                                    String albumId = finalRecord[0];
+                                    String artistsIdString  = finalRecord[1];
+                                    long durationMs = Long.parseLong(finalRecord[2]);
+                                    String spotifyUrl = finalRecord[3];
+                                    String id = finalRecord[4];
+                                    String name = finalRecord[5];
+                                    int popularity = Integer.parseInt(finalRecord[6]);
+
+                                    //terminal.println("id: " + id + " name: " + name + " duration: " + durationMs + " popularity: " + popularity + " spotifyUrl: " + spotifyUrl + " albumId: " + albumId + " artistsIdString: " + artistsIdString.replace("[", "").replace("]", "").replace("\'", "").replace(" ", ""));
+
+                                    trackInfo.put(PredefinedSQLCode.Colonne.TITLE.getName(), name);
+                                    trackInfo.put(PredefinedSQLCode.Colonne.DURATION.getName(), durationMs);
+                                    trackInfo.put(PredefinedSQLCode.Colonne.POPULARITY.getName(), popularity);
+                                    trackInfo.put(PredefinedSQLCode.Colonne.URL.getName(), spotifyUrl);
+                                    trackInfo.put(PredefinedSQLCode.Colonne.ID.getName(), id);
+                                    trackInfo.put(PredefinedSQLCode.Colonne.ALBUM_ID_REF.getName(), albumId);
+                                
+                                    
+
+                                    String[] artistsIdList = artistsIdString.replace("[", "").replace("]", "").replace("\'", "").replace(" ", "").split(",");
+
+                                    //TRACK data
+                                    PredefinedSQLCode.crea_INSER_query_ed_esegui(trackInfo, PredefinedSQLCode.Tabelle.SONG, this.main);
+                                
+                                    //AUTORI canzone
+                                    for(Object id_autor : artistsIdList) 
+                                    {
+                                        HashMap<String, Object> table1 = new HashMap<String, Object>();
+                                        table1.put(Colonne.ARTIST_ID_REF.getName(), id_autor);
+                                        table1.put(Colonne.SONG_ID_REF.getName(), id);
+                                        PredefinedSQLCode.crea_INSER_query_ed_esegui(table1, PredefinedSQLCode.Tabelle.SONG_AUTORS, this.main);
+                                    }
+                                }
+                            }//switch
+                        }//try
+                        catch (Exception e) {
+                            System.out.println(e);
+                            e.printStackTrace();
+
+                            System.out.println("LIne:" + (newIndex - 1));
+                            System.exit(0);
+
+                            int i = 0;
+                            System.out.println("record:");
+                            for (String string : finalRecord) {
+                                System.out.println("record[" + (i++) + "]: " + string + ",");
+                            }
+                            System.exit(0);
+                        }
+                    });
+                }//while
+
+                // Attendere il completamento di tutti i thread
+                executorService.shutdown();
+                
+                while (!executorService.isTerminated()) {
+                    // Attendere finché tutti i thread non sono terminati
+                }
+
+                makeProgressBar(currentIndex++, file_line_count.get(current_File));
+
+
+            } catch (IOException | CsvException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return 0;
+    }
+
+    private int load_JSON(HashMap<String, File> foldersPath, File database__data_folder) 
+    {
+        final String ARTIST = "Artists.json";
+        final String ALBUM = "Album.json";
+        final String TRACKS = "Tracks.json";
+        final String[] files = {ARTIST, ALBUM, TRACKS};
+
+        if (database__data_folder.isDirectory()) {
+            boolean tuttePresenti = true;
+
+            for (String file_name : files) {
+                File file = new File(database__data_folder, file_name);
+
+                if (!file.exists() || file.isDirectory()) {
+                    tuttePresenti = false;
+                    terminal.printErrorln("file " + file_name + " not found");
+                } 
+                else {
+                    foldersPath.put(file_name, file);
+                    terminal.printSuccesln("file " + file_name + " found");
+                }
+            }
+
+            if(!tuttePresenti) {
+                terminal.printErrorln(Terminal.Color.RED_BOLD_BRIGHT + "FILE MISSING" + Terminal.Color.RESET);
+                terminal.printInfoln("Database configuration ended\n");
+                return 0;
+            }
+            else {
+                terminal.printSuccesln("All file found\n");
+            }
+        }
+        else {
+            terminal.printErrorln(Terminal.Color.RED_BOLD_BRIGHT + "INVALID PATH" + Terminal.Color.RESET);
+            terminal.printInfoln("Database configuration ended\n");
+            return 0;
+        }
+
+        for(String current_File : files) 
         {
             BlockingQueue<File> filesQueue = new LinkedBlockingDeque<File>();
             long fileCount = 0L;
 
             System.out.println("-----------------------------------------------------------------------------------------");
-            terminal.printInfoln("analyzing " + foldersPath.get(key).getAbsolutePath());
+            terminal.printInfoln("analyzing " + foldersPath.get(current_File).getAbsolutePath());
             terminal.startWaithing(MessageType.INFO + " reading files...");
             
-            if(key == TRACKS || key == ALBUM) 
+            if(current_File == TRACKS || current_File == ALBUM) 
             {
-                for (File folder : foldersPath.get(key).listFiles())  {   
+                for (File folder : foldersPath.get(current_File).listFiles())  {   
                     for (File file : folder.listFiles())  {
                         if (file.isFile() && file.getName().endsWith(".json")) { 
                             fileCount += 1;
@@ -174,7 +583,7 @@ public class Loader {
                     }
                 }
             }
-            else if(key == ARTIST) {
+            else if(current_File == ARTIST) {
                 //fileCount = foldersPath.get(key).listFiles().length; 
                 for (File file : foldersPath.get(ARTIST).listFiles()) {
                     if (file.isFile() && file.getName().endsWith(".json")) { 
@@ -205,7 +614,7 @@ public class Loader {
                     File file = filesQueue.poll();
 
 
-                    switch(key) {
+                    switch(current_File) {
                         case ARTIST: data_for_Queries = JsonParser.parseArtists(file.getAbsolutePath()); break;
                         case ALBUM:  data_for_Queries = JsonParser.parseAlbums(file.getAbsolutePath());  break;
                         case TRACKS: data_for_Queries = JsonParser.parseTracks(file.getAbsolutePath());  break;
@@ -215,7 +624,7 @@ public class Loader {
                     HashMap<String, Object> ElementsImgaes = (HashMap<String, Object>) data_for_Queries[1];
                     HashMap<String, Object> ElementsData2  = (HashMap<String, Object>) data_for_Queries[2];
 
-                    switch(key) 
+                    switch(current_File) 
                     {
                         case ARTIST -> {
 
@@ -300,7 +709,7 @@ public class Loader {
 
                                     PredefinedSQLCode.crea_INSER_query_ed_esegui(table1, PredefinedSQLCode.Tabelle.SONG_AUTORS, this.main);
                                 }
-                                ;
+                                
                             }
                         }
                     }
@@ -340,6 +749,32 @@ public class Loader {
     }
 
 
+    private static List<String> parseJsonArray(String jsonArray) {
+        List<String> result = new ArrayList<>();
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+            JsonNode jsonNode = objectMapper.readTree(jsonArray);
+
+            if (jsonNode.isArray()) {
+                Iterator<JsonNode> elements = jsonNode.elements();
+                while (elements.hasNext()) {
+                    JsonNode element = elements.next();
+                    result.add(element.asText());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+
 
     
 }
+
+
+

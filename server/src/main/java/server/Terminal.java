@@ -4,7 +4,10 @@ import database.PredefinedSQLCode.Tabelle;
 import java.time.format.DateTimeFormatter;
 import utility.WaithingAnimationThread;
 import database.PredefinedSQLCode;
+import database.QueryBuilder;
 import utility.AsciiArtGenerator;
+import utility.OS_utility;
+
 import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.io.BufferedReader;
@@ -12,6 +15,7 @@ import java.sql.SQLException;
 import enumclass.SQLKeyword;
 import java.util.LinkedList;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Hashtable;
 
 import database.DatabaseManager;
@@ -20,6 +24,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
 import java.io.File;
+import java.io.FileReader;
 
 
 
@@ -78,7 +83,7 @@ public class Terminal extends Thread
                         }
                         else {
                             MUTEX_QUEUE.release();
-                            Thread.sleep(10);
+                            Thread.sleep(1);
                         }
                     }   
                 } 
@@ -200,17 +205,21 @@ public class Terminal extends Thread
 
     private enum Command 
     {
-        HELP(           "help   ", " Elenco dei comandi"),
-        START(          "start  ", "Avvia il Server"),
-        CLOSE(          "exit   ", " Termina l'applicazione"),
-        BUILD_SERVER(   "init   ", " Inizilizza il database dell'applicazione"),
-        CLEAR_DB(       "clear  ", "Cancella tutte le informazioni del database"),
-        PRINT_SQL(      "sql    ", "  Mostra i codici SQL statici creati"),
+        HELP(           "help      ", " Elenco dei comandi"),
+        START(          "start     ", " Avvia il Server"),
+        CLOSE(          "exit      ", " Termina l'applicazione"),
+        //BUILD_SERVER(   "init   ", " Inizilizza il database dell'applicazione"),
+        CLEAR_DB(       "clear     ", " Cancella tutte le informazioni del database"),
+        PRINT_SQL(      "sql       ", "  Mostra i codici SQL statici creati"),
         //SAVE(           "save", " Salva i settaggi della connessione con il DB"),
-        LOAD(           "load   ", " Carica i settaggi per connessione con il DB"),
-        EDIT(           "edit   ", " Modifica i parametri di connessione con il DB"),
-        CONNECT(        "connect", " verifica la connessione col il database"),
-        CHECK(          "check  ", " Verifica se le tabelle delle database sono corrette");
+        LOAD(           "load      ", " Carica i settaggi per connessione con il DB"),
+        EDIT(           "edit      ", " Modifica i parametri di connessione con il DB"),
+        CONNECT(        "connect   ", " verifica la connessione col il database"),
+        DISCONNECT(     "disconnect", " Per disconnettersi dal datatbase"),
+        CHECK(          "check     ", " Verifica se le tabelle delle database sono corrette"),
+        //DB_INFO(        "info      ", " Mostra le informazioni sul database"),
+        EXPORT(         "export    ", " Esporta il contenuto del dataBase in file CSV"),
+        IMPORT(         "import    ", " per importare i dati nel database tramite dei file CSV");
         //SQL_TERMINAL("makequery", " Apre la console SQL");
 
         public final String value;
@@ -307,41 +316,39 @@ public class Terminal extends Thread
                     command = Command.START.getCommandValue();
                 }
                 else {
-                    System.out.println("type \"help\" to see available commands");
+                    println("type \"help\" to see available commands");
                     printArrow();
                     command = in.readLine();
+                    println("");
+                    printLine();
                 }
-                
-                System.out.println();
-                System.out.flush();
-                
                 
                 if(command.equalsIgnoreCase(Command.HELP.getCommandValue())) {
                     dumpCommands();
                 }
-                else if(command.equalsIgnoreCase(Command.START.getCommandValue())) { 
-
-                    do {
+                else if(command.equalsIgnoreCase(Command.START.getCommandValue())) 
+                { 
+                    //do {
                         if(main.isDatabaseConnected()) {
                             main.runServer();
                             System.console().readLine();
                             main.StopServer();
                             setAddTime(false);
-                            break;
+                            //break;
                         }
                         else {
-                            printInfoln("The database is not connected");
-                            main.setDatabaseConnection();
+                            printErrorln("The database is not connected");
+                            //main.setDatabaseConnection();
                         }   
-                    }
-                    while(main.isDatabaseConnected());
+                    // }
+                    // while(main.isDatabaseConnected());
                 }
                 else if(command.equalsIgnoreCase(Command.CLOSE.getCommandValue())) {
                     main.exit();
                 }
-                else if(command.equalsIgnoreCase(Command.BUILD_SERVER.getCommandValue())) {
-                    initializeDatabase();
-                }
+                // else if(command.equalsIgnoreCase(Command.BUILD_SERVER.getCommandValue())) {
+                //     initializeDatabase();
+                // }
                 else if(command.equalsIgnoreCase(Command.CLEAR_DB.getCommandValue())) {
 
                     if(main.isDatabaseConnected()) {
@@ -354,8 +361,8 @@ public class Terminal extends Thread
                         
                     }
                     else {
-                        printInfoln("The database is not connected");
-                        main.setDatabaseConnection();
+                        printErrorln("The database is not connected");
+                        //main.setDatabaseConnection();
                     }        
                 }
                 else if(command.equalsIgnoreCase(Command.PRINT_SQL.getCommandValue())) {
@@ -366,11 +373,17 @@ public class Terminal extends Thread
                 }*/
                 else if(command.equalsIgnoreCase(Command.LOAD.getCommandValue())) {
                     main.loadSettings();
+                    if(main.isDatabaseConnected()) {
+                        printInfoln("terminate last connection");
+                        DatabaseManager.getInstance().closeConnection();
+                    }
+                    //main.setDatabaseConnection();
                 }
                 else if(command.equalsIgnoreCase(Command.EDIT.getCommandValue())) {
                     editSettings();
                 }
-                else if(command.equalsIgnoreCase(Command.CONNECT.getCommandValue())) {
+                else if(command.equalsIgnoreCase(Command.CONNECT.getCommandValue())) 
+                {
                     if(main.isDatabaseConnected()) {
                         printInfoln("Database is already connected");
                         printInfoln("terminate last connection");
@@ -379,8 +392,15 @@ public class Terminal extends Thread
                     
                     main.setDatabaseConnection();
                 }
+                else if(command.equalsIgnoreCase(Command.DISCONNECT.getCommandValue())) 
+                {
+                    if(main.isDatabaseConnected()) {
+                        DatabaseManager.getInstance().closeConnection();
+                        printInfoln("connection close");
+                    }
+                }
                 else if(command.equalsIgnoreCase(Command.CHECK.getCommandValue())) {
-                    printInfoln("start database integrity test...");
+                    printInfoln("Start database integrity test...");
                     
                     if(main.isDatabaseConnected()) {
                         main.DatabaseIntegrityTest();
@@ -390,12 +410,40 @@ public class Terminal extends Thread
                     } 
                 
                 }
+                // else if(command.equalsIgnoreCase(Command.DB_INFO.getCommandValue())) {
+                //     //printDatabaseInfo();
+                // }
+                else if(command.equalsIgnoreCase(Command.EXPORT.getCommandValue())) {
+                    if(main.isDatabaseConnected()) {
+                        exportDB();
+                    }
+                    else {
+                        printErrorln("The database is not connected");
+                        //main.setDatabaseConnection();
+                    }     
+                }
+                else if(command.equalsIgnoreCase(Command.IMPORT.getCommandValue())) {
+                    if(main.isDatabaseConnected()) 
+                    {
+                        String ask = "Any data already in the database will be deleted. Do you want to proceed ?";
+                        
+                        if(askYesNo(ask))
+                            importDB();
+                        else                        
+                            printInfoln("operation cancelled");
+                    }
+                    else {
+                        printInfoln("The database is not connected");
+                        //main.setDatabaseConnection();
+                    }
+                }
                 else if( !(command.equals("\n")||command.equals("\r")||command.equals("\n\r")||command.equals("\r\n"))) {
                    printErrorln("Unknown command \"" + Color.CYAN_BOLD_BRIGHT + command + Color.RESET + "\""); 
                 }
+
+                Thread.interrupted();
                 printSeparator();
-                
-                
+           
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -409,6 +457,166 @@ public class Terminal extends Thread
                 e.printStackTrace();
                 System.out.println(e);
             }
+        }
+    }
+
+    public void importDB() throws IOException 
+    {
+        File database__data_folder;
+        boolean clear = true;
+        boolean success = true;
+        
+        //==================================== SELEZIONE DEI FILE ====================================//
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+
+        printInfoln("Start database initalizzation...\n");
+        getInstance().println("Dataset Folder Path:");
+        getInstance().printArrow();
+        database__data_folder = new File(OS_utility.formatPath(in.readLine()));
+
+
+        if (!database__data_folder.isDirectory()) {
+            printErrorln(Terminal.Color.RED_BOLD_BRIGHT + "INVALID PATH" + Terminal.Color.RESET);
+            printInfoln("Database configuration ended\n");
+            return;
+        }
+
+        HashMap<String, Integer> filesName = new HashMap<>();
+        HashMap<String, File> fileToLoad = new HashMap<>();
+
+        for (PredefinedSQLCode.Tabelle table : PredefinedSQLCode.Tabelle.values()) {
+            String tableName = table.toString();
+            filesName.put(tableName.toLowerCase(), 0);
+         }
+
+        for(File f : database__data_folder.listFiles()) {
+            if(!f.isDirectory()) {
+                System.out.println(f.getName());
+                String name = f.getName().split(".csv")[0];
+                System.out.println("name");
+                filesName.remove(name.toLowerCase());
+                printSuccesln("file: " + f.getName().toLowerCase() + " found");
+
+                fileToLoad.put(name.toLowerCase(), f);
+            }
+        }
+
+        if(filesName.size() > 0) {
+            for (String name : filesName.keySet()) {
+                printErrorln("file: " + name + " missing");
+            } 
+            return;
+        }
+
+        printSuccesln("All files found");
+        
+        try {
+            for (Tabelle table : PredefinedSQLCode.Tabelle.values()) 
+            {
+                if(clear)// || table== Tabelle.SONG)
+                    this.main.database.submitQuery(PredefinedSQLCode.deleteTable_Queries.get(table));
+
+                printInfoln("Creating table: " + table);
+                this.main.database.submitQuery(PredefinedSQLCode.createTable_Queries.get(table)); 
+            }
+        } catch (SQLException e) {
+            printErrorln(e.toString());
+            e.printStackTrace();
+            System.exit(0);
+        }
+
+        printLine();
+
+        for (PredefinedSQLCode.Tabelle table : PredefinedSQLCode.Tabelle.values()) 
+        {
+            String tableName = table.toString();
+            
+            File file = fileToLoad.get(tableName.toLowerCase());
+            String header = null;
+
+            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                
+                header = br.readLine();
+
+                if(header == null) {
+                    printErrorln("File " + file.getName() + " is empty");
+                    return;
+                }
+            } 
+            catch (IOException e) {
+                printErrorln(Terminal.Color.RED_BOLD_BRIGHT + e.toString() + Terminal.Color.RESET);
+                return;
+            }
+
+            String query = QueryBuilder.importQuery(tableName, OS_utility.formatPath(file.getAbsolutePath()), header);
+            try {
+                printInfoln("Importing " + tableName);
+                DatabaseManager.getInstance().submitQuery(query);
+                printSuccesln(tableName + " Imported");
+            } catch (SQLException e) {
+                for (String s : e.toString().split("\n")) {
+                    printErrorln(Color.RED_BOLD_BRIGHT + s + Color.RESET);
+                } 
+                success = false;
+            }
+            finally {
+                printLine();
+            }
+        }
+
+        if(success) {
+            printSuccesln(Color.GREEN_BOLD_BRIGHT + "Database successfully imported".toUpperCase() + Color.RESET);
+        }
+        else {
+            printErrorln(Color.RED_BOLD_BRIGHT + "Try changing the folder access premisses to 'full access'."  + Color.RESET);
+            printErrorln(Color.RED_BOLD_BRIGHT + "Add \"Everyone\" user"  + Color.RESET);
+        }
+    }
+
+    public void exportDB() throws IOException
+    {
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        boolean success = true;
+
+        printInfoln("Start database initalizzation...\n");
+        println("Output Folder Path:");
+        printArrow();
+        File output = new File(OS_utility.formatPath(in.readLine()));
+        println("");
+
+        if (!output.exists() || !output.isDirectory()) {
+            printErrorln(Terminal.Color.RED_BOLD_BRIGHT + "INVALID PATH: " + output.getAbsolutePath()  + Terminal.Color.RESET);
+            printErrorln("Operation cancelled\n");
+            return;
+        }
+        
+        for (PredefinedSQLCode.Tabelle table : PredefinedSQLCode.Tabelle.values()) 
+        {
+            String tableName = table.toString();
+            String path = OS_utility.formatPath(output.getAbsolutePath() + "\\" + tableName + ".csv");
+            String query = QueryBuilder.exportQuery(tableName, path);
+            
+
+            try {
+                printInfoln("Exporting " + tableName);
+                DatabaseManager.getInstance().submitQuery(query);
+                printSuccesln(tableName + " exported");
+            } catch (SQLException e) {
+                for (String s : e.toString().split("\n")) {
+                    printErrorln(Color.RED_BOLD_BRIGHT + s + Color.RESET);
+                } 
+                success = false;
+            }
+            finally {
+                printLine();
+            }  
+        }
+        if(success) {
+            printSuccesln(Color.GREEN_BOLD_BRIGHT + "Database successfully exported".toUpperCase() + Color.RESET);
+        }
+        else {
+            printErrorln(Color.RED_BOLD_BRIGHT + "Try changing the folder access premisses to 'full access'."  + Color.RESET);
+            printErrorln(Color.RED_BOLD_BRIGHT + "Add \"Everyone\" user"  + Color.RESET);
         }
     }
 
@@ -426,6 +634,8 @@ public class Terminal extends Thread
             e.printStackTrace();
         }
     }
+
+    
 
     public synchronized void startWaithing(String text, Object... args) 
     {
@@ -529,50 +739,51 @@ public class Terminal extends Thread
 
     public int getTerminalColumns() 
     {
-        int read = -1;
-        String[] signals = new String[] {
-            "\u001b[s",            // save cursor position
-            "\u001b[5000;5000H",   // move to col 5000 row 5000
-            "\u001b[6n",           // request cursor position
-            "\u001b[u",            // restore cursor position
-        };
+        // int read = -1;
+        // String[] signals = new String[] {
+        //     "\u001b[s",            // save cursor position
+        //     "\u001b[5000;5000H",   // move to col 5000 row 5000
+        //     "\u001b[6n",           // request cursor position
+        //     "\u001b[u",            // restore cursor position
+        // };
 
-        try {
-            for (String s : signals)
-                System.out.print(s);
+        // try {
+        //     for (String s : signals)
+        //         System.out.print(s);
             
              
-            StringBuilder sb = new StringBuilder();
-            byte[] buff = new byte[1];
+        //     StringBuilder sb = new StringBuilder();
+        //     byte[] buff = new byte[1];
              
-            while ((read = System.in.read(buff, 0, 1)) != -1) 
-            {
-                sb.append((char) buff[0]);
-                if ('R' == buff[0]) {
-                    break;
-                }
-            }
+        //     while ((read = System.in.read(buff, 0, 1)) != -1) 
+        //     {
+        //         sb.append((char) buff[0]);
+        //         if ('R' == buff[0]) {
+        //             break;
+        //         }
+        //     }
 
-            String size = sb.toString();
-            //int rows = Integer.parseInt(size.substring(size.indexOf("\u001b[") + 2, size.indexOf(';')));
-            //int cols = Integer.parseInt(size.substring(size.indexOf(';') + 1, size.indexOf('R')));
-            //System.err.printf("rows = %s, cols = %s%n", rows, cols);
+        //     String size = sb.toString();
+        //     //int rows = Integer.parseInt(size.substring(size.indexOf("\u001b[") + 2, size.indexOf(';')));
+        //     //int cols = Integer.parseInt(size.substring(size.indexOf(';') + 1, size.indexOf('R')));
+        //     //System.err.printf("rows = %s, cols = %s%n", rows, cols);
 
-            int cols = Integer.parseInt(size.split(";")[1].split("R")[0]);
+        //     int cols = Integer.parseInt(size.split(";")[1].split("R")[0]);
             
         
-            return cols;
+        //     return cols;
            
 
-        } catch (Exception e) {
-            return 0;
-        }
+        // } catch (Exception e) {
+        //     return 0;
+        // }
 
+        return this.jlineTerminal.getWidth() - 1;
     }
 
     public void printSeparator() 
     {
-        int terminalWidth = this.jlineTerminal.getWidth();
+        int terminalWidth = this.jlineTerminal.getWidth() - 1;
         StringBuilder sb = new StringBuilder();
 
         for(int i = 0; i < terminalWidth; i++)
@@ -600,11 +811,11 @@ public class Terminal extends Thread
 
         String result = new BufferedReader(new InputStreamReader(System.in)).readLine();
         if(result.equalsIgnoreCase("y")) {
-            System.out.println();
+            println("");
             return true;
         }
         else {
-            System.out.println();
+            println("");
             return false;
         }
 
@@ -651,7 +862,7 @@ public class Terminal extends Thread
                 System.out.print(str);
             }
         
-            this.waithingThread.print();
+            //this.waithingThread.print();
             this.waithingThread.restart();
         }
         else {
@@ -717,7 +928,7 @@ public class Terminal extends Thread
             MUTEX_QUEUE.release();
         } 
         catch (InterruptedException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         } 
     }
 

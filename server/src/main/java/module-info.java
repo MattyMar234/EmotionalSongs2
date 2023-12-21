@@ -17,6 +17,8 @@ module application.client {
     requires java.management;
 
     requires jline;
+    requires com.opencsv;
+    requires org.json;
     //requires me.tongfei.progressbar;
 
 

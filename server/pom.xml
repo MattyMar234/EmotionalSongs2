@@ -75,6 +75,13 @@
         <version>2.3.0</version>
     </dependency>
 
+    <!-- https://mvnrepository.com/artifact/org.json/json -->
+    <dependency>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>20231013</version>
+    </dependency>
+
 
 
     <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
@@ -82,6 +89,12 @@
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
         <version>42.6.0</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.opencsv</groupId>
+        <artifactId>opencsv</artifactId>
+        <version>5.5</version> <!-- Controlla la versione più recente su Maven Central -->
     </dependency>
 
     
@@ -190,6 +203,18 @@
                         </archive>
                     </configuration>
                 </plugin>
+                <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-javadoc-plugin</artifactId>
+                  <executions>
+                    <execution>
+                      <id>attach-javadocs</id>
+                      <goals>
+                        <goal>jar</goal>
+                      </goals>
+                    </execution>
+                  </executions>
+              </plugin>
             </plugins>
         </build>
 </project>

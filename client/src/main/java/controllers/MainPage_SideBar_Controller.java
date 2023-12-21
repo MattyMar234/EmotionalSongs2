@@ -42,11 +42,14 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
 
     // ========================= Buttons ========================= //
     @FXML public Button homeButton;
-    @FXML public Button exploreButton;
+    //@FXML public Button exploreButton;
     @FXML public Button playlistButton;
     //@FXML public Button optionsButton;
-    @FXML public Button CambioButton;
-    @FXML public Button ExitButton;
+    //@FXML public Button CambioButton;
+    @FXML public Button userData_button;
+    @FXML public Button about_button;
+    @FXML public Button logout_button;
+
 
     @FXML public Button buttonBackward;
     @FXML public Button buttonForward;
@@ -76,6 +79,7 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
 
     public MainPage_SideBar_Controller() throws IOException {
         super();
+        
     }
 
 
@@ -83,10 +87,13 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
     public void initialize(URL arg0, ResourceBundle arg1)
     {
         anchor_for_injectScene = anchor;
+        super.setBackgroundLinearColor(ControllerBase.backgroundImageIndex);
 
         if(Main.account == null) {
             userName.setText(Main.applicationLanguage == 0 ? "Accedi" : "Login");
             playlistButton.setDisable(true);
+            userData_button.setDisable(true);
+            
         }
         else {
             userName.setText(Main.account.getNickname());
@@ -139,12 +146,31 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
             SceneManager.instance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.ACCESS_PAGE);
         }
     }
+
+    @FXML
+    public void logout(ActionEvent event) {
+
+    }
+
+    @FXML
+    public void set_about(ActionEvent event) {
+        sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.MAIN_PAGE_ABOUT);
+    }
+
+    @FXML
+    public void set_userDatat_page(ActionEvent event) {
+        if(Main.account != null) {
+            sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.MAIN_PAGE_USER);
+        }
+    }
         
     
 
     @FXML
     public void viewUserInformation(MouseEvent event) {
-
+        if(Main.account != null) {
+            sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.MAIN_PAGE_USER);
+        }
     }
 
 

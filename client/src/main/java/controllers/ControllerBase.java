@@ -54,6 +54,10 @@ public abstract class ControllerBase {
 
 
     public ControllerBase() {
+
+        if(linearGradien_background_lower != null && linearGradien_background_upper != null) {
+            setBackgroundLinearColor(backgroundImageIndex);
+        }
         
     }
 
