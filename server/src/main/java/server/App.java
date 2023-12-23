@@ -87,7 +87,12 @@ public class App //extends JFrame
     public static void main( String[] args ) throws Exception 
     {
         //UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-        new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor(); 
+        if(OS_utility.isWindows()) {
+            new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor(); 
+        }
+        else {
+            new ProcessBuilder("clear").inheritIO().start().waitFor();
+        }
 
         System.getProperties().setProperty("java.security.policy", FILE_POLICY_PATH);
         new App(args);
