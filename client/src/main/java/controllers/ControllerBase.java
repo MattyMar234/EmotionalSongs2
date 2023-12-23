@@ -88,6 +88,18 @@ public abstract class ControllerBase {
             
     }
 
+    protected String randomColor() 
+    {
+        Random random = new Random();
+        int number = random.nextInt(22) + 1;
+
+        Image image = new Image(UtilityOS.formatPath(Main.ImageFolder + "\\colored_icon\\" + number + ".png"));  
+        Color everegedColor = getAverageColor(image, -0.26f);
+        String color = ColorToHex(everegedColor);
+
+        return color;
+    }
+
     protected static Color getAverageColor(Image image, float brightnessFactor) {
         // Create a PixelReader to read pixel data
         PixelReader pixelReader = image.getPixelReader();
@@ -130,6 +142,11 @@ public abstract class ControllerBase {
         double averageGreen = totalGreen / pixelCount;
         double averageBlue = totalBlue / pixelCount;
 
+        if(averageRed > 1.0F) averageRed = 1.0F;
+        if(averageGreen > 1.0F) averageGreen = 1.0F;
+        if(averageBlue > 1.0F) averageBlue = 1.0F;
+
+      
         // Create a color from the average components
         return new Color(averageRed, averageGreen, averageBlue, 1);
     }

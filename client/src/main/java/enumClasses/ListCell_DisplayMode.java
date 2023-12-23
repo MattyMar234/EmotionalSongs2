@@ -2,6 +2,7 @@ package enumClasses;
 
 public enum ListCell_DisplayMode {
     DISPLAY_SONG,
+    DISPLAY_SONG_and_DELETE,
     DISPLAY_COMMENT,
     DISPLAY_ALBUM,
     DISPLAY_PLAYLIST,

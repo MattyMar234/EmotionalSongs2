@@ -219,7 +219,9 @@ public class Terminal extends Thread
         CHECK(          "check     ", " Verifica se le tabelle delle database sono corrette"),
         //DB_INFO(        "info      ", " Mostra le informazioni sul database"),
         EXPORT(         "export    ", " Esporta il contenuto del dataBase in file CSV"),
-        IMPORT(         "import    ", " per importare i dati nel database tramite dei file CSV");
+        IMPORT(         "import    ", " per importare i dati nel database tramite dei file CSV"),
+        QUERY_DB_ON(    "edqp      ", " Abilita la scrittura delle query dinamiche"),
+        QUERY_DB_OFF(   "ddqp      ", " Disabilita la scrittura delle query dinamiche");
         //SQL_TERMINAL("makequery", " Apre la console SQL");
 
         public final String value;
@@ -436,6 +438,12 @@ public class Terminal extends Thread
                         printInfoln("The database is not connected");
                         //main.setDatabaseConnection();
                     }
+                }
+                else if(command.equalsIgnoreCase(Command.QUERY_DB_ON.getCommandValue())) {
+                    QueryBuilder.setQueryDebug(true);
+                }
+                else if(command.equalsIgnoreCase(Command.QUERY_DB_OFF.getCommandValue())) {
+                    QueryBuilder.setQueryDebug(false);
                 }
                 else if( !(command.equals("\n")||command.equals("\r")||command.equals("\n\r")||command.equals("\r\n"))) {
                    printErrorln("Unknown command \"" + Color.CYAN_BOLD_BRIGHT + command + Color.RESET + "\""); 

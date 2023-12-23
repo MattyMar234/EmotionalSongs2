@@ -12,6 +12,13 @@ public class Playlist implements Serializable
     private String data;
     private String userID;
     private String[] songsID;
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Playlist)
+            return this.id.equals(((Playlist)obj).getId());
+        return false;
+    }
     
 
     public String getId() {

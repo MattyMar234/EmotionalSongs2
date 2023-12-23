@@ -31,6 +31,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import objects.Album;
 import objects.Comment;
@@ -70,6 +71,7 @@ public class ListCell_Controller extends ControllerBase implements Initializable
     private ListCell_DisplayMode mode;
     private Object element;
     private long rowNumber = 0;
+    private Playlist playlist = null;
 
 
     public ListCell_Controller() {
@@ -95,6 +97,11 @@ public class ListCell_Controller extends ControllerBase implements Initializable
         
         this.mode = (ListCell_DisplayMode)data[0];
 
+        if(this.mode == ListCell_DisplayMode.DISPLAY_SONG_and_DELETE) {
+            this.playlist = (Playlist) data[4];
+        }
+        
+
         if(data.length >= 2) {
             this.element = data[1];
         }
@@ -106,11 +113,12 @@ public class ListCell_Controller extends ControllerBase implements Initializable
         
     
         switch (mode) {
-            case DISPLAY_SONG ->      setupAsSong();
-            case DISPLAY_COMMENT ->   setupAsComment();
-            case DISPLAY_PLAYLIST ->  setupAsPlaylist();
-            case DISPLAY_ALBUM ->     setupAsAlbum();
-            case SONG_HEADER ->       setupAsSongHeader();
+            case DISPLAY_SONG ->                 setupAsSong();
+            case DISPLAY_SONG_and_DELETE ->      setupAsSong();
+            case DISPLAY_COMMENT ->              setupAsComment();
+            case DISPLAY_PLAYLIST ->             setupAsPlaylist();
+            case DISPLAY_ALBUM ->                setupAsAlbum();
+            case SONG_HEADER ->                  setupAsSongHeader();
             case ALBUM_HEADER -> throw new UnsupportedOperationException("Unimplemented case: " + mode);
             case COMMENT_HEADER -> throw new UnsupportedOperationException("Unimplemented case: " + mode);
             case PLAYLIST_HEADER ->   setupAsPlaylistHeader();
@@ -126,11 +134,11 @@ public class ListCell_Controller extends ControllerBase implements Initializable
         Label titleLable = new Label(Main.applicationLanguage == 0 ? "Titolo" : "Title");
         Label artistLable = new Label(Main.applicationLanguage == 0 ? "" : "");
         //FontIcon clockImage = new FontIcon("mdi2c-clock-outline");
-        Label timeLabel = new Label(Main.applicationLanguage == 0 ? "Canzoni presenti" : "Songs present");
+        Label timeLabel = new Label(Main.applicationLanguage == 0 ? "Canzoni" : "Songs");
         Label azioniLable = new Label(Main.applicationLanguage == 0 ? "Azioni" : "Actions");
         
         numerLabel.getStyleClass().add("Label-Style1");
-        imageLable.getStyleClass().add("Label-Style1");
+        //imageLable.getStyleClass().add("Label-Style1");
         titleLable.getStyleClass().add("Label-Style1");
         artistLable.getStyleClass().add("Label-Style1");
         azioniLable.getStyleClass().add("Label-Style1");
@@ -138,7 +146,7 @@ public class ListCell_Controller extends ControllerBase implements Initializable
         //clockImage.getStyleClass().add("generic-fontIcon-style");
         
         header_container1.getChildren().add(numerLabel);
-        header_container2.getChildren().add(imageLable);
+        //header_container2.getChildren().add(imageLable);
         header_container3.getChildren().add(titleLable);
         header_container4.getChildren().add(artistLable);
         header_container5.getChildren().add(timeLabel);
@@ -214,15 +222,21 @@ public class ListCell_Controller extends ControllerBase implements Initializable
         });
 
         if(Main.account != null) {
-            Menu pMenu = new Menu(Main.applicationLanguage == 0 ? "Aggiungi ad una playlist" : "Add to a playlist");
-            actionButton.getItems().add(pMenu);
-
             new Thread(() -> {
+                
+                Menu pMenu = new Menu(Main.applicationLanguage == 0 ? "Aggiungi ad una playlist" : "Add to a playlist");
+                actionButton.getItems().add(pMenu);
+
                 try {
                     ArrayList<Playlist> playlist_list = connectionManager.getAccountPlaylists(Main.account.getNickname());
                     
                     Platform.runLater(() -> {
-                        for (Playlist playlist : playlist_list) {
+                        for (Playlist playlist : playlist_list) 
+                        {
+                            if(this.playlist != null && playlist.equals(this.playlist)) {
+                                continue;
+                            }
+                            
                             MenuItem item = new MenuItem(playlist.getName());
                             pMenu.getItems().add(item);
                             
@@ -235,6 +249,21 @@ public class ListCell_Controller extends ControllerBase implements Initializable
                             });
                         }
                     });
+
+                    if(this.mode == ListCell_DisplayMode.DISPLAY_SONG_and_DELETE) {
+                        Menu deleteMenu = new Menu(Main.applicationLanguage == 0 ? "Rimuovi dalla playlist" : "Remove from playlist");
+                        actionButton.getItems().add(deleteMenu);
+                        
+                        deleteMenu.setOnAction(event -> {
+                            try {
+                                connectionManager.removeSongFromPlaylist(Main.account.getNickname(), this.playlist.getId(), song.getId());
+                                sceneManager.refreshScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);
+                            } 
+                            catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    }
                 } 
                 catch (Exception e) {
                     // TODO Auto-generated catch block
@@ -242,6 +271,9 @@ public class ListCell_Controller extends ControllerBase implements Initializable
                 }
                 
             }).start();
+        }
+        else {
+            actionButton.setDisable(true);
         }      
     }
 
@@ -267,22 +299,27 @@ public class ListCell_Controller extends ControllerBase implements Initializable
         MenuItem deleteItem = new MenuItem(Main.applicationLanguage == 0 ? "Elimina Playlist" : "Delete Playlist");
         MenuItem renameItem = new MenuItem(Main.applicationLanguage == 0 ? "Rinomina Playlist" : "Rename Playlist");
 
+        HBox hb = (HBox) actionButton.getParent();
+        hb.getChildren().clear();
+        hb.getChildren().add(actionButton);
+
         actionButton.getItems().addAll(renameItem, deleteItem);
 
-        exspandButton.setVisible(false);
-        spotifyButton.setVisible(false);
+        //exspandButton.setVisible(false);
+        //spotifyButton.setVisible(false);
 
         labelNumber.setText(String.valueOf(rowNumber));
 
         //funzione 
         renameItem.setOnAction(event -> {
-            
+            sceneManager.startWindow(SceneManager.ApplicationWinodws.PLAYLIST_CREATION_WINDOW, playlist);
         });
 
         //cancello la playlist
         deleteItem.setOnAction(event -> {
-           if((boolean)connectionManager.deletePlaylist(Main.account.getNickname(), playlist.getId()));
-            sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.MAIN_PAGE_PLAYLIST);
+           if((boolean) connectionManager.deletePlaylist(Main.account.getNickname(), playlist.getId())) {
+               sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.MAIN_PAGE_PLAYLIST);
+           }
         });
 
         grid.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>(){

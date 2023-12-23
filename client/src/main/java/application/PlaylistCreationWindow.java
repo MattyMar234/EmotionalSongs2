@@ -16,27 +16,30 @@ public class PlaylistCreationWindow extends Application
     private final SceneManager sceneManager = SceneManager.instance();
     private final ConnectionManager connectionManager = ConnectionManager.getConnectionManager();
     private Stage root;
+    private static Object[] args;
 
 
     @SuppressWarnings("unchecked")
     public static void startWindow(Object args_) 
     {
-        String[] args = (String[]) args_;
+        Object[] args = (Object[])args_;
+        PlaylistCreationWindow.args = (Object[])args_;
         //Class<Type> clazz = (Class<Type>)((ParameterizedType)getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
         System.out.print("PlaylistCreationWindow args:");
         
         if(args_ != null && args.length > 0) {
             System.out.println();
-            for (String string : args) 
+            for (Object string : args) 
                 System.out.println("-" + string);
         }  
-        else
+        else {
             System.out.println("null");
+        }
+        
         try {
             new PlaylistCreationWindow().start(new Stage());
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
             
@@ -59,7 +62,7 @@ public class PlaylistCreationWindow extends Application
         });
 
         sceneManager.setStage(SceneManager.ApplicationWinodws.PLAYLIST_CREATION_WINDOW, root);
-        sceneManager.setScene(SceneManager.ApplicationWinodws.PLAYLIST_CREATION_WINDOW, ApplicationScene.CREATE_PLAYLIST);
+        sceneManager.setScene(SceneManager.ApplicationWinodws.PLAYLIST_CREATION_WINDOW, ApplicationScene.CREATE_PLAYLIST, PlaylistCreationWindow.args);
     }
 
     public void closeWindow() {

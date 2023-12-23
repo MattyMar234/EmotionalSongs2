@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
+import application.Main;
 import application.SceneManager;
 import enumClasses.EmotionType;
 import interfaces.Injectable;
@@ -17,6 +18,8 @@ import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import objects.Emotion;
 
@@ -25,6 +28,10 @@ public class EmotionsChart extends ControllerBase implements Initializable, Inje
     @FXML public PieChart chart;
     @FXML public Label labelTotUsers;
     @FXML public VBox Vbox_keys;
+
+    @FXML public HBox chartContainer;
+    @FXML public VBox labelContainer;
+    @FXML public Label labelDataNotAvailable;
 
     private ArrayList<Emotion> listaEmozini;
 
@@ -38,7 +45,22 @@ public class EmotionsChart extends ControllerBase implements Initializable, Inje
     public void injectData(Object... data) {
         
         listaEmozini = (ArrayList<Emotion>) data[0];
-        InitializePieChart();
+
+        if(listaEmozini.size() == 0) {
+            StackPane sp = (StackPane)chartContainer.getParent();
+            sp.getChildren().remove(chartContainer);
+            
+            labelDataNotAvailable.setText(Main.applicationLanguage == 0 ? "Nessun dato disponibile\nper la visulizzazione" : "No data available for visualization");
+        }
+        else {
+            StackPane sp = (StackPane)chartContainer.getParent();
+            sp.getChildren().remove(labelContainer);
+
+            labelTotUsers.setText(Main.applicationLanguage == 0 ? "Commenti Totali: " + listaEmozini.size() : "Total Comments: " + listaEmozini.size());
+            InitializePieChart();
+        }
+
+        
     }
 
     @Override
@@ -55,6 +77,7 @@ public class EmotionsChart extends ControllerBase implements Initializable, Inje
     private void InitializePieChart() {
         
         ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
+     
 
         HashMap<EmotionType, Node> conteggioEmozioni = new HashMap<>();
         final long total_emotion = listaEmozini.size();
@@ -79,23 +102,20 @@ public class EmotionsChart extends ControllerBase implements Initializable, Inje
         
         for (EmotionType e : enumClasses.EmotionType.values()) 
         {
-            pieData.add(new PieChart.Data(e.getName(), conteggioEmozioni.get(e).count));            
-
+            if(conteggioEmozioni.get(e).count != 0) {
+                PieChart.Data p = new PieChart.Data(e.getName(), conteggioEmozioni.get(e).count);
+                pieData.add(p); 
+            }
+                       
             EmotionsChartKeys_Controller controller = (EmotionsChartKeys_Controller) sceneManager.injectScene(SceneManager.SceneElemets.CHART_KEYS.getElemetFilePath(), Vbox_keys);
             controller.injectData(e, conteggioEmozioni.get(e).count, conteggioEmozioni.get(e).summ);
-            
-            // System.out.println("index: " + index + " => " + e.getName() + " e " + e.getPieColor(true));
-            // sb.append(".default-color" + (index++) + ".chart-pie{\n");
-            // sb.append("\t" + e.getPieColor(true) + "\n");
-            // sb.append("}\n");
         }
-        
-        //System.out.println("style: " + sb.toString());
-        //chart.setStyle(sb.toString());
+   
+
         chart.setData(pieData);
 
         chart.getData().forEach(data -> {
-            String percentage  = String.format("%.2f%%", data.getPieValue() / total_emotion*100);
+            String percentage  = data.getName() + ": " + String.format("%.2f%%", data.getPieValue() / total_emotion*100);
             Tooltip tooltip = new Tooltip(percentage);
             Tooltip.install(data.getNode(), tooltip);
         });

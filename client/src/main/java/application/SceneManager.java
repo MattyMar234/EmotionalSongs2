@@ -234,7 +234,7 @@ public class SceneManager {
      * @param name
      * @param args
      */
-    public void startWindow(ApplicationWinodws wName, String[] args) 
+    public void startWindow(ApplicationWinodws wName, Object...args) 
     {
         try {
             if(wName == null)
@@ -438,6 +438,14 @@ public class SceneManager {
         windowUserActions.get(window).redo();
     }
 
+    public void refreshScene(ApplicationWinodws window) {
+        windowUserActions.get(window).refresh();
+    }
+
+    public ApplicationActions getUserActions(ApplicationWinodws window) {
+        return windowUserActions.get(window);
+    }
+
  
 
     /**
@@ -520,6 +528,10 @@ public class SceneManager {
         switch(window)
         {
             case EMOTIONALSONGS_WINDOW -> {
+                
+                //se cambio scena, chiudo le altre finestre aperte
+                closeWindow(SceneManager.ApplicationWinodws.PLAYLIST_CREATION_WINDOW);
+                
                 switch(sceneName) 
                 {
                     case ACCESS_PAGE:
@@ -540,6 +552,9 @@ public class SceneManager {
                     case MAIN_PAGE_EXPLORE:
                         break;
                     case MAIN_PAGE_HOME:
+
+                        stage.setMinWidth(1000);
+                        stage.setMinHeight(1000);
 
                         while(loadedController.size() > 2) loadedController.pop();
 
@@ -640,7 +655,7 @@ public class SceneManager {
 
         //==================================== verfica passaggio args... ====================================//
         //verifico se ho dei parametri da passare al controller
-        if(args.length >= 0 ) {
+        if(args != null && args.length >= 0 ) {
             //verifico se implementa l'interfaccia
             // Inheritance testing:
             Class<?> interfaceType = Injectable.class;

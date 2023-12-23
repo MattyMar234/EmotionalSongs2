@@ -25,18 +25,28 @@ public class QueryBuilder
     private static boolean queryDebug = false;
 
     public static void setQueryDebug(boolean mode) {
-        queryDebug = mode;
+        QueryBuilder.queryDebug = mode;
         Terminal.getInstance().printInfoln(mode ? "DynamicQueryDebug: true" : "DynamicQueryDebug: false");
     }
 
     private static void printQuery(final StringBuilder sb) {
         
-        if(!queryDebug)
+        if(!QueryBuilder.queryDebug)
             return;
         
         new Thread(() -> {
             terminal.printQueryln(sb.toString());
-        });
+        }).start();
+    }
+
+    private static void printQuery(final String s) {
+        
+        if(!QueryBuilder.queryDebug)
+            return;
+        
+        new Thread(() -> {
+            terminal.printQueryln(s);
+        }).start();
     }
 
     /**
@@ -128,7 +138,9 @@ public class QueryBuilder
             dati[i++] = informazioni.get(coll);
         }
 
-        return insert_query_creator(tableName, dati);
+        String s = insert_query_creator(tableName, dati);
+        printQuery(s);
+        return s;
     }
 
     private static void convert_and_addType(StringBuilder sb, Colonne type, Object obj)
@@ -252,6 +264,7 @@ public class QueryBuilder
         sb.append("\'" + path + "\'");
         sb.append(" DELIMITER ',' CSV HEADER;");
 
+        printQuery(sb);
         return sb.toString();
     }
 
@@ -266,6 +279,7 @@ public class QueryBuilder
         sb.append("\'" + path + "\'");
         sb.append(" DELIMITER ',' CSV HEADER;");
 
+        printQuery(sb);
         return sb.toString();
     }
 

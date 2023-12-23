@@ -807,8 +807,22 @@ public class ConnectionManager implements ServerServices{
 
 	@Override
 	public boolean renamePlaylist(String userID, String playlistID, String newName) throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'renamePlaylist'");
+		
+		try {
+
+			Object[] params = new Object[]{QueryParameter.ACCOUNT_ID.toString(), userID, QueryParameter.PLAYLIST_ID.toString(), playlistID, QueryParameter.NEW_NAME.toString(), newName};
+			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.RENAME_PLAYLIST.name(), params));
+			
+			if(result instanceof Exception)
+				throw (Exception) result;
+			
+			
+			return (Boolean) result;
+		} 
+		catch (Exception e) {
+			System.out.println(e);
+			return false;
+		}
 	}
 
 
@@ -837,8 +851,24 @@ public class ConnectionManager implements ServerServices{
 
 	@Override
 	public boolean removeEmotion(String id) throws Exception {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'removeEmotion'");
+		
+		try {
+			Object[] params = new Object[]{QueryParameter.ID.toString(), id};
+			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.REMOVE_EMOTION.name(), params));
+			
+			if(result instanceof Exception)
+				throw (Exception) result;
+			
+			return (boolean)result;
+		} 
+		catch (Exception e) {
+			System.out.println(e);
+			return false;
+		}
+//		return false;
+//		return (boolean)makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.REMOVE_EMOTION.name(), params));
+//		return (boolean)makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.REMOVE_EMOTION.name(), params));
+//		return (boolean)makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.REMOVE_EMOTION.name(), params));
 	}
 
 

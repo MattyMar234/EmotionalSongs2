@@ -14,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import objects.Playlist;
 
 public class PlaylistCreationController extends ControllerBase implements Initializable, Injectable 
 {
@@ -25,6 +26,7 @@ public class PlaylistCreationController extends ControllerBase implements Initia
 
     private boolean editPlaylist = false;
     private String fieldDefaultStyle;
+    private Playlist playlist = null;
     
     
     @Override
@@ -37,13 +39,14 @@ public class PlaylistCreationController extends ControllerBase implements Initia
 
     @Override
     public void injectData(Object... data) {
-        if(data.length == 2) {
-            String playlistName = (String) data[0];
-            Image img = (Image) data[1];
+        if(data.length == 1) {
+            // String playlistName = (String) data[0];
+            // Image img = (Image) data[1];
+            playlist = (Playlist) data[0];
 
             labellTitle.setText((Main.applicationLanguage == 0) ? "Modifica Playlist" : "Playlist editor");
-            playtlistName.setText(playlistName);
-            playlistImage.setImage(img);
+            playtlistName.setText(playlist.getName());
+            //playlistImage.setImage(img);
 
             editPlaylist = true;
         }
@@ -55,7 +58,7 @@ public class PlaylistCreationController extends ControllerBase implements Initia
     }
 
     @FXML
-    public void saveData(ActionEvent event) {
+    public void saveData(ActionEvent event) throws Exception {
 
         String text = playtlistName.getText();
 
@@ -68,18 +71,25 @@ public class PlaylistCreationController extends ControllerBase implements Initia
 
         ErrorLabel.setVisible(false);
         playtlistName.setStyle(fieldDefaultStyle);
-        boolean result = connectionManager.addPlaylist(text, Main.account.getNickname(), null);
-        
+        boolean result = false;
+
+        if(editPlaylist) {
+            result = connectionManager.renamePlaylist(Main.account.getNickname(), playlist.getId(), text);
+        }
+        else {
+            result = connectionManager.addPlaylist(text, Main.account.getNickname(), null); 
+        }
+
         if(result) {
             sceneManager.closeWindow(SceneManager.ApplicationWinodws.PLAYLIST_CREATION_WINDOW);
-            sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.MAIN_PAGE_PLAYLIST);
+            sceneManager.refreshScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);
+            
+            //sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.MAIN_PAGE_PLAYLIST);
             return;
         }
 
         ErrorLabel.setVisible(true);
         ErrorLabel.setText((Main.applicationLanguage == 0) ? "Qualcosa è andato male" : "Something went wrong");
-        playtlistName.setStyle(fieldDefaultStyle + "-fx-border-width: 1.5px; -fx-border-radius: 6px; -fx-border-color: #F14934;");  
-    }
-
-    
+        playtlistName.setStyle(fieldDefaultStyle + "-fx-border-width: 1.5px; -fx-border-radius: 6px; -fx-border-color: #F14934;"); 
+    } 
 }

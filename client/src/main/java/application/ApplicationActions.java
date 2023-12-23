@@ -58,6 +58,14 @@ public class ApplicationActions
         
     }
 
+    public void refresh()
+    {
+        if(actualAction == null)
+            return;
+        
+        SceneManager.instance().showScene(actualAction);
+    }
+
     public void undo() 
     {
         if(actualAction == null || backward_queue.isEmpty())

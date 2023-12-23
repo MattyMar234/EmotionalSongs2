@@ -650,7 +650,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	public Object renamePlaylist(final HashMap<String, Object> argsTable) {
 		try {
 			QueriesManager.renamePlaylist((String)argsTable.get(QueryParameter.ACCOUNT_ID.toString()), (String)argsTable.get(QueryParameter.PLAYLIST_ID.toString()), (String)argsTable.get(QueryParameter.NEW_NAME.toString()));
-			return null;        
+			return true;        
 		} 
 		catch (Exception e) {
 			return e;

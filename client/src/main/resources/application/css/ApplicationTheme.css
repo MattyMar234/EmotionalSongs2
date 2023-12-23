@@ -1,13 +1,15 @@
 * {
-    -primary: #121212;
+    -primary: #282828;
     -secondary: #1a1919;
-    -tertiary: #8259e3;
+    /*-tertiary: #8259e3;*/
     -tertiary: #9783c4;
+    -tertiary_Hover: #c9b6f4;
     -container1: #181818;
     -container1_H: #282828;
     
     -gray1:  #242424;
     -gray1_transparent:  #2424247F;
+    -gray2_transparent:  #bababa7f;
 
 }
 
@@ -16,11 +18,8 @@
 }
 
 .Theme-color-1 {
-    -fx-background-color: #282828;
+    -fx-background-color: -primary;
 }
-
-
-
 
 /*======================== BUTTONS =====================*/
 .button {
@@ -130,12 +129,12 @@
 }
 
 #detailsBtn > .menu-item {
-    -fx-background-color: #282828; /* Background color for menu items */
+    -fx-background-color: -primary; /* Background color for menu items */
     -fx-text-fill: white; /* Text color for menu items */
 }
 
 .context-menu{
-    -fx-background-color: #282828; /* Set the background to transparent */
+    -fx-background-color: -primary; /* Set the background to transparent */
 }
 
 .context-menu .menu-item:hover {
@@ -157,7 +156,7 @@
     -fx-background-color: transparent;
     -fx-border-width: 0 0 0 60;
     -fx-border-width: 0.5px 0px 0px 0px;
-    -fx-border-color: rgb(70, 70, 70);
+    -fx-border-color: rgb(112, 112, 112);
 
 }
 
@@ -174,27 +173,37 @@
     -fx-font-weight: Bold;
     -fx-text-fill: white;
     -fx-font-size: 14;
+    -fx-fill: white;
+}
+.Label-Style1nB{
+    -fx-text-fill: white;
+    -fx-font-size: 14;
+    -fx-fill: white;
 }
 .Label-Style2{
     -fx-font-weight: Bold;
     -fx-text-fill: white;
     -fx-font-size: 17;
+    -fx-fill: white;
 }
 .Label-Style3{
     -fx-font-weight: Bold;
     -fx-text-fill: white;
     -fx-font-size: 24;
+    -fx-fill: white;
 }
 
 .Label-CategoryTitle{
     -fx-font-weight: Bold;
     -fx-text-fill: white;
+    -fx-fill: white;
     -fx-font-size: 24;
 }
 
 .Label-DisplayedeElement-Title{
     -fx-font-weight: Bold;
     -fx-text-fill: white;
+    -fx-fill: white;
     -fx-font-size:48;
 }
 
@@ -317,6 +326,12 @@
     /*-fx-background-radius: 15 15 15 15;*/
 }
 
+#tableHeaderbackground
+{
+    -fx-background-color: -gray1_transparent;
+    -fx-background-radius: 24px;
+}
+
 #BackGround {
     -fx-background-color: #000000;
 }
@@ -343,7 +358,7 @@
 }
 
 .ElementContainer-Background:hover {
-    -fx-background-color: #282828;
+    -fx-background-color: -primary;
 }
 
 
@@ -355,7 +370,7 @@
 }
 
 .Theme-color-1 {
-    -fx-background-color: #282828;
+    -fx-background-color: -primary;
 }
 
 #chartDetailsContainer {
@@ -433,7 +448,7 @@
 }
 
 
-.default-color0.chart-pie{
+/*.default-color0.chart-pie{
     -fx-pie-color: #800080;
 }
 .default-color1.chart-pie{
@@ -458,16 +473,17 @@
     -fx-pie-color: #58423F;
 }
 .default-color8.chart-pie{
-    -fx-pie-color: #4682B4;
+    -fx-pie-color: #b44646;
 }
 .default-color9.chart-pie{
-    -fx-pie-color: #4682B4;
-}
+    -fx-pie-color: #b44646;
+}*/
 
 
-/*==================================== LIST-VIEW ====================================*/
+/*==================================== COMBOX ====================================*/
 .list-cell {
     -fx-background-color: transparent;
+    
     -fx-font-size: 14px;
     -fx-padding: 0 50;
 
@@ -478,12 +494,14 @@
     -fx-fill: white; /* Apply the text color */
 }
 .list-cell:hover {
-    -fx-background-color: #555555; /* Change to the desired lighter color */
+    -fx-background-color: -tertiary_Hover;
+    -fx-background-radius: 12px; /* Change to the desired lighter color */
 }
 
 /* Apply styles to ListView */
 .list-view {
-    -fx-background-color: transparent;
+    -fx-background-color: -tertiary;
+    -fx-background-radius: 12px;
     /* Add other properties for ListView here */
 }
 
@@ -492,10 +510,12 @@
 }
 
 .list-view .scroll-bar:vertical .thumb {
-    -fx-background-color: #8259E3; /* Thumb color */
+    -fx-background-color: -tertiary;/*#8259E3; /* Thumb color */
     -fx-background-insets: 0, 2; /* Insets for the thumb */
     -fx-background-radius: 5px; /* Thumb border radius */
 }
+
+/*==================================== LIST-VIEW ====================================*/
 
 #detailsBtn {
     -fx-background-color: transparent; /* Remove background */
@@ -508,16 +528,27 @@
 }
 
 #detailsBtn > .menu-item {
-    -fx-background-color: #282828; /* Background color for menu items */
+    -fx-background-color: -primary; /* Background color for menu items */
     -fx-text-fill: white; /* Text color for menu items */
 }
 
+/*==================================== MENU-ITEM ====================================*/
+
 .context-menu{
-    -fx-background-color: #282828; /* Set the background to transparent */
+    -fx-background-color: -primary; /* Set the background to transparent */
+    
+}
+.context-menu .menu-item .label {
+    -fx-text-fill: white;
 }
 
+
 .context-menu .menu-item:hover {
-    -fx-background-color: #8259E3; /* Background color for hovetransparent menu item */
+    -fx-background-color: -tertiary; /* Background color for hovetransparent menu item */
+}
+
+.context-menu .menu-item {
+    -fx-background-color: -primary; /* Set the background to transparent */
 }
 
 .menubtn {

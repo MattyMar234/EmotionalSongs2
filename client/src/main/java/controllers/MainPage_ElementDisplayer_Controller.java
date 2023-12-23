@@ -186,7 +186,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
             }).start();
         }
         else {
-            Color everegedColor = getAverageColor(img, 0.3f);
+            Color everegedColor = super.getAverageColor(img, 0.3f);
             String color = ColorToHex(everegedColor);
             linearGradien_background_upper.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");");
             image.setImage(img);
@@ -207,21 +207,30 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
         final Song song = (Song) displayedElement;
         
         try {
-            ArrayList<Emotion> list = connectionManager.getEmotions(song.getId());
+            new Thread(() -> {
+                ArrayList<Emotion> list;
+                try {
+                    list = connectionManager.getEmotions(song.getId());
+                    //if(list.size() != 0) {
+                    Platform.runLater(() -> {
+                            EmotionsChart emotionsChart = (EmotionsChart) SceneManager.instance().injectScene(SceneManager.SceneElemets.CHART.getElemetFilePath(), elementContainer);
+                            emotionsChart.injectData(list);
+                        //}
 
-            if(list.size() != 0) {
-                EmotionsChart emotionsChart = (EmotionsChart) SceneManager.instance().injectScene(SceneManager.SceneElemets.CHART.getElemetFilePath(), elementContainer);
-                emotionsChart.injectData(list);
-            }
+                        CommentArea commentArea = (CommentArea)SceneManager.instance().injectScene(SceneManager.SceneElemets.COMMENT_AREA.getElemetFilePath(), elementContainer);
+                        commentArea.injectData(song);
 
-            CommentArea commentArea = (CommentArea)SceneManager.instance().injectScene(SceneManager.SceneElemets.COMMENT_AREA.getElemetFilePath(), elementContainer);
-            commentArea.injectData(song);
-
-            for (Emotion emotion : list) {
-                boolean canBeDeleted = emotion.getID_Account().equals(Main.account.getNickname());
-                CommentListCell_Controller controller = (CommentListCell_Controller)SceneManager.instance().injectScene(SceneManager.SceneElemets.COMMENT_VIEW.getElemetFilePath(), elementContainer, canBeDeleted);
-                controller.injectData(emotion);
-            }
+                        for (Emotion emotion : list) {
+                            CommentListCell_Controller controller = (CommentListCell_Controller)SceneManager.instance().injectScene(SceneManager.SceneElemets.COMMENT_VIEW.getElemetFilePath(), elementContainer);
+                            controller.injectData(emotion);
+                        }
+                    });
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }   
+            }).start();
+           
         } 
         catch (Exception e) {
            System.out.println(e);
@@ -317,7 +326,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                         Platform.runLater(() -> {
                             
                             ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_ELEMENT, elementContainer);
-                            listCell.injectData(ListCell_DisplayMode.DISPLAY_SONG, song, null, j);
+                            listCell.injectData(ListCell_DisplayMode.DISPLAY_SONG_and_DELETE, song, null, j, playlist);
                         });
                         i++;
                     } 
@@ -345,7 +354,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
 
         actionButton.setDisable(false);
         actionButton.setVisible(true);
-        actionButton.setText(Main.applicationLanguage == 0 ? "Crea una nuova playlist" : "Create a new playlist");
+        actionButton.setText(Main.applicationLanguage == 0 ? "Nuova playlist" : "New playlist");
 
         actionButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
@@ -379,10 +388,13 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                 catch (Exception e) {
                     System.out.println(e);
                     e.printStackTrace();
+                    
                 }
             } 
             catch (Exception e) {
+                System.out.println(e);
                 e.printStackTrace();
+                
             }
         }).start();
     }

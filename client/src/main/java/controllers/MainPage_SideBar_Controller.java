@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import application.ApplicationActions;
 import application.Main;
 import application.SceneManager;
 import interfaces.Injectable;
@@ -113,13 +114,34 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
     // -------------------------------- eventi -------------------------------- //
 
     @FXML
-    public void BackwardAction(MouseEvent event) {
+    public void BackwardAction(MouseEvent event) 
+    {
         sceneManager.undo(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);
+        ApplicationActions action = sceneManager.getUserActions(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);  
+        
+        if(!action.undoAvailable()) {
+            buttonBackward.setDisable(true);
+        }
+        else {
+            buttonBackward.setDisable(false);
+        }
+    
     }
 
     @FXML
-    public void ForwardAction(MouseEvent event) {
+    public void ForwardAction(MouseEvent event) 
+    {
         sceneManager.redo(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);
+        ApplicationActions action = sceneManager.getUserActions(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);  
+        
+
+        if(!action.redoAvailable()) {
+            //buttonForward.setDisable(true);
+        }
+        else {
+            //buttonForward.setDisable(false);
+        }
+    
     }
 
 
@@ -149,7 +171,7 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
 
     @FXML
     public void logout(ActionEvent event) {
-
+        
     }
 
     @FXML

@@ -42,47 +42,60 @@
                <center>
                   <AnchorPane BorderPane.alignment="CENTER">
                      <children>
-                        <AnchorPane layoutX="4.099999904632568" layoutY="0.09999990463256836" AnchorPane.leftAnchor="4.099999904632568" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="8.0">
-                           <children>
-                              <HBox alignment="CENTER" minHeight="-Infinity" prefHeight="40.0" prefWidth="200.0" spacing="20.0">
-                                 <children>
-                                    <Button fx:id="allButtonFilter" minWidth="-Infinity" mnemonicParsing="false" onAction="#allButton_click" prefWidth="75.0" styleClass="filterbutton" text="Tutti" />
-                                    <Button fx:id="songButtonFilter" minWidth="-Infinity" mnemonicParsing="false" onAction="#songButton_click" prefWidth="75.0" styleClass="filterbutton" text="Canzoni" />
-                                    <Button fx:id="albumButtonFilter" minWidth="-Infinity" mnemonicParsing="false" onAction="#playlistButton_click" prefWidth="75.0" styleClass="filterbutton" text="Playlist" />
-                                    <Button fx:id="artistButtonFilter" minWidth="-Infinity" mnemonicParsing="false" onAction="#artistButton_click" prefWidth="75.0" styleClass="filterbutton" text="Artisti" />
-                                 </children>
-                              </HBox>
-                           </children>
-                        </AnchorPane>
-                        <Label id="filterlabel" fx:id="resultLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="4.099999904632568" layoutY="50.09999990463257" styleClass="Label-Style2" text="I migliori risultati" textAlignment="JUSTIFY" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="90.0">
-                           <padding>
-                              <Insets left="20.0" />
-                           </padding>
-                        </Label>
-                        <AnchorPane prefHeight="35.0" prefWidth="677.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="80.0">
-                           <children>
-                              <HBox alignment="CENTER" layoutX="635.0" layoutY="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                 <children>
-                                    <Button mnemonicParsing="false" onAction="#back_page" style="-fx-background-color: transparent;">
-                                       <graphic>
-                                          <FontIcon iconColor="WHITE" iconLiteral="mdi2c-chevron-left" iconSize="24" />
-                                       </graphic>
-                                    </Button>
-                                    <Label fx:id="pageIndex" alignment="CENTER" styleClass="Label-Style2" text="n di m" textAlignment="JUSTIFY" />
-                                    <Button fx:id="nextPage_Button" mnemonicParsing="false" onAction="#next_page" style="-fx-background-color: transparent;">
-                                       <graphic>
-                                          <FontIcon iconColor="WHITE" iconLiteral="mdi2c-chevron-right" iconSize="24" />
-                                       </graphic>
-                                    </Button>
-                                 </children>
-                              </HBox>
-                           </children>
-                        </AnchorPane>
-                        <ScrollPane fitToWidth="true" layoutX="4.099999904632568" layoutY="80.09999990463257" prefHeight="541.0" prefWidth="717.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="150.0">
+                        <ScrollPane fitToWidth="true" layoutX="4.099999904632568" layoutY="80.09999990463257" prefHeight="541.0" prefWidth="717.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <content>
                               <AnchorPane>
                                  <children>
-                                    <VBox fx:id="elementContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: trasparent;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <HBox alignment="CENTER_LEFT" layoutY="90.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+                                             <children>
+                                                <AnchorPane minHeight="-Infinity" prefHeight="60.0" VBox.vgrow="ALWAYS">
+                                                   <children>
+                                                      <HBox alignment="CENTER_LEFT" minHeight="-Infinity" prefHeight="40.0" prefWidth="200.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                         <children>
+                                                            <Label id="filterlabel" fx:id="resultLabel1" contentDisplay="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="30.0" prefWidth="91.0" styleClass="Label-Style2" text="Filtra per:" />
+                                                            <Button fx:id="songButtonFilter" minWidth="-Infinity" mnemonicParsing="false" onAction="#songButton_click" prefWidth="75.0" styleClass="PrimaryButton" text="Canzoni" />
+                                                            <Button fx:id="albumButtonFilter" minWidth="-Infinity" mnemonicParsing="false" onAction="#playlistButton_click" prefWidth="75.0" styleClass="PrimaryButton" text="Playlist" />
+                                                         </children>
+                                                      </HBox>
+                                                   </children>
+                                                </AnchorPane>
+                                                <AnchorPane minHeight="-Infinity" prefHeight="40.0">
+                                                   <children>
+                                                      <Label id="filterlabel" fx:id="resultLabel" contentDisplay="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="30.0" prefWidth="160.0" styleClass="Label-Style2" text="I migliori risultati" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                   </children>
+                                                   <padding>
+                                                      <Insets top="10.0" />
+                                                   </padding>
+                                                </AnchorPane>
+                                             </children>
+                                          </VBox>
+                                       </children>
+                                       <padding>
+                                          <Insets left="12.0" />
+                                       </padding>
+                                    </HBox>
+                                    <AnchorPane prefHeight="35.0" prefWidth="677.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="120.0">
+                                       <children>
+                                          <HBox alignment="CENTER" layoutX="635.0" layoutY="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <children>
+                                                <Button mnemonicParsing="false" onAction="#back_page" style="-fx-background-color: transparent;">
+                                                   <graphic>
+                                                      <FontIcon iconColor="WHITE" iconLiteral="mdi2c-chevron-left" iconSize="24" />
+                                                   </graphic>
+                                                </Button>
+                                                <Label fx:id="pageIndex" alignment="CENTER" contentDisplay="CENTER" styleClass="Label-Style2" text="n di n" textAlignment="CENTER" />
+                                                <Button fx:id="nextPage_Button" mnemonicParsing="false" onAction="#next_page" style="-fx-background-color: transparent;">
+                                                   <graphic>
+                                                      <FontIcon iconColor="WHITE" iconLiteral="mdi2c-chevron-right" iconSize="24" />
+                                                   </graphic>
+                                                </Button>
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </AnchorPane>
+                                    <VBox fx:id="elementContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: trasparent;" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="200.0">
                                        <children>
                                           <AnchorPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="80.0" prefWidth="647.0" style="-fx-background-color: transparent;">
                                              <children>
@@ -107,7 +120,7 @@
                   </AnchorPane>
                </center>
                <StackPane.margin>
-                  <Insets left="20.0" right="20.0" />
+                  <Insets />
                </StackPane.margin>
             </BorderPane>
          </children>

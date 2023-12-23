@@ -34,7 +34,7 @@ public class EmotionsChartKeys_Controller extends ControllerBase implements Init
         this.numer = (long) data[1];
 
         if(numer == 0) {
-            everageLabel.setText("?");
+            everageLabel.setText("-");
         }
         else {
             this.everage = (double)(((long) data[2])/this.numer);

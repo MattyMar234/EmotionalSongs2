@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.swing.JFrame;
-import javax.swing.UIManager;
+// import javax.swing.JFrame;
+// import javax.swing.UIManager;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,7 +31,8 @@ import utility.AsciiArtGenerator.ASCII_STYLE;
 import utility.OS_utility;
 
 
-public class App extends JFrame
+
+public class App //extends JFrame
 {
     public final static String WORKING_DIRECTORY  = OS_utility.formatPath(System.getProperty("user.dir"));
     public final static String SETTINGS_DIRECTORY = OS_utility.formatPath(WORKING_DIRECTORY + "/data");
@@ -85,7 +86,7 @@ public class App extends JFrame
 
     public static void main( String[] args ) throws Exception 
     {
-        UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+        //UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor(); 
 
         System.getProperties().setProperty("java.security.policy", FILE_POLICY_PATH);
