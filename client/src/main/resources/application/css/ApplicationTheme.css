@@ -4,6 +4,7 @@
     /*-tertiary: #8259e3;*/
     -tertiary: #9783c4;
     -tertiary_Hover: #c9b6f4;
+    -tertiary_Selected: #754cd3;
     -container1: #181818;
     -container1_H: #282828;
     
@@ -34,6 +35,12 @@
 
 .PrimaryButton {
     -fx-background-color: -tertiary;
+    -fx-text-fill: #FFFFFF;
+    -fx-background-radius: 10px;
+}
+
+.PrimaryButtonSelected {
+    -fx-background-color: -tertiary_Selected;
     -fx-text-fill: #FFFFFF;
     -fx-background-radius: 10px;
 }

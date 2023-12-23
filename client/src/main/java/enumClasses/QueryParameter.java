@@ -29,7 +29,8 @@ public enum QueryParameter
     COMMENT_ID("CommentID"),
     ARTIST_ID("ID_Artista"),
     EMOZIONE("Emozione"),
-    VAL_EMOZIONE("Val_Emozione");
+    VAL_EMOZIONE("Val_Emozione"),
+    MODE("Mode");
 
 
     private String text;

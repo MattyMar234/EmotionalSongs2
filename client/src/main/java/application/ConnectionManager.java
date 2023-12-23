@@ -19,6 +19,7 @@ import enumClasses.ServerServicesName;
 import interfaces.ServerServices;
 import objects.Account;
 import objects.Album;
+import objects.Artist;
 import objects.Emotion;
 import objects.Packet;
 import objects.Playlist;
@@ -587,10 +588,16 @@ public class ConnectionManager implements ServerServices{
 
 
 	@SuppressWarnings("unchecked")
-	public Object[] searchSongs(String searchString, long limit, long offset) throws Exception 
+	public Object[] searchSongs(String searchString, long limit, long offset, int mode) throws Exception 
 	{
 		try {
-			Object[] params = new Object[]{QueryParameter.SEARCH_STRING.toString(), searchString, QueryParameter.LIMIT.toString(), limit, QueryParameter.OFFSET.toString(), offset}; 
+			Object[] params = new Object[]{
+				QueryParameter.SEARCH_STRING.toString(), searchString, 
+				QueryParameter.LIMIT.toString(), limit, 
+				QueryParameter.OFFSET.toString(), offset,
+				QueryParameter.MODE.toString(), mode
+			}; 
+
 			Packet p = new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.SEARCH_SONGS.name(), params);
 			
 			String key = generateKey(p);
@@ -622,7 +629,7 @@ public class ConnectionManager implements ServerServices{
 	
 
 	@SuppressWarnings("unchecked")
-	public ArrayList<Album> searchAlbums(String searchString, long limit, long offset) throws Exception {
+	public Object[] searchAlbums(String searchString, long limit, long offset) throws Exception {
 		try {
 			Object[] params = new Object[]{QueryParameter.SEARCH_STRING.toString(), searchString, QueryParameter.LIMIT.toString(), limit, QueryParameter.OFFSET.toString(), offset};
 			Packet p = new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.SEARCH_ALBUMS.name(), params);
@@ -631,27 +638,61 @@ public class ConnectionManager implements ServerServices{
 			Object cacheResult = cache.getItem(ObjectsCache.CacheObjectType.QUERY, key);
 
 			if(cacheResult != null) {
-				return (ArrayList<Album>) cacheResult;
+				return (Object[]) cacheResult;
 			}
 		
-			Object result = makeRequest(p);
+			Object[] result = (Object[])makeRequest(p);
 			cache.addItem(ObjectsCache.CacheObjectType.QUERY, key, result, false);
 
-			ArrayList<Album> output = (ArrayList<Album>) result;
+			ArrayList<Album> output = (ArrayList<Album>) result[1];
 
 			//aggiungo tutte le canzoni nella cache
 			for (Album album : output) {
 				if(cache.getItem(ObjectsCache.CacheObjectType.ALBUM, album.getID()) == null) {
-					cache.addItem(ObjectsCache.CacheObjectType.ALBUM, album.getID(), album, true);
+					cache.addItem(ObjectsCache.CacheObjectType.ALBUM, album.getID(), album, false);
 				}
 			}
-			return output;
+
+			return result;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}	
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Object[] searchArtists(String searchString, long limit, long offset) {
+
+		try {
+			Object[] params = new Object[]{QueryParameter.SEARCH_STRING.toString(), searchString, QueryParameter.LIMIT.toString(), limit, QueryParameter.OFFSET.toString(), offset};
+			Packet p = new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.SEARCH_ARTISTS.name(), params);
+			
+			String key = generateKey(p);
+			Object cacheResult = cache.getItem(ObjectsCache.CacheObjectType.QUERY, key);
+
+			if(cacheResult != null) {
+				return (Object[]) cacheResult;
+			}
+		
+			Object[] result = (Object[]) makeRequest(p);
+			cache.addItem(ObjectsCache.CacheObjectType.QUERY, key, result, false);
+
+			ArrayList<Artist> output = (ArrayList<Artist>) result[1];
+
+			//aggiungo tutte le canzoni nella cache
+			for (Artist artist : output) {
+				if(cache.getItem(ObjectsCache.CacheObjectType.ARTIST, artist.getID()) == null) {
+					cache.addItem(ObjectsCache.CacheObjectType.ARTIST, artist.getID(), artist, true);
+				}
+			}
+			return result;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
-		
 	}
 
 
@@ -663,6 +704,66 @@ public class ConnectionManager implements ServerServices{
 		try {
 			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_SONG_BY_IDS.name(), params));
 			data = (ArrayList<Song>) result;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return data;
+	}
+
+
+	public Artist getArtistByID(String ID) 
+	{
+		try {
+			Object[] params = new Object[]{QueryParameter.ARTIST_ID.toString(), ID};
+			Packet p = new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_ARTIST_BY_ID.name(), params);
+				
+			String key = generateKey(p);
+			Object cacheResult = cache.getItem(ObjectsCache.CacheObjectType.ARTIST, key);
+
+			if(cacheResult != null) {
+				return (Artist) cacheResult;
+			}
+			
+			Object result = makeRequest(p);
+
+			if(result instanceof Exception)
+				throw (Exception) result;
+
+			cache.addItem(ObjectsCache.CacheObjectType.ARTIST, key, (Artist)result, false);
+		
+			return (Artist) result;
+		} 
+		catch (Exception e) {
+			System.out.println(e);
+			e.printStackTrace();
+			return null;
+		}
+		
+		
+	}
+
+
+	public Album getAlbum_by_ID(String AlbumID) {
+		System.out.println("AlbumID:" + AlbumID);
+
+		Object cacheResult = cache.getItem(ObjectsCache.CacheObjectType.ALBUM, AlbumID);
+
+		if(cacheResult != null) {
+			return (Album) cacheResult;
+		}
+
+		Object[] params = new Object[]{QueryParameter.ID.toString(), AlbumID};
+		Album data = null;
+		
+		try {
+			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_ALBUM_BY_ID.name(), params));
+			
+			if(result instanceof Exception)
+				throw (Exception) result;
+			
+			data = (Album) result;
+			cache.addItem(ObjectsCache.CacheObjectType.ALBUM, AlbumID, data, false);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -889,7 +990,6 @@ public class ConnectionManager implements ServerServices{
 		
 		return (ArrayList<Emotion>)result;
 	}
-
 }
 
 

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import database.PredefinedSQLCode.Colonne;
 
 public class Artist implements Serializable 
 {
@@ -16,6 +17,14 @@ public class Artist implements Serializable
 
     private HashMap <String, MyImage> images = new HashMap <String, MyImage>();
 
+    public Artist(HashMap<Colonne, Object> table) {
+        this.id = (String) table.get(Colonne.ID);
+        this.name = (String) table.get(Colonne.NAME);
+        this.spotifyURL = (String) table.get(Colonne.URL);
+        this.followers = (long) table.get(Colonne.FOLLOWERS);
+        this.popularity = (int) table.get(Colonne.POPULARITY);
+    }
+
 
     public String getID() {
         return id;
@@ -24,26 +33,8 @@ public class Artist implements Serializable
     public void addImages(ArrayList<MyImage> imgs) {
         for (MyImage myImage : imgs) {
             images.put(myImage.getSize(), myImage);
+            System.out.println("Added image: " + myImage.getSize());
         }
     }
 
-    public MyImage getImage(MyImage.ImageSize size) {
-        return images.get(size.getImgSize());
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getSpotifyURL() {
-        return spotifyURL;
-    }
-
-    public long getFollowers() {
-        return followers;
-    }
-
-    public int getPopularity() {
-        return popularity;
-    }
 }

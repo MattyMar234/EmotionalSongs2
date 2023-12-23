@@ -10,7 +10,7 @@ public enum ServerServicesName
     //research
     SEARCH_SONGS,
     SEARCH_ALBUMS,
-    SEARCH_ARTIST,
+    SEARCH_ARTISTS,
 
     //utility
     GET_MOST_POPULAR_SONGS,
@@ -46,5 +46,5 @@ public enum ServerServicesName
     GET_SONG_EMOTION,
     GET_COMMENTS_SONG_FOR_ACCOUNT,
     GET_COMMENTS_SONG,
-    GET_COMMENTS_ACCOUNT;
+    GET_ACCOUNT_EMOTIONS;
 }

@@ -33,9 +33,9 @@ import utility.UtilityOS;
 public class MainPage_Search_Controller extends ControllerBase implements Initializable, Injectable
 {
     private static final int MAX_ELEMENT_FOR_PAGE = 50;
-    private enum FilterType {ALL, ARTIST, ALBUM, SONG};
+    private enum FilterType {SONG_NAME, SONG_DATE, ALBUM_NAME, ARTIST_NAME};
 
-    private FilterType filterType = FilterType.SONG;
+    private static FilterType filterType = FilterType.SONG_NAME;
     private MainPage_SideBar_Controller toolsController;
     private TextField searchBox = null;
     private String key = "";
@@ -45,10 +45,10 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
     private long availablePage = 0;
 
 
-    @FXML public Button allButtonFilter;
-    @FXML public Button artistButtonFilter;
-    @FXML public Button albumButtonFilter;
-    @FXML public Button songButtonFilter;
+    @FXML public Button songNameButtonFilter;
+    @FXML public Button songDateButtonFilter;
+    @FXML public Button albumNameButtonFilter;
+    @FXML public Button artistNameButtonFilter;
     
     @FXML public FontIcon backPage_Button;
     @FXML public FontIcon nectPage_Button;
@@ -87,17 +87,24 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
             currentPage = 0;
         }
 
-        if(data.length >= 4) {
-            filterType = (FilterType) data[3];
-        }
-        else {
-            filterType = FilterType.SONG;
-        }
+        // if(data.length >= 4) {
+        //     filterType = (FilterType) data[3];
+        // }
+        // else {
+        //     filterType = FilterType.SONG_NAME;
+        // }
 
         
-        
         pageIndex.setText((0) + (Main.applicationLanguage == 0 ? " di " : " of ") + (0));
+        songNameButtonFilter.setText((Main.applicationLanguage == 0 ? "Titolo Canzone" : "Song Title"));
+        songDateButtonFilter.setText((Main.applicationLanguage == 0 ? "Data Canzone" : "Song Date"));
+        albumNameButtonFilter.setText((Main.applicationLanguage == 0 ? "Titolo Album" : "Album Title"));
+        artistNameButtonFilter.setText((Main.applicationLanguage == 0 ? "Titolo Artista" : "Artist Title"));
+
+        changeButtonColor();
         makeResearch(currentPage, true);
+
+        System.out.println("");
     }
 
     private void makeResearch(long index, boolean caricaPrercedente_e_successivo) 
@@ -107,17 +114,17 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
 
             switch (filterType) {
                 
-                case ALL -> {
-                    result = connectionManager.searchSongs(key, MAX_ELEMENT_FOR_PAGE, index*MAX_ELEMENT_FOR_PAGE);
+                case SONG_NAME -> {
+                    result = connectionManager.searchSongs(key, MAX_ELEMENT_FOR_PAGE, index*MAX_ELEMENT_FOR_PAGE, 0);
                 }
-                case ARTIST -> {
-                    result = connectionManager.searchSongs(key, MAX_ELEMENT_FOR_PAGE, index*MAX_ELEMENT_FOR_PAGE);
+                case SONG_DATE -> {
+                    result = connectionManager.searchSongs(key, MAX_ELEMENT_FOR_PAGE, index*MAX_ELEMENT_FOR_PAGE, 1);
                 }
-                case ALBUM -> {
-                    result = connectionManager.searchSongs(key, MAX_ELEMENT_FOR_PAGE, index*MAX_ELEMENT_FOR_PAGE);
+                case ALBUM_NAME -> {
+                    result = connectionManager.searchAlbums(key, MAX_ELEMENT_FOR_PAGE, index*MAX_ELEMENT_FOR_PAGE);
                 }
-                case SONG -> {
-                    result = connectionManager.searchSongs(key, MAX_ELEMENT_FOR_PAGE, index*MAX_ELEMENT_FOR_PAGE);
+                case ARTIST_NAME -> {
+                    result = connectionManager.searchArtists(key, MAX_ELEMENT_FOR_PAGE, index*MAX_ELEMENT_FOR_PAGE);
                 }
             }
 
@@ -129,7 +136,7 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
             final Object list =  result[1];
             totalResult = (long) result[0];
             availablePage = totalResult / MAX_ELEMENT_FOR_PAGE;
-            int rowIndex = 1;
+            
 
             if(totalResult % MAX_ELEMENT_FOR_PAGE != 0) {
                 availablePage++;
@@ -160,27 +167,67 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
             
             elementContainer.getChildren().clear();
             
-            Platform.runLater(() -> {
-                ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_HEADER, elementContainer);
-                listCell.injectData(ListCell_DisplayMode.SONG_HEADER);
-            });
 
-            
+            switch (MainPage_Search_Controller.filterType) {
+                case ALBUM_NAME:
+                    Platform.runLater(() -> {
+                        ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_HEADER, elementContainer);
+                        listCell.injectData(ListCell_DisplayMode.ALBUM_HEADER);
+                    });
+                    break;
+                case ARTIST_NAME:
+                    Platform.runLater(() -> {
+                        ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_HEADER, elementContainer);
+                        listCell.injectData(ListCell_DisplayMode.ARTIST_HEADER);
+                    });
+                    break;
 
-            for (Object object : (ArrayList<Object>)list) 
-            {
+                case SONG_DATE:
+                case SONG_NAME:
+                    Platform.runLater(() -> {
+                        ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_HEADER, elementContainer);
+                        listCell.injectData(ListCell_DisplayMode.SONG_HEADER);
+                    });
+                    break;
+                default:
+                    break;
                 
-                final int final_rowIndex = rowIndex++;
-                //new Thread(() -> {
-                    //synchronized(MainPage_Search_Controller.class) {
-                        Platform.runLater(() -> {
-                            ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_ELEMENT, elementContainer);
-                            listCell.injectData(ListCell_DisplayMode.DISPLAY_SONG, object, true, final_rowIndex + currentPage*MAX_ELEMENT_FOR_PAGE);
-                        });
-                    //}
-               // }).start();
             }
 
+            new Thread(() -> {
+                int rowIndex = 1;
+                for (Object object : (ArrayList<Object>)list) 
+                {
+                    final int final_rowIndex = rowIndex++;
+                    
+                    new Thread(() -> {
+                        switch (MainPage_Search_Controller.filterType) {
+                            case ALBUM_NAME:
+                                Platform.runLater(() -> {
+                                    ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_ELEMENT, elementContainer);
+                                    listCell.injectData(ListCell_DisplayMode.DISPLAY_ALBUM, object, true, final_rowIndex + currentPage*MAX_ELEMENT_FOR_PAGE);
+                                });
+                                break;
+                            case ARTIST_NAME:
+                                Platform.runLater(() -> {
+                                    ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_ELEMENT, elementContainer);
+                                    listCell.injectData(ListCell_DisplayMode.DISPLAY_ARTIST, object, true, final_rowIndex + currentPage*MAX_ELEMENT_FOR_PAGE);
+                                });
+                                break;
+                            case SONG_DATE:
+                            case SONG_NAME:
+                                Platform.runLater(() -> {
+                                    ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_ELEMENT, elementContainer);
+                                    listCell.injectData(ListCell_DisplayMode.DISPLAY_SONG, object, true, final_rowIndex + currentPage*MAX_ELEMENT_FOR_PAGE);
+                                });
+                                break;
+                            default:
+                                break;
+                    
+                        }
+                    }).start(); 
+                }
+            }).start();
         } 
         catch (Exception e) {
             e.printStackTrace();
@@ -197,40 +244,118 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
     public void back_page(ActionEvent event) {
         if(currentPage > 0) {
             currentPage--;
-            makeResearch(currentPage, true);
+            new Thread(() -> {
+                Platform.runLater(() -> {makeResearch(currentPage, true);});}
+            ).start();
         }
     }
-
+    
     @FXML
     public void next_page(ActionEvent event) {
         if(currentPage < availablePage) {
             currentPage++;
-            makeResearch(currentPage, true);
+            new Thread(() -> {
+                Platform.runLater(() -> {makeResearch(currentPage, true);});}
+            ).start();
         }
     }
-
-
+    
     @FXML
-    public void allButton_click(ActionEvent event) {
+    public void songNameButton_click(ActionEvent event) {
         currentPage = 0;
-        filterType = FilterType.ALL;
+        MainPage_Search_Controller.filterType = FilterType.SONG_NAME;
+        changeButtonColor();
+        new Thread(() -> {
+                Platform.runLater(() -> {makeResearch(currentPage, true);});}
+            ).start();
     }
 
     @FXML
-    public void artistButton_click(ActionEvent event) {
+    public void songDateButton_click(ActionEvent event) {
         currentPage = 0;
-        filterType = FilterType.ARTIST;
+        MainPage_Search_Controller.filterType = FilterType.SONG_DATE;
+        String s = searchBox.getText();
+        changeButtonColor();
+
+        if(s.startsWith("-")) {
+            elementContainer.getChildren().clear();
+            pageIndex.setText((Main.applicationLanguage == 0 ? "nessun risultato" : "no result"));
+            return;
+        }
+
+        for (int i = 0; i < s.length(); i++) {
+            if(!Character.isDigit(s.charAt(i))  && s.charAt(i) != '-') {
+                elementContainer.getChildren().clear();
+                pageIndex.setText((Main.applicationLanguage == 0 ? "nessun risultato" : "no result"));
+                return;
+            }
+        }
+
+        new Thread(() -> {makeResearch(currentPage, true);}).start();
     }
 
     @FXML
-    public void playlistButton_click(ActionEvent event) {
+    public void albumNameButton_click(ActionEvent event) {
         currentPage = 0;
-        filterType = FilterType.ALBUM;
+        MainPage_Search_Controller.filterType = FilterType.ALBUM_NAME;
+        changeButtonColor();
+        new Thread(() -> {
+                Platform.runLater(() -> {makeResearch(currentPage, true);});}
+            ).start();
     }
 
     @FXML
-    public void songButton_click(ActionEvent event) {
+    public void artistNameButton_click(ActionEvent event) {
         currentPage = 0;
-        filterType = FilterType.SONG;
+        MainPage_Search_Controller.filterType = FilterType.ARTIST_NAME;
+        changeButtonColor();
+        new Thread(() -> {
+                Platform.runLater(() -> {makeResearch(currentPage, true);});}
+            ).start();
+    }
+
+
+    private void changeButtonColor() 
+    {
+        songNameButtonFilter.getStyleClass().clear();
+        songDateButtonFilter.getStyleClass().clear();
+        albumNameButtonFilter.getStyleClass().clear();
+        artistNameButtonFilter.getStyleClass().clear();
+
+        songNameButtonFilter.getStyleClass().add("button");
+        songDateButtonFilter.getStyleClass().add("button");
+        albumNameButtonFilter.getStyleClass().add("button");
+        artistNameButtonFilter.getStyleClass().add("button");
+
+        
+
+        switch (MainPage_Search_Controller.filterType) {
+            case ALBUM_NAME:
+                songNameButtonFilter.getStyleClass().add("PrimaryButton");
+                songDateButtonFilter.getStyleClass().add("PrimaryButton");
+                albumNameButtonFilter.getStyleClass().add("PrimaryButtonSelected");
+                artistNameButtonFilter.getStyleClass().add("PrimaryButton");
+                break;
+            case ARTIST_NAME:
+                songNameButtonFilter.getStyleClass().add("PrimaryButton");
+                songDateButtonFilter.getStyleClass().add("PrimaryButton");
+                albumNameButtonFilter.getStyleClass().add("PrimaryButton");
+                artistNameButtonFilter.getStyleClass().add("PrimaryButtonSelected");
+                break;
+            case SONG_DATE:
+                songNameButtonFilter.getStyleClass().add("PrimaryButton");
+                songDateButtonFilter.getStyleClass().add("PrimaryButtonSelected");
+                albumNameButtonFilter.getStyleClass().add("PrimaryButton");
+                artistNameButtonFilter.getStyleClass().add("PrimaryButton");
+                break;
+            case SONG_NAME:
+                songNameButtonFilter.getStyleClass().add("PrimaryButtonSelected");
+                songDateButtonFilter.getStyleClass().add("PrimaryButton");
+                albumNameButtonFilter.getStyleClass().add("PrimaryButton");
+                artistNameButtonFilter.getStyleClass().add("PrimaryButton");
+                break;
+            default:
+                break;
+        }
     }
 }

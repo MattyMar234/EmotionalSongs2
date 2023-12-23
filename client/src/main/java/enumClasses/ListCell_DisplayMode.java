@@ -6,10 +6,12 @@ public enum ListCell_DisplayMode {
     DISPLAY_COMMENT,
     DISPLAY_ALBUM,
     DISPLAY_PLAYLIST,
+    DISPLAY_ARTIST,
 
     SONG_HEADER,
     COMMENT_HEADER,
     ALBUM_HEADER,
     PLAYLIST_HEADER,
+    ARTIST_HEADER,
     
 }

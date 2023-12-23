@@ -5,9 +5,11 @@ import java.io.Serializable;
 public class MyImage implements Serializable 
 {
     public enum ImageSize {
+        S64x64("64x64"),
+        S160x160("160x160"),
         S300x300("300x300"),
-        S640x640("640x640"),
-        S64x64("64x64");
+        S320x320("300x300"),
+        S640x640("640x640");
 
         private String imgSize;
 

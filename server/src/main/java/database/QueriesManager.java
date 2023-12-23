@@ -20,6 +20,7 @@ import database.PredefinedSQLCode.Colonne;
 import database.PredefinedSQLCode.Tabelle;
 import objects.Account;
 import objects.Album;
+import objects.Artist;
 import objects.Emotion;
 import objects.MyImage;
 import objects.Playlist;
@@ -164,6 +165,20 @@ public class QueriesManager
         return result; 
     }
 
+    public static ArrayList<MyImage> getArtistImages_by_ID(String ID) throws SQLException {
+
+        ArrayList<MyImage> result = new ArrayList<MyImage>();
+        ResultSet resultSet = database.submitQuery(QueryBuilder.getArtistImages_by_ID(ID));
+
+        while (resultSet.next()) { 
+            result.add(new MyImage(getHashMap_for_ClassConstructor(resultSet, Tabelle.ALBUM_IMAGES)));
+        }
+
+        return result; 
+    }
+
+
+
 
     public static void addAccount_and_addResidence(HashMap<Colonne, Object> colonne_account, HashMap<Colonne, Object> colonne_residenza) throws SQLException {
 
@@ -269,13 +284,13 @@ public class QueriesManager
      * @return una lista di Song che contengono nel titolo la parola passata come parametro
      * @throws SQLException
      */
-    public static Object[] searchSong_and_countElement(String search_key, long limit, long offset) throws SQLException 
+    public static Object[] searchSong_and_countElement(String search_key, long limit, long offset, int mode) throws SQLException 
     {
         
         ArrayList<Song> pageElement = new ArrayList<Song>();
         long total_element = 0;
 
-        String query = QueryBuilder.getSongSearch_query(search_key, limit, offset);
+        String query = QueryBuilder.getSongSearch_query(search_key, limit, offset, mode);
         ResultSet resultSet1 = database.submitQuery(query);
 
         while (resultSet1.next()) { 
@@ -286,7 +301,7 @@ public class QueriesManager
 
         resultSet1.close();
       
-        String query_result = QueryBuilder.getSongSearch_Count_query(search_key);
+        String query_result = QueryBuilder.getSongSearch_Count_query(search_key, mode);
         ResultSet resultSet2 = database.submitQuery(query_result);
 
         resultSet2.next();
@@ -306,7 +321,7 @@ public class QueriesManager
         return buildSongObjects_From_resultSet(database.submitQuery(query), true);
     }
 
-    public static ArrayList<Album> searchAlbum(String search, long limit, long offset) throws SQLException {
+    public static Object[] searchAlbum(String search, long limit, long offset) throws SQLException {
         ArrayList<Album> result = new ArrayList<Album>();
 
         String query = QueryBuilder.getAlbumSearch_query(search, limit, offset);
@@ -324,8 +339,14 @@ public class QueriesManager
             album.addImages(getAlbumImages_by_ID(album.getID()));
         }*/
 
+        String query_result = QueryBuilder.getAlbumSearch_Count_query(search);
+        ResultSet resultSet2 = database.submitQuery(query_result);
 
-        return result; 
+        resultSet2.next();
+        long total_element = (long) resultSet2.getObject("count");
+        resultSet2.close();
+    
+        return new Object[] {total_element, result}; 
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -433,6 +454,19 @@ public class QueriesManager
         return list;
     }
 
+    public static Object getAccountEmotions(String accountID) throws SQLException 
+    {
+        String query = QueryBuilder.getAccountEmotions(accountID);
+        ResultSet resultSet = database.submitQuery(query);
+        ArrayList<Emotion> list = new ArrayList<Emotion>();
+
+        while (resultSet.next()) { 
+            Emotion playlist = new Emotion(getHashMap_for_ClassConstructor(resultSet, Tabelle.EMOZIONE));
+            list.add(playlist); 
+        }
+        return list;
+    }
+
 
 
     public static void deletePlaylist(String accountID, String playlistID) throws SQLException {
@@ -450,25 +484,69 @@ public class QueriesManager
         return buildSongObjects_From_resultSet(database.submitQuery(query), true);
     }
 
+
+    public static Artist getArtistByID(String ID) throws SQLException {
+
+        String query = QueryBuilder.getArtistByID_query(ID);
+        ResultSet resultSet = database.submitQuery(query);
+
+        if(!resultSet.next())
+            return null;
+
+        Artist artist = new Artist(getHashMap_for_ClassConstructor(resultSet, Tabelle.ARTIST));
+        artist.addImages(getArtistImages_by_ID(artist.getID()));
+
+        return artist;
+    
+    }
+
+
+    public static Object[] searchArtists(String key, long limit, long offset) throws SQLException {
+        String query = QueryBuilder.searchArtist_query(key, limit, offset);
+        ArrayList<Artist> result = new ArrayList<Artist>();
+
+        ResultSet resultSet = database.submitQuery(query);
+        while (resultSet.next()) { 
+            Artist artist = new Artist(getHashMap_for_ClassConstructor(resultSet, Tabelle.ARTIST));
+            //album.addImages(getAlbumImages_by_ID(album.getID()));
+            
+            artist.addImages(getArtistImages_by_ID(artist.getID()));
+            
+            result.add(artist);    
+        }
+
+        String query_result = QueryBuilder.searchArtist_Count_query(key);
+        ResultSet resultSet2 = database.submitQuery(query_result);
+
+        resultSet2.next();
+        long total_element = (long) resultSet2.getObject("count");
+        resultSet2.close();
+
+        resultSet.close();
+        return new Object[] {total_element, result};
+    }
+
+
+
+
     public static ArrayList<Song> getPlaylistSong(String playlistID) throws SQLException {
         String query = QueryBuilder.getPlaylistSong_query(playlistID);
         return buildSongObjects_From_resultSet(database.submitQuery(query), true);
     }
 
-    public static ArrayList<Album> getAlbumByID(String ID) throws SQLException {
+    public static Album getAlbumByID(String ID) throws SQLException {
         String query = QueryBuilder.getAlbumByID_query(ID);
-        ArrayList<Album> result = new ArrayList<Album>();
-
         ResultSet resultSet = database.submitQuery(query);
-        while (resultSet.next()) { 
-            Album album = new Album(getHashMap_for_ClassConstructor(resultSet, Tabelle.ALBUM));
-            album.addImages(getAlbumImages_by_ID(album.getID()));
-            result.add(album);    
-        }
+        
 
+        if(!resultSet.next())
+            return null;
+        
+        Album album = new Album(getHashMap_for_ClassConstructor(resultSet, Tabelle.ALBUM));
+        album.addImages(getAlbumImages_by_ID(album.getID()));
         resultSet.close();
 
-        return result;
+        return album;
     }
 
     

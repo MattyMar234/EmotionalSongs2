@@ -34,6 +34,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import objects.Album;
+import objects.Artist;
 import objects.Comment;
 import objects.Playlist;
 import objects.Song;
@@ -47,6 +48,7 @@ public class ListCell_Controller extends ControllerBase implements Initializable
     @FXML public Label label2;
     @FXML public Label timeLabel;
     @FXML public Label labelNumber;
+    @FXML public Label labelData;
 
     @FXML public MenuButton actionButton;
     @FXML public AnchorPane anchor;
@@ -54,6 +56,7 @@ public class ListCell_Controller extends ControllerBase implements Initializable
 
     @FXML public FontIcon exspandButton;
     @FXML public FontIcon spotifyButton;
+    @FXML public FontIcon dataIcon;
 
     @FXML public ImageView image;
 
@@ -117,9 +120,11 @@ public class ListCell_Controller extends ControllerBase implements Initializable
             case DISPLAY_SONG_and_DELETE ->      setupAsSong();
             case DISPLAY_COMMENT ->              setupAsComment();
             case DISPLAY_PLAYLIST ->             setupAsPlaylist();
+            case DISPLAY_ARTIST ->               setupAsArtist();
             case DISPLAY_ALBUM ->                setupAsAlbum();
             case SONG_HEADER ->                  setupAsSongHeader();
-            case ALBUM_HEADER -> throw new UnsupportedOperationException("Unimplemented case: " + mode);
+            case ALBUM_HEADER ->                 setupAsAlbumHeader();
+            case ARTIST_HEADER ->                setupAsArtistHeader();
             case COMMENT_HEADER -> throw new UnsupportedOperationException("Unimplemented case: " + mode);
             case PLAYLIST_HEADER ->   setupAsPlaylistHeader();
             default -> throw new IllegalArgumentException("Unexpected value: " + mode);
@@ -136,6 +141,8 @@ public class ListCell_Controller extends ControllerBase implements Initializable
         //FontIcon clockImage = new FontIcon("mdi2c-clock-outline");
         Label timeLabel = new Label(Main.applicationLanguage == 0 ? "Canzoni" : "Songs");
         Label azioniLable = new Label(Main.applicationLanguage == 0 ? "Azioni" : "Actions");
+
+        dataIcon.setVisible(false);
         
         numerLabel.getStyleClass().add("Label-Style1");
         //imageLable.getStyleClass().add("Label-Style1");
@@ -179,6 +186,7 @@ public class ListCell_Controller extends ControllerBase implements Initializable
 
     }
 
+
     private void setupAsSong() {
         final Song song = (Song)element;
 
@@ -187,6 +195,35 @@ public class ListCell_Controller extends ControllerBase implements Initializable
         timeLabel.setText(convertTime(song.getDurationMs()));
         labelNumber.setText(String.valueOf(rowNumber));
         //grid.getRowConstraints().remove(1);
+        new Thread(() -> {
+            Album album = connectionManager.getAlbum_by_ID(song.getAlbumId());
+
+            if(album != null) 
+            {
+                Platform.runLater(() -> {
+                    labelData.setText(album.getReleaseDate());
+                });
+
+                Artist artist = connectionManager.getArtistByID(album.getArtistID());
+
+                if(artist != null) {
+                    Platform.runLater(() -> {
+                        label2.setText(artist.getName());
+                    });
+                }
+                else {
+                    Platform.runLater(() -> {
+                        label2.setText("");
+                    });
+                }
+            }
+            else {
+                Platform.runLater(() -> {
+                    labelData.setText("");
+                    label2.setText("");
+                });
+            }
+        }).start();
 
         new Thread(() -> {
             
@@ -331,8 +368,200 @@ public class ListCell_Controller extends ControllerBase implements Initializable
 
     }
 
+
+    private void setupAsArtistHeader() {
+        Label numerLabel = new Label("#");
+        Label imageLable = new Label(Main.applicationLanguage == 0 ? "Immagine" : "Image");
+        Label titleLable = new Label(Main.applicationLanguage == 0 ? "Nome Artista" : "Artist name");
+        Label artistLable = new Label(Main.applicationLanguage == 0 ? "Followers" : "Followers");
+        //FontIcon clockImage = new FontIcon("mdi2c-clock-outline");
+        Label timeLabel = new Label(Main.applicationLanguage == 0 ? "" : "");
+        Label azioniLable = new Label(Main.applicationLanguage == 0 ? "Azioni" : "Actions");
+
+        dataIcon.setVisible(false);
+        
+        
+        numerLabel.getStyleClass().add("Label-Style1");
+        //imageLable.getStyleClass().add("Label-Style1");
+        titleLable.getStyleClass().add("Label-Style1");
+        artistLable.getStyleClass().add("Label-Style1");
+        azioniLable.getStyleClass().add("Label-Style1");
+        timeLabel.getStyleClass().add("Label-Style1");
+        //clockImage.getStyleClass().add("generic-fontIcon-style");
+        
+        header_container1.getChildren().add(numerLabel);
+        //header_container2.getChildren().add(imageLable);
+        header_container3.getChildren().add(titleLable);
+        header_container4.getChildren().add(artistLable);
+        header_container5.getChildren().add(timeLabel);
+        header_container6.getChildren().add(azioniLable);
+    }
+
+    private void setupAsArtist() 
+    {
+        final Artist artist = (Artist)element;
+        label1.setText(artist.getName());
+        
+        String.valueOf(rowNumber);
+        String str = Long.toString(artist.getFollowers());
+        StringBuilder sb = new StringBuilder();
+        StringBuilder sb2 = new StringBuilder();
+        
+        int counter = 0;
+        for(int i = str.length() - 1; i >= 0; i--) {
+            if(counter++ % 3 == 0 && counter != 0)
+                sb.append(".");
+            sb.append(str.charAt(i));
+        }
+
+        String s = sb.toString();
+
+        for(int i = 0; i < s.length(); i++) {
+            if(s.length() - 1 == i && s.charAt(s.length() - 1 - i) == '.')
+                continue;
+
+            sb2.append(s.charAt(s.length() - 1 - i));
+        }
+    
+
+        
+        
+        label2.setText(sb2.toString());
+        labelNumber.setText(String.valueOf(rowNumber));
+        labelData.setText("");
+        timeLabel.setText("");
+
+        HBox hb = (HBox) actionButton.getParent();
+        hb.getChildren().clear();
+        hb.getChildren().add(spotifyButton);
+
+        new Thread(() -> {
+            
+            String link = null;
+
+            try {link = artist.getImage(ImageSize.S64x64).getUrl();} catch (Exception e) {}
+            try {link = artist.getImage(ImageSize.S160x160).getUrl();} catch (Exception e) {}
+            try {link = artist.getImage(ImageSize.S300x300).getUrl();} catch (Exception e) {}
+            try {link = artist.getImage(ImageSize.S320x320).getUrl();} catch (Exception e) {}
+            try {link = artist.getImage(ImageSize.S640x640).getUrl();} catch (Exception e) {}
+
+            try {
+                Image img = super.download_Image_From_Internet(link, true);
+                Platform.runLater(() -> {
+                    image.setImage(img);
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            } 
+        }).start();
+
+        spotifyButton.setOnMouseClicked(event -> 
+        {
+            try {
+                super.openLink(artist.getSpotifyURL());
+            } 
+            catch (IOException e) {
+                e.printStackTrace();
+            } 
+            catch (URISyntaxException e) {
+                System.out.println(e);
+                System.out.println("Invalid url " + artist.getSpotifyURL());
+                e.printStackTrace();
+            }
+        });
+
+        exspandButton.setOnMouseClicked(event -> {
+            sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE, ElementDisplayerMode.SHOW_ARTIST_SONGS, artist);
+        });
+
+    }
+
+
+    private void setupAsAlbumHeader() {
+        Label numerLabel = new Label("#");
+        Label imageLable = new Label(Main.applicationLanguage == 0 ? "Immagine" : "Image");
+        Label titleLable = new Label(Main.applicationLanguage == 0 ? "Titolo" : "Title");
+        Label artistLable = new Label(Main.applicationLanguage == 0 ? "Artista" : "Artist");
+        //FontIcon clockImage = new FontIcon("mdi2c-clock-outline");
+        Label timeLabel = new Label(Main.applicationLanguage == 0 ? "" : "");
+        Label azioniLable = new Label(Main.applicationLanguage == 0 ? "Azioni" : "Actions");
+
+        //dataIcon.setVisible(false);
+        
+        numerLabel.getStyleClass().add("Label-Style1");
+        //imageLable.getStyleClass().add("Label-Style1");
+        titleLable.getStyleClass().add("Label-Style1");
+        artistLable.getStyleClass().add("Label-Style1");
+        azioniLable.getStyleClass().add("Label-Style1");
+        timeLabel.getStyleClass().add("Label-Style1");
+        //clockImage.getStyleClass().add("generic-fontIcon-style");
+        
+        header_container1.getChildren().add(numerLabel);
+        //header_container2.getChildren().add(imageLable);
+        header_container3.getChildren().add(titleLable);
+        header_container4.getChildren().add(artistLable);
+        header_container5.getChildren().add(timeLabel);
+        header_container6.getChildren().add(azioniLable);
+    }
+
     private void setupAsAlbum() {
 
+        final Album album = (Album)element;
+
+        label1.setText(album.getName());
+        labelNumber.setText(String.valueOf(rowNumber));
+        labelData.setText(album.getReleaseDate());
+        timeLabel.setText("");
+
+        HBox hb = (HBox) actionButton.getParent();
+        hb.getChildren().clear();
+        hb.getChildren().add(spotifyButton);
+        hb.getChildren().add(exspandButton);
+
+        Artist artist = connectionManager.getArtistByID(album.getArtistID());
+
+        if(artist != null) {
+            Platform.runLater(() -> {
+                label2.setText(artist.getName());
+            });
+        }
+        else {
+            Platform.runLater(() -> {
+                label2.setText("");
+            });
+        }
+
+        new Thread(() -> {
+            
+            try {
+                Image img = super.download_Image_From_Internet(album.getImage(ImageSize.S64x64).getUrl(), true);
+                Platform.runLater(() -> {
+                    image.setImage(img);
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            } 
+        }).start();
+
+
+        spotifyButton.setOnMouseClicked(event -> 
+        {
+            try {
+                super.openLink(album.getSpotifyURL());
+            } 
+            catch (IOException e) {
+                e.printStackTrace();
+            } 
+            catch (URISyntaxException e) {
+                System.out.println(e);
+                System.out.println("Invalid url " + album.getSpotifyURL());
+                e.printStackTrace();
+            }
+        });
+
+        exspandButton.setOnMouseClicked(event -> {
+            sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.DISPLAY_ELEMENT_PAGE, ElementDisplayerMode.SHOW_ALBUM, album);
+        });
 
     }
 

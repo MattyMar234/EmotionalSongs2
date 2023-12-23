@@ -9,6 +9,7 @@ import Exceptions.InvalidPasswordException;
 import Exceptions.InvalidUserNameException;
 import objects.Account;
 import objects.Album;
+import objects.Artist;
 import objects.Song;
 
 public interface ServerServices {
@@ -28,9 +29,9 @@ public interface ServerServices {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //ricerca
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public Object[] searchSongs(String searchString, long limit, long offset) throws Exception;
-    public ArrayList<Album> searchAlbums(String searchString, long limit, long offset) throws Exception;
-    //public ArrayList<Artist> searchArtists(String searchString, long limit, long offset) throws RemoteException;
+    public Object[] searchSongs(String searchString, long limit, long offset, int mode) throws Exception;
+    public Object[] searchAlbums(String searchString, long limit, long offset) throws Exception;
+    public Object[] searchArtists(String searchString, long limit, long offset) throws RemoteException;
 
     //canzoni
     public ArrayList<Song> getSongByIDs(String[] IDs) throws Exception;

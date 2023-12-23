@@ -6,5 +6,7 @@ public enum ElementDisplayerMode {
     SHOW_ALBUM,
     SHOW_ARTIST,
     SHOW_USER_PLAYLISTS,
+    SHOW_ARTIST_SONGS,
     SHOW_PLAYLIST;
+
 }

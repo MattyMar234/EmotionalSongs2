@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
@@ -14,18 +15,19 @@
 
 <!--?import com.sun.tools.javac.jvm.Items?-->
 
-<AnchorPane fx:id="anchor" maxWidth="Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="600.0" stylesheets="@css/ApplicationTheme.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.ListCell_Controller">
+<AnchorPane fx:id="anchor" maxWidth="Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="800.0" stylesheets="@css/ApplicationTheme.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.ListCell_Controller">
 <children>
       <AnchorPane layoutX="10.0" layoutY="0.5" style="-fx-background-radius: 24px; -fx-border-radius: 24px;" styleClass="listCellBackgound" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0">
          <children>
             <GridPane fx:id="grid" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <columnConstraints>
                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="10.0" prefWidth="120.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" prefWidth="140.0" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" prefWidth="240.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="120.0" prefWidth="120.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="140.0" prefWidth="140.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="160.0" prefWidth="160.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="120.0" prefWidth="240.0" />
               </columnConstraints>
               <rowConstraints>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -49,10 +51,18 @@
                      </children>
                   </AnchorPane>
                    <Label id="songName" fx:id="timeLabel" alignment="CENTER" prefHeight="18.0" prefWidth="90.0" styleClass="Label-Style1" text="mm:ss" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.valignment="CENTER" GridPane.vgrow="NEVER" />
-                  <HBox alignment="CENTER" spacing="30" GridPane.columnIndex="5" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="5">
+                     <children>
+                        <Label id="songName" fx:id="labelData" alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="90.0" styleClass="Label-Style1" text="1970-01-01" textAlignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
+                  <HBox alignment="CENTER" spacing="30" GridPane.columnIndex="6" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                       <MenuButton id="detailsBtn" fx:id="actionButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" popupSide="LEFT" prefHeight="38.0" prefWidth="50.0" styleClass="arrow-button">
                           <graphic>
-                              <FontIcon id="dots-icon" iconLiteral="mdi2d-dots-horizontal" />
+                              <FontIcon id="dots-icon" iconLiteral="mdi2d-dots-horizontal">
+                              <cursor>
+                                 <Cursor fx:constant="HAND" />
+                              </cursor></FontIcon>
                           </graphic>
                         <HBox.margin>
                            <Insets />
@@ -61,12 +71,18 @@
                             </MenuButton>
                       <Button layoutX="496.0" layoutY="25.0" mnemonicParsing="false" prefHeight="50.0" styleClass="btnlistcell">
                           <graphic>
-                              <FontIcon id="expand-icon" fx:id="exspandButton" iconLiteral="mdi2a-arrow-expand-all" />
+                              <FontIcon id="expand-icon" fx:id="exspandButton" iconLiteral="mdi2a-arrow-expand-all">
+                              <cursor>
+                                 <Cursor fx:constant="HAND" />
+                              </cursor></FontIcon>
                           </graphic>
                       </Button>
                       <Button mnemonicParsing="false" prefHeight="50.0" styleClass="btnlistcell">
                           <graphic>
-                              <FontIcon id="spotify-icon" fx:id="spotifyButton" iconLiteral="mdi2s-spotify" iconSize="30" />
+                              <FontIcon id="spotify-icon" fx:id="spotifyButton" iconLiteral="mdi2s-spotify" iconSize="30">
+                              <cursor>
+                                 <Cursor fx:constant="HAND" />
+                              </cursor></FontIcon>
                           </graphic>
                       </Button>
                   </HBox>

@@ -481,6 +481,16 @@ public class QueryBuilder
         return sb.toString();
     }
 
+    public static String getArtistImages_by_ID(String ID) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM " + PredefinedSQLCode.Tabelle.ARTIST_IMAGES.toString());
+        sb.append(" WHERE " + PredefinedSQLCode.Colonne.ID.getName() + " = '" + ID +"';");
+
+        printQuery(sb);
+        return sb.toString();
+    }
+
+
     /**
      * Genera la query che ritorna le canzoni con gli ID specificati
      * @param IDs
@@ -536,26 +546,61 @@ public class QueryBuilder
 
 
     //================================================ OPERAZIONI DI RICERCA =================================================//
-    public static String getSongSearch_query(String search, long limit, long offset) {
+    public static String getSongSearch_query(String search, long limit, long offset, int mode) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT c.* ");
         sb.append("FROM " + Tabelle.SONG + " c JOIN " + Tabelle.ALBUM + " a ON c."+ Colonne.ALBUM_ID_REF.getName() + " = a."+ Colonne.ID.getName());
-        sb.append(" WHERE c." + Colonne.TITLE.getName() + " LIKE '%" + search + "%'");
-        //sb.append(" OR a."+ Colonne.RELEASE_DATE.getName() +" LIKE '" + search + "%'");   
-        sb.append(" ORDER BY c." + Colonne.TITLE.getName() + ", a." + Colonne.RELEASE_DATE.getName());   
+        
+        switch (mode) 
+        {
+            //NAME
+            case 0:
+                sb.append(" WHERE c." + Colonne.TITLE.getName() + " LIKE '" + search + "%'");
+                break;
+
+            //DATE
+            case 1:
+                sb.append(" WHERE CAST(a." + Colonne.RELEASE_DATE.getName() + " AS VARCHAR) LIKE '" + search + "%'");
+                //sb.append(" ORDER BY a." + Colonne.RELEASE_DATE.getName() + " DESC");
+                break;
+        
+            //NAME
+            default:
+                sb.append(" WHERE c." + Colonne.TITLE.getName() + " LIKE '" + search + "%'");
+                break;
+        }
+        
+        
+        //sb.append(" ORDER BY c." + Colonne.TITLE.getName() + ", a." + Colonne.RELEASE_DATE.getName());   
         sb.append(" LIMIT " + limit + " OFFSET " + offset + ";");
 
         printQuery(sb);
         return sb.toString();
     }
 
-    public static String getSongSearch_Count_query(String search) {
+    public static String getSongSearch_Count_query(String search, int mode) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT count(c.*) ");
         sb.append("FROM " + Tabelle.SONG + " c JOIN " + Tabelle.ALBUM + " a ON c."+ Colonne.ALBUM_ID_REF.getName() + " = a."+ Colonne.ID.getName());
-        sb.append(" WHERE c." + Colonne.TITLE.getName() + " LIKE '%" + search + "%'");
-        //sb.append(" OR a."+ Colonne.RELEASE_DATE.getName() +" LIKE '" + search + "%'");   
-        //sb.append(" ORDER BY c." + Colonne.TITLE.getName() + ", a." + Colonne.RELEASE_DATE.getName());   
+        
+        switch (mode) 
+        {
+            //NAME
+            case 0:
+                sb.append(" WHERE c." + Colonne.TITLE.getName() + " LIKE '" + search + "%'");
+                break;
+
+            //DATE
+            case 1:
+                sb.append(" WHERE CAST(a." + Colonne.RELEASE_DATE.getName() + " AS VARCHAR) LIKE '" + search + "%'");
+                //sb.append(" ORDER BY a." + Colonne.RELEASE_DATE.getName() + " DESC");
+                break;
+        
+            //NAME
+            default:
+                sb.append(" WHERE c." + Colonne.TITLE.getName() + " LIKE '" + search + "%'");
+                break;
+        }
         sb.append(";");
 
         printQuery(sb);
@@ -564,18 +609,63 @@ public class QueryBuilder
 
     public static String getAlbumSearch_query(String search, long limit, long offset) 
     {
-        
         StringBuilder sb = new StringBuilder();
-        sb.append("SELECT a.* ");
-        sb.append("FROM " + Tabelle.ALBUM + " a ");
-        sb.append("WHERE a." + Colonne.NAME.getName() + " LIKE '" + search + "%'");
-        //sb.append(" OR a." + Colonne.RELEASE_DATE.getName() + " LIKE '" + search + "%'");
-        sb.append(" ORDER BY a." + Colonne.NAME.getName() + ", a." + Colonne.RELEASE_DATE.getName());
+        sb.append("SELECT * ");
+        sb.append("FROM " + Tabelle.ALBUM + " ");
+        sb.append("WHERE " + Colonne.NAME.getName() + " LIKE '" + search + "%'");
+        sb.append(" ORDER BY " + Colonne.RELEASE_DATE.getName() + " DESC");
         sb.append(" LIMIT " + limit + " OFFSET " + offset + ";");
 
         printQuery(sb);
         return sb.toString();
+    }
 
+    public static String getAlbumSearch_Count_query(String search) 
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT count(*) ");
+        sb.append("FROM " + Tabelle.ALBUM + " ");
+        sb.append("WHERE " + Colonne.NAME.getName() + " LIKE '" + search + "%';");
+        //sb.append(" ORDER BY " + Colonne.RELEASE_DATE.getName() + " DESC;");
+
+        printQuery(sb);
+        return sb.toString();
+    }
+
+
+    public static String getArtistByID_query(String id) {
+       StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * ");
+        sb.append("FROM " + Tabelle.ARTIST + " ");
+        sb.append("WHERE " + Colonne.ID.getName() + " = '" + id + "';");
+        
+        printQuery(sb);
+        return sb.toString();
+    }
+
+
+    public static String searchArtist_query(String search, long limit, long offset) {
+       StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * ");
+        sb.append(" FROM " + Tabelle.ARTIST);
+        sb.append(" WHERE " + Colonne.NAME.getName() + " LIKE '" + search + "%'");
+        sb.append(" ORDER BY " + Colonne.FOLLOWERS.getName() + " DESC");
+        sb.append(" LIMIT " + limit + " OFFSET " + offset + ";");
+
+        printQuery(sb);
+        return sb.toString();
+    }
+
+
+    public static String searchArtist_Count_query(String search) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT count(*)");
+        sb.append(" FROM " + Tabelle.ARTIST);
+        sb.append(" WHERE " + Colonne.NAME.getName() + " LIKE '" + search + "%';");
+        //sb.append(" ORDER BY " + Colonne.FOLLOWERS.getName() + " DESC;");
+
+        printQuery(sb);
+        return sb.toString();
     }
 
 
@@ -738,15 +828,15 @@ public class QueryBuilder
         return sb.toString();
     }
 
-    // public static String deleteEmotion_query(String emotionID)
-    // {
-    //     dele
+    public static String getAccountEmotions(String accountID)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM " + Tabelle.EMOZIONE + " WHERE ");
+        sb.append(Colonne.ACCOUNT_ID_REF.getName() + " = '" + accountID + "';");
 
-        
-
-    //     printQuery(sb);
-    //     return sb.toString();
-    // }
+        printQuery(sb);
+        return sb.toString();
+    }
 
     /*=======================================[Utility]=======================================*/
     public static String editColumSize(PredefinedSQLCode.Tabelle table, PredefinedSQLCode.Colonne colum) 
