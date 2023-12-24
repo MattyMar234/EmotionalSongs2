@@ -517,6 +517,17 @@ public class Terminal extends Thread
         }
 
         printSuccesln("All files found");
+
+        try {
+            if(OS_utility.isWindows()) {
+                //new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor(); 
+            }
+            else {
+                //new ProcessBuilder("chmod -R a+rwx " + OS_utility.formatPath(database__data_folder.getAbsolutePath())).inheritIO().start().waitFor();
+            }
+        } catch (Exception e) {
+            printErrorln(e.toString());
+        }
         
         try {
             for (Tabelle table : PredefinedSQLCode.Tabelle.values()) 

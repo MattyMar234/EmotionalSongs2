@@ -22,7 +22,19 @@ public final class UtilityOS
             return path.replace("/", fileSeparator);
         }
         else if (isUnix() || isMac()) {
-            return path.replace("\\", fileSeparator);
+            // if(!isUnix())
+            //     return path.replace("\\", fileSeparator);
+
+            path = path.replace("\\", fileSeparator);
+
+            // if(path.startsWith("/home/")) {
+            //     String[] paths = path.split("/");
+
+            //     for(int i = 2; i < paths.length; i++) {
+            //         path += "/" + paths[i];
+            //     }
+            // }
+            return path;
         }
         else {
             System.out.println("Your OS is not support!!");

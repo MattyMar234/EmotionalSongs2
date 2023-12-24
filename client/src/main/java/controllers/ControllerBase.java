@@ -4,6 +4,7 @@ import java.awt.Desktop;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -76,8 +77,19 @@ public abstract class ControllerBase {
             number = val[0] % 22;
         }
 
-        
-        Image image = new Image(UtilityOS.formatPath(Main.ImageFolder + "\\colored_icon\\" + number + ".png"));  
+        String path = UtilityOS.formatPath(Main.ImageFolder + "\\colored_icon\\" + number + ".png");
+        File file = new File(path);
+        Image image = null;
+
+    
+        if(UtilityOS.isUnix() || UtilityOS.isMac()) {
+            image = new Image(file.toURI().toString());
+        }
+        else {
+            image = new Image(path);
+        }
+            //image.setImage(SwingFXUtils.toFXImage(ImageIO.read(file), null));
+   
         Color everegedColor = getAverageColor(image, -0.26f);
 
         //everegedColor = brightenColor(everegedColor, 0.1);
