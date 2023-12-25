@@ -54,7 +54,7 @@
                                           </Label>
                                        </children>
                                     </AnchorPane>
-                                    <Label fx:id="objectsLabel" prefHeight="34.0" prefWidth="456.0" text="Label" />
+                                    <Label fx:id="objectsLabel" prefHeight="34.0" prefWidth="456.0" styleClass="Label-Style1" text="Label" />
                                  </children>
                               </VBox>
                               <ImageView fx:id="image" fitHeight="180.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="70.0">

@@ -1,6 +1,7 @@
 package controllers;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -9,6 +10,7 @@ import application.Main;
 import application.SceneManager;
 import enumClasses.ElementDisplayerMode;
 import interfaces.Injectable;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -63,6 +65,23 @@ public class CommentArea extends ControllerBase implements Initializable, Inject
         }
 
         labelCommenti.setText(Main.applicationLanguage == 0 ? "Commenti" : "Comments");
+
+        new Thread(() -> {
+            try {
+                ArrayList<Emotion> list = connectionManager.getEmotions(song.getId());
+            
+                if(list.size() == 0) {
+                     Platform.runLater(() -> {
+                        labelCommenti.setText(Main.applicationLanguage == 0 ? "Nessun Commento" : "No Comments");
+                    });
+                }
+            } 
+            catch (Exception e) {
+                
+               
+            }
+        });
+
 
         textArea.setTextFormatter(new TextFormatter<String>(change -> 
             change.getControlNewText().length() <= getCharsCounter(change.getControlNewText().length()) ? change : null

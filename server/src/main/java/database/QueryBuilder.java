@@ -241,7 +241,11 @@ public class QueryBuilder
             } 
             catch (Exception e) {
                 e.printStackTrace();
-                System.out.println(e + "class found:" + dati[i].getClass().getName());
+
+                if(dati[i] != null)
+                    System.out.println(e + "class found:" + dati[i].getClass().getName());
+
+                System.out.println("Colonna: " + colonne[i] + " => value: " + dati[i]);
                 System.exit(0);
             } 
             sb.append(", ");
@@ -442,7 +446,7 @@ public class QueryBuilder
         sb.append(Tabelle.RESIDENZA);
         sb.append(" r ON a." + Colonne.RESIDENCE_ID_REF.getName() + " = r." + Colonne.ID.getName());
         sb.append(" WHERE ");
-        sb.append(Colonne.NICKNAME.getName() + " = '" + nickname + "';");
+        sb.append(" a." + Colonne.NICKNAME.getName() + " = '" + nickname + "';");
 
         printQuery(sb);
         return sb.toString();
@@ -785,7 +789,7 @@ public class QueryBuilder
     public static String deleteAccount_query(String accountID) {
         StringBuilder sb = new StringBuilder();
         sb.append("DELETE FROM " + Tabelle.ACCOUNT + " WHERE ");
-        sb.append(Colonne.ID.getName() + " = '" + accountID + "';");
+        sb.append(Colonne.NICKNAME.getName() + " = '" + accountID + "';");
 
         printQuery(sb);
         return sb.toString();
@@ -793,8 +797,14 @@ public class QueryBuilder
 
     public static String getArtistSong_query(String artistID) {
         StringBuilder sb = new StringBuilder();
-        sb.append("SELECT * FROM " + Tabelle.SONG + " WHERE ");
-        sb.append(Colonne.ARTIST_ID_REF.getName() + " = '" + artistID + "';");
+        //sb.append("SELECT * FROM " + Tabelle.SONG + " WHERE ");
+        //sb.append(Colonne.ARTIST_ID_REF.getName() + " = '" + artistID + "';");
+
+        //select c.* from canzone c join album a on c.id_album = a.id where a.id_artist = '3TqjDuqT3xvg7YlNh4JWp5'
+        sb.append("SELECT c.* FROM " + Tabelle.SONG + " c JOIN " + Tabelle.ALBUM + " a ");
+        sb.append("ON c." + Colonne.ALBUM_ID_REF.getName() + " = a." + Colonne.ID.getName());
+        sb.append(" WHERE a." + Colonne.ARTIST_ID_REF.getName() + " = '" + artistID + "';");
+
 
         printQuery(sb);
         return sb.toString();

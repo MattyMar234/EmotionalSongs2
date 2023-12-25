@@ -126,6 +126,14 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                         break;
                     case SHOW_USER_PLAYLISTS:
                         setupAsPlaylistShower(data);
+                        break;
+
+                    case SHOW_ARTIST_SONGS:
+                        setupAsArtist(data);
+                        //setImage_and_backgroundColor();
+                        //setImageLink();
+                        break;
+                    default:
                         break; 
                 }
             } 
@@ -219,12 +227,15 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
 
                         CommentArea commentArea = (CommentArea)SceneManager.instance().injectScene(SceneManager.SceneElemets.COMMENT_AREA.getElemetFilePath(), elementContainer);
                         commentArea.injectData(song);
+                    });
 
-                        for (Emotion emotion : list) {
+                    for (Emotion emotion : list) {
+                        Platform.runLater(() -> {
                             CommentListCell_Controller controller = (CommentListCell_Controller)SceneManager.instance().injectScene(SceneManager.SceneElemets.COMMENT_VIEW.getElemetFilePath(), elementContainer);
                             controller.injectData(emotion);
-                        }
-                    });
+                        });
+                    }
+
                 } catch (Exception e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -239,11 +250,21 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
 
         labelName.setText(song.getTitle());
         labelType.setText("Song");
+        objectsLabel.setText("");
+
+        new Thread(() -> {
+            final Album album = connectionManager.getAlbum_by_ID(song.getAlbumId());
+            if(album != null) {
+                Platform.runLater(() -> {
+                    objectsLabel.setText((Main.applicationLanguage == 0 ? "Album " : "Album ") + album.getName());
+                });
+            }
+        }).start();
+        
 
         imgURL = song.getImage(MyImage.ImageSize.S300x300).getUrl();
         spotifyUrl = song.getSpotifyUrl();
 
-        System.out.println(imgURL);
 
         //listView.setVisible(false);
     }   
@@ -256,9 +277,19 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
 
         labelName.setText(album.getName());
         labelType.setText("Album");
+        objectsLabel.setText("");
+
+        new Thread(() -> {
+            final Artist artist = connectionManager.getArtistByID(album.getArtistID());
+            if(artist != null) {
+                Platform.runLater(() -> {
+                    objectsLabel.setText((Main.applicationLanguage == 0 ? "Artista " : "Artist ") + artist.getName());
+                });
+            }
+        }).start();
 
         imgURL = ((Album) displayedElement).getImage(MyImage.ImageSize.S300x300).getUrl();
-        album.getSpotifyURL();
+        spotifyUrl = album.getSpotifyURL();
 
         
         new Thread(() -> {
@@ -275,7 +306,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                 for (Song song : songs) 
                 {
                     final long j = i;
-                    System.out.println("loading element: " + song.getTitle());
+                    //System.out.println("loading element: " + song.getTitle());
                 
                     Platform.runLater(() -> {
                         ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_ELEMENT, elementContainer);
@@ -293,14 +324,98 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
 
     private void setupAsArtist(Object... data) 
     {
+        final Artist artis = (Artist) displayedElement;
+        String imgUrl = "";
+
+        try {
+            imgUrl = artis.getImage(MyImage.ImageSize.S300x300).getUrl();
+        } 
+        catch (Exception e1) {
+            try {
+                imgUrl = artis.getImage(MyImage.ImageSize.S320x320).getUrl();
+            } catch (Exception e2) {
+                try {
+                    imgUrl = artis.getImage(MyImage.ImageSize.S640x640).getUrl();
+                } 
+                catch (Exception e3) {
+
+                }
+            }
+        }
         
+        imgURL = imgUrl;
+        img = (Image) ObjectsCache.getInstance().getItem(ObjectsCache.CacheObjectType.IMAGE,imgUrl);
+        
+        if(img == null) {
+            new Thread(() -> {
+                try {
+                    //image = Main.imageDownloader.addImageToDownload(imgURL);  
+                    img = super.download_Image_From_Internet(imgURL, true);
+                    Color everegedColor = getAverageColor(img, 0.3f);
+                    String color = ColorToHex(everegedColor);
+                    linearGradien_background_upper.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");");
+                    
+                    Platform.runLater(() -> {
+                        image.setImage(img);
+                    });
+                    
+                } 
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        }
+        else {
+            Color everegedColor = super.getAverageColor(img, 0.3f);
+            String color = ColorToHex(everegedColor);
+            linearGradien_background_upper.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");");
+            image.setImage(img);
+        }   
+
+        labelName.setText((Main.applicationLanguage == 0 ? "Artista " : "Artist ") + artis.getName());
+        labelType.setText(Main.applicationLanguage == 0 ? "Artista " : "Artist ");
+        objectsLabel.setText("");
+
+
+        //carico i brani
+        new Thread(() -> {
+            try {
+                ArrayList<Song> song_list = connectionManager.getArtistSong(artis.getID());
+
+                Platform.runLater(() -> {
+                    ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_HEADER, elementContainer);
+                    listCell.injectData(ListCell_DisplayMode.SONG_HEADER);
+                });
+
+                //carico le playlist
+                try {
+                    long i = 1;
+                    for (Song song : song_list){
+                        final long j = i;
+                        Platform.runLater(() -> {
+                            ListCell_Controller listCell = (ListCell_Controller) SceneManager.instance().injectElement(SceneElemets.EDITABLE_LIST_CELL_ELEMENT, elementContainer);
+                            listCell.injectData(ListCell_DisplayMode.DISPLAY_SONG, song, null, j);
+                        });
+                        i++;
+                    } 
+                } 
+                catch (Exception e) {
+                    System.out.println(e);
+                    e.printStackTrace();
+                }
+            } 
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+
 
     }
 
     private void setupAsPlaylist(Object... data)
     {
         setBackgroundLinearColor(ControllerBase.backgroundImageIndex);
-        image.setImage(new Image(UtilityOS.formatPath(Main.ImageFolder + "\\icon\\playlistIcon.png")));
+        image.setImage(loadImage(Main.ImageFolder + "\\icon\\playlistIcon.png"));
 
         final Playlist playlist = (Playlist) displayedElement;
         labelName.setText((Main.applicationLanguage == 0 ? "La mia playlist " : "My playlist ") + playlist.getName());

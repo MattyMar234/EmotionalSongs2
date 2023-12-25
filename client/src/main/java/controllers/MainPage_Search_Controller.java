@@ -280,6 +280,7 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
         if(s.startsWith("-")) {
             elementContainer.getChildren().clear();
             pageIndex.setText((Main.applicationLanguage == 0 ? "nessun risultato" : "no result"));
+            resultLabel.setText((Main.applicationLanguage == 0 ? "Risultati trovat: " : "Results found: ") + "0");
             return;
         }
 

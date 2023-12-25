@@ -434,6 +434,7 @@ public class ListCell_Controller extends ControllerBase implements Initializable
         HBox hb = (HBox) actionButton.getParent();
         hb.getChildren().clear();
         hb.getChildren().add(spotifyButton);
+        hb.getChildren().add(exspandButton);  
 
         new Thread(() -> {
             

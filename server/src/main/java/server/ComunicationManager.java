@@ -126,7 +126,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		////////////////////////////////////////////////////////////
 		functionParametreKeys.put(ServerServicesName.ADD_ACCOUNT, 					new String[] {QueryParameter.NAME.toString(), QueryParameter.USERNAME.toString(), QueryParameter.USER_ID.toString(), QueryParameter.CODICE_FISCALE.toString(), QueryParameter.EMAIL.toString(), QueryParameter.PASSWORD.toString(), QueryParameter.CIVIC_NUMBER.toString(), QueryParameter.VIA_PIAZZA.toString(), QueryParameter.CAP.toString(), QueryParameter.COMMUNE.toString(), QueryParameter.PROVINCE.toString()});  
 	    functionParametreKeys.put(ServerServicesName.GET_ACCOUNT, 					new String[]{QueryParameter.EMAIL.toString(), QueryParameter.PASSWORD.toString()}); 
-		functionParametreKeys.put(ServerServicesName.DELETE_ACCOUNT, 				new String[]{QueryParameter.ACCOUNT_ID.toString(), QueryParameter.PLAYLIST_ID.toString()});
+		functionParametreKeys.put(ServerServicesName.DELETE_ACCOUNT, 				new String[]{QueryParameter.ACCOUNT_ID.toString()});
 		
 		
 		/////////////////////////////////////////////////////////////
@@ -287,13 +287,9 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	}
 
 
-	
-	public void run() 
+	public static String getMachineIP()
 	{
-		ServerSocket server = null;
 		String IP = "";
-
-
 		try(final DatagramSocket socket = new DatagramSocket()){
 			socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
 			IP = socket.getLocalAddress().getHostAddress();
@@ -301,6 +297,18 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		catch(Exception e) {
 
 		}
+		return IP;
+	}
+
+
+	
+	public void run() 
+	{
+		ServerSocket server = null;
+		String IP = getMachineIP();
+
+
+		
 
 
 		terminal.printInfoln("Start comunication inizilization");
@@ -309,7 +317,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 
 		try {
 			if(IP == "")
-				IP = getPublicIPv4();
+				IP = getPrivateIPv4();
 			//IP = InetAddress.getLocalHost().getHostAddress();
 		} 
 		catch (Exception e) {
@@ -415,7 +423,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 // ==================================== UTILITY ====================================//
 
 	@SuppressWarnings("unused")
-	private String getPublicIPv4() throws UnknownHostException, SocketException 
+	public static String getPrivateIPv4() throws UnknownHostException, SocketException 
 	{
 		Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
 		String ipToReturn = null;
@@ -529,10 +537,24 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	@Override
 	public Object addAccount(final HashMap<String, Object> argsTable) 
 	{
-		HashMap<Colonne, Object> colonne_account   = new HashMap<Colonne, Object>();
-		HashMap<Colonne, Object> colonne_residenza = new HashMap<Colonne, Object>();
-
 		try {
+			HashMap<Colonne, Object> colonne_account   = new HashMap<Colonne, Object>();
+			HashMap<Colonne, Object> colonne_residenza = new HashMap<Colonne, Object>();
+			Account account = null;
+
+			account = QueriesManager.getAccountByEmail((String) argsTable.get(QueryParameter.EMAIL.toString()));
+			
+			if(account != null) {
+				return enumclass.ErrorString.INVALID_EMAIL.name();
+			}
+
+			account = QueriesManager.getAccountByNickname((String) argsTable.get(QueryParameter.USER_ID.toString()));
+
+			if(account != null) {
+				return enumclass.ErrorString.INVALID_NICKNAME.name();
+			}
+
+		
 			colonne_account.put(Colonne.NAME, argsTable.get(QueryParameter.NAME.toString()));
 			colonne_account.put(Colonne.SURNAME, argsTable.get(QueryParameter.USERNAME.toString()));
 			colonne_account.put(Colonne.NICKNAME, argsTable.get(QueryParameter.USER_ID.toString()));
@@ -542,11 +564,11 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 			//colonne_account.put(Colonne.RESIDENCE_ID_REF, resd_ID);
 			
 			//colonne_residenza.put(Colonne.ID, resd_ID);
-			colonne_residenza.put(Colonne.VIA_PIAZZA, argsTable.get("viaPiazza"));
+			colonne_residenza.put(Colonne.VIA_PIAZZA, argsTable.get(QueryParameter.VIA_PIAZZA.toString()));
 			colonne_residenza.put(Colonne.CIVIC_NUMER, Integer.parseInt((String)argsTable.get(QueryParameter.CIVIC_NUMBER.toString())));
 			colonne_residenza.put(Colonne.PROVINCE_NAME, argsTable.get(QueryParameter.PROVINCE.toString()));
 			colonne_residenza.put(Colonne.COUNCIL_NAME, argsTable.get(QueryParameter.COMMUNE.toString()));
-			colonne_residenza.put(Colonne.CAP, Integer.parseInt((String)argsTable.get(QueryParameter.CAP.toString())));
+			colonne_residenza.put(Colonne.CAP, (String)argsTable.get(QueryParameter.CAP.toString()));
 
 			QueriesManager.addAccount_and_addResidence(colonne_account, colonne_residenza);
 

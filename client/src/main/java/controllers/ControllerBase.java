@@ -77,27 +77,26 @@ public abstract class ControllerBase {
             number = val[0] % 22;
         }
 
-        String path = UtilityOS.formatPath(Main.ImageFolder + "\\colored_icon\\" + number + ".png");
-        File file = new File(path);
-        Image image = null;
-
-    
-        if(UtilityOS.isUnix() || UtilityOS.isMac()) {
-            image = new Image(file.toURI().toString());
-        }
-        else {
-            image = new Image(path);
-        }
-            //image.setImage(SwingFXUtils.toFXImage(ImageIO.read(file), null));
-   
+        Image image = loadImage(Main.ImageFolder + "\\colored_icon\\" + number + ".png");
         Color everegedColor = getAverageColor(image, -0.26f);
-
-        //everegedColor = brightenColor(everegedColor, 0.1);
 
         String color = ColorToHex(everegedColor);
         this.linearGradien_background_upper.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");"); 
         this.linearGradien_background_lower.setStyle("-fx-background-color: #030300;"); 
             
+    }
+
+    protected Image loadImage(String UnformattedPath) {
+        File file = new File(UtilityOS.formatPath(UnformattedPath));
+        Image image = null;
+
+        if(UtilityOS.isUnix() || UtilityOS.isMac()) {
+            image = new Image(file.toURI().toString());
+        }
+        else {
+            image = new Image(UtilityOS.formatPath(UnformattedPath));
+        }
+        return image;
     }
 
     protected String randomColor() 
@@ -206,8 +205,7 @@ public abstract class ControllerBase {
             if(setDefaultImage) {
                 Random random = new Random();
                 int number = random.nextInt(22) + 1;
-                image = new Image(UtilityOS.formatPath(Main.ImageFolder + "\\colored_icon\\" + number + ".png"));  
-                return image;
+                return loadImage(Main.ImageFolder + "\\colored_icon\\" + number + ".png");
             }
             throw e;
         }

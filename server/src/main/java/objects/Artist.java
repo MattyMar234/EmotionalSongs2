@@ -33,7 +33,7 @@ public class Artist implements Serializable
     public void addImages(ArrayList<MyImage> imgs) {
         for (MyImage myImage : imgs) {
             images.put(myImage.getSize(), myImage);
-            System.out.println("Added image: " + myImage.getSize());
+            //System.out.println("Added image: " + myImage.getSize());
         }
     }
 

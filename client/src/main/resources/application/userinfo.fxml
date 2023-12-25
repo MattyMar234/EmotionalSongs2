@@ -93,22 +93,46 @@
                         </Label>
                         <HBox alignment="BOTTOM_CENTER">
                            <children>
-                              <Label fx:id="contValoreLabel" prefWidth="100.0" text="00" textFill="WHITE">
-                                 <font>
-                                    <Font size="72.0" />
-                                 </font>
-                              </Label>
-                              <Label fx:id="commentLabel" prefWidth="100.0" styleClass="Label-Style1" text="Commenti" textFill="WHITE" />
+                              <VBox HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <AnchorPane>
+                                       <children>
+                                          <Label fx:id="contValoreLabel" alignment="CENTER" contentDisplay="CENTER" prefWidth="100.0" text="00" textAlignment="CENTER" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <font>
+                                                <Font size="72.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </AnchorPane>
+                                    <AnchorPane VBox.vgrow="ALWAYS">
+                                       <children>
+                                          <Label fx:id="commentLabel" alignment="CENTER" contentDisplay="CENTER" prefWidth="100.0" styleClass="Label-Style1" text="Commenti" textAlignment="CENTER" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
+                                 </children>
+                              </VBox>
                            </children>
                         </HBox>
                         <HBox alignment="BOTTOM_CENTER">
                            <children>
-                              <Label fx:id="playlistCountLabel" prefWidth="100.0" text="00" textFill="WHITE">
-                                 <font>
-                                    <Font size="72.0" />
-                                 </font>
-                              </Label>
-                              <Label fx:id="playlistLabel" prefWidth="100.0" styleClass="Label-Style1" text="Playlist Create" textFill="WHITE" />
+                              <VBox HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <AnchorPane>
+                                       <children>
+                                          <Label fx:id="playlistCountLabel" alignment="CENTER" contentDisplay="CENTER" prefWidth="100.0" text="00" textAlignment="CENTER" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <font>
+                                                <Font size="72.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </AnchorPane>
+                                    <AnchorPane>
+                                       <children>
+                                          <Label fx:id="playlistLabel" alignment="CENTER" prefWidth="100.0" styleClass="Label-Style1" text="Playlist Create" textAlignment="CENTER" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
+                                 </children>
+                              </VBox>
                            </children>
                         </HBox>
                      </children>

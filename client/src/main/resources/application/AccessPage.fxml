@@ -41,8 +41,19 @@
                   </AnchorPane>
                   <HBox layoutX="652.0" layoutY="24.0" spacing="15.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="24.0" AnchorPane.topAnchor="24.0">
                      <children>
-                        <Button fx:id="connectButton" mnemonicParsing="false" onMouseClicked="#connectButtonEvent" styleClass="PrimaryButton" text="CONNETTITI" textFill="WHITE" />
-                        <ComboBox id="comboBox" fx:id="flags" onAction="#changeLanguage" prefHeight="28.0" prefWidth="80.0" />
+                        <AnchorPane>
+                           <children>
+                              <VBox>
+                                 <children>
+                                    <Button fx:id="connectButton" mnemonicParsing="false" onMouseClicked="#connectButtonEvent" styleClass="PrimaryButton" text="CONNETTITI" textFill="WHITE" />
+                                 </children>
+                              </VBox>
+                           </children>
+                           <padding>
+                              <Insets right="20.0" />
+                           </padding>
+                        </AnchorPane>
+                        <ComboBox id="comboBox" fx:id="flags" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#changeLanguage" prefHeight="32.0" prefWidth="80.0" style="-fx-padding: 0;" visibleRowCount="3" HBox.hgrow="ALWAYS" />
                      </children>
                   </HBox>
                </children></AnchorPane>

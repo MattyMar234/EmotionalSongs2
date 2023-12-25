@@ -72,7 +72,7 @@ public class PredefinedSQLCode
         CIVIC_NUMER("civicNumber",    "INTEGER",  "",         "NOT NULL"),
         COUNCIL_NAME("council_name",  "VARCHAR",  "(80)",     "NOT NULL"),
         PROVINCE_NAME("province_name","VARCHAR",  "(80)",     "NOT NULL"),
-        CAP("cap",                    "VARCHAR",  "(10)",     "NOT NULL");
+        CAP("cap",                    "VARCHAR",  "(10)",     "");
         
         
         private String name;
@@ -182,7 +182,7 @@ public class PredefinedSQLCode
         tablesAttributes.put(Tabelle.ACCOUNT,           new Colonne[] {Colonne.NAME, Colonne.NICKNAME, Colonne.SURNAME, Colonne.FISCAL_CODE, Colonne.EMAIL, Colonne.PASSWORD,Colonne.RESIDENCE_ID_REF});
         //tablesAttributes.put(Tabelle.COMUNE,            new Colonne[] {Colonne.NAME, Colonne.CAP});
         //tablesAttributes.put(Tabelle.PROVINCIA,         new Colonne[] {Colonne.NAME});
-        tablesAttributes.put(Tabelle.RESIDENZA,         new Colonne[] {Colonne.ID, Colonne.VIA_PIAZZA, Colonne.CIVIC_NUMER, Colonne.PROVINCE_NAME, Colonne.COUNCIL_NAME});
+        tablesAttributes.put(Tabelle.RESIDENZA,         new Colonne[] {Colonne.ID, Colonne.VIA_PIAZZA, Colonne.CIVIC_NUMER, Colonne.PROVINCE_NAME, Colonne.COUNCIL_NAME, Colonne.CAP});
         tablesAttributes.put(Tabelle.ALBUM_IMAGES,      new Colonne[] {Colonne.ID, Colonne.URL, Colonne.IMAGE_SIZE});
         tablesAttributes.put(Tabelle.ARTIST_IMAGES,     new Colonne[] {Colonne.ID, Colonne.URL, Colonne.IMAGE_SIZE});
         tablesAttributes.put(Tabelle.PLAYLIST_SONGS,    new Colonne[] {Colonne.PLAYLIST_ID_REF, Colonne.SONG_ID_REF});

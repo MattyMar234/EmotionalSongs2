@@ -10,6 +10,7 @@ public class Residenze implements Serializable {
     private int civicNumber;
     private String provinceName;
     private String councilName;
+    private String cap;
 
 
 
@@ -34,6 +35,10 @@ public class Residenze implements Serializable {
 
     public String getCouncilName() {
         return councilName;
+    }
+
+    public String getCAP() {
+        return cap;
     }
 
 

@@ -4,6 +4,7 @@ package controllers;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -11,12 +12,17 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import application.ApplicationActions;
 import application.Main;
 import application.SceneManager;
+import application.SceneManager.ApplicationScene;
+import applicationEvents.SceneChangeEvent;
 import interfaces.Injectable;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -25,6 +31,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+import objects.SceneAction;
 
 /**
  * Questa classe grafica gestisce il menù laterale della pagina principale dell'applicazione
@@ -80,6 +88,7 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
 
     public MainPage_SideBar_Controller() throws IOException {
         super();
+        SceneManager.sideBarController = this;
         
     }
 
@@ -89,19 +98,22 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
     {
         anchor_for_injectScene = anchor;
         super.setBackgroundLinearColor(ControllerBase.backgroundImageIndex);
+        userData_button.setText(Main.applicationLanguage == 0 ? "Profilo" : "Profile");
 
         if(Main.account == null) {
             userName.setText(Main.applicationLanguage == 0 ? "Accedi" : "Login");
             playlistButton.setDisable(true);
             userData_button.setDisable(true);
-            
+            logout_button.setText(Main.applicationLanguage == 0 ? "Esci" : "Exit");
         }
         else {
             userName.setText(Main.account.getNickname());
+            logout_button.setText(Main.applicationLanguage == 0 ? "Logout" : "Logout");
         }
 
-
+        setupActionButtons();
     }
+
 
 
     private void ClearActiveButtons() {
@@ -113,18 +125,32 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
     }
     // -------------------------------- eventi -------------------------------- //
 
-    @FXML
-    public void BackwardAction(MouseEvent event) 
+    public void setupActionButtons()
     {
-        sceneManager.undo(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);
         ApplicationActions action = sceneManager.getUserActions(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);  
-        
-        if(!action.undoAvailable()) {
+        SceneAction preAction = action.previeusScene();
+        SceneAction nextAction = action.nextScene();
+
+        if(preAction == null || preAction.scena_name ==  ApplicationScene.ACCESS_PAGE) {
             buttonBackward.setDisable(true);
         }
         else {
             buttonBackward.setDisable(false);
         }
+
+        if(nextAction == null) {
+            buttonForward.setDisable(true);
+        }
+        else {
+            buttonForward.setDisable(false);
+        }
+    }
+
+    @FXML
+    public void BackwardAction(MouseEvent event) 
+    {
+        sceneManager.undo(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);
+        setupActionButtons();
     
     }
 
@@ -132,16 +158,7 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
     public void ForwardAction(MouseEvent event) 
     {
         sceneManager.redo(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);
-        ApplicationActions action = sceneManager.getUserActions(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);  
-        
-
-        if(!action.redoAvailable()) {
-            //buttonForward.setDisable(true);
-        }
-        else {
-            //buttonForward.setDisable(false);
-        }
-    
+        setupActionButtons();
     }
 
 
@@ -171,7 +188,32 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
 
     @FXML
     public void logout(ActionEvent event) {
+        if(Main.account == null) {
+            Main.account = null;
+            SceneManager.instance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.ACCESS_PAGE);
+        }
+        else {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle(Main.applicationLanguage == 0 ? "Esci dall'Account" : "Logout Account");
         
+            if(Main.applicationLanguage == 0) {
+                alert.setContentText("Sei sicuro di volore escire dal tuo Account?");
+            }
+            else if(Main.applicationLanguage == 1) {
+                alert.setContentText("Are you sure you want to logout from your Account?");
+            }
+
+            alert.getButtonTypes().setAll(ButtonType.YES);
+            //alert.getButtonTypes().setAll(ButtonType.NO);
+
+            Optional<ButtonType> result = alert.showAndWait();
+
+            if (result.isPresent() && result.get() == ButtonType.YES) {
+                Main.account = null;
+                SceneManager.instance().setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, SceneManager.ApplicationScene.ACCESS_PAGE);
+            }
+        
+        }
     }
 
     @FXML

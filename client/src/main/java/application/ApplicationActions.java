@@ -28,6 +28,18 @@ public class ApplicationActions
         System.out.println("backwad size: " + backward_queue.size());
     }
 
+    public SceneAction previeusScene() {
+        if(backward_queue.isEmpty())
+            return null;
+        return backward_queue.peek();
+    }
+
+    public SceneAction nextScene() {
+        if(forward_queue.isEmpty())
+            return null;
+        return forward_queue.peek();
+    }
+
 
 
     public void addAction(SceneAction action) 

@@ -141,6 +141,11 @@ public class App //extends JFrame
             database.connect();
             if(database.testConnection() && database.connect()) {
                 terminal.printSuccesln("Database found and connection established");
+
+                if(this.DB_IP.toLowerCase().equals("localhost") || this.DB_IP.startsWith("127.")) {
+                    terminal.printInfoln("Database IP: " + ComunicationManager.getMachineIP());
+                }
+
                 databaseConnected = database.isConnected();
             }
             else {
@@ -213,6 +218,8 @@ public class App //extends JFrame
             terminal.printSuccesln("Loading completed");
             return;
         }
+
+        terminal.printInfoln("File " + App.FILE_SETTINGS_PATH + " found");
             
 
         JsonNode node = JsonParser.readJsonFile(FILE_SETTINGS_PATH);

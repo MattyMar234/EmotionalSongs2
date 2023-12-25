@@ -13,6 +13,7 @@ public class Residenze implements Serializable {
     private int civicNumber;
     private String provinceName;
     private String councilName;
+    private String cap;
 
     public Residenze(String ID, String viaPiazza, int civicNumber, String provinceName, String councilName) {
         this.ID = ID;
@@ -29,6 +30,7 @@ public class Residenze implements Serializable {
         this.civicNumber = (int) table.get(Colonne.CIVIC_NUMER);
         this.provinceName = (String) table.get(Colonne.PROVINCE_NAME);
         this.councilName = (String) table.get(Colonne.COUNCIL_NAME);    
+        this.cap = (String) table.get(Colonne.CAP);
     }
 
     @Override

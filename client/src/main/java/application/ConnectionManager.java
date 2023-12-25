@@ -482,23 +482,72 @@ public class ConnectionManager implements ServerServices{
 
 
 
-	public Account addAccount(String name, String username, String userID, String codiceFiscale, String Email, String password, String civicNumber, String viaPiazza, String cap, String commune, String province) throws InvalidUserNameException, InvalidEmailException
+	public Account addAccount(String name, String username, String userID, String codiceFiscale, String Email, String password, String civicNumber, String viaPiazza, String cap, String commune, String province) throws InvalidUserNameException, InvalidEmailException, InvalidPasswordException
 	{
 		try {
 			Object[] params = new Object[]{
-				QueryParameter.NAME.toString(), name, QueryParameter.USERNAME.toString(), username, QueryParameter.USER_ID.toString(), userID, QueryParameter.CODICE_FISCALE.toString(), codiceFiscale,	QueryParameter.EMAIL.toString(), Email,	QueryParameter.PASSWORD.toString(), password,
-				QueryParameter.CIVIC_NUMBER.toString(), civicNumber, QueryParameter.VIA_PIAZZA.toString(), viaPiazza, QueryParameter.CAP.toString(), cap, QueryParameter.COMMUNE.toString(), commune, QueryParameter.PROVINCE.toString(), province
+				QueryParameter.NAME.toString(), name, 
+				QueryParameter.USERNAME.toString(), username, 
+				QueryParameter.USER_ID.toString(), userID, 
+				QueryParameter.CODICE_FISCALE.toString(), codiceFiscale,	
+				QueryParameter.EMAIL.toString(), Email,	
+				QueryParameter.PASSWORD.toString(), password,
+				QueryParameter.CIVIC_NUMBER.toString(), civicNumber, 
+				QueryParameter.VIA_PIAZZA.toString(), viaPiazza, 
+				QueryParameter.CAP.toString(), cap, 
+				QueryParameter.COMMUNE.toString(), commune, 
+				QueryParameter.PROVINCE.toString(), province
 			}; 
 
 			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.ADD_ACCOUNT.name(), params));
+			
+			if(result instanceof String) {
+				switch (enumClasses.ErrorString.valueOf((String)result)) {
+					case INVALID_PASSWORD -> throw new InvalidPasswordException();
+					case INVALID_EMAIL -> throw new InvalidEmailException();
+					case INVALID_NICKNAME -> throw new InvalidUserNameException("");
+				}
+			}
+
+			if(result instanceof Exception)
+				throw (Exception) result;
+
 			return (Account) result;
 		} 
+		catch(InvalidPasswordException e) {
+			throw e;
+		}
+		catch(InvalidUserNameException e) {
+			throw e;
+		}
+		catch(InvalidEmailException e) {
+			throw e;
+		}
 		catch (Exception e) {
 			System.out.println(e);
 			e.printStackTrace();
 		}
 		
 		return null;
+	}
+
+	public boolean deleteAccount(String accountID) {
+		Object[] params = new Object[]{QueryParameter.ACCOUNT_ID.toString(), accountID};
+
+		try {
+			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.DELETE_ACCOUNT.name(), params));
+			
+			if(result instanceof Exception) {
+				throw (Exception) result;
+			}
+			
+			return (boolean) result;
+		} 
+		catch (Exception e) {
+			System.out.println(e);
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 
@@ -715,32 +764,58 @@ public class ConnectionManager implements ServerServices{
 	public Artist getArtistByID(String ID) 
 	{
 		try {
-			Object[] params = new Object[]{QueryParameter.ARTIST_ID.toString(), ID};
-			Packet p = new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_ARTIST_BY_ID.name(), params);
-				
-			String key = generateKey(p);
-			Object cacheResult = cache.getItem(ObjectsCache.CacheObjectType.ARTIST, key);
+			Object cacheResult = cache.getItem(ObjectsCache.CacheObjectType.ARTIST, ID);
 
 			if(cacheResult != null) {
 				return (Artist) cacheResult;
 			}
-			
+
+			Object[] params = new Object[]{QueryParameter.ARTIST_ID.toString(), ID};
+			Packet p = new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_ARTIST_BY_ID.name(), params);
 			Object result = makeRequest(p);
 
 			if(result instanceof Exception)
 				throw (Exception) result;
 
-			cache.addItem(ObjectsCache.CacheObjectType.ARTIST, key, (Artist)result, false);
-		
+			if(result != null)
+				cache.addItem(ObjectsCache.CacheObjectType.ARTIST, ID, (Artist)result, false);
 			return (Artist) result;
 		} 
 		catch (Exception e) {
 			System.out.println(e);
 			e.printStackTrace();
 			return null;
+		}	
+	}
+
+
+	public ArrayList<Song> getArtistSong(String ArtistID) {
+		System.out.println("getArtistSong: ArtistID = " + ArtistID);
+
+		Object[] params = new Object[]{QueryParameter.ARTIST_ID.toString(), ArtistID};
+		Packet p = new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_ARTIST_SONGS.name(), params);
+		String key = generateKey(p);
+		
+		Object cacheResult = cache.getItem(ObjectsCache.CacheObjectType.QUERY, key);
+		
+		if(cacheResult != null) {
+			return (ArrayList<Song>) cacheResult;
 		}
-		
-		
+
+		try {
+			Object result = makeRequest(p);
+
+			if(result instanceof Exception)
+				throw (Exception) result;
+
+			cache.addItem(ObjectsCache.CacheObjectType.QUERY, key, result, false);
+			return (ArrayList<Song>) result;
+		} 
+		catch (Exception e) {
+			System.out.println(e);
+			e.printStackTrace();
+			return null;
+		}	
 	}
 
 
@@ -923,6 +998,24 @@ public class ConnectionManager implements ServerServices{
 		catch (Exception e) {
 			System.out.println(e);
 			return false;
+		}
+	}
+
+
+	public ArrayList<Emotion> getAccountEmotions(String userID) throws Exception {
+
+		try {
+			Object[] params = new Object[]{QueryParameter.ACCOUNT_ID.toString(), userID};
+			Object result = makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.GET_ACCOUNT_EMOTIONS.name(), params));
+			
+			if(result instanceof Exception)
+				throw (Exception) result;
+			
+			return (ArrayList<Emotion>)result;
+		} 
+		catch (Exception e) {
+			System.out.println(e);
+			return null;
 		}
 	}
 

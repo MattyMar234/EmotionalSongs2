@@ -187,6 +187,7 @@ public class QueriesManager
 
         ResultSet resultSet = database.submitQuery(query);
 
+        //aggiungo la resistenza se non esiste
         if(resultSet.next() == true) {
             residence_id = resultSet.getString(Colonne.ID.getName());
             resultSet.close();
@@ -481,7 +482,18 @@ public class QueriesManager
 
     public static ArrayList<Song> getArtistSong(String artistID) throws SQLException {
         String query = QueryBuilder.getArtistSong_query(artistID);
-        return buildSongObjects_From_resultSet(database.submitQuery(query), true);
+        ArrayList<Song> result = new ArrayList<Song>();
+
+        ResultSet resultSet = database.submitQuery(query);
+        while (resultSet.next()) { 
+            Song song = new Song(getHashMap_for_ClassConstructor(resultSet, Tabelle.SONG));
+            //album.addImages(getAlbumImages_by_ID(album.getID()));
+            
+            song.addImages(getAlbumImages_by_ID(song.getAlbumId()));
+            result.add(song);    
+        }
+
+        return result;
     }
 
 

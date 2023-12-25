@@ -490,11 +490,14 @@
 /*==================================== COMBOX ====================================*/
 .list-cell {
     -fx-background-color: transparent;
-    
     -fx-font-size: 14px;
-    -fx-padding: 0 50;
-
 }
+
+.Combox_LargeListCell {
+    -fx-padding: 0 50;
+}
+
+
 
 /* Apply styles to the text in ListCell */
 .list-cell .text {

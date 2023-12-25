@@ -73,6 +73,8 @@ public class SceneManager {
 
     private static SceneManager classReference = null;
 
+    public static MainPage_SideBar_Controller sideBarController;
+
     /**
      * Classe enum per tener traccia delle finestre presenti nell'applicazione
      */
@@ -630,6 +632,13 @@ public class SceneManager {
                     default:
                         throw new RuntimeException("Invalid window scene");   
                 }
+
+                try {
+                    sideBarController.setupActionButtons();
+                } catch (Exception e) {
+                   
+                }
+                
             }
 
             case PLAYLIST_CREATION_WINDOW -> {

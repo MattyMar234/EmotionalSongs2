@@ -909,27 +909,26 @@ public class Terminal extends Thread
             processedString = type.toString().replace(":", "(" + dtf.format(now) + ") :") + message;
         else 
             processedString = type.toString() + message; 
-        
 
-        
-        /*if (type != MessageType.NONE && processedString.length() > terminalWidth) {
-            int spaceIndex = processedString.lastIndexOf(" ", terminalWidth);
+        if(message.length() >= terminalWidth - 13 && type != MessageType.QUERY) {
+            StringBuilder sb = new StringBuilder();
+            int lineCharsCounter = 0;
 
-            if (spaceIndex != -1) {
-
-                int endFistPart = spaceIndex;
-
-                String firstPart  = processedString.substring(0, endFistPart);
-                String secondPart = processedString.substring(endFistPart);
-
-                processedString =  firstPart + "\n";
-
-                if(this.addTime) {
-                    processedString += processedString = type.toString().replace(":", "(" + dtf.format(now) + ") :");
-                    processedString += secondPart + '\n';
+            for (int i = 0; i < message.length(); i++) {
+                if(lineCharsCounter++ >= terminalWidth) {
+                    sb.append("\n           : ");
+                    if(this.addTime) 
+                        processedString = type.toString().replace(":", "(" + dtf.format(now) + ") :") + message;
+                    else 
+                        processedString = type.toString() + message; 
+                    lineCharsCounter = 0;
                 }
+                sb.append(message.charAt(i));
             }
-        }*/
+
+            message = sb.toString();
+        }
+       
                 
         //QUERY KEY:
         if(type == MessageType.QUERY) {

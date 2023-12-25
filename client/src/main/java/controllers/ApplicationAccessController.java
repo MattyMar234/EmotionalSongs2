@@ -143,32 +143,6 @@ public class ApplicationAccessController extends ControllerBase implements Initi
         PORT.setText(Integer.toString(connectionManager.getPort()));
         IP.setText(connectionManager.getAddress());
 
-        /*new Thread(() -> {
-
-            SceneManager sceneManager = SceneManager.getInstance();
-            Thread th = Thread.currentThread();
-            th.setPriority(Thread.MIN_PRIORITY);
-
-            while(sceneManager.getApplicationState() == ApplicationState.ACCESS_PAGE) 
-            {
-                //verifico se ho scritto qualcosa
-                if(IP == null || PORT == null || IP.getText().length() <= 8 || PORT.getText().length() <= 2) 
-                {
-                    //se non collegato e ho rimosso i dati
-                    if(connectionManager.isConnected()) {
-                        connectionManager.disconnect();
-                    }
-                    //aspetto
-                    try {Thread.sleep(800);} catch (InterruptedException e) {}  
-                }
-                else {
-                    try {Thread.sleep(1000);} catch (InterruptedException e) {}
-                    checkConnection(null);
-                   
-                }   
-            }
-        }).start();*/
-
         
         //carico tutte le immagini delle lingue
         File folder = new File(Main.flagsFolder);
@@ -183,24 +157,17 @@ public class ApplicationAccessController extends ControllerBase implements Initi
             //se l'immagine corrisponde a quella che cerco
             if(file.isFile()) {   
                 if(Integer.parseInt(file.getName().split("_")[0]) == index) {
-                    try {
-                        ImageView image = new ImageView();
+                    //try {
 
-                        if(UtilityOS.isUnix() || UtilityOS.isMac())
-                            image.setImage(new Image(file.toURI().toString()));
-                        else
-                            image.setImage(SwingFXUtils.toFXImage(ImageIO.read(file), null));
+                        ImageView image = new ImageView(loadImage(file.getAbsolutePath()));
 
                         image.setFitHeight(30);
                         image.setFitWidth(30);
                         imgs.add(image);
                         flags.getItems().add(image);
+                        
                         index++;
-                    } 
-                    catch (IOException e) {
-                        System.out.println(e);
-                        e.printStackTrace();
-                    }
+                    
                 }
                 else {
                     queue.add(file);
