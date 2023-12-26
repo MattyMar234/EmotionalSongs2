@@ -168,6 +168,9 @@
                                              <HBox.margin>
                                                 <Insets right="10.0" />
                                              </HBox.margin>
+                                             <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                             </cursor>
                                           </FontIcon>
                                        </children>
                                     </HBox>

@@ -8,16 +8,19 @@ import interfaces.Injectable;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import objects.Emotion;
 
 public class EmotionsChartKeys_Controller extends ControllerBase implements Initializable, Injectable{
 
-    @FXML public Circle colorCircle;
+    //@FXML public Circle colorCircle;
     @FXML public Label emotionTypeLabel;
     @FXML public Label everageLabel;
     @FXML public Label numerLabel;
+    @FXML public ImageView emojiIcon;
+
 
     private EmotionType emotionType;
     private long numer;
@@ -43,8 +46,7 @@ public class EmotionsChartKeys_Controller extends ControllerBase implements Init
 
         emotionTypeLabel.setText(emotionType.getName());
         numerLabel.setText(Long.toString(numer));
-        colorCircle.setFill(Paint.valueOf(emotionType.getColorHexValue()));
-        
+        emojiIcon.setImage(emotionType.getEmotionImage());   
     }
 
     @Override

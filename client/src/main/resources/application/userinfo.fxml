@@ -27,12 +27,20 @@
                <children>
                   <VBox layoutX="4.099999904632568" prefWidth="148.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="4.099999904632568" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <Label fx:id="infoUserLabel" styleClass="Label-Style2" text="Info Utente" textFill="WHITE">
-                           <VBox.margin>
-                              <Insets left="4.0" />
-                           </VBox.margin>
-                        </Label>
-                        <FontIcon iconColor="#8259e3" iconLiteral="mdi2a-account-circle" iconSize="120" />
+                        <HBox alignment="CENTER">
+                           <children>
+                              <Label fx:id="infoUserLabel" styleClass="Label-Style2" text="Info Utente" textFill="WHITE" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" VBox.vgrow="ALWAYS">
+                           <children>
+                              <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="120.0">
+                                 <children>
+                                    <FontIcon iconColor="#8259e3" iconLiteral="mdi2a-account-circle" iconSize="120" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                 </children>
+                              </AnchorPane>
+                           </children>
+                        </HBox>
                         <Label fx:id="nameLabel" prefHeight="20.0" styleClass="Label-Style1" text="Nome" textFill="WHITE">
                            <padding>
                               <Insets bottom="4.0" />

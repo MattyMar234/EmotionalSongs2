@@ -428,7 +428,7 @@ public class App //extends JFrame
             }
         }
 
-        editColumSize(PredefinedSQLCode.Colonne.ID);
+        //editColumSize(PredefinedSQLCode.Colonne.ID);
     }
     
 }

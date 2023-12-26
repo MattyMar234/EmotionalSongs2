@@ -167,6 +167,7 @@ public class ConnectionManager implements ServerServices{
 		} 
 		catch (Exception e) {
 			System.out.println(e);
+			disconnect();
 			return false;
 			//e.printStackTrace();
 		}
@@ -437,7 +438,9 @@ public class ConnectionManager implements ServerServices{
 
 	
 	public boolean testConnection() throws Exception {
-		makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.PING.name(), null));
+		if(makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.PING.name(), null)) == null){
+			return false;
+		}
 		return true;
 	}
 

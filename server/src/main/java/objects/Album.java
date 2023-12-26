@@ -34,7 +34,7 @@ public class Album implements Serializable {
     public Album(HashMap<Colonne, Object> table) {
         this.ID = (String) table.get(Colonne.ID);
         this.name = (String) table.get(Colonne.NAME);
-        this.releaseDate = ((java.sql.Date) table.get(Colonne.RELEASE_DATE)).toString();
+        this.releaseDate = (String) table.get(Colonne.RELEASE_DATE).toString();
         this.spotifyURL = (String) table.get(Colonne.URL);
         this.type = (String) table.get(Colonne.TYPE);
         this.element = (int) table.get(Colonne.ELEMENT);

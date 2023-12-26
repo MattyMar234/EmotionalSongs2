@@ -287,26 +287,26 @@ public class Terminal extends Thread
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         boolean autoRUN = main.getServerAutoStart();
 
-        try {
-            printInfoln("start database integrity test...");
+        // try {
+        //     printInfoln("start database integrity test...");
                     
-            if(main.isDatabaseConnected()) {
-                main.DatabaseIntegrityTest();
-            }
-            else {
-                printErrorln("The database is not connected");
-            }   
-        } catch (Exception e) {
-            Terminal.getInstance().printErrorln(e.toString());
+        //     if(main.isDatabaseConnected()) {
+        //         main.DatabaseIntegrityTest();
+        //     }
+        //     else {
+        //         printErrorln("The database is not connected");
+        //     }   
+        // } catch (Exception e) {
+        //     Terminal.getInstance().printErrorln(e.toString());
 
-            for (StackTraceElement stack : e.getStackTrace()) {
-                Terminal.getInstance().printErrorln(stack.toString());
-            }
-        }
-        finally {
-            printSeparator();
-        }
-
+        //     for (StackTraceElement stack : e.getStackTrace()) {
+        //         Terminal.getInstance().printErrorln(stack.toString());
+        //     }
+        // }
+        // finally {
+        // }
+        
+        printSeparator();
         
         
 

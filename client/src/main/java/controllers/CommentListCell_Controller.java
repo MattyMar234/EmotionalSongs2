@@ -70,7 +70,7 @@ public class CommentListCell_Controller extends ControllerBase implements Initia
         labelEmotionType.setText(emotionType.getName());
 
         String style = commentUserIcon.getStyle();
-        commentUserIcon.setStyle(style + "-fx-fill: " + super.randomColor() +";");
+        commentUserIcon.setStyle(style + "-fx-fill: " + emotionType.getColorHexValue() +";");
 
         if(Main.account == null || !emotion.getID_Account().equals(Main.account.getNickname())) {
            HBox hb = (HBox) deleteButton.getParent();

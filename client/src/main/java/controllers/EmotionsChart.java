@@ -31,14 +31,22 @@ public class EmotionsChart extends ControllerBase implements Initializable, Inje
 
     @FXML public HBox chartContainer;
     @FXML public VBox labelContainer;
+
     @FXML public Label labelDataNotAvailable;
+    @FXML public Label commentiLabel;
+    @FXML public Label emozioneLabel;
+    @FXML public Label imgLabel;
+    @FXML public Label mediaLabel;
 
     private ArrayList<Emotion> listaEmozini;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-    
+        commentiLabel.setText(Main.applicationLanguage == 0 ? "Commenti" : "Comments");
+        emozioneLabel.setText(Main.applicationLanguage == 0 ? "Emozione" : "Emotion");
+        imgLabel.setText(Main.applicationLanguage == 0 ? "Immagine" : "Image");
+        mediaLabel.setText(Main.applicationLanguage == 0 ? "Media" : "Media");
     }
 
     @Override

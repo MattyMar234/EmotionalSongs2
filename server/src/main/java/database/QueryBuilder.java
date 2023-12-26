@@ -564,7 +564,8 @@ public class QueryBuilder
 
             //DATE
             case 1:
-                sb.append(" WHERE CAST(a." + Colonne.RELEASE_DATE.getName() + " AS VARCHAR) LIKE '" + search + "%'");
+                //sb.append(" WHERE CAST(a." + Colonne.RELEASE_DATE.getName() + " AS VARCHAR) LIKE '" + search + "%'");
+                sb.append(" WHERE a." + Colonne.RELEASE_DATE.getName() + " LIKE '" + search + "%'");
                 //sb.append(" ORDER BY a." + Colonne.RELEASE_DATE.getName() + " DESC");
                 break;
         

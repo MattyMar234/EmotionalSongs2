@@ -494,20 +494,21 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
             }
         }
 
-        if(!email.getText().endsWith("@gmai.com")) {
+        if(!email.getText().endsWith("@gmail.com")) {
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle(Main.applicationLanguage == 0 ? "Formato email" : "Email format");
             alert.setHeaderText("");
         
             if(Main.applicationLanguage == 0) {
-                alert.setContentText("Il formato dell'email non è valido.\nDeve finire con: '@gmai.com'");
+                alert.setContentText("Il formato dell'email non è valido.\nDeve finire con: '@gmail.com'");
             }
             else if(Main.applicationLanguage == 1) {
-                alert.setContentText("Email format is not valid.\nShould end with: '@gmai.com'");
+                alert.setContentText("Email format is not valid.\nShould end with: '@gmail.com'");
             }
 
             alert.getButtonTypes().setAll(ButtonType.OK);
             Optional<ButtonType> result = alert.showAndWait();
+            return;
         }
 
         
@@ -675,35 +676,36 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
 
     private int testComboBox() 
     {
-        ArrayList<Region> regions = this.loader.getLocations();
+        return 0;
+        // ArrayList<Region> regions = this.loader.getLocations();
 
-        for(Region r : regions) 
-        { 
-            for(Province p : r.getProvincesList()) 
-            {
-                if(province.getSelectionModel().getSelectedItem().equals(p.getName()))
-                {
-                    String com = commune.getSelectionModel().getSelectedItem();
+        // for(Region r : regions) 
+        // { 
+        //     for(Province p : r.getProvincesList()) 
+        //     {
+        //         if(province.getSelectionModel().getSelectedItem().equals(p.getName()))
+        //         {
+        //             String com = commune.getSelectionModel().getSelectedItem();
                     
-                    for(Commune c : p.getCommonsList()) 
-                    {
-                        if(c.getName().equals(com)) {
-                            String selectedCup = cap.getSelectionModel().getSelectedItem().split(":")[0];
-                            for(String c_cap : c.cap) 
-                            {
-                                if(c_cap.equals(selectedCup)) {
-                                    return 0;
-                                }
-                            }
-                            return -3; 
-                        }      
-                    }
-                    return -1;          
-                }
-            }
-            return -2;
-        }
-        return -4;
+        //             for(Commune c : p.getCommonsList()) 
+        //             {
+        //                 if(c.getName().equals(com)) {
+        //                     String selectedCup = cap.getSelectionModel().getSelectedItem().split(":")[0];
+        //                     for(String c_cap : c.cap) 
+        //                     {
+        //                         if(c_cap.equals(selectedCup)) {
+        //                             return 0;
+        //                         }
+        //                     }
+        //                     return -3; 
+        //                 }      
+        //             }
+        //             return -1;          
+        //         }
+        //     }
+        //     return -2;
+        // }
+        // return -4;
     }
 
     

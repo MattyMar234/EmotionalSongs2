@@ -114,6 +114,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
             connectButton.setText(Main.applicationLanguage == 0 ? "Disconnettiti" : "Disconnect");
             connectionStatus.setStyle("-fx-text-fill: #1ED760;");
             connectionIcon.setStyle(connectionIcon.getStyle() + "-fx-fill: #1ED760;");
+            userName.setText("");
         }
         else {
             connectionStatus.setText(Main.applicationLanguage == 0 ? "Server non trovato" : "Server not found");
@@ -127,6 +128,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
         NoAccountButton.setText(Main.applicationLanguage == 0 ? "Continua senza Account" : "Continue without account");
         LoginButton.setText(Main.applicationLanguage == 0 ? "Accedi all'Account": "Login");
         NewAccount.setText(Main.applicationLanguage == 0 ? "Crea un Account" : "Create Account");
+        userName.setPromptText(Main.applicationLanguage == 0 ? "Indirizzo e-mail" : "E-mail address");
         //LabelField1.setText(Main.applicationLanguage == 0 ? "Nome utente o indirizzo e-mail" : "User name or e-mail address");
         //LabelField2.setText(Main.applicationLanguage == 0 ? "Password" : "Password");
     }

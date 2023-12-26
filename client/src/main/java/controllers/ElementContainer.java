@@ -29,6 +29,9 @@ public class ElementContainer extends ControllerBase implements Initializable, I
 {
     @FXML public ImageView image;
     @FXML public Label title;
+    @FXML public Label lable2;
+
+    
     
     private Object displayedElement;
     
@@ -44,6 +47,7 @@ public class ElementContainer extends ControllerBase implements Initializable, I
         //int number = random.nextInt(22) + 1;
 
         this.title.setText("?");
+        lable2.setText("");
         image.setImage(null);    
     }
 
@@ -77,6 +81,15 @@ public class ElementContainer extends ControllerBase implements Initializable, I
             Song song = (Song) displayedElement;
             String imgUrl = song.getImage(MyImage.ImageSize.S300x300).getUrl();
             
+            new Thread(() -> {
+                final Album album = connectionManager.getAlbum_by_ID(song.getAlbumId());
+                if(album != null) {
+                    Platform.runLater(() -> {
+                        lable2.setText((Main.applicationLanguage == 0 ? "Album " : "Album ") + album.getName());
+                    });
+                }
+            }).start();
+
             Platform.runLater(() -> {
                 title.setText(song.getTitle());
             });
@@ -90,6 +103,16 @@ public class ElementContainer extends ControllerBase implements Initializable, I
         {
             Album album = (Album) displayedElement;
             //System.out.println(album);
+            
+            new Thread(() -> {
+                final Artist artist = connectionManager.getArtistByID(album.getArtistID());
+                if(artist != null) {
+                    Platform.runLater(() -> {
+                        lable2.setText((Main.applicationLanguage == 0 ? "Artista " : "Artist ") + artist.getName());
+                    });
+                }
+            }).start();
+            
             Platform.runLater(() -> {title.setText(album.getName());});
 
 
@@ -105,7 +128,7 @@ public class ElementContainer extends ControllerBase implements Initializable, I
                 Platform.runLater(() -> {image.setImage(img);});
                 
             }
-        }
+        }   
     }
     
     

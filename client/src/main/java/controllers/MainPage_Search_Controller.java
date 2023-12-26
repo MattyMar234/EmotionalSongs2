@@ -99,7 +99,7 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
         songNameButtonFilter.setText((Main.applicationLanguage == 0 ? "Titolo Canzone" : "Song Title"));
         songDateButtonFilter.setText((Main.applicationLanguage == 0 ? "Data Canzone" : "Song Date"));
         albumNameButtonFilter.setText((Main.applicationLanguage == 0 ? "Titolo Album" : "Album Title"));
-        artistNameButtonFilter.setText((Main.applicationLanguage == 0 ? "Titolo Artista" : "Artist Title"));
+        artistNameButtonFilter.setText((Main.applicationLanguage == 0 ? "Artista" : "Artist"));
 
         changeButtonColor();
         makeResearch(currentPage, true);
@@ -287,6 +287,7 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
         for (int i = 0; i < s.length(); i++) {
             if(!Character.isDigit(s.charAt(i))  && s.charAt(i) != '-') {
                 elementContainer.getChildren().clear();
+                resultLabel.setText((Main.applicationLanguage == 0 ? "Risultati trovat: " : "Results found: ") + "0");
                 pageIndex.setText((Main.applicationLanguage == 0 ? "nessun risultato" : "no result"));
                 return;
             }

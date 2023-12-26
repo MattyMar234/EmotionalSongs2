@@ -21,7 +21,7 @@ public class Playlist implements Serializable{
         
         this.id = (String) table.get(Colonne.ID);
         this.name = (String) table.get(Colonne.NAME);
-        this.data = (String) dateFormat.format((java.sql.Date)table.get(Colonne.CREATION_DATE));
+        this.data = (String) table.get(Colonne.CREATION_DATE);
         this.userID = (String) table.get(Colonne.ACCOUNT_ID_REF);  
     }
 

@@ -54,6 +54,7 @@ public class UserPageController extends ControllerBase implements Initializable,
             viaLabel.setText("Via: " + Main.account.getResidenza().getViaPiazza());
             communeLabel.setText("Comune: " + Main.account.getResidenza().getCouncilName());
             provinceLabel.setText("Provinica: " + Main.account.getResidenza().getProvinceName());
+            infoUserLabel.setText("Informazioni Utente");
         }
         else {
             nameLabel.setText("Name:" + Main.account.getName());
@@ -64,6 +65,7 @@ public class UserPageController extends ControllerBase implements Initializable,
             viaLabel.setText("Via: " + Main.account.getResidenza().getViaPiazza());
             communeLabel.setText("commune: " + Main.account.getResidenza().getCouncilName());
             provinceLabel.setText("Province: " + Main.account.getResidenza().getProvinceName());
+            infoUserLabel.setText("User Information");
         }
 
         capLabel.setText("CAP: " + Main.account.getResidenza().getCAP());

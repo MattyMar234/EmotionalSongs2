@@ -321,6 +321,9 @@ public class ListCell_Controller extends ControllerBase implements Initializable
         Playlist playlist = (Playlist)element;
         label1.setText(playlist.getName());
         //label2.setText(playlist.getId());
+        timeLabel.setText("");
+        labelData.setText("");
+        label2.setText("");
 
         ArrayList<Song> result;
         try {
