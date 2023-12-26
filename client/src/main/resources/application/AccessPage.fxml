@@ -35,6 +35,11 @@
                               </TextField>
                               <FontIcon fx:id="connectionIcon" iconColor="WHITE" iconLiteral="mdi2c-connection" iconSize="24" wrappingWidth="27.0" />
                               <Label fx:id="connectionStatus" styleClass="Label-Style1" text="STATUS" />
+                              <Label fx:id="pingLabel" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="18.0" prefWidth="132.0" styleClass="Label-Style1" text="Label">
+                                 <HBox.margin>
+                                    <Insets left="10.0" />
+                                 </HBox.margin>
+                              </Label>
                            </children>
                         </HBox>
                      </children>

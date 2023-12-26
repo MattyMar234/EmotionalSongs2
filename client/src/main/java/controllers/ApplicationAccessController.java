@@ -71,6 +71,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
     @FXML public Label LabelField2;
     @FXML public Label NewAccount;
     @FXML public Label connectionStatus;
+    @FXML public Label pingLabel;
     
     @FXML public FontIcon LabelError_IMG1;
     @FXML public FontIcon LabelError_IMG2;
@@ -137,6 +138,8 @@ public class ApplicationAccessController extends ControllerBase implements Initi
     public void initialize(URL location, ResourceBundle resources) 
     {
         setLanguageText_and_color();
+        pingLabel.setText("");
+        connectionManager.setPinLabel(pingLabel);
 
         Stage stage = sceneManager.getWindowStage(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);
         stage.addEventFilter(ConnectionEvent.DISCONNECTED, this::handleConnectionLostEvent);
@@ -264,6 +267,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
         }
 
         clearError();
+        connectionManager.removePinLabel();
         sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, ApplicationScene.MAIN_PAGE_HOME);
       
     }
@@ -276,6 +280,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
             stage.fireEvent(new ConnectionEvent(ConnectionEvent.SERVER_NOT_FOUND));
             return;
         }
+        connectionManager.removePinLabel();
         sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, ApplicationScene.REGISTRATION_PAGE);
     }
 
@@ -288,7 +293,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
             return;
         }
             
-
+        
         boolean error = false;
         clearError();
 
@@ -323,6 +328,7 @@ public class ApplicationAccessController extends ControllerBase implements Initi
 
             if(response != null) {
                 Main.account = response;
+                connectionManager.removePinLabel();
                 sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, ApplicationScene.MAIN_PAGE_HOME);
             }
         } 

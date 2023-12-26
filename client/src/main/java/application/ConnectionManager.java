@@ -17,6 +17,8 @@ import applicationEvents.ConnectionEvent;
 import enumClasses.QueryParameter;
 import enumClasses.ServerServicesName;
 import interfaces.ServerServices;
+import javafx.application.Platform;
+import javafx.scene.control.Label;
 import objects.Account;
 import objects.Album;
 import objects.Artist;
@@ -42,6 +44,7 @@ public class ConnectionManager implements ServerServices{
     private ObjectOutputStream outputStream;
 	private Socket clientSocket;
 	private boolean connected = false;
+	private Label pingLable;
 
 	private HashMap<String, Object> requestResult = new HashMap<>();
 	private PacketLintener_thread packetLintener;
@@ -67,39 +70,66 @@ public class ConnectionManager implements ServerServices{
 				//verifico se non sono connesso
 				if(!isConnected()) {
 					//aspetto finechè non mi connetto con il server
+					// synchronized(this) {
+					// 	while(!isConnected()) {
+					// 		try {
+								
+					// 			wait();
+					// 		} 
+					// 		catch (InterruptedException e) {
+					// 		}
+					// 	}
+					// }
 					synchronized(this) {
-						while(!isConnected()) {
-							try {
-								wait();
-							} 
-							catch (InterruptedException e) {
-							}
-						}
+						Platform.runLater(() -> {
+							if(pingLable != null)
+								this.pingLable.setText("");
+						});
+					}
+					try {
+						Thread.sleep(50);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
 				}
-				
+				else {
+					double start = System.nanoTime();
 
-				double start = System.nanoTime();
+					//faccio un ping
+					if(!testServerConnection()) {
+						continue;
+					}
+					
+					//cronometro quanto ci ho messo
+					double dt = 1000 - (System.nanoTime() - start)/1000000;
+					Main.PING_TIME_us = (System.nanoTime() - start);
+					if(dt < 0) dt = 0;
 
-				//faccio un ping
-				if(!testServerConnection()) {
-					continue;
-				}
-				
-				//cronometro quanto ci ho messo
-				double dt = 1000 - (System.nanoTime() - start)/1000000;
-				Main.PING_TIME_us = (System.nanoTime() - start);
-				if(dt < 0) dt = 0;
-				//System.out.println((long)dt);
+					synchronized(this) {
+						final double finalDT = dt;
+						Platform.runLater(() -> {
+							this.pingLable.setText("Ping: " + TimeFormatter.formatTime(Main.PING_TIME_us));
+						});
+					}
+					//System.out.println((long)dt);
 
-				try {
-					Thread.sleep((long)dt);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+					try {
+						Thread.sleep((long)dt);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}).start();
     }
+
+	public synchronized void setPinLabel(Label l) {
+		this.pingLable = l;
+	}
+
+	public synchronized void removePinLabel() {
+		this.pingLable = null;
+	}
 
 
 	
@@ -207,8 +237,11 @@ public class ConnectionManager implements ServerServices{
 	public synchronized boolean connect() 
 	{
 		//verifico che non sono già collegato
-		if(isConnected())
+		if(isConnected()) {
+			notifyAll();
 			return true;
+		}
+			
 			
 		try	{
 			//provo a creare un socket e i relativi streams.
@@ -224,6 +257,7 @@ public class ConnectionManager implements ServerServices{
 			//timeline.setCycleCount(Timeline.INDEFINITE); // Imposta il conteggio ciclico infinito
 			//timeline.play();
 			connected = true;
+			requestResult.clear();
 			notifyAll();
 			SceneManager.instance().fireEvent(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, new ConnectionEvent(ConnectionEvent.CONNECTED));
 			return true;
@@ -246,6 +280,13 @@ public class ConnectionManager implements ServerServices{
 		if(!isConnected())
 			return;
 			
+		if(clientSocket != null) {
+			try {
+				clientSocket.close();
+			} catch (IOException e) {
+			}
+		}
+
 		SceneManager.instance().fireEvent(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, new ConnectionEvent(ConnectionEvent.DISCONNECTED));
 		requestResult.clear();
 		connected = false;
@@ -265,11 +306,19 @@ public class ConnectionManager implements ServerServices{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			finally {
+				try {
+					clientSocket.close();
+				} catch (IOException e) {
+					
+				}
+				requestResult.clear();
+				connected = false;
+				clientSocket = null;
+				notifyAll();
+			}
 		}
-		requestResult.clear();
-		connected = false;
-		clientSocket = null;
-		notifyAll();
+		
 	}
 	
 	/**
@@ -341,7 +390,7 @@ public class ConnectionManager implements ServerServices{
 
 				while(this.clientSocket != null && requestResult.get(myId) == null) 
 				{
-					try {wait(5000);} catch (InterruptedException e) {}
+					try {wait(1000);} catch (InterruptedException e) {}
 					
 					//se sono passati 10s da quando ho inviato i dati
 					if((System.nanoTime() - start)/1000000000 >= 10.0) {
@@ -351,7 +400,7 @@ public class ConnectionManager implements ServerServices{
 					}
 				}
 
-				if(this.clientSocket == null) {
+				if(this.clientSocket == null || !connected) {
 					System.out.println("");
 					throw new RuntimeException("Comunicazione con il server persa");
 				}
