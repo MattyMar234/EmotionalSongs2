@@ -11,7 +11,7 @@ import objects.*;
 
 public class ObjectsCache 
 {
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     
     public enum CacheObjectType 
     {

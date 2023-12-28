@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InvalidClassException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -233,7 +234,7 @@ public class SceneManager {
 
     /**
      * Questa funzione viene utilizzata avviare una particolarte finestra del programma.
-     * @param name
+     * @param wName
      * @param args
      */
     public void startWindow(ApplicationWinodws wName, Object...args) 
@@ -290,11 +291,21 @@ public class SceneManager {
     private FXMLLoader get_FXML_File_Loader(String name) throws IOException  
     {
         FXMLLoader loader = new FXMLLoader();
-        String path = UtilityOS.formatPath(Main.FXML_folder_path + "\\" + ((!name.endsWith(".fxml")) ? name + ".fxml" : name));
-        File file = new File(path);
+        File file = FileManager.getInstance().loadFile(((!name.endsWith(".fxml")) ? name + ".fxml" : name), FileManager.FileType.FXML);
         URL file_URL = file.toURI().toURL();
         loader.setLocation(file_URL);
-       
+        
+        // else {
+        //     try {
+        //         File file = new File(getClass().getResource().toURI());
+        //         loader.setLocation(file.toURI().toURL());
+        //     } 
+        //     catch (URISyntaxException e) {
+        //         e.printStackTrace();
+        //     }
+            
+        // }
+        
         return loader;
     }
 
@@ -366,7 +377,6 @@ public class SceneManager {
 
     /**
     * Carico il contenuto di un file fxml all'interno di un anchor generico
-    * @param sceneName Il nome del file fxml
     * @param anchor Il riferimento dell'anchor (anchorPane o BorderPane)
     * @return riferimento della classe controller del file fxml caricato.
     */ 
@@ -408,7 +418,6 @@ public class SceneManager {
     * Carico il contenuto di un file fxml all'interno di un anchor generico, con la possibilià di specificare il costruttore del controller.
     * @param sceneName Il nome del file fxml
     * @param anchor Il riferimento dell'anchor (anchorPane o BorderPane)
-    * @param controllerFactory il costruttore della classe controller del file fxml
     * @return riferimento della classe controller del file fxml caricato.
     */ 
     public Object injectScene(String sceneName, Object anchor, final Object controller) throws IOException
@@ -533,6 +542,7 @@ public class SceneManager {
                 
                 //se cambio scena, chiudo le altre finestre aperte
                 closeWindow(SceneManager.ApplicationWinodws.PLAYLIST_CREATION_WINDOW);
+   
                 
                 switch(sceneName) 
                 {
@@ -542,6 +552,7 @@ public class SceneManager {
 
                         while(loadedController.size() > 1) loadedController.pop();
                         loadedController.push((ControllerBase)injectScene(SceneElemets.ACCESS.file, loadedController.peek().anchor_for_injectScene));
+
                         stage.setMinWidth(800);
                         stage.setMinHeight(800);
                         break;

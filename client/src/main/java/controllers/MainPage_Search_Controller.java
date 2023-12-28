@@ -64,6 +64,7 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setBackgroundLinearColor(ControllerBase.backgroundImageIndex);
+        
     }
     
     @Override
@@ -200,7 +201,7 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
                 {
                     final int final_rowIndex = rowIndex++;
                     
-                    new Thread(() -> {
+                    //new Thread(() -> {
                         switch (MainPage_Search_Controller.filterType) {
                             case ALBUM_NAME:
                                 Platform.runLater(() -> {
@@ -225,7 +226,7 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
                                 break;
                     
                         }
-                    }).start(); 
+                    //}).start(); 
                 }
             }).start();
         } 

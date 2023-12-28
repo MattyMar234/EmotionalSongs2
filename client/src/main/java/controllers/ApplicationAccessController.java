@@ -3,6 +3,7 @@ package controllers;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -17,6 +18,7 @@ import Exceptions.InvalidEmailException;
 import Exceptions.InvalidPasswordException;
 import Exceptions.InvalidUserNameException;
 import application.ConnectionManager;
+import application.FileManager;
 import application.Main;
 import application.SceneManager;
 import application.SceneManager.ApplicationState;
@@ -150,35 +152,58 @@ public class ApplicationAccessController extends ControllerBase implements Initi
 
         
         //carico tutte le immagini delle lingue
-        File folder = new File(Main.flagsFolder);
-        File[] listOfFiles = folder.listFiles();
+        FileManager fManager = FileManager.getInstance();
 
-        Queue<File> queue = new LinkedList<File>();
-        for(File f : listOfFiles) queue.add(f);
+        try {
+            Image[] imglist = {
+                new Image(fManager.loadFile("1_Italy.png", FileManager.FileType.FLAG).toURI().toURL().toString()),
+                new Image(fManager.loadFile("2_GreatBritain.png", FileManager.FileType.FLAG).toURI().toURL().toString())
+            };
 
-        int index = 1;
-        while(queue.size() > 0) {
-            File file = queue.poll();
-            //se l'immagine corrisponde a quella che cerco
-            if(file.isFile()) {   
-                if(Integer.parseInt(file.getName().split("_")[0]) == index) {
-                    //try {
-
-                        ImageView image = new ImageView(loadImage(file.getAbsolutePath()));
-
-                        image.setFitHeight(30);
-                        image.setFitWidth(30);
-                        imgs.add(image);
-                        flags.getItems().add(image);
-                        
-                        index++;
-                    
-                }
-                else {
-                    queue.add(file);
-                }
+            for (Image image : imglist) {
+                ImageView imageView = new ImageView(image);
+                imageView.setFitHeight(30);
+                imageView.setFitWidth(30);
+                imgs.add(imageView);
+                flags.getItems().add(imageView);
             }
+        } 
+        catch (Exception e) {
+          
+            e.printStackTrace();
         }
+
+
+        
+        // File folder = new File(Main.flagsFolder);
+        // File[] listOfFiles = folder.listFiles();
+
+        // Queue<File> queue = new LinkedList<File>();
+        // for(File f : listOfFiles) queue.add(f);
+
+        // int index = 1;
+        // while(queue.size() > 0) {
+        //     File file = queue.poll();
+        //     //se l'immagine corrisponde a quella che cerco
+        //     if(file.isFile()) {   
+        //         if(Integer.parseInt(file.getName().split("_")[0]) == index) {
+        //             //try {
+
+        //                 ImageView image = new ImageView(loadImage(file.getAbsolutePath()));
+
+        //                 image.setFitHeight(30);
+        //                 image.setFitWidth(30);
+        //                 imgs.add(image);
+        //                 flags.getItems().add(image);
+                        
+        //                 index++;
+                    
+        //         }
+        //         else {
+        //             queue.add(file);
+        //         }
+        //     }
+        // }
 
         //definisco come caricare le immagini nella combox
         flags.setCellFactory(new Callback<ListView<ImageView>, ListCell<ImageView>>() {

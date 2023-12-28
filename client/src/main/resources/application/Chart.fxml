@@ -18,13 +18,30 @@
          <children>
             <StackPane layoutX="5.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="32.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
+                  <VBox fx:id="labelContainer" alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                           <children>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <AnchorPane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <Label fx:id="labelDataNotAvailable" alignment="CENTER" contentDisplay="CENTER" styleClass="Label-Style3" text="Label" textAlignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </VBox>
                   <HBox fx:id="chartContainer" alignment="CENTER" prefHeight="100.0">
                      <children>
                         <AnchorPane maxWidth="-Infinity" minHeight="500.0" minWidth="-Infinity" prefWidth="500.0">
                            <children>
                               <VBox alignment="CENTER" prefHeight="200.0" prefWidth="0.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <children>
-                                    <AnchorPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="36.0" prefWidth="214.0">
+                                    <AnchorPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="42.0" prefWidth="214.0">
                                        <children>
                                           <Label fx:id="labelTotUsers" alignment="CENTER" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="80.0" styleClass="Label-Style1" text="TOTALI: 1000" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                        </children>
@@ -80,28 +97,20 @@
                         <Pane maxWidth="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="100.0" />
                         <AnchorPane minWidth="-Infinity" prefHeight="500.0" prefWidth="500.0">
                            <children>
-                              <PieChart fx:id="chart" legendVisible="false" maxWidth="1.7976931348623157E308" minWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <VBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <AnchorPane prefHeight="42.0" prefWidth="200.0">
+                                       <children>
+                                          <Label fx:id="labelDistribuzione" alignment="CENTER" contentDisplay="CENTER" styleClass="Label-Style1" text="Distribuzione Commenti" textAlignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
+                                    <PieChart fx:id="chart" legendVisible="false" maxWidth="1.7976931348623157E308" minWidth="400.0" />
+                                 </children>
+                              </VBox>
                            </children>
                         </AnchorPane>
                      </children>
                   </HBox>
-                  <VBox fx:id="labelContainer" alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
-                     <children>
-                        <AnchorPane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-                           <children>
-                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                 <children>
-                                    <AnchorPane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
-                                       <children>
-                                          <Label fx:id="labelDataNotAvailable" alignment="CENTER" contentDisplay="CENTER" styleClass="Label-Style3" text="Label" textAlignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                       </children>
-                                    </AnchorPane>
-                                 </children>
-                              </HBox>
-                           </children>
-                        </AnchorPane>
-                     </children>
-                  </VBox>
                </children>
             </StackPane>
          </children>

@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
@@ -66,69 +67,77 @@
          <center>
             <AnchorPane BorderPane.alignment="CENTER">
                <children>
-                  <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="0.0">
+                  <StackPane layoutX="5.0" layoutY="312.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <Label prefHeight="116.0" prefWidth="678.0" style="-fx-font-size: 100;" styleClass="bg_label" text="TUNE " />
-                       
-                                                <Label prefHeight="116.0" prefWidth="678.0" style="-fx-font-size: 100;" styleClass="bg_label" text="INTO" />
-                         
-                                                <Label prefHeight="116.0" prefWidth="678.0" style="-fx-font-size: 100;" styleClass="bg_label" text="HEARTBEAT" />
-                          
-                                                <Label prefHeight="116.0" prefWidth="678.0" style="-fx-font-size: 100;" styleClass="bg_label" text="MELODIES." />
-                          
-                                            
-                     </children>
-                  </VBox>
-
-                                                <VBox alignment="CENTER" maxWidth="400.0" minWidth="-Infinity" prefHeight="200.0" prefWidth="300.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="0.0">
-                     <children>
-                        <ImageView fitHeight="73.0" fitWidth="360.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@image/generic/Logo.png" />
-                           </image>
-                        </ImageView>
-                        <TextField fx:id="userName" maxWidth="-Infinity" prefHeight="42.0" prefWidth="400.0" promptText="Indirizzo e-mail o nome utente">
-                           <VBox.margin>
-                              <Insets top="60.0" />
-                           </VBox.margin>
-                        </TextField>
-                        <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" prefWidth="400.0">
+                        <VBox alignment="BOTTOM_LEFT">
                            <children>
-                              <FontIcon fx:id="LabelError_IMG1" iconColor="RED" iconLiteral="mdi2e-exclamation-thick" iconSize="24" />
-                              <Label id="error_label" fx:id="LabeErrorlField1" maxWidth="-Infinity" prefHeight="20.0" text="Inserisci il tuo nome utente o il tuo indirizzo e-mail." />
+                              <Label prefHeight="116.0" prefWidth="678.0" style="-fx-font-size: 100;" styleClass="bg_label" text="TUNE " />
+                             
+                                                      <Label prefHeight="116.0" prefWidth="678.0" style="-fx-font-size: 100;" styleClass="bg_label" text="INTO" />
+                               
+                                                      <Label prefHeight="116.0" prefWidth="678.0" style="-fx-font-size: 100;" styleClass="bg_label" text="HEARTBEAT" />
+                                
+                                                      <Label prefHeight="116.0" prefWidth="678.0" style="-fx-font-size: 100;" styleClass="bg_label" text="MELODIES." />
+                                
+                                                  
                            </children>
-                        </HBox>
-                        <PasswordField fx:id="password" maxWidth="-Infinity" prefHeight="42.0" prefWidth="400.0" promptText="Password" styleClass="text-field" />
-                        <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" prefWidth="400.0">
+                        </VBox>
+                        <VBox alignment="TOP_RIGHT" StackPane.alignment="TOP_RIGHT">
                            <children>
-                              <FontIcon fx:id="LabelError_IMG2" iconColor="RED" iconLiteral="mdi2e-exclamation-thick" iconSize="24" />
-                              <Label id="error_label" fx:id="LabeErrorlField2" maxWidth="-Infinity" prefHeight="20.0" text="Inserisci la password" />
+                               <FontIcon iconColor="WHITE" iconLiteral="mdi2h-headphones" iconSize="512" opacity="0.25" wrappingWidth="512.0" />
                            </children>
-                        </HBox>
-                        <Button fx:id="LoginButton" mnemonicParsing="false" onAction="#accedi_Account" prefHeight="42.0" prefWidth="313.0" styleClass="PrimaryButton" text="Accedi all'Account">
-                           <VBox.margin>
+                        </VBox>
+      
+                                                      <VBox alignment="CENTER" maxWidth="400.0" minWidth="-Infinity" prefHeight="200.0" prefWidth="300.0" spacing="10.0">
+                           <children>
+                              <ImageView fitHeight="73.0" fitWidth="360.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@image/generic/Logo.png" />
+                                 </image>
+                              </ImageView>
+                              <TextField fx:id="userName" maxWidth="-Infinity" prefHeight="42.0" prefWidth="400.0" promptText="Indirizzo e-mail o nome utente">
+                                 <VBox.margin>
+                                    <Insets top="60.0" />
+                                 </VBox.margin>
+                              </TextField>
+                              <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" prefWidth="400.0">
+                                 <children>
+                                    <FontIcon fx:id="LabelError_IMG1" iconColor="RED" iconLiteral="mdi2e-exclamation-thick" iconSize="24" />
+                                    <Label id="error_label" fx:id="LabeErrorlField1" maxWidth="-Infinity" prefHeight="20.0" text="Inserisci il tuo nome utente o il tuo indirizzo e-mail." />
+                                 </children>
+                              </HBox>
+                              <PasswordField fx:id="password" maxWidth="-Infinity" prefHeight="42.0" prefWidth="400.0" promptText="Password" styleClass="text-field" />
+                              <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" prefWidth="400.0">
+                                 <children>
+                                    <FontIcon fx:id="LabelError_IMG2" iconColor="RED" iconLiteral="mdi2e-exclamation-thick" iconSize="24" />
+                                    <Label id="error_label" fx:id="LabeErrorlField2" maxWidth="-Infinity" prefHeight="20.0" text="Inserisci la password" />
+                                 </children>
+                              </HBox>
+                              <Button fx:id="LoginButton" mnemonicParsing="false" onAction="#accedi_Account" prefHeight="42.0" prefWidth="313.0" styleClass="PrimaryButton" text="Accedi all'Account">
+                                 <VBox.margin>
+                                    <Insets top="40.0" />
+                                 </VBox.margin>
+                              </Button>
+                              <Button fx:id="NoAccountButton" mnemonicParsing="false" onAction="#NoAccount" prefHeight="42.0" prefWidth="313.0" styleClass="PrimaryButton" text="Continua senza account">
+                                 <VBox.margin>
+                                    <Insets top="40.0" />
+                                 </VBox.margin>
+                              </Button>
+                              <Label id="NewAccountLabel" fx:id="NewAccount" alignment="CENTER" onMouseClicked="#CreateNewAccount" prefHeight="19.0" prefWidth="149.0" text="Crea un Account" textAlignment="CENTER" textFill="#e8e8e8" textOverrun="WORD_ELLIPSIS" underline="true">
+                                 <font>
+                                    <Font size="13.0" />
+                                 </font>
+                                 <VBox.margin>
+                                    <Insets top="20.0" />
+                                 </VBox.margin>
+                              </Label>
+                           </children>
+                           <padding>
                               <Insets top="40.0" />
-                           </VBox.margin>
-                        </Button>
-                        <Button fx:id="NoAccountButton" mnemonicParsing="false" onAction="#NoAccount" prefHeight="42.0" prefWidth="313.0" styleClass="PrimaryButton" text="Continua senza account">
-                           <VBox.margin>
-                              <Insets top="40.0" />
-                           </VBox.margin>
-                        </Button>
-                        <Label id="NewAccountLabel" fx:id="NewAccount" alignment="CENTER" onMouseClicked="#CreateNewAccount" prefHeight="19.0" prefWidth="149.0" text="Crea un Account" textAlignment="CENTER" textFill="#e8e8e8" textOverrun="WORD_ELLIPSIS" underline="true">
-                           <font>
-                              <Font size="13.0" />
-                           </font>
-                           <VBox.margin>
-                              <Insets top="20.0" />
-                           </VBox.margin>
-                        </Label>
+                           </padding>
+                        </VBox>
                      </children>
-                     <padding>
-                        <Insets top="40.0" />
-                     </padding>
-                  </VBox>
-                   <FontIcon iconColor="WHITE" iconLiteral="mdi2h-headphones" iconSize="512" opacity="0.25" wrappingWidth="512.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0" />
+                  </StackPane>
                </children>
             </AnchorPane>
          </center>

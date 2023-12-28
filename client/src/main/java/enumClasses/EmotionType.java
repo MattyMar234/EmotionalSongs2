@@ -1,8 +1,11 @@
 package enumClasses;
 
 import java.io.File;
+import java.io.IOException;
 
+import application.FileManager;
 import application.Main;
+import application.FileManager.FileType;
 import javafx.scene.image.Image;
 
 public enum EmotionType {
@@ -23,39 +26,57 @@ public enum EmotionType {
 
     private EmotionType(int index, String styleColor) 
     {
-        File directory = new File(Main.emotionFolder);
+        //File directory = new File(Main.emotionFolder);
         this.color = styleColor;
         this.index = index;
 
-        // Verifica se il percorso è una cartella
-        if (!directory.isDirectory()) {
-            System.out.println("Impossibile reperire le immagini delle emozioni.\nPercorso non valido");
-            System.exit(0);
+        FileManager fileManager = FileManager.getInstance();
+        try {
+            File[] emotionImageFile_list = {
+                fileManager.loadFile("Amazement[1].png", FileType.EMOTION),
+                fileManager.loadFile("Solemnity[2].png", FileType.EMOTION),
+                fileManager.loadFile("Tenderness[3].png", FileType.EMOTION),
+                fileManager.loadFile("Nostalgia[4].png", FileType.EMOTION),
+                fileManager.loadFile("Calmness[5].png", FileType.EMOTION),
+                fileManager.loadFile("Power[6].png", FileType.EMOTION),
+                fileManager.loadFile("Joy[7].png", FileType.EMOTION),
+                fileManager.loadFile("Tension[8].png", FileType.EMOTION),
+                fileManager.loadFile("Sadness[9].png", FileType.EMOTION)
+            };
+
+            boolean found = false;
+
+            for (File file : emotionImageFile_list) {
+                if(file.getName().contains("[" + Integer.toString(index) +"]")) {
+                    image = new Image(new File(file.getAbsolutePath()).toURI().toString());
+                    found = true;
+                    break;
+                }
+            }
+
+            if(!found) {
+                System.out.println("L'immagne dell'emozione con l'Id" + index + " non è stata trovata");
+                System.exit(0);
+            }
+        } 
+        catch (IOException e){
+            e.printStackTrace();
         }
+
+        // Verifica se il percorso è una cartella
+        // if (!directory.isDirectory()) {
+        //     System.out.println("Impossibile reperire le immagini delle emozioni.\nPercorso non valido");
+        //     System.exit(0);
+        // }
 
         // Ottieni un array di oggetti File che rappresentano i file nella cartella
-        File[] files = directory.listFiles();
+        //File[] files = directory.listFiles();
 
         // Verifica se l'array non è nullo e contiene elementi
-        if (files == null) {
-            System.out.println("non sono presenti le immagini delle emozioni");
-            System.exit(0);
-        }
-
-        boolean found = false;
-
-        for (File file : files) {
-            if(file.getName().contains("[" + Integer.toString(index) +"]")) {
-                image = new Image(new File(file.getAbsolutePath()).toURI().toString());
-                found = true;
-                break;
-            }
-        }
-
-        if(!found) {
-            System.out.println("L'immagne dell'emozione con l'Id" + index + " non è stata trovata");
-            System.exit(0);
-        }
+        // if (files == null) {
+        //     System.out.println("non sono presenti le immagini delle emozioni");
+        //     System.exit(0);
+        // }
     }
 
     public String getColorHexValue() {
@@ -77,7 +98,7 @@ public enum EmotionType {
 
     /**
      * @param semicolum
-     * @return-fx-pie-color: color
+     * @return -fx-pie-color: color
      */
     public String getPieColor(boolean semicolum) {
         return "-fx-pie-color: " + color + (semicolum ? ";" : "");

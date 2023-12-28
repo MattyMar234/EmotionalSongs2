@@ -115,19 +115,31 @@ public class ElementContainer extends ControllerBase implements Initializable, I
             
             Platform.runLater(() -> {title.setText(album.getName());});
 
-
             String imgUrl = album.getImage(MyImage.ImageSize.S300x300).getUrl();
-            Image img = (Image) ObjectsCache.getInstance().getItem(ObjectsCache.CacheObjectType.IMAGE,imgUrl);
+            
+            setImage(imgUrl);
 
-            if(img == null) {
-                String imgURL = album.getImage(MyImage.ImageSize.S300x300).getUrl();
-                Main.imageDownloader.addImageToDownload(imgURL, image);
-                //EmotionalSongs.imageDownloader.addImageToDownload(song.getImage(MyImage.ImageSize.S300x300).getUrl(), image);
-            }
-            else {
-                Platform.runLater(() -> {image.setImage(img);});
+
+            // String imgUrl = album.getImage(MyImage.ImageSize.S300x300).getUrl();
+            // Image img = (Image) ObjectsCache.getInstance().getItem(ObjectsCache.CacheObjectType.IMAGE,imgUrl);
+
+            // if(img == null) {
+            //     String imgURL = album.getImage(MyImage.ImageSize.S300x300).getUrl();
+            //     //Main.imageDownloader.addImageToDownload(imgURL, image);
+            //     //EmotionalSongs.imageDownloader.addImageToDownload(song.getImage(MyImage.ImageSize.S300x300).getUrl(), image);
+            //     new Thread(() -> {
+            //         try {
+            //             Image img2 = download_Image_From_Internet(imgURL, true);
+            //             Platform.runLater(() -> {image.setImage(img);});
+            //         } catch (IOException e) {
+            //             e.printStackTrace();
+            //         }
+            //     }).start();
+            // }
+            // else {
+            //     Platform.runLater(() -> {image.setImage(img);});
                 
-            }
+            // }
         }   
     }
     

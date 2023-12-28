@@ -515,6 +515,13 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 
 	//====================================== SOCKET SERVICES ======================================//
 	
+	/**
+     * Tests whether the provided arguments match the expected keys and have the correct size.
+     *
+     * @param argsTable A {@code HashMap<String, Object>} containing arguments for an operation.
+     * @param keys An array of keys expected in the argsTable.
+     * @return {@code true} if the arguments are valid, {@code false} otherwise.
+     */
 	private boolean testParametre(HashMap<String, Object> argsTable, String[] keys) {
 		
 		if(argsTable.size() != keys.length)
@@ -534,6 +541,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	
 	
 	//---------------------------- operazioni con Account ---------------------------- //
+	/**
+     * Adds a new account based on the provided parameters.
+     *
+     * @param argsTable A {@code HashMap<String, Object>} containing parameters for adding an account.
+     * @return An object representing the result of the operation or an error message.
+     */
 	@Override
 	public Object addAccount(final HashMap<String, Object> argsTable) 
 	{
@@ -583,7 +596,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
         }
 	}
 
-
+	/**
+     * Gets an account based on the provided parameters.
+     *
+     * @param argsTable A {@code HashMap<String, Object>} containing parameters for getting an account.
+     * @return An object representing the result of the operation or an error message.
+     */
 	@Override
 	@SuppressWarnings("unchecked")
 	public Object getAccount(final HashMap<String, Object> argsTable) 
@@ -608,7 +626,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	}
 
 	//---------------------------- operazioni con SONG ---------------------------- //
-
+	/**
+     * Gets the most popular songs based on the provided parameters.
+     *
+     * @param argsTable A {@code HashMap<String, Object>} containing parameters for getting popular songs.
+     * @return An object representing the result of the operation or an error message.
+     */
 	@Override
 	@SuppressWarnings("unchecked")
 	public Object getMostPopularSongs(final HashMap<String, Object> argsTable) 
@@ -622,7 +645,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	}
 
 	
-
+	/**
+     * Searches for songs based on the provided parameters.
+     *
+     * @param argsTable A {@code HashMap<String, Object>} containing parameters for searching songs.
+     * @return An object representing the result of the operation or an error message.
+     */
 	@Override
 	@SuppressWarnings("unchecked")
 	public Object searchSongs(final HashMap<String, Object> argsTable) 
@@ -643,7 +671,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
         }
 	}
 
-
+	/**
+     * Gets the most recently published albums based on the provided parameters.
+     *
+     * @param argsTable A {@code HashMap<String, Object>} containing parameters for getting recent albums.
+     * @return An object representing the result of the operation or an error message.
+     */
 	@Override
 	@SuppressWarnings("unchecked")
 	public Object getRecentPublischedAlbum(final HashMap<String, Object> argsTable) 
@@ -658,7 +691,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	}
 
 
-
+	/**
+     * Searches for albums based on a search string, limit, and offset.
+     *
+     * @param argsTable A HashMap containing search parameters.
+     * @return An array of search results or an error string.
+     */
 	@Override
 	@SuppressWarnings("unchecked")
 	public Object searchAlbums(final HashMap<String, Object> argsTable) 
@@ -671,6 +709,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
         }
 	}
 
+	/**
+     * Deletes an account based on the provided parameters.
+     *
+     * @param argsTable A {@code HashMap<String, Object>} containing parameters for deleting an account.
+     * @return {@code true} if the account is deleted successfully, {@code false} otherwise.
+     */
 	@Override
 	public Object deleteAccount(final HashMap<String, Object> argsTable) {
 		try {
@@ -692,6 +736,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
         }
 	}
 
+	/**
+     * Searches for albums based on a search string, limit, and offset.
+     *
+     * @param argsTable A HashMap containing search parameters.
+     * @return An array of search results or an error string.
+     */
 	@Override
 	public Object getAlbumsSongs(final HashMap<String, Object> argsTable) 
 	{
@@ -740,6 +790,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		}
 	}
 
+	 /**
+     * Retrieves an album by its ID.
+     *
+     * @param argsTable A HashMap containing the album ID.
+     * @return An Album object or an error string.
+     */
 	@Override
 	public Object getAlbumByID(final HashMap<String, Object> argsTable) {
 		try {
@@ -751,6 +807,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
         }
 	}
 
+	/**
+	 * Retrieves albums associated with a specific artist.
+	 *
+	 * @param argsTable A HashMap containing the artist ID.
+	 * @return A list of albums or an error string.
+	 */
 	@Override
 	public Object getArtistAlbums(final HashMap<String, Object> argsTable) {
 		try {
@@ -763,6 +825,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		}
 	}
 
+	/**
+	 * Searches for artists based on a search string, limit, and offset.
+	 *
+	 * @param argsTable A HashMap containing search parameters.
+	 * @return An array of search results or an error string.
+	 */
 	@Override
 	public Object searchArtists(final HashMap<String, Object> argsTable) {
 		try {
@@ -779,6 +847,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		}
 	}
 
+	/**
+	 * Retrieves artists based on their IDs.
+	 *
+	 * @param argsTable A HashMap containing artist IDs.
+	 * @return An array of artists or an error string.
+	 */
 	@Override
 	public Object getArtistsByIDs(HashMap<String, Object> argsTable) {
 		try {
@@ -790,6 +864,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		}
 	}
 
+	/**
+	 * Adds a new playlist for a specific account.
+	 *
+	 * @param argsTable A HashMap containing account ID and playlist name.
+	 * @return True if the playlist was added successfully, false or an error string otherwise.
+	 */
 	@Override
 	public Object addPlaylist(final HashMap<String, Object> argsTable) {
 		try {
@@ -802,6 +882,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
         }
 	}
 
+	/**
+	 * Deletes a playlist for a specific account.
+	 *
+	 * @param argsTable A HashMap containing account ID and playlist ID.
+	 * @return True if the playlist was deleted successfully, false or an error string otherwise.
+	 */
 	@Override
 	public Object deletePlaylist(final HashMap<String, Object> argsTable) {
 		try {
@@ -813,6 +899,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		} 
 	}
 
+	/**
+	 * Removes a song from a playlist for a specific account.
+	 *
+	 * @param argsTable A HashMap containing account ID, playlist ID, and song ID.
+	 * @return True if the song was removed successfully, false or an error string otherwise.
+	 */
 	@Override
 	public Object removeSongFromPlaylist(final HashMap<String, Object> argsTable) {
 		try {
@@ -824,6 +916,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		}
 	}
 
+	/**
+	 * Adds a song to a playlist for a specific account.
+	 *
+	 * @param argsTable A HashMap containing account ID, playlist ID, and song ID.
+	 * @return True if the song was added successfully, false or an error string otherwise.
+	 */
 	@Override
 	public Object addSongToPlaylist(final HashMap<String, Object> argsTable) {
 		try {
@@ -835,6 +933,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		}
 	}
 
+	/**
+	 * Retrieves playlists associated with a specific account.
+	 *
+	 * @param argsTable A HashMap containing account ID.
+	 * @return A list of playlists or an error string.
+	 */
 	@Override
 	public Object getAccountsPlaylists(final HashMap<String, Object> argsTable) {
 		try {
@@ -850,6 +954,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	//EMOTION
 	/////////////////////////////////////////////////////////////////////////////////
 
+	/**
+	 * Adds a new emotion for a specific song.
+	 *
+	 * @param argsTable A HashMap containing emotion parameters.
+	 * @return True if the emotion was added successfully, false or an error string otherwise.
+	 */
 	@Override
 	public Object addEmotion(final HashMap<String, Object> argsTable) {
 		try {
@@ -861,7 +971,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		return true;
 	}
 
-
+	/**
+	 * Retrieves emotions associated with a specific song.
+	 *
+	 * @param argsTable A HashMap containing song ID.
+	 * @return A list of emotions or an error string.
+	 */
 	@Override
 	public Object getSongEmotion(final HashMap<String, Object> argsTable) {
 		try {
@@ -872,6 +987,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		} 
 	}
 
+	/**
+	 * Deletes an emotion based on its ID.
+	 *
+	 * @param argsTable A HashMap containing emotion ID.
+	 * @return True if the emotion was deleted successfully, false or an error string otherwise.
+	 */
 	@Override
 	public Object deleteEmotion(final HashMap<String, Object> argsTable) {
 		try {
@@ -885,6 +1006,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 
 	}
 
+	/**
+	 * Retrieves emotions associated with a specific account.
+	 *
+	 * @param argsTable A HashMap containing account ID.
+	 * @return A list of emotions or an error string.
+	 */
 	@Override
 	public Object getAccountEmotion(HashMap<String, Object> argsTable) {
 		try {

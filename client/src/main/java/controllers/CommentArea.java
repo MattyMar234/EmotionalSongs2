@@ -39,6 +39,7 @@ public class CommentArea extends ControllerBase implements Initializable, Inject
     @FXML public Button sendButton;
     @FXML public Label labelCommenti;
     @FXML public Label charsCounterLabel;
+    @FXML public Label labelDistribuzione;
 
     
 
@@ -55,6 +56,11 @@ public class CommentArea extends ControllerBase implements Initializable, Inject
 
        
        emotionCombox.getSelectionModel().select(enumClasses.EmotionType.AMAZEMENT.getName());
+       sendButton.setText(Main.applicationLanguage == 0 ? "Conferma" : "Confirm");
+
+        if(labelDistribuzione != null)
+            labelDistribuzione.setText(Main.applicationLanguage == 0 ? "Distribuzione Commenti" : "Comment Distribution");
+       
        slider.setValue(0);
 
         if(Main.account == null) {

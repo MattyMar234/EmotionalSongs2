@@ -107,7 +107,7 @@ public class MainPage_Home_Controller extends ControllerBase implements Initiali
         scrollPane.widthProperty().addListener((observable, oldValue, newValue) -> {
             double ds = newValue.doubleValue() - oldValue.doubleValue();
             
-            System.out.println(ds);
+            //System.out.println(ds);
             
             for (RowContainerController controller : rowControllers) {
                 controller.Hbox.prefWidthProperty().bind(scrollPane.prefWidthProperty());

@@ -8,14 +8,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
 import application.ConnectionManager;
+import application.FileManager;
 import application.Main;
 import application.ObjectsCache;
 import application.SceneManager;
+import application.FileManager.FileType;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.embed.swing.SwingFXUtils;
@@ -45,8 +48,9 @@ public abstract class ControllerBase {
     private HashMap<Object, String[]> ObjectsErrorVisualization = new HashMap<Object, String[]>();
     
 
-    public final ConnectionManager connectionManager = ConnectionManager.getConnectionManager();
-    public final SceneManager sceneManager = SceneManager.instance();
+    protected final ConnectionManager connectionManager = ConnectionManager.getConnectionManager();
+    protected final SceneManager sceneManager = SceneManager.instance();
+    protected final FileManager fileManager = FileManager.getInstance();
 
     public Object anchor_for_injectScene;
 
@@ -77,38 +81,50 @@ public abstract class ControllerBase {
             number = val[0] % 22;
         }
 
-        Image image = loadImage(Main.ImageFolder + "\\colored_icon\\" + number + ".png");
-        Color everegedColor = getAverageColor(image, -0.26f);
+        try {
+            
+            Image image = new Image(fileManager.loadFile(number + ".png", FileType.COLORED_ICON).toURI().toURL().toString());
+            Color everegedColor = getAverageColor(image, -0.26f);
 
-        String color = ColorToHex(everegedColor);
-        this.linearGradien_background_upper.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");"); 
-        this.linearGradien_background_lower.setStyle("-fx-background-color: #030300;"); 
+            String color = ColorToHex(everegedColor);
+            this.linearGradien_background_upper.setStyle("-fx-background-color: linear-gradient(to top, #030300, "+ color +");"); 
+            this.linearGradien_background_lower.setStyle("-fx-background-color: #030300;"); 
+        } 
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        
             
     }
 
-    protected Image loadImage(String UnformattedPath) {
-        File file = new File(UtilityOS.formatPath(UnformattedPath));
-        Image image = null;
+    // protected Image loadImage(String UnformattedPath) {
+    //     File file = new File(UtilityOS.formatPath(UnformattedPath));
+    //     Image image = null;
 
-        if(UtilityOS.isUnix() || UtilityOS.isMac()) {
-            image = new Image(file.toURI().toString());
-        }
-        else {
-            image = new Image(UtilityOS.formatPath(UnformattedPath));
-        }
-        return image;
-    }
+    //     if(UtilityOS.isUnix() || UtilityOS.isMac()) {
+    //         image = new Image(file.toURI().toString());
+    //     }
+    //     else {
+    //         image = new Image(UtilityOS.formatPath(UnformattedPath));
+    //     }
+    //     return image;
+    // }
 
     protected String randomColor() 
     {
         Random random = new Random();
         int number = random.nextInt(22) + 1;
 
-        Image image = new Image(UtilityOS.formatPath(Main.ImageFolder + "\\colored_icon\\" + number + ".png"));  
-        Color everegedColor = getAverageColor(image, -0.26f);
-        String color = ColorToHex(everegedColor);
+        try {
+            Image image = new Image(fileManager.loadFile(number + ".png", FileType.COLORED_ICON).toURI().toURL().toString());
+            Color everegedColor = getAverageColor(image, -0.26f);
 
-        return color;
+            String color = ColorToHex(everegedColor);
+            return color;
+        }
+        catch (Exception e) {
+            return "#FFFFFF";
+        }   
     }
 
     protected static Color getAverageColor(Image image, float brightnessFactor) {
@@ -195,6 +211,7 @@ public abstract class ControllerBase {
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 try (InputStream inputStream = httpURLConnection.getInputStream()) {
                     image = new Image(new ByteArrayInputStream(inputStream.readAllBytes()));
+                    ObjectsCache.getInstance().addItem(ObjectsCache.CacheObjectType.IMAGE, imageURL, image,  false); 
                     return image;
                 }
             } else {
@@ -202,10 +219,19 @@ public abstract class ControllerBase {
             }
         } 
         catch (IOException e) {
+
+            Random random = new Random();
+            int number = random.nextInt(22) + 1;
+
             if(setDefaultImage) {
-                Random random = new Random();
-                int number = random.nextInt(22) + 1;
-                return loadImage(Main.ImageFolder + "\\colored_icon\\" + number + ".png");
+                try {
+                    Image img = new Image(fileManager.loadFile(number + ".png", FileType.COLORED_ICON).toURI().toString());
+                    ObjectsCache.getInstance().addItem(ObjectsCache.CacheObjectType.IMAGE, imageURL, img,  false);   
+                    return img;
+                }
+                catch (Exception k) {
+                    return null;
+                }   
             }
             throw e;
         }

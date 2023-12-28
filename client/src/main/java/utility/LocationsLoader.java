@@ -8,7 +8,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
+import application.FileManager;
 import application.Main;
+import application.FileManager.FileType;
 import objects.Commune;
 import objects.Province;
 import objects.Region;
@@ -18,7 +20,7 @@ import objects.Region;
 public class LocationsLoader extends Thread {
 
     private ArrayList<Region> regions = new ArrayList<Region>();
-    private String path = Main.LocationsPath;
+    //private String path = Main.LocationsPath;
     private UtilityInterface function;
 
     public LocationsLoader(UtilityInterface function) {
@@ -62,8 +64,10 @@ public class LocationsLoader extends Thread {
     */
     public boolean LoadData() 
     {
-        try {  
-            JsonParser jsonFileReader = new JsonParser(path);
+        try { 
+            FileManager manager = FileManager.getInstance();
+             
+            JsonParser jsonFileReader = new JsonParser(manager.loadFile("comuni.json", FileType.JSON).toURI().toURL().toString());
             JSONObject [] structure = jsonFileReader.ReadJsonFile_as_ArrayOfJsonObject();
 
             for(JSONObject jsonData : structure) 

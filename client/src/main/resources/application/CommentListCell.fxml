@@ -16,9 +16,9 @@
 
 <!--?import com.sun.tools.javac.jvm.Items?-->
 
-<AnchorPane minHeight="120.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.CommentListCell_Controller">
+<AnchorPane style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.CommentListCell_Controller">
    <children>
-      <HBox alignment="CENTER" layoutX="20.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="0.0">
+      <HBox alignment="CENTER" layoutX="20.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="10.0">
          <children>
             <VBox alignment="CENTER">
                <children>

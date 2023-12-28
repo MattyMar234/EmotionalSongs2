@@ -11,8 +11,10 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import objects.Account;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.System.Logger.Level;
+import java.net.URISyntaxException;
 import java.util.Optional;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -26,14 +28,18 @@ import utility.UtilityOS;
 public class Main
 {
     //================================[Variabili di classe]================================//
-    public static final String ApplicationDirectory = System.getProperty("user.dir");
-    public static final String FXML_folder_path = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application"); //main\\resources\\pages-fxml
-    public static final String CSS_file_folder = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\css"); //main\\resources\\pages-fxml
-    public static final String LocationsPath = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\data\\comuni.json");
-    public static final String ImageFolder = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\image");
-    public static final String flagsFolder = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\image\\flags");
-    public static final String emotionFolder = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\image\\emotion_icon");
+    public static final boolean jarExecution = isJarFIle();
+    public static final String ApplicationDirectory = initPath();
+
+    // public static final String FXML_folder_path = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application"); //main\\resources\\pages-fxml
+    // public static final String CSS_file_folder = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\css"); //main\\resources\\pages-fxml
+    // public static final String LocationsPath = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\data\\comuni.json");
+    // public static final String ImageFolder = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\image");
+    // public static final String flagsFolder = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\image\\flags");
+    // public static final String emotionFolder = UtilityOS.formatPath(ApplicationDirectory + "\\src\\main\\resources\\application\\image\\emotion_icon");
     
+    
+
     public static final ImageDownloader imageDownloader = new ImageDownloader();
     private static Main instance = null;
     
@@ -46,9 +52,44 @@ public class Main
     private ConnectionManager connectionManager;
 
 
-    static {
+    private static boolean isJarFIle() {
+        try {
+            File f = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            String path = f.getAbsolutePath();
 
+            if(path.endsWith(".jar")) {
+                System.out.println("Jar file detected");
+                return true;
+            }
+            return false;
+        } 
+        catch (URISyntaxException e) {
+            e.printStackTrace();
+            System.exit(0);
+            return false;
+        }
     }
+
+    private static String initPath() {
+        try {
+            File f = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            String path = f.getAbsolutePath();
+
+            if(path.endsWith(".jar")) {
+                return "";
+            }
+            
+            return UtilityOS.formatPath(System.getProperty("user.dir"));
+        
+        } 
+        catch (URISyntaxException e) {
+            e.printStackTrace();
+            System.exit(0);
+            return "";
+        }
+    }
+
+
 
     public static void main(String[] args) 
     {

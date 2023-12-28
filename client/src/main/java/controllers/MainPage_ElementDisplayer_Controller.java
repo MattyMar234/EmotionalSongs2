@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import application.FileManager.FileType;
 import application.Main;
 import application.ObjectsCache;
 import application.SceneManager;
@@ -249,7 +250,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
         }
 
         labelName.setText(song.getTitle());
-        labelType.setText("Song");
+        labelType.setText(Main.applicationLanguage == 0 ? "Canzone" : "Song");
         objectsLabel.setText("");
 
         new Thread(() -> {
@@ -412,10 +413,11 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
 
     }
 
-    private void setupAsPlaylist(Object... data)
+    private void setupAsPlaylist(Object... data) throws IOException
     {
         setBackgroundLinearColor(ControllerBase.backgroundImageIndex);
-        image.setImage(loadImage(Main.ImageFolder + "\\icon\\playlistIcon.png"));
+  
+        image.setImage(new Image(fileManager.loadFile("playlistIcon.png", FileType.ICON).toURI().toString()));
 
         final Playlist playlist = (Playlist) displayedElement;
         labelName.setText((Main.applicationLanguage == 0 ? "La mia playlist " : "My playlist ") + playlist.getName());
@@ -457,10 +459,10 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
         }).start();
     }
 
-    private void setupAsPlaylistShower(Object... data) 
+    private void setupAsPlaylistShower(Object... data) throws IOException 
     {
         setBackgroundLinearColor(ControllerBase.backgroundImageIndex);
-        image.setImage(new Image(UtilityOS.formatPath(Main.ImageFolder + "\\icon\\playlistIcon.png")));
+        image.setImage(new Image(fileManager.loadFile("playlistIcon.png", FileType.ICON).toURI().toString()));
         labelName.setText(Main.applicationLanguage == 0 ? "Le tue playlist" : "Your playlist");
         labelType.setText("");
         objectsLabel.setText("");

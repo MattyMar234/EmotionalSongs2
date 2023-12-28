@@ -2,6 +2,7 @@ package controllers;
 
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -12,6 +13,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import application.ApplicationActions;
 import application.Main;
 import application.SceneManager;
+import application.FileManager.FileType;
 import application.SceneManager.ApplicationScene;
 import applicationEvents.SceneChangeEvent;
 import interfaces.Injectable;
@@ -70,8 +72,9 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
     @FXML public ImageView logo;
     
     
-    public void setLogo() {
-        Image image = new Image(getClass().getResource("image/generic/Logo.png").toExternalForm(), 500, 500, true, true);
+    public void setLogo() throws MalformedURLException, IOException {
+        System.out.println("--------------------------------------");
+        Image image = new Image(fileManager.loadFile("Logo.png", FileType.ICON).toURI().toURL().toString(), 500, 500, true, true);
         logo.setImage(image);
     }
 
@@ -100,6 +103,8 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
         super.setBackgroundLinearColor(ControllerBase.backgroundImageIndex);
         userData_button.setText(Main.applicationLanguage == 0 ? "Profilo" : "Profile");
 
+        anchor.setMinWidth(1200);
+
         if(Main.account == null) {
             userName.setText(Main.applicationLanguage == 0 ? "Accedi" : "Login");
             playlistButton.setDisable(true);
@@ -112,6 +117,11 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
         }
 
         setupActionButtons();
+        try {
+            setLogo();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

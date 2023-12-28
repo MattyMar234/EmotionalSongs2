@@ -108,7 +108,8 @@ public class ConnectionManager implements ServerServices{
 					synchronized(this) {
 						final double finalDT = dt;
 						Platform.runLater(() -> {
-							this.pingLable.setText("Ping: " + TimeFormatter.formatTime(Main.PING_TIME_us));
+							if(pingLable != null)
+								this.pingLable.setText("Ping: " + TimeFormatter.formatTime(Main.PING_TIME_us));
 						});
 					}
 					//System.out.println((long)dt);
@@ -137,7 +138,6 @@ public class ConnectionManager implements ServerServices{
      * Class implemented with a Singleton pattern, this method is necessary to get
      * the ConnectionManager instance
      * @return instance of ConnectionManager
-     * @throws RemoteException
      */
     public static ConnectionManager getConnectionManager() {
         if(manager == null)
@@ -231,8 +231,6 @@ public class ConnectionManager implements ServerServices{
 	/**
 	 * Connects the client to server's instance of ConnectionBalancer
 	 * @return success of the operation
-	 * @throws IOException
-	 * @throws UnknownHostException
 	 */
 	public synchronized boolean connect() 
 	{
