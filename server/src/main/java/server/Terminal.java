@@ -379,7 +379,7 @@ public class Terminal extends Thread
                         printInfoln("terminate last connection");
                         DatabaseManager.getInstance().closeConnection();
                     }
-                    //main.setDatabaseConnection();
+                    main.setDatabaseConnection();
                 }
                 else if(command.equalsIgnoreCase(Command.EDIT.getCommandValue())) {
                     editSettings();
