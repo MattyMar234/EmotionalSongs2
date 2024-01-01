@@ -1,0 +1,9 @@
+{
+  "Port_server" : 8090,
+  "IP_database" : "127.0.0.1",
+  "Port_database" : 5432,
+  "Pw_database" : "admin",
+  "User_database" : "postgres",
+  "Name_database" : "EmotionalSongs",
+  "Auto_Start" : false
+}

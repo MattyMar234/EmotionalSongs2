@@ -299,13 +299,31 @@ public abstract class ControllerBase {
     }
 
     protected static void openLink(String link) throws IOException, URISyntaxException {
-        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-            Desktop.getDesktop().browse(new URI(link));
-        } else {
-            // Se il desktop non è supportato o l'azione di apertura del browser non è supportata,
-            // puoi gestire l'apertura del link in modo diverso qui (ad esempio, visualizzando il link in un terminale).
-            System.out.println("Desktop o l'azione di apertura del browser non sono supportati.");
+        
+        if(UtilityOS.isWindows()) {
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                Desktop.getDesktop().browse(new URI(link));
+            } else {
+                // Se il desktop non è supportato o l'azione di apertura del browser non è supportata,
+                // puoi gestire l'apertura del link in modo diverso qui (ad esempio, visualizzando il link in un terminale).
+                System.out.println("Desktop o l'azione di apertura del browser non sono supportati.");
+            }
         }
+        else {
+
+            String myCmd = "xdg-open " + link;
+            ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", "-c", myCmd);
+        
+            
+            Process processo = processBuilder.start();
+            try {
+                int exitCode = processo.waitFor();
+            } 
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        
     }
 
     
