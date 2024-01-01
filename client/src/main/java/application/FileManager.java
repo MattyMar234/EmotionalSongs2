@@ -30,6 +30,8 @@ public class FileManager
     public static final String EmotionFolder = UtilityOS.formatPath((Main.jarExecution ? System.getProperty("user.dir") + "\\" + jarDataFolderName + "\\" : "") +"image\\emotion_icon");
     public static final String coloredIconFolder = UtilityOS.formatPath((Main.jarExecution ? System.getProperty("user.dir") + "\\" + jarDataFolderName + "\\" : "") +"image\\colored_icon");
 
+    private static final boolean DEBUG = true;
+
     private static final String[] folders = {
         FXML_folder_path,
         CSS_file_folder,
@@ -89,7 +91,8 @@ public class FileManager
     public File loadFile(String fileName, FileType type) throws IOException 
     {
        
-        
+        File file = null; 
+
         try {
             if(Main.jarExecution)
             {
@@ -100,27 +103,33 @@ public class FileManager
 
                     case EMOTION:
                         System.out.println("File requested: " + UtilityOS.formatPath(FlagsFolder + "\\" + fileName));
-                        return new File(UtilityOS.formatPath(EmotionFolder + "\\" + fileName));
+                        file = new File(UtilityOS.formatPath(EmotionFolder + "\\" + fileName));
+                        break;
 
                     case COLORED_ICON:
                         System.out.println("File requested: " + UtilityOS.formatPath(coloredIconFolder + "\\" + fileName));
-                        return new File(UtilityOS.formatPath(coloredIconFolder + "\\" + fileName));
+                        file = new File(UtilityOS.formatPath(coloredIconFolder + "\\" + fileName));
+                        break;
                         
                     case FLAG:
                         System.out.println("File requested: " + UtilityOS.formatPath(FlagsFolder + "\\" + fileName));
-                        return new File(UtilityOS.formatPath(FlagsFolder + "\\" + fileName));
+                        file = new File(UtilityOS.formatPath(FlagsFolder + "\\" + fileName));
+                        break;
 
                     case FXML:
                         if(Main.jarExecution)
-                            return new File(UtilityOS.formatPath(FXML_folder_path + "\\" + fileName));
+                            file = new File(UtilityOS.formatPath(FXML_folder_path + "\\" + fileName));
+                        break;
                     
                     case ICON:
                         System.out.println("File requested: " + UtilityOS.formatPath(FlagsFolder + "\\" + fileName));
-                        return new File(UtilityOS.formatPath(IconFolder + "\\" + fileName));
+                        file = new File(UtilityOS.formatPath(IconFolder + "\\" + fileName));
+                        break;
                     
                     case JSON:
                         System.out.println("File requested: " + UtilityOS.formatPath(DataFolderPath + "\\" + fileName));
-                        return new File(UtilityOS.formatPath(DataFolderPath + "\\" + fileName));
+                        file = new File(UtilityOS.formatPath(DataFolderPath + "\\" + fileName));
+                        break;
                     
                     default:
                         break;   
@@ -135,26 +144,32 @@ public class FileManager
 
                     case EMOTION:
                         System.out.println("File requested: " + UtilityOS.formatPath(FlagsFolder + "\\" + fileName));
-                        return new File(getClass().getResource(formatResoursePath(EmotionFolder + "\\" + fileName)).toURI());
+                        file = new File(getClass().getResource(formatResoursePath(EmotionFolder + "\\" + fileName)).toURI());
+                        break;
 
                     case COLORED_ICON:
                         System.out.println("File requested: " + UtilityOS.formatPath(coloredIconFolder + "\\" + fileName));
-                        return new File(getClass().getResource(formatResoursePath(coloredIconFolder + "\\" + fileName)).toURI());
+                        file = new File(getClass().getResource(formatResoursePath(coloredIconFolder + "\\" + fileName)).toURI());
+                        break;
                         
                     case FLAG:
                         System.out.println("File requested: " + UtilityOS.formatPath(FlagsFolder + "\\" + fileName));
-                        return new File(getClass().getResource(formatResoursePath(FlagsFolder + "\\" + fileName)).toURI());
+                        file = new File(getClass().getResource(formatResoursePath(FlagsFolder + "\\" + fileName)).toURI());
+                        break;
 
                     case FXML:
-                        return new File(getClass().getResource(fileName).toURI());
+                        file = new File(getClass().getResource(fileName).toURI());
+                        break;
                     
                     case ICON:
                         System.out.println("File requested: " + UtilityOS.formatPath(FlagsFolder + "\\" + fileName));
-                        return new File(getClass().getResource(formatResoursePath(IconFolder + "\\" + fileName)).toURI());
+                        file = new File(getClass().getResource(formatResoursePath(IconFolder + "\\" + fileName)).toURI());
+                        break;
                     
                     case JSON:
                         System.out.println("File requested: " + UtilityOS.formatPath(DataFolderPath + "\\" + fileName));
-                        return new File(getClass().getResource(formatResoursePath(DataFolderPath + "\\" + fileName)).toURI());
+                        file = new File(getClass().getResource(formatResoursePath(DataFolderPath + "\\" + fileName)).toURI());
+                        break;
                     
                     default:
                         break;   
@@ -163,9 +178,14 @@ public class FileManager
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e);
-            return null;
         }
-        return null;
+        finally {
+            if(DEBUG && file != null) {
+                System.out.println("FILE PATH: " + file.getAbsolutePath());
+            }
+        }
+
+        return file;
     }
 
 
