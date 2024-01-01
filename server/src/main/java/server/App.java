@@ -340,7 +340,7 @@ public class App //extends JFrame
     /**
      * Edits the size of a database column.
      *
-     * @param column The column to be edited.
+     * @param colum The column to be edited.
      * @throws SQLException If a SQL error occurs.
      */
     public void editColumSize(Colonne colum) throws SQLException  {
