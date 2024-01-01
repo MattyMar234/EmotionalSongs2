@@ -497,11 +497,11 @@ public class Terminal extends Thread
             filesName.put(tableName.toLowerCase(), 0);
          }
 
-        for(File f : database__data_folder.listFiles()) {
-            if(!f.isDirectory()) {
+         for(File f : database__data_folder.listFiles()) {
+            if(!f.isDirectory() && f.getName().endsWith(".csv")) {
                 System.out.println(f.getName());
                 String name = f.getName().split(".csv")[0];
-                System.out.println("name");
+                //System.out.println("name");
                 filesName.remove(name.toLowerCase());
                 printSuccesln("file: " + f.getName().toLowerCase() + " found");
 
@@ -517,6 +517,7 @@ public class Terminal extends Thread
         }
 
         printSuccesln("All files found");
+        
 
         try {
             if(OS_utility.isWindows()) {
@@ -524,9 +525,37 @@ public class Terminal extends Thread
             }
             else {
                 //new ProcessBuilder("chmod -R a+rwx " + OS_utility.formatPath(database__data_folder.getAbsolutePath())).inheritIO().start().waitFor();
+                String path = OS_utility.formatPath(database__data_folder.getAbsolutePath());
+                String name = path.split("/")[path.split("/").length - 1];
+                String folderNewName = "/tmp/" + name;
+                String myCmd = "cp " + path + " " + folderNewName + " -r";
+                ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", "-c", myCmd);
+                
+                printInfoln("moving folder to /tmp");
+                printInfoln("command: " + myCmd);
+                
+                Process processo = processBuilder.start();
+                int exitCode = processo.waitFor();
+
+                printSuccesln("folder cloned");
+
+                for (String key : fileToLoad.keySet()) {
+                    File csvFile = fileToLoad.get(key);
+
+                    String filePath = OS_utility.formatPath(csvFile.getAbsolutePath());
+                    String folderName = filePath.split("/")[filePath.split("/").length - 1];
+                    String fileNewName = folderNewName + "/" +folderName;
+
+                    fileToLoad.put(key, new File(fileNewName));
+                }
+                
+                database__data_folder = new File(folderNewName);
+                
+                //cp /home/matty234/Downloads/DataBasePostgres /tmp -r
             }
         } catch (Exception e) {
             printErrorln(e.toString());
+            return;
         }
         
         try {
@@ -559,7 +588,7 @@ public class Terminal extends Thread
 
                 if(header == null) {
                     printErrorln("File " + file.getName() + " is empty");
-                    return;
+                    continue;
                 }
             } 
             catch (IOException e) {
@@ -572,7 +601,8 @@ public class Terminal extends Thread
                 printInfoln("Importing " + tableName);
                 DatabaseManager.getInstance().submitQuery(query);
                 printSuccesln(tableName + " Imported");
-            } catch (SQLException e) {
+            } 
+            catch (SQLException e) {
                 for (String s : e.toString().split("\n")) {
                     printErrorln(Color.RED_BOLD_BRIGHT + s + Color.RESET);
                 } 
@@ -586,9 +616,25 @@ public class Terminal extends Thread
         if(success) {
             printSuccesln(Color.GREEN_BOLD_BRIGHT + "Database successfully imported".toUpperCase() + Color.RESET);
         }
-        else {
-            printErrorln(Color.RED_BOLD_BRIGHT + "Try changing the folder access premisses to 'full access'."  + Color.RESET);
-            printErrorln(Color.RED_BOLD_BRIGHT + "Add \"Everyone\" user"  + Color.RESET);
+        // else {
+        //     printErrorln(Color.RED_BOLD_BRIGHT + "Try changing the folder access premisses to 'full access'."  + Color.RESET);
+        //     printErrorln(Color.RED_BOLD_BRIGHT + "Add \"Everyone\" user"  + Color.RESET);
+        // }
+
+        if(OS_utility.isUnix()) {
+            String myCmd = "rm -r " + database__data_folder.getAbsolutePath();
+            ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", "-c", myCmd);
+            
+            printInfoln("deleting " + database__data_folder.getAbsolutePath());
+            printInfoln("command: " + myCmd);
+            
+            Process processo = processBuilder.start();
+            try {
+                int exitCode = processo.waitFor();
+            } 
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
