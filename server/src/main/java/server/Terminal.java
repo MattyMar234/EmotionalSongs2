@@ -220,6 +220,7 @@ public class Terminal extends Thread
         //DB_INFO(        "info      ", " Mostra le informazioni sul database"),
         EXPORT(         "export    ", " Esporta il contenuto del dataBase in file CSV"),
         IMPORT(         "import    ", " per importare i dati nel database tramite dei file CSV"),
+
         QUERY_DB_ON(    "edqp      ", " Abilita la scrittura delle query dinamiche"),
         QUERY_DB_OFF(   "ddqp      ", " Disabilita la scrittura delle query dinamiche");
         //SQL_TERMINAL("makequery", " Apre la console SQL");

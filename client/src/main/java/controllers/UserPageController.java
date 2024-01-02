@@ -55,6 +55,8 @@ public class UserPageController extends ControllerBase implements Initializable,
             communeLabel.setText("Comune: " + Main.account.getResidenza().getCouncilName());
             provinceLabel.setText("Provinica: " + Main.account.getResidenza().getProvinceName());
             infoUserLabel.setText("Informazioni Utente");
+            deleteButton.setText("Cancella account");
+            commentLabel.setText("Commenti");
         }
         else {
             nameLabel.setText("Name:" + Main.account.getName());
@@ -62,10 +64,12 @@ public class UserPageController extends ControllerBase implements Initializable,
             accountIDLabel.setText("User ID:" + Main.account.getNickname());
             emailLabel.setText("Email: " + Main.account.getEmail());
             codeLabel.setText("Fiscal code: " + Main.account.getFiscalCode());
-            viaLabel.setText("Via: " + Main.account.getResidenza().getViaPiazza());
+            viaLabel.setText("Street: " + Main.account.getResidenza().getViaPiazza());
             communeLabel.setText("commune: " + Main.account.getResidenza().getCouncilName());
             provinceLabel.setText("Province: " + Main.account.getResidenza().getProvinceName());
             infoUserLabel.setText("User Information");
+            deleteButton.setText("Delete account");
+            commentLabel.setText("Comments");
         }
 
         capLabel.setText("CAP: " + Main.account.getResidenza().getCAP());

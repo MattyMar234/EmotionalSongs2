@@ -58,7 +58,7 @@
                                              <children>
                                                 <Label fx:id="labelEmotionType" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="132.0" styleClass="Label-Style1" text="Label" textAlignment="RIGHT" />
                                                 <ImageView fx:id="emojiIcon" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true" />
-                                                <Circle fx:id="circle" fill="RED" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+                                                <Circle fx:id="circle" disable="true" fill="RED" radius="10.0" stroke="BLACK" strokeType="INSIDE" visible="false" />
                                                 <Label id="rate" fx:id="labelValue" text="4,5/5" textFill="WHITE" />
                                                 <Button fx:id="deleteButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="25.0" mnemonicParsing="false" onAction="#removeComment" prefHeight="32.0" prefWidth="25.0" style="-fx-background-color: transparent;">
                                                    <graphic>

@@ -55,6 +55,7 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
 
     @FXML public Label pageIndex;
     @FXML public Label resultLabel;
+    @FXML public Label resultLabel1;
     
     @FXML public VBox elementContainer;
 
@@ -64,6 +65,10 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setBackgroundLinearColor(ControllerBase.backgroundImageIndex);
+
+        resultLabel1.setText((Main.applicationLanguage == 0 ? "Filtra per: " : "Filter by: "));
+
+        
         
     }
     

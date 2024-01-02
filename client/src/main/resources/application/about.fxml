@@ -13,7 +13,7 @@
             <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="557.0" spacing="10.0">
                <children>
                   <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
-                  <Label text="Questo software è stato sviluppato da:" textFill="WHITE" />
+                  <Label fx:id="label1" text="Questo software è stato sviluppato da:" textFill="WHITE" />
                   <Label text="Matteo Mariani" textFill="WHITE" />
                   <Label text="Francesco Vulcano" textFill="WHITE" />
                   <Label text="Michele Arduini" textFill="WHITE" />

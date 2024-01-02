@@ -340,6 +340,7 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		catch (Exception e) {
 			terminal.printErrorln(e.toString());
 			e.printStackTrace();
+			terminal.stopWaithing();
 			return;
 		}
 

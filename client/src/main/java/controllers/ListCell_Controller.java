@@ -443,11 +443,21 @@ public class ListCell_Controller extends ControllerBase implements Initializable
             
             String link = null;
 
-            try {link = artist.getImage(ImageSize.S64x64).getUrl();} catch (Exception e) {}
-            try {link = artist.getImage(ImageSize.S160x160).getUrl();} catch (Exception e) {}
-            try {link = artist.getImage(ImageSize.S300x300).getUrl();} catch (Exception e) {}
-            try {link = artist.getImage(ImageSize.S320x320).getUrl();} catch (Exception e) {}
-            try {link = artist.getImage(ImageSize.S640x640).getUrl();} catch (Exception e) {}
+            for (objects.MyImage.ImageSize size : objects.MyImage.ImageSize.values()) {
+                try {
+                    link = artist.getImage(ImageSize.S64x64).getUrl();
+                    break;
+                } 
+                catch (Exception e) {
+                    continue;
+                }  
+            }
+
+            
+            // try {link = artist.getImage(ImageSize.S160x160).getUrl();} catch (Exception e) {}
+            // try {link = artist.getImage(ImageSize.S300x300).getUrl();} catch (Exception e) {}
+            // try {link = artist.getImage(ImageSize.S320x320).getUrl();} catch (Exception e) {}
+            // try {link = artist.getImage(ImageSize.S640x640).getUrl();} catch (Exception e) {}
 
             try {
                 Image img = super.download_Image_From_Internet(link, true);

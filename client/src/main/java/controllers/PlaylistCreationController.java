@@ -32,6 +32,7 @@ public class PlaylistCreationController extends ControllerBase implements Initia
     @Override
     public void initialize(URL location, ResourceBundle resources) {
        labellTitle.setText((Main.applicationLanguage == 0) ? "Creazione Playlist" : "Playlist Creation");
+       saveButton.setText((Main.applicationLanguage == 0) ? "Salva" : "Save");
         fieldDefaultStyle = playtlistName.getStyle();
         ErrorLabel.setVisible(false);
     

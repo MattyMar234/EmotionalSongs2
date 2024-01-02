@@ -18,13 +18,19 @@ import interfaces.Injectable;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
@@ -53,6 +59,9 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     @FXML public VBox elementContainer;
     @FXML public Button actionButton;
 
+    @FXML public MenuButton actionButton1;
+    @FXML public Button spotifyButton;
+
 
     @FXML public ListView<Object> listView;
     private Object displayedElement;
@@ -72,6 +81,9 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
         actionButton.setDisable(true);
         actionButton.setVisible(false);
 
+        
+        
+
         linearGradien_background_upper.setStyle("-fx-background-color: linear-gradient(to top, #030300, #060600);");
     }
 
@@ -89,12 +101,19 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
         this.mode = (ElementDisplayerMode)data[0];
         this.displayedElement = data[1];
 
+        
+
+
+
         Platform.runLater(() -> {
             try {
                 switch (mode) {
                     case SHOW_ALBUM:
                         if(!(displayedElement instanceof Album)) 
                             throw new RuntimeException("obejct type must be \"Album\" type");
+                        
+                        actionButton1.setVisible(false);
+                        actionButton1.setDisable(true);
                         setupAsAlbum(data);
                         setImage_and_backgroundColor();    
                         setImageLink();
@@ -107,12 +126,19 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                         setupAsArtist(data);  
                         setImage_and_backgroundColor();  
                         setImageLink();
+                        
+                        actionButton1.setVisible(false);
+                        actionButton1.setDisable(true);
                         break;
                     case SHOW_PLAYLIST:
                         if(!(displayedElement instanceof Playlist)) 
                             throw new RuntimeException("obejct type must be \"Playlist\" type");
                         
                         setupAsPlaylist(data);   
+                        spotifyButton.setVisible(false);
+                        actionButton1.setVisible(false);
+                        spotifyButton.setDisable(true);
+                        actionButton1.setDisable(true);
                         //setImage_and_backgroundColor(); 
                         //setImageLink();
                         break;
@@ -127,10 +153,17 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                         break;
                     case SHOW_USER_PLAYLISTS:
                         setupAsPlaylistShower(data);
+                        spotifyButton.setVisible(false);
+                        actionButton1.setVisible(false);
+
+                        spotifyButton.setDisable(true);
+                        actionButton1.setDisable(true);
                         break;
 
                     case SHOW_ARTIST_SONGS:
                         setupAsArtist(data);
+                        actionButton1.setVisible(false);
+                        actionButton1.setDisable(true);
                         //setImage_and_backgroundColor();
                         //setImageLink();
                         break;
@@ -151,20 +184,20 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
 
     private void setImageLink() {
         final String url = spotifyUrl;
-        image.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                try {
-                    openLink(url);
-                } 
-                catch (IOException e) {
-                    e.printStackTrace();
-                } 
-                catch (URISyntaxException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        // image.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        //     @Override
+        //     public void handle(MouseEvent event) {
+        //         try {
+        //             openLink(url);
+        //         } 
+        //         catch (IOException e) {
+        //             e.printStackTrace();
+        //         } 
+        //         catch (URISyntaxException e) {
+        //             e.printStackTrace();
+        //         }
+        //     }
+        // });
     }
 
     private void setImage_and_backgroundColor() {
@@ -207,6 +240,15 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     @Override
     public void init(Object... data) {
        
+        if(this.spotifyUrl != null && this.spotifyUrl.length() > 0) {
+            try {
+                openLink(this.spotifyUrl);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 
@@ -242,6 +284,67 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                     e.printStackTrace();
                 }   
             }).start();
+
+
+            if(Main.account != null) {
+            new Thread(() -> {
+                
+                Menu pMenu = new Menu(Main.applicationLanguage == 0 ? "Aggiungi ad una playlist" : "Add to a playlist");
+                actionButton1.getItems().add(pMenu);
+
+                try {
+                    ArrayList<Playlist> playlist_list = connectionManager.getAccountPlaylists(Main.account.getNickname());
+
+                    if(playlist_list == null || playlist_list.size() == 0) {
+                        actionButton1.setDisable(true);
+                        return;
+                    }
+                    
+                    Platform.runLater(() -> {
+                        for (Playlist playlist : playlist_list) 
+                        {
+                            // if(this.playlist != null && playlist.equals(this.playlist)) {
+                            //     continue;
+                            // }
+                            
+                            MenuItem item = new MenuItem(playlist.getName());
+                            pMenu.getItems().add(item);
+                            
+                            item.setOnAction(event -> {
+                                try {
+                                    connectionManager.addSongToPlaylist(playlist.getUserID(), playlist.getId(), song.getId());
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            });
+                        }
+                    });
+
+                    // if(this.mode == ListCell_DisplayMode.DISPLAY_SONG_and_DELETE) {
+                    //     Menu deleteMenu = new Menu(Main.applicationLanguage == 0 ? "Rimuovi dalla playlist" : "Remove from playlist");
+                    //     actionButton.getItems().add(deleteMenu);
+                        
+                    //     deleteMenu.setOnAction(event -> {
+                    //         try {
+                    //             connectionManager.removeSongFromPlaylist(Main.account.getNickname(), this.playlist.getId(), song.getId());
+                    //             sceneManager.refreshScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);
+                    //         } 
+                    //         catch (Exception e) {
+                    //             e.printStackTrace();
+                    //         }
+                    //     });
+                    // }
+                } 
+                catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                
+            }).start();
+        }
+        else {
+            actionButton1.setDisable(true);
+        }
            
         } 
         catch (Exception e) {
@@ -514,6 +617,18 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
                 
             }
         }).start();
+    }
+
+
+    @FXML
+    public void openLinkButton(ActionEvent event) {
+        try {
+            super.openLink(spotifyUrl);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
 

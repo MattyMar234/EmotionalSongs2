@@ -22,6 +22,7 @@ public class JsonParser
     * Percorso del file su cui si opera
     */
     protected String FilePath;
+    protected String FileData;
 
 
     /*Constructor*/

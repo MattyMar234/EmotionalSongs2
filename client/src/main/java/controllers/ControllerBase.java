@@ -22,6 +22,7 @@ import application.FileManager.FileType;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
@@ -298,7 +299,13 @@ public abstract class ControllerBase {
         return img;
     }
 
+
+    
+
     protected static void openLink(String link) throws IOException, URISyntaxException {
+        
+        if(link == null || link.length() == 0)
+            return;
         
         if(UtilityOS.isWindows()) {
             if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
