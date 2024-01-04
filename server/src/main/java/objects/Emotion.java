@@ -5,6 +5,10 @@ import java.util.HashMap;
 
 import database.PredefinedSQLCode.Colonne;
 
+/**
+ * La classe `Emotion` rappresenta un'emozione associata a una canzone e un account utente.
+ */
+
 public class Emotion implements Serializable 
 {
     private static final long serialVersionUID = 1L;

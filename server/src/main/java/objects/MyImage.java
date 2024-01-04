@@ -5,6 +5,10 @@ import java.util.HashMap;
 
 import database.PredefinedSQLCode.Colonne;
 
+/**
+ * La classe `MyImage` rappresenta un'immagine con le relative informazioni.
+ */
+
 public class MyImage implements Serializable 
 {
     private static final long serialVersionUID = 1L;
@@ -28,16 +32,40 @@ public class MyImage implements Serializable
     }
 
 
+
+/**
+ * Restituisce la dimensione dell'immagine.
+ *
+ * Questo metodo restituisce la dimensione dell'immagine, che è stata precedentemente impostata.
+ *
+ * @return La dimensione dell'immagine.
+ */
     public String getSize() {
         return size;
     }
 
 
+
+/**
+ * Restituisce l'ID dell'immagine.
+ *
+ * Questo metodo restituisce l'ID dell'immagine, che è stato precedentemente impostato.
+ *
+ * @return L'ID dell'immagine.
+ */
     public String getId() {
         return id;
     }
 
 
+
+/**
+ * Restituisce l'URL dell'immagine.
+ *
+ * Questo metodo restituisce l'URL dell'immagine, che è stato precedentemente impostato.
+ *
+ * @return L'URL dell'immagine.
+ */
     public String getUrl() {
         return url;
     }

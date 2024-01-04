@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+/**
+ * La classe `DatabaseManager` gestisce la connessione e le operazioni su un database PostgreSQL.
+ */
 
 public class DatabaseManager {
 
@@ -29,7 +32,6 @@ public class DatabaseManager {
         
     }
     
-    /*Metodo statico per Pattern Singleton*/
 
 /**
  * Restituisce un'istanza singleton della classe DatabaseManager.
