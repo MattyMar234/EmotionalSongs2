@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<AnchorPane prefHeight="691.0" prefWidth="757.0" stylesheets="@css/ApplicationTheme.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainPage_ElementDisplayer_Controller">
+   <children>
+      <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="200.0" minHeight="200.0" prefHeight="200.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <AnchorPane fx:id="linearGradien_background_upper" prefHeight="200.0" prefWidth="200.0" />
+                        <AnchorPane fx:id="linearGradien_background_lower" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" />
+                     </children>
+                  </GridPane>
+               </children>
+            </AnchorPane>
+            <ScrollPane fitToWidth="true" prefHeight="541.0" prefWidth="647.0" style="-fx-background-color: transparent;">
+               <content>
+                  <VBox fx:id="elementContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: trasparent;">
+                     <children>
+                        <AnchorPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="280.0" prefWidth="647.0" style="-fx-background-color: trasparent;">
+                           <children>
+                              <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="70.0">
+                                 <children>
+                                    <Label fx:id="labelType" prefHeight="28.0" prefWidth="438.0" styleClass="Label-Style1" text="Label" />
+                                    <AnchorPane>
+                                       <children>
+                                          <Label fx:id="labelName" prefHeight="46.0" prefWidth="452.0" styleClass="Label-DisplayedeElement-Title" text="Label" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <font>
+                                                <Font name="System Bold" size="40.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </AnchorPane>
+                                    <Label fx:id="objectsLabel" prefHeight="34.0" prefWidth="456.0" styleClass="Label-Style1" text="Label" />
+                                 </children>
+                              </VBox>
+                              <ImageView fx:id="image" fitHeight="180.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="70.0">
+                                 <cursor>
+                                    <Cursor fx:constant="DEFAULT" />
+                                 </cursor>
+                              </ImageView>
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="80.0" prefWidth="647.0" style="-fx-background-color: transparent;">
+                           <children>
+                              <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <AnchorPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="1.0" prefWidth="200.0" style="-fx-background-color: #A0A0A0;">
+                                       <VBox.margin>
+                                          <Insets left="20.0" right="20.0" />
+                                       </VBox.margin>
+                                    </AnchorPane>
+                                 </children>
+                              </VBox>
+                              <HBox layoutX="646.9000244140625" layoutY="8.899999618530273" AnchorPane.rightAnchor="24.0" AnchorPane.topAnchor="12.0">
+                                 <children>
+                                    <Button fx:id="actionButton" mnemonicParsing="false" styleClass="PrimaryButton" text="Button" HBox.hgrow="ALWAYS">
+                                       <graphic>
+                                          <FontIcon iconColor="WHITE" iconLiteral="mdi2p-plus-thick" iconSize="20" />
+                                       </graphic>
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                    </Button>
+                                 </children>
+                              </HBox>
+                              <HBox maxHeight="-Infinity" minHeight="-Infinity" prefHeight="34.0" prefWidth="200.0" AnchorPane.leftAnchor="24.0" AnchorPane.topAnchor="12.0">
+                                 <children>
+                                    <Button fx:id="spotifyButton" mnemonicParsing="false" onAction="#openLinkButton" prefHeight="34.0" styleClass="btnlistcell">
+                                       <graphic>
+                                          <FontIcon id="spotify-icon" iconLiteral="mdi2s-spotify" iconSize="30">
+                                             <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                             </cursor>
+                                          </FontIcon>
+                                       </graphic>
+                                    </Button>
+                                    <MenuButton id="detailsBtn" fx:id="actionButton1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" popupSide="LEFT" prefHeight="38.0" prefWidth="50.0" styleClass="arrow-button">
+                                       <graphic>
+                                          <FontIcon id="dots-icon" iconLiteral="mdi2d-dots-horizontal">
+                                             <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                             </cursor>
+                                          </FontIcon>
+                                       </graphic>
+                                       <HBox.margin>
+                                          <Insets right="16.0" />
+                                       </HBox.margin>
+                                    </MenuButton>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </VBox>
+               </content>
+            </ScrollPane>
+         </children>
+      </StackPane>
+   </children>
+</AnchorPane>

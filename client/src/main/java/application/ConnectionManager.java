@@ -698,17 +698,24 @@ public class ConnectionManager implements ServerServices{
 			}; 
 
 			Packet p = new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.SEARCH_SONGS.name(), params);
-			
 			String key = generateKey(p);
-			Object cacheResult = cache.getItem(ObjectsCache.CacheObjectType.QUERY, key);
+			
+			if(mode != 2) {
+				Object cacheResult = cache.getItem(ObjectsCache.CacheObjectType.QUERY, key);
 
-			if(cacheResult != null) {
-				return (Object[]) cacheResult;
-				
+				if(cacheResult != null) {
+					return (Object[]) cacheResult;
+					
+				}
+			}
+
+			Object[] result = (Object[])makeRequest(p);
+			
+			if(mode == 2) {
+				cache.addItem(ObjectsCache.CacheObjectType.QUERY, key, result, false);
 			}
 			
-			Object[] result = (Object[])makeRequest(p);
-			cache.addItem(ObjectsCache.CacheObjectType.QUERY, key, result, false);
+			
 			ArrayList<Song> output = (ArrayList<Song>) result[1];
 
 			//aggiungo tutte le canzoni nella cache

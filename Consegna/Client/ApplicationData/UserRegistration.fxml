@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<AnchorPane id="mainStart" fx:id="mainStart" prefHeight="900.0" prefWidth="760.0" stylesheets="@css/ApplicationTheme.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.NewUserRegistrationController">
+   <children>
+      <BorderPane prefHeight="900.0" prefWidth="1077.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <top>
+            <AnchorPane prefHeight="70.0" BorderPane.alignment="CENTER">
+               <children>
+                  <VBox alignment="CENTER" maxHeight="70.0" minHeight="-Infinity" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <Label styleClass="simpleText" text="&quot;Immergiti nelle emozioni della musica con oltre 1 milione di brani nella nostra vivace community.&quot; " />
+                        <Label styleClass="simpleText" text="&quot;Dive into the emotions of music with over 1 million songs in our vibrant community.&quot;" />
+                     </children>
+                     <padding>
+                        <Insets top="15.0" />
+                     </padding>
+                  </VBox>
+               </children></AnchorPane>
+         </top>
+         <center>
+            <AnchorPane prefHeight="200.0" BorderPane.alignment="CENTER">
+               <children>
+                  <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="0.0">
+                     <children>
+                        <Label prefHeight="116.0" prefWidth="678.0" style="-fx-font-size: 100;" styleClass="bg_label" text="TUNE " />
+                       
+                        <Label prefHeight="116.0" prefWidth="678.0" style="-fx-font-size: 100;" styleClass="bg_label" text="INTO" />
+                         
+                        <Label prefHeight="116.0" prefWidth="678.0" style="-fx-font-size: 100;" styleClass="bg_label" text="HEARTBEAT" />
+                          
+                        <Label prefHeight="116.0" prefWidth="678.0" style="-fx-font-size: 100;" styleClass="bg_label" text="MELODIES." />
+                          
+                    
+                     </children>
+                  </VBox>
+                  <FontIcon iconColor="WHITE" iconLiteral="mdi2h-headphones" iconSize="512" opacity="0.2" wrappingWidth="512.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <VBox alignment="TOP_CENTER" maxWidth="500.0" minWidth="-Infinity" prefHeight="200.0" prefWidth="400.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <ImageView fitHeight="73.0" fitWidth="360.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@image/generic/Logo.png" />
+                           </image>
+                        </ImageView>
+                        <HBox maxWidth="-Infinity" spacing="5.0">
+                           <VBox.margin>
+                              <Insets top="60.0" />
+                           </VBox.margin>
+                           <children>
+                              <TextField fx:id="userName" alignment="CENTER" maxWidth="-Infinity" prefHeight="42.0" prefWidth="405.0" promptText="Nome" styleClass="text-field" />
+                              <TextField fx:id="surname" alignment="CENTER" layoutX="10.0" layoutY="10.0" maxWidth="-Infinity" prefHeight="42.0" prefWidth="405.0" promptText="Cognome" styleClass="text-field" />
+                           </children>
+                        </HBox>
+                        <TextField fx:id="userID" alignment="CENTER" maxWidth="-Infinity" prefHeight="42.0" prefWidth="820.0" promptText="Nickname" styleClass="text-field" />
+                        <TextField fx:id="email" alignment="CENTER" maxWidth="-Infinity" prefHeight="42.0" prefWidth="820.0" promptText="Email" styleClass="text-field" />
+                        <PasswordField fx:id="password" alignment="CENTER" maxWidth="-Infinity" prefHeight="42.0" prefWidth="820.0" promptText="Password" />
+                        <PasswordField fx:id="password2" alignment="CENTER" maxWidth="-Infinity" prefHeight="42.0" prefWidth="820.0" promptText="Conferma Password" />
+                        <TextField fx:id="codiceFiscale" alignment="CENTER" maxWidth="-Infinity" prefHeight="42.0" prefWidth="820.0" promptText="Codice Fiscale" />
+                        <HBox alignment="CENTER" maxWidth="-Infinity" spacing="5.0">
+                           <children>
+                              <TextField fx:id="Comune" maxHeight="-Infinity" prefHeight="42.0" prefWidth="240.0" promptText="comm" />
+                              <TextField fx:id="province" maxHeight="-Infinity" prefHeight="42.0" prefWidth="240.0" />
+                              <TextField fx:id="cap" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="42.0" prefWidth="120.0" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="TOP_CENTER" spacing="20.0">
+                           <children>
+                              <TextField fx:id="viaPiazza" alignment="CENTER" maxWidth="-Infinity" prefHeight="42.0" prefWidth="580.0" promptText="Via/Piazza" styleClass="text-field" />
+                              <TextField fx:id="civicNumber" alignment="CENTER" maxWidth="-Infinity" prefHeight="42.0" prefWidth="220.0" promptText="N° Civico" styleClass="text-field" />
+                           </children>
+                        </HBox>
+                        <Button fx:id="confirmButton" mnemonicParsing="false" onAction="#validateNewUser" prefHeight="42.0" prefWidth="313.0" styleClass="PrimaryButton" text="Accedi all'Account">
+                           <VBox.margin>
+                              <Insets top="40.0" />
+                           </VBox.margin>
+                        </Button>
+                        <Button fx:id="NoAccountButton" mnemonicParsing="false" onAction="#NoAccount" prefHeight="42.0" prefWidth="313.0" styleClass="PrimaryButton" text="Continua senza account">
+                           <VBox.margin>
+                              <Insets top="16.0" />
+                           </VBox.margin>
+                        </Button>
+                        <Label id="NewAccountLabel" fx:id="BackButton" alignment="CENTER" onMouseClicked="#TurnBack" prefHeight="19.0" prefWidth="149.0" text="Ho già un account" textAlignment="CENTER" textFill="#e8e8e8" textOverrun="WORD_ELLIPSIS" underline="true">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets top="11.0" />
+                           </VBox.margin>
+                        </Label>
+                     </children>
+                     <padding>
+                        <Insets top="40.0" />
+                     </padding>
+                  </VBox>
+               </children>
+            </AnchorPane>
+         </center>
+         <bottom>
+            <HBox alignment="CENTER" spacing="4.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label text="MADE WITH " textFill="WHITE" />
+                  <FontIcon iconColor="RED" iconLiteral="mdi2c-cards-heart" />
+                  <Label layoutX="349.0" layoutY="10.0" text="BY UNINSUBRIA STUDENTS" textFill="WHITE" />
+               </children>
+               <BorderPane.margin>
+                  <Insets bottom="10.0" />
+               </BorderPane.margin>
+            </HBox>
+         </bottom>
+      </BorderPane>
+   </children>
+      
+</AnchorPane>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Text?>
+<VBox id="maincontainer" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@styles/explore.css" prefHeight="400.0" prefWidth="600.0" >
+    <Label id="titleLabel" text="Scopri nuove canzoni" />
+
+    <GridPane id="gridcontainer" VBox.vgrow="ALWAYS" vgap="20" hgap="20" >
+
+    <columnConstraints>
+        <ColumnConstraints hgrow="ALWAYS" minWidth="100" />
+        <ColumnConstraints hgrow="ALWAYS" minWidth="100" />
+  </columnConstraints>
+  <rowConstraints>
+      <RowConstraints vgrow="ALWAYS" minHeight="50" />
+      <RowConstraints vgrow="ALWAYS" minHeight="50" />
+      <RowConstraints vgrow="ALWAYS" minHeight="50" />
+      <RowConstraints vgrow="ALWAYS" minHeight="50" />
+      <RowConstraints vgrow="ALWAYS" minHeight="50" />
+  </rowConstraints>
+        <children>
+            <!-- Trending-->
+            <Button  id="trendingButton" minHeight="40" minWidth="100" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"  mnemonicParsing="false" text="Trending">
+                <graphic>
+                    <FontIcon iconLiteral="mdi2s-star" />
+                </graphic>
+            </Button>
+
+            <!-- Calmness-->
+            <Button  id="calmnessButton" minHeight="40" minWidth="100" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"  mnemonicParsing="false" text="Calmness" GridPane.rowIndex="1">
+                <graphic>
+                    <FontIcon iconLiteral="mdi2l-leaf" />
+                </graphic>
+            </Button>
+
+            <!-- Power-->
+            <Button  id="powerButton" minHeight="40" minWidth="100" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"  mnemonicParsing="false" text="Power" GridPane.rowIndex="2">
+                <graphic>
+                    <FontIcon iconLiteral="mdi2a-arm-flex" />
+
+                </graphic>
+
+            </Button>
+
+            <!-- Joy-->
+            <Button  id="joyButton" minHeight="40" minWidth="100" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"  mnemonicParsing="false" text="Joy" GridPane.rowIndex="3">
+                <graphic>
+                    <FontIcon iconLiteral="mdi2p-party-popper" />
+                </graphic>
+            </Button>
+
+            <!-- Tension-->
+            <Button  id="tensionButton" minHeight="40" minWidth="100" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"  mnemonicParsing="false" text="Tension" GridPane.rowIndex="4">
+                <graphic>
+                    <FontIcon iconLiteral="mdi2h-heart-pulse" />
+                </graphic>
+            </Button>
+
+            <!-- Sadness-->
+            <Button  id="sadnessButton" minHeight="40" minWidth="100" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"  mnemonicParsing="false" text="Sadness" GridPane.columnIndex="1">
+                <graphic>
+                    <FontIcon iconLiteral="mdi2w-weather-pouring" />
+                </graphic>
+            </Button>
+
+            <!-- Amazement-->
+            <Button  id="amazementButton" minHeight="40" minWidth="100" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"  mnemonicParsing="false" text="Amazement" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <graphic>
+                    <FontIcon iconLiteral="mdi2l-lightbulb-on" />
+                </graphic>
+            </Button>
+
+            <!-- Solemnity-->
+            <Button  id="solemnityButton" minHeight="40" minWidth="100" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"  mnemonicParsing="false" text="Solemnity" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <graphic>
+                    <FontIcon iconLiteral="mdi2c-candle" />
+                </graphic>
+            </Button>
+
+            <!-- Tenderness-->
+            <Button id="tendernessButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"  mnemonicParsing="false" text="Tenderness" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                <graphic>
+                    <FontIcon iconLiteral="mdi2h-heart" />
+                </graphic>
+            </Button>
+
+            <!-- Nostalgia-->
+            <Button id="nostalgiaButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"  mnemonicParsing="false"  GridPane.columnIndex="1" GridPane.rowIndex="4">
+                <graphic>
+                    <HBox alignment="CENTER" spacing="5.0">
+                        <FontIcon iconLiteral="mdi2c-clock-time-four" />
+                        <Text text="Nostalgia" />
+                    </HBox>
+                </graphic>
+            </Button>
+        </children>
+    </GridPane>
+</VBox>

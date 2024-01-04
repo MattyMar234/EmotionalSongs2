@@ -430,6 +430,7 @@ public class MainPage_ElementDisplayer_Controller extends ControllerBase impleme
     {
         final Artist artis = (Artist) displayedElement;
         String imgUrl = "";
+        spotifyUrl = artis.getSpotifyURL();
 
         try {
             imgUrl = artis.getImage(MyImage.ImageSize.S300x300).getUrl();

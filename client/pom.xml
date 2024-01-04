@@ -6,7 +6,7 @@
 
     <groupId>Application</groupId>
     <artifactId>client</artifactId>
-    <version>Application-1.0</version>
+    <version>Application</version>
     <name>ClientApplication</name>
 
     <properties>

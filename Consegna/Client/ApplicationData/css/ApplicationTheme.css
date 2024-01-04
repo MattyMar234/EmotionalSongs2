@@ -1,0 +1,634 @@
+* {
+    -primary: #282828;
+    -secondary: #1a1919;
+    /*-tertiary: #8259e3;*/
+    -tertiary: #9783c4;
+    -tertiary_Hover: #c9b6f4;
+    -tertiary_Selected: #ac99d7;
+    -container1: #181818;
+    -container1_H: #282828;
+    
+    -gray1:  #242424;
+    -gray1_transparent:  #2424247F;
+    -gray2_transparent:  #bababa7f;
+
+}
+
+.border-10PX {
+    -fx-background-radius: 10px;
+}
+
+.Theme-color-1 {
+    -fx-background-color: -primary;
+}
+
+/*======================== BUTTONS =====================*/
+.button {
+    -fx-font-weight: lighter;
+    -fx-font-size: 14px;
+}
+
+.button:hover {
+    -fx-cursor: hand; 
+}
+
+
+.PrimaryButton {
+    -fx-background-color: -tertiary;
+    -fx-text-fill: #FFFFFF;
+    -fx-background-radius: 10px;
+}
+
+.PrimaryButtonSelected {
+    -fx-background-color: -tertiary_Selected;
+    -fx-text-fill: #FFFFFF;
+    -fx-background-radius: 10px;
+}
+
+.PrimaryButton:hover {
+    -fx-scale-x: 1.02; /* Increase the X scale on hover */
+    -fx-scale-y: 1.02; /* Increase the Y scale on hover */
+    -fx-cursor: hand; 
+    -fx-background-color: derive(-tertiary, 20%);
+}
+
+
+.secondary-button{
+    -fx-background-color: transparent;
+    -fx-border-radius: 5;
+    -fx-border-width:2;
+    -fx-border-color: #FF0000;
+    -fx-text-fill: #FF0000; 
+}
+
+.secondary-button:hover {
+    -fx-scale-x: 1.02; /* Increase the X scale on hover */
+    -fx-scale-y: 1.02; /* Increase the Y scale on hover */
+    -fx-cursor: hand; 
+}
+
+
+.filterbutton{
+    -fx-background-color:  transparent;
+    -fx-text-fill: #FFFFFF;
+    -fx-border-color: -tertiary;
+    -fx-border-width:  0 0 2 0;
+
+}
+
+#filterlabel{
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+
+}
+
+#GreenButton {
+    -fx-background-color: #1ED760;
+    -fx-text-fill: #000000;
+    -fx-background-radius: 14px;
+    -fx-border-radius: 14px;
+    
+    
+}
+
+#GreenButton2 {
+    /*-fx-background-color: #1db954;*/
+    -fx-background-color: linear-gradient(to right, #1db985, #1ed737);
+    -fx-text-fill: white;
+
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+}
+
+#GreenButton:hover {
+    /*-fx-background-color: #1ed737;*/
+    -fx-background-color: linear-gradient(to right, #1db985, #1ed784);
+}
+
+#GreenButton2:hover {
+
+}
+
+
+#OrangeButton {
+    -fx-background-color: linear-gradient(to right, #ee8700, #f14804);
+    /*-fx-background-color: linear-gradient(to right, #ee8700, #3bf104);*/
+    -fx-font-size: 15;
+}
+
+#OrangeButton:hover {
+    -fx-background-color: linear-gradient(to right, #eeea00, #f18a04);
+    -fx-background-color: linear-gradient(to top, #030300, #eeea00);
+    -fx-font-size: 15;
+    
+}
+
+/*------------------LIST-VIEW------------------*/
+#detailsBtn {
+    -fx-background-color: transparent; /* Remove background */
+    -fx-padding: 0; /* Remove padding */
+    -fx-cursor: hand;
+}
+
+#detailsBtn .arrow {
+    visibility: collapse; /* Hide the arrow */
+}
+
+#detailsBtn > .menu-item {
+    -fx-background-color: -primary; /* Background color for menu items */
+    -fx-text-fill: white; /* Text color for menu items */
+}
+
+.context-menu{
+    -fx-background-color: -primary; /* Set the background to transparent */
+}
+
+.context-menu .menu-item:hover {
+    -fx-background-color: #8259E3; /* Background color for hovered menu item */
+}
+
+.menubtn {
+    -fx-alignment: CENTER-LEFT;
+    -fx-pref-width:150;
+    -fx-background-color: transparent;
+}
+
+.btnlistcell {
+    -fx-background-color: transparent;
+    -fx-cursor: hand; /* Hand cursor */
+}
+
+.listCellBackgound {
+    -fx-background-color: transparent;
+    -fx-border-width: 0 0 0 60;
+    -fx-border-width: 0.5px 0px 0px 0px;
+    -fx-border-color: rgb(112, 112, 112);
+
+}
+
+.listCellBackgound:hover {
+    -fx-background-color: rgba(81, 81, 81, 0.282);
+}
+
+/*---------------------------------------------*/
+
+
+/*======================== LABELS =====================*/
+
+.Label-Style1{
+    -fx-font-weight: Bold;
+    -fx-text-fill: white;
+    -fx-font-size: 14;
+    -fx-fill: white;
+}
+.Label-Style1nB{
+    -fx-text-fill: white;
+    -fx-font-size: 14;
+    -fx-fill: white;
+}
+.Label-Style2{
+    -fx-font-weight: Bold;
+    -fx-text-fill: white;
+    -fx-font-size: 17;
+    -fx-fill: white;
+}
+.Label-Style3{
+    -fx-font-weight: Bold;
+    -fx-text-fill: white;
+    -fx-font-size: 24;
+    -fx-fill: white;
+}
+
+.Label-CategoryTitle{
+    -fx-font-weight: Bold;
+    -fx-text-fill: white;
+    -fx-fill: white;
+    -fx-font-size: 24;
+}
+
+.Label-DisplayedeElement-Title{
+    -fx-font-weight: Bold;
+    -fx-text-fill: white;
+    -fx-fill: white;
+    -fx-font-size:48;
+}
+
+.Error_label {
+    -fx-text-fill:  #F14934;
+    -fx-font-weight: lighter;
+    -fx-font-size: 13.5;
+   
+}
+
+.bg_label {
+    -fx-font-size: 100;
+    -fx-text-fill:  #031e4d;
+    -fx-opacity: 0.3;
+}
+
+#error_label {
+    -fx-text-fill:  #F14934;
+    -fx-font-weight: lighter;
+    -fx-font-size: 13.5;
+   
+}
+
+/*AccessPage*/
+#NewAccountLabel:hover{
+    -fx-cursor: hand; 
+}
+
+/*======================== IMAGES/ICONS =====================*/
+
+#image_error > .glyph-icon {
+    -fx-fill:  #F14934;
+}
+
+#spotify-icon{
+    -fx-fill: #1DB954;
+}
+#expand-icon{
+    -fx-fill: #8259E3;
+    -fx-icon-size: 30;
+}
+#dots-icon{
+    -fx-fill: #FFFFFF;
+    -fx-icon-size: 30;
+}
+
+.generic-fontIcon-style {
+    -fx-fill: #FFFFFF;
+    -fx-icon-size: 24;
+}
+
+/*======================== FIELDS =====================*/
+.text-field, .password-field {
+    
+
+}
+
+.search-container {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 100;
+}
+
+.search-text-field {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 100;
+}
+
+.text-field-style1 {
+    -fx-background-color: #3E3E3E;
+    -fx-background-radius: 5;
+    -fx-border-width: 0px;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: lighter;
+    -fx-font-size: 18px;
+
+    
+
+}
+
+/*.login-text-field, .login-password-field{
+    -fx-font-weight: bolder;
+    -fx-background-color: #1f1f1fd6;
+    -fx-font-size: 14.5;
+
+  
+    -fx-text-fill: #ffffff;
+
+    -fx-border-color: #727272;
+    -fx-border-radius: 5px;
+    -fx-border-width: 1px;
+
+
+
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 15;
+    -fx-text-fill: #ADADAD;
+    -fx-font-size: 16;
+    -fx-highlight-fill: #ADADAD;
+}*/
+
+
+
+
+
+
+#text-field_error {
+    -fx-border-color: #E91429;
+}
+
+
+
+
+
+
+/*======================== Anchors =====================*/
+
+#Border_BackGround {
+    /*-fx-background-color: #171717;*/
+    -fx-background-color: linear-gradient(to bottom, #121212, #332336, #121212);
+    /*-fx-background-radius: 15 15 15 15;*/
+}
+
+#tableHeaderbackground
+{
+    -fx-background-color: -gray1_transparent;
+    -fx-background-radius: 24px;
+}
+
+#BackGround {
+    -fx-background-color: #000000;
+}
+
+#NavColor {
+    -fx-background-color: #000000;
+}
+
+/*Comment Area*/
+#AnchorComment{
+    /*-fx-background-color: derive(#282828,50%);*/
+    -fx-background-color: -gray1_transparent;
+    -fx-background-radius: 10px; 
+}
+
+.RowContainer-Background {
+    /*-fx-background-color: #242424;*/
+    -fx-background-color: transparent;
+}
+
+.ElementContainer-Background {
+    -fx-background-color: #181818;
+    -fx-background-radius: 12;
+}
+
+.ElementContainer-Background:hover {
+    -fx-background-color: -primary;
+}
+
+
+#mainStart{
+    -fx-background-color: linear-gradient(to bottom, #242424, #8259e3);
+}
+.border-10PX {
+    -fx-background-radius: 10px;
+}
+
+.Theme-color-1 {
+    -fx-background-color: -primary;
+}
+
+#chartDetailsContainer {
+    -fx-background-color: -gray1_transparent;
+    -fx-background-radius: 8px;
+}
+
+
+
+
+/*================================ SCROLLPANE */
+
+.scroll-pane{
+    -fx-background-color:transparent;
+}
+
+.scroll-pane > .viewport {  
+    -fx-background-color: transparent;
+}
+
+
+.scroll-bar .increment-button {
+    visibility: hidden;
+}
+
+.scroll-bar .decrement-button {
+    visibility: hidden;
+}
+
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:vertical .track-background {
+    visibility: hidden;
+}
+
+.scroll-bar:vertical .track {
+    visibility: hidden;
+}
+
+.hide-thumb .scroll-bar:vertical .thumb {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:horizontal {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:horizontal .track-background {
+    visibility: hidden;
+}
+
+.scroll-bar:horizontal .track {
+    visibility: hidden;
+}
+
+.hide-thumb .scroll-bar:horizontal .thumb {
+-fx-background-color: transparent;
+}
+
+
+/*==================================== GRAFICO ====================================*/
+
+.chart-legend {
+    -fx-background-color:  #bfaeee;
+    -fx-stroke: #ffffff;
+ }
+
+ .chart-pie-label { 
+    -fx-weight: Bold;
+    -fx-fill: white;
+    -fx-font-size: 14;
+    
+}
+
+
+/*.default-color0.chart-pie{
+    -fx-pie-color: #800080;
+}
+.default-color1.chart-pie{
+    -fx-pie-color: #228B22;
+}
+.default-color2.chart-pie{
+    -fx-pie-color: #FFB6C1;
+}
+.default-color3.chart-pie{
+    -fx-pie-color: #704214;
+}
+.default-color4.chart-pie{
+    -fx-pie-color: #E6E6FA;
+}
+.default-color5.chart-pie{
+    -fx-pie-color: #FFA500;
+}
+.default-color6.chart-pie{
+    -fx-pie-color: #FFFF00;
+}
+.default-color7.chart-pie{
+    -fx-pie-color: #58423F;
+}
+.default-color8.chart-pie{
+    -fx-pie-color: #b44646;
+}
+.default-color9.chart-pie{
+    -fx-pie-color: #b44646;
+}*/
+
+
+/*==================================== COMBOX ====================================*/
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-font-size: 14px;
+}
+
+.Combox_LargeListCell {
+    -fx-padding: 0 50;
+}
+
+
+
+/* Apply styles to the text in ListCell */
+.list-cell .text {
+    -fx-fill: white; /* Apply the text color */
+}
+.list-cell:hover {
+    -fx-background-color: -tertiary_Hover;
+    -fx-background-radius: 12px; /* Change to the desired lighter color */
+}
+
+/* Apply styles to ListView */
+.list-view {
+    -fx-background-color: -tertiary;
+    -fx-background-radius: 12px;
+    /* Add other properties for ListView here */
+}
+
+.list-view .scroll-bar:vertical {
+    -fx-background-color: transparent; /* Background color of the scrollbar track */
+}
+
+.list-view .scroll-bar:vertical .thumb {
+    -fx-background-color: -tertiary;/*#8259E3; /* Thumb color */
+    -fx-background-insets: 0, 2; /* Insets for the thumb */
+    -fx-background-radius: 5px; /* Thumb border radius */
+}
+
+/*==================================== LIST-VIEW ====================================*/
+
+#detailsBtn {
+    -fx-background-color: transparent; /* Remove background */
+    -fx-padding: 0; /* Remove padding */
+    -fx-cursor: hand;
+}
+
+#detailsBtn .arrow {
+    visibility: collapse; /* Hide the arrow */
+}
+
+#detailsBtn > .menu-item {
+    -fx-background-color: -primary; /* Background color for menu items */
+    -fx-text-fill: white; /* Text color for menu items */
+}
+
+/*==================================== MENU-ITEM ====================================*/
+
+.context-menu{
+    -fx-background-color: -primary; /* Set the background to transparent */
+    
+}
+.context-menu .menu-item .label {
+    -fx-text-fill: white;
+}
+
+
+.context-menu .menu-item:hover {
+    -fx-background-color: -tertiary; /* Background color for hovetransparent menu item */
+}
+
+.context-menu .menu-item {
+    -fx-background-color: -primary; /* Set the background to transparent */
+}
+
+.menubtn {
+    -fx-alignment: CENTER-LEFT;
+    -fx-pref-width:150;
+    -fx-background-color: transparent;
+}
+
+.btnlistcell {
+    -fx-background-color: transparent;
+    -fx-cursor: hand; /* Hand cursor */
+}
+
+.listCellBackgound {
+    -fx-background-color: transparent;
+    -fx-border-width: 0 0 0 60;
+    -fx-border-width: 0.5px 0px 0px 0px;
+    -fx-border-color: rgb(70, 70, 70);
+
+}
+
+.listCellBackgound:hover {
+    -fx-background-color: rgba(81, 81, 81, 0.282);
+}
+
+/*==================================== SLIDER ====================================*/
+.slider:horizontal .thumb{
+    -fx-background-color: -tertiary;
+}
+
+
+
+/*==================================== COMBO-BOX ====================================*/
+
+.combo-box{
+    -fx-background-color:  derive(#606060, 20%);
+    -fx-background-radius: 10px;
+}
+
+#comboBox{
+    -fx-background-color:  derive(-tertiary, 20%);
+    -fx-background-radius: 20px;
+}
+
+/*==================================== TEXT-FIELD ====================================*/
+
+.text-field-style1 { 
+    -fx-background-color:  derive(#606060, 20%);     
+    -fx-background-radius: 10px;     
+    -fx-prompt-text-fill:  #FFFFFF;     
+    -fx-text-fill: #FFFFFF; 
+}
+
+
+
+/*==================================== EXTRA ====================================*/
+
+.simpleText{
+    -fx-fill: #FFFFFF;
+}
+
+/* #bgheadphone{
+    -fx-fill:  derive(-tertiary 20%);
+} */
+
+
+#commentArea{
+    -fx-background-color:  transparent;
+    -fx-text-fill: #000000;
+    -fx-prompt-text-fill:  #000000;
+
+}
+
