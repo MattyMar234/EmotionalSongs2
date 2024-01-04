@@ -33,7 +33,7 @@ public class CommentListCell_Controller extends ControllerBase implements Initia
 {
 
     @FXML public AnchorPane anchor;
-    @FXML public Circle circle;
+    // @FXML public Circle circle;
     @FXML public ImageView emojiIcon;
     @FXML public Label labelUserName;
     @FXML public Label labelValue;
@@ -62,7 +62,7 @@ public class CommentListCell_Controller extends ControllerBase implements Initia
        this.emotion = (Emotion) data[0];
        EmotionType emotionType = emotion.getEmotionType();
 
-        circle.setStyle(emotionType.getStyleColor(true));
+        //circle.setStyle(emotionType.getStyleColor(true));
         emojiIcon.setImage(emotionType.getEmotionImage());
         labelUserName.setText(emotion.getID_Account());
         labelValue.setText(emotion.getEmotionValue() + "/5");

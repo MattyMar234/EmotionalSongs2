@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
@@ -70,17 +69,11 @@
                         <PasswordField fx:id="password" alignment="CENTER" maxWidth="-Infinity" prefHeight="42.0" prefWidth="820.0" promptText="Password" />
                         <PasswordField fx:id="password2" alignment="CENTER" maxWidth="-Infinity" prefHeight="42.0" prefWidth="820.0" promptText="Conferma Password" />
                         <TextField fx:id="codiceFiscale" alignment="CENTER" maxWidth="-Infinity" prefHeight="42.0" prefWidth="820.0" promptText="Codice Fiscale" />
-                        <HBox alignment="CENTER" spacing="5.0">
+                        <HBox alignment="CENTER" maxWidth="-Infinity" spacing="5.0">
                            <children>
-                              <ComboBox fx:id="commune" maxWidth="272.0" onAction="#selectCommon" prefHeight="40.0" prefWidth="115.0" promptText="Comune" HBox.hgrow="ALWAYS" />
-                              <ComboBox fx:id="province" layoutX="10.0" layoutY="10.0" maxWidth="272.0" onAction="#selectProvince" prefHeight="42.0" prefWidth="120.0" promptText="Provincia" HBox.hgrow="ALWAYS" />
-                              <ComboBox fx:id="cap" maxWidth="260.0" onAction="#selectCap" prefHeight="42.0" prefWidth="90.0" promptText="CAP" HBox.hgrow="ALWAYS">
-                                 <HBox.margin>
-                                    <Insets />
-                                 </HBox.margin>
-                                 <opaqueInsets>
-                                    <Insets />
-                                 </opaqueInsets></ComboBox>
+                              <TextField fx:id="Comune" maxHeight="-Infinity" prefHeight="42.0" prefWidth="240.0" promptText="comm" />
+                              <TextField fx:id="province" maxHeight="-Infinity" prefHeight="42.0" prefWidth="240.0" />
+                              <TextField fx:id="cap" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="42.0" prefWidth="120.0" />
                            </children>
                         </HBox>
                         <HBox alignment="TOP_CENTER" spacing="20.0">

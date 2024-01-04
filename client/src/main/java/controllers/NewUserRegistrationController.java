@@ -94,10 +94,13 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
     @FXML public PasswordField password;
     @FXML public PasswordField password2;
 
+    @FXML public TextField cap;
+    @FXML public TextField Comune;
+    @FXML public TextField province;
 
-    @FXML public ComboBox<String> cap;
-    @FXML public ComboBox<String> commune;
-    @FXML public ComboBox<String> province;
+    // @FXML public ComboBox<String> cap;
+    // @FXML public ComboBox<String> commune;
+    // @FXML public ComboBox<String> province;
 
     public AutoCompleteComboBoxListener<String> c1;
     public AutoCompleteComboBoxListener<String> c2;
@@ -347,6 +350,10 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
         
         super.addObjectText_Translations(BackButton, new String[] {"Torna indietro", "Turn Back"});
         super.addObjectText_Translations(confirmButton, new String[] {"Registrati", "Sig In"});
+
+        cap.setPromptText("CAP");
+        Comune.setPromptText(Main.applicationLanguage == 0 ? "Comune" : "Commune");
+        province.setPromptText(Main.applicationLanguage == 0 ? "Provincia" : "Province");
     
         super.setTextsLanguage();
 
@@ -355,9 +362,9 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
         NoAccountButton.setText(Main.applicationLanguage == 0 ? "Continua senza account" : "Continue without account");
 
 
-        c1 = new AutoCompleteComboBoxListener<>(cap);
-        c2 = new AutoCompleteComboBoxListener<>(commune);
-        c3 = new AutoCompleteComboBoxListener<>(province);
+        // c1 = new AutoCompleteComboBoxListener<>(cap);
+        // c2 = new AutoCompleteComboBoxListener<>(commune);
+        // c3 = new AutoCompleteComboBoxListener<>(province);
 
         //ClearLabelError(labelID);
         //ClearLabelError(labelSing);
@@ -365,53 +372,53 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
         //ClearLabelError(LabelPassword2);
 
         
-        this.loader = new LocationsLoader((args) -> {
+        // this.loader = new LocationsLoader((args) -> {
 
-            final int minSize = 5;
-            Queue<String> q;
-            ArrayList<Region> regions = (ArrayList<Region>) args[0];
+        //     final int minSize = 5;
+        //     Queue<String> q;
+        //     ArrayList<Region> regions = (ArrayList<Region>) args[0];
 
-            for(Region r : regions) { 
-                for(Province p : r.getProvincesList()) {
-                    while(p.getName().length() < minSize) {
-                        p.setName(p.getName() + " ");
-                    }
-                    province.getItems().add(p.getName());
+        //     for(Region r : regions) { 
+        //         for(Province p : r.getProvincesList()) {
+        //             while(p.getName().length() < minSize) {
+        //                 p.setName(p.getName() + " ");
+        //             }
+        //             province.getItems().add(p.getName());
 
-                    for(Commune c : p.getCommonsList()) {
-                        while(c.getName().length() < minSize) {
-                            c.setName(p.getName() + " ");
-                        }
-                        commune.getItems().add(c.getName());
+        //             for(Commune c : p.getCommonsList()) {
+        //                 while(c.getName().length() < minSize) {
+        //                     c.setName(p.getName() + " ");
+        //                 }
+        //                 commune.getItems().add(c.getName());
 
-                        for(int i = 0; i < c.cap.length; i++) {
-                            cap.getItems().add(c.cap[i] + " : " + c.getName());
-                        }
-                    }
-                }
-            }
+        //                 for(int i = 0; i < c.cap.length; i++) {
+        //                     cap.getItems().add(c.cap[i] + " : " + c.getName());
+        //                 }
+        //             }
+        //         }
+        //     }
 
-            try {
-                q = new LinkedList<>(province.getItems());
-                //System.out.println(q.size());
-                province.getItems().clear();
-                province.getItems().addAll(BucketSort(q,3,256, 0));
-                //System.out.println(province.getItems().size());
+        //     try {
+        //         q = new LinkedList<>(province.getItems());
+        //         //System.out.println(q.size());
+        //         province.getItems().clear();
+        //         province.getItems().addAll(BucketSort(q,3,256, 0));
+        //         //System.out.println(province.getItems().size());
             
-                q = new LinkedList<>(commune.getItems());
-                commune.getItems().clear();
-                commune.getItems().addAll(BucketSort(q,3,256 - (int)' ', (int)' '));
+        //         q = new LinkedList<>(commune.getItems());
+        //         commune.getItems().clear();
+        //         commune.getItems().addAll(BucketSort(q,3,256 - (int)' ', (int)' '));
             
-                q = new LinkedList<>(cap.getItems());
-                cap.getItems().clear();
-                cap.getItems().addAll(BucketSort(q,5,10, (int)'0')); 
+        //         q = new LinkedList<>(cap.getItems());
+        //         cap.getItems().clear();
+        //         cap.getItems().addAll(BucketSort(q,5,10, (int)'0')); 
 
-            } catch (Exception e) {
-                System.out.println(e);;
-                e.printStackTrace();
+        //     } catch (Exception e) {
+        //         System.out.println(e);;
+        //         e.printStackTrace();
                 
-            }
-        });
+        //     }
+        // });
 
         contenitori.add(new ElementsContainer(userName      , null));
         contenitori.add(new ElementsContainer(surname       , null));
@@ -422,10 +429,9 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
         contenitori.add(new ElementsContainer(civicNumber   , null));
         contenitori.add(new ElementsContainer(codiceFiscale , null));
         contenitori.add(new ElementsContainer(viaPiazza     , null));
-        
-        contenitori.add(new ElementsContainer(cap     ));
-        contenitori.add(new ElementsContainer(commune     ));
-        contenitori.add(new ElementsContainer(province));
+        contenitori.add(new ElementsContainer(cap           , null));
+        contenitori.add(new ElementsContainer(Comune        , null));
+        contenitori.add(new ElementsContainer(province      , null));
     }
 
 
@@ -443,7 +449,7 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
         // ================================= 1° verifica ================================= //
         //Verifico se tutti i campi sono stati compilati e che siano corretti
 
-        for(int i = 0; i < contenitori.size() - 3; i++) 
+        for(int i = 0; i < contenitori.size(); i++) 
         {
             ElementsContainer container = contenitori.get(i);
             String data = container.text.getText();
@@ -470,29 +476,29 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
             }
         }
 
-        //test combox
-        for(int i = contenitori.size() - 3; i < contenitori.size(); i++) 
-        {
-            ElementsContainer container = contenitori.get(i);
-            String data = container.comb.getSelectionModel().getSelectedItem();
+        // //test combox
+        // for(int i = contenitori.size() - 3; i < contenitori.size(); i++) 
+        // {
+        //     ElementsContainer container = contenitori.get(i);
+        //     String data = container.comb.getSelectionModel().getSelectedItem();
 
-            if(data == null) {
+        //     if(data == null) {
                 
-                Alert alert = new Alert(AlertType.INFORMATION);
-                alert.setTitle(Main.applicationLanguage == 0 ? "Valori non selezionati" : "Values not selected");
-                alert.setHeaderText("");
-                // if(Main.applicationLanguage == 0) {
-                //     alert.setContentText("sei sicuro di volore escire dal tuo Account?");
-                // }
-                // else if(Main.applicationLanguage == 1) {
-                //     alert.setContentText("Are you sure you want to logout from your Account?");
-                // }
+        //         Alert alert = new Alert(AlertType.INFORMATION);
+        //         alert.setTitle(Main.applicationLanguage == 0 ? "Valori non selezionati" : "Values not selected");
+        //         alert.setHeaderText("");
+        //         // if(Main.applicationLanguage == 0) {
+        //         //     alert.setContentText("sei sicuro di volore escire dal tuo Account?");
+        //         // }
+        //         // else if(Main.applicationLanguage == 1) {
+        //         //     alert.setContentText("Are you sure you want to logout from your Account?");
+        //         // }
 
-                alert.getButtonTypes().setAll(ButtonType.OK);
-                Optional<ButtonType> result = alert.showAndWait();
-                return;
-            }
-        }
+        //         alert.getButtonTypes().setAll(ButtonType.OK);
+        //         Optional<ButtonType> result = alert.showAndWait();
+        //         return;
+        //     }
+        // }
 
         if(!email.getText().endsWith("@gmail.com")) {
             Alert alert = new Alert(AlertType.INFORMATION);
@@ -561,76 +567,98 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
             return;
         }
 
+        String str = cap.getText();
 
-        switch (testComboBox()) {
-            case 0:
-                break;
-
-            case -1:
-                Alert alert = new Alert(AlertType.INFORMATION);
-                alert.setTitle(Main.applicationLanguage == 0 ? "Valore selezionato non valido" : "Invalid value selected");
-                alert.setHeaderText("");
-            
-                if(Main.applicationLanguage == 0) {
-                    alert.setContentText("Il valore del comune non è valido");
-                }
-                else if(Main.applicationLanguage == 1) {
-                    alert.setContentText("The value of the commune is not valid");
-                }
-
-                alert.getButtonTypes().setAll(ButtonType.OK);
-                Optional<ButtonType> result = alert.showAndWait();
-                return;
-            
-            case -2:
-                Alert alert2 = new Alert(AlertType.INFORMATION);
-                alert2.setTitle(Main.applicationLanguage == 0 ? "Valore selezionato non valido" : "Invalid value selected");
-                alert2.setHeaderText("");
-            
-                if(Main.applicationLanguage == 0) {
-                    alert2.setContentText("Il valore della provincia non è valido");
-                }
-                else if(Main.applicationLanguage == 1) {
-                    alert2.setContentText("The value of the province is not valid");
-                }
-
-                alert2.getButtonTypes().setAll(ButtonType.OK);
-                alert2.showAndWait();
-                return;
-
-            case -3:
-                Alert alert3 = new Alert(AlertType.INFORMATION);
-                alert3.setTitle(Main.applicationLanguage == 0 ? "Valore selezionato non valido" : "Invalid value selected");
-                alert3.setHeaderText("");
-            
-                if(Main.applicationLanguage == 0) {
-                    alert3.setContentText("Il valore del CAP non è valido");
-                }
-                else if(Main.applicationLanguage == 1) {
-                    alert3.setContentText("The value of the CAP is not valid");
-                }
-
-                alert3.getButtonTypes().setAll(ButtonType.OK);
-                alert3.showAndWait();
-                return;
+        if(str.length() < 5) {
+            // SetLabelError(labelSing);
+            // labelSing.setText(EmotionalSongs.applicationLanguage == 0 ? "Codice fiscale non valido" : "Invalid fiscal code");
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle(Main.applicationLanguage == 0 ? "CAP" : "CAP");
+            alert.setHeaderText("");
         
-            default:
-                Alert alert4 = new Alert(AlertType.INFORMATION);
-                alert4.setTitle(Main.applicationLanguage == 0 ? "Errore di sistema" : "System error");
-                alert4.setHeaderText("");
+            if(Main.applicationLanguage == 0) {
+                alert.setContentText("Il CAP inserito non è valido.\nDeve possedere almeno 5 numeri");
+            }
+            else if(Main.applicationLanguage == 1) {
+                alert.setContentText("The inserted CAP is not valid.\nShould have at least 5 numbers");
+            }
 
-                alert4.getButtonTypes().setAll(ButtonType.OK);
-                alert4.showAndWait();
-                return;
+            alert.getButtonTypes().setAll(ButtonType.OK);
+            //alert.getButtonTypes().setAll(ButtonType.NO);
+            Optional<ButtonType> result = alert.showAndWait();
+            return;
         }
+
+
+        // switch (testComboBox()) {
+        //     case 0:
+        //         break;
+
+        //     case -1:
+        //         Alert alert = new Alert(AlertType.INFORMATION);
+        //         alert.setTitle(Main.applicationLanguage == 0 ? "Valore selezionato non valido" : "Invalid value selected");
+        //         alert.setHeaderText("");
+            
+        //         if(Main.applicationLanguage == 0) {
+        //             alert.setContentText("Il valore del comune non è valido");
+        //         }
+        //         else if(Main.applicationLanguage == 1) {
+        //             alert.setContentText("The value of the commune is not valid");
+        //         }
+
+        //         alert.getButtonTypes().setAll(ButtonType.OK);
+        //         Optional<ButtonType> result = alert.showAndWait();
+        //         return;
+            
+        //     case -2:
+        //         Alert alert2 = new Alert(AlertType.INFORMATION);
+        //         alert2.setTitle(Main.applicationLanguage == 0 ? "Valore selezionato non valido" : "Invalid value selected");
+        //         alert2.setHeaderText("");
+            
+        //         if(Main.applicationLanguage == 0) {
+        //             alert2.setContentText("Il valore della provincia non è valido");
+        //         }
+        //         else if(Main.applicationLanguage == 1) {
+        //             alert2.setContentText("The value of the province is not valid");
+        //         }
+
+        //         alert2.getButtonTypes().setAll(ButtonType.OK);
+        //         alert2.showAndWait();
+        //         return;
+
+        //     case -3:
+        //         Alert alert3 = new Alert(AlertType.INFORMATION);
+        //         alert3.setTitle(Main.applicationLanguage == 0 ? "Valore selezionato non valido" : "Invalid value selected");
+        //         alert3.setHeaderText("");
+            
+        //         if(Main.applicationLanguage == 0) {
+        //             alert3.setContentText("Il valore del CAP non è valido");
+        //         }
+        //         else if(Main.applicationLanguage == 1) {
+        //             alert3.setContentText("The value of the CAP is not valid");
+        //         }
+
+        //         alert3.getButtonTypes().setAll(ButtonType.OK);
+        //         alert3.showAndWait();
+        //         return;
+        
+        //     default:
+        //         Alert alert4 = new Alert(AlertType.INFORMATION);
+        //         alert4.setTitle(Main.applicationLanguage == 0 ? "Errore di sistema" : "System error");
+        //         alert4.setHeaderText("");
+
+        //         alert4.getButtonTypes().setAll(ButtonType.OK);
+        //         alert4.showAndWait();
+        //         return;
+        // }
 
        
 
         ConnectionManager service = ConnectionManager.getConnectionManager();
         
         try {
-            String cap_str = cap.getSelectionModel().getSelectedItem().split(":")[0];
-            Account account = service.addAccount(userName.getText(), surname.getText(), userID.getText(), codiceFiscale.getText(), email.getText(), password.getText(), civicNumber.getText(), viaPiazza.getText(), cap_str, commune.getSelectionModel().getSelectedItem(), province.getSelectionModel().getSelectedItem());
+            String cap_str = cap.getText();
+            Account account = service.addAccount(userName.getText(), surname.getText(), userID.getText(), codiceFiscale.getText(), email.getText(), password.getText(), civicNumber.getText(), viaPiazza.getText(), cap_str, Comune.getText(), province.getText());
             
             if(account != null) {
                 Main.account = account;
@@ -727,121 +755,121 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
         sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, ApplicationScene.MAIN_PAGE_HOME); 
     }
 
-    @FXML
-    public void selectCap(ActionEvent event) {
+    // @FXML
+    // public void selectCap(ActionEvent event) {
         
-        while(this.loader.isAlive());
+    //     while(this.loader.isAlive());
 
-        try {
-            if(commune.getSelectionModel().getSelectedItem() == null && province.getSelectionModel().getSelectedItem() == null || true) {
-                String com = cap.getSelectionModel().getSelectedItem().split(" : ")[1];
+    //     try {
+    //         if(commune.getSelectionModel().getSelectedItem() == null && province.getSelectionModel().getSelectedItem() == null || true) {
+    //             String com = cap.getSelectionModel().getSelectedItem().split(" : ")[1];
     
-                //metto il comune
-                commune.getSelectionModel().select(commune.getItems().indexOf(com));
+    //             //metto il comune
+    //             commune.getSelectionModel().select(commune.getItems().indexOf(com));
     
-                ArrayList<Region> regions = this.loader.getLocations();
-                boolean finded = false;
+    //             ArrayList<Region> regions = this.loader.getLocations();
+    //             boolean finded = false;
     
-                for(Region r : regions) { 
-                    if(finded) break;
+    //             for(Region r : regions) { 
+    //                 if(finded) break;
                     
-                    for(Province p : r.getProvincesList()) {
-                        if(finded) break;
+    //                 for(Province p : r.getProvincesList()) {
+    //                     if(finded) break;
                         
-                        for(Commune c : p.getCommonsList()) 
-                        {
-                            if(c.getName().equals(com)) {
-                                province.getSelectionModel().select(province.getItems().indexOf(p.getName()));
-                                finded = !finded;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        catch (ArrayIndexOutOfBoundsException e){
+    //                     for(Commune c : p.getCommonsList()) 
+    //                     {
+    //                         if(c.getName().equals(com)) {
+    //                             province.getSelectionModel().select(province.getItems().indexOf(p.getName()));
+    //                             finded = !finded;
+    //                             break;
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     catch (ArrayIndexOutOfBoundsException e){
             
-        }
+    //     }
         
-    }
+    // }
 
-    @FXML
-    public void selectCommon(ActionEvent event) 
-    {
-        while(this.loader.isAlive());
-        ArrayList<Region> regions = this.loader.getLocations();
-        String com = commune.getSelectionModel().getSelectedItem();
+    // @FXML
+    // public void selectCommon(ActionEvent event) 
+    // {
+    //     while(this.loader.isAlive());
+    //     ArrayList<Region> regions = this.loader.getLocations();
+    //     String com = commune.getSelectionModel().getSelectedItem();
 
-        boolean finded = false;
+    //     boolean finded = false;
 
-        //set CAP
-        if(cap.getSelectionModel().getSelectedItem() == null || true) {
-            for(Region r : regions) { 
-                if(finded) break;
+    //     //set CAP
+    //     if(cap.getSelectionModel().getSelectedItem() == null || true) {
+    //         for(Region r : regions) { 
+    //             if(finded) break;
 
-                for(Province p : r.getProvincesList()) {
-                    if(finded) break;
+    //             for(Province p : r.getProvincesList()) {
+    //                 if(finded) break;
 
-                    for(Commune c : p.getCommonsList()) 
-                    {
-                        if(c.getName().equals(com)) 
-                        {
-                            if(c.cap.length == 1) {
-                                cap.getSelectionModel().select(c.cap[0] + " : " + c.getName());  
-                            }
+    //                 for(Commune c : p.getCommonsList()) 
+    //                 {
+    //                     if(c.getName().equals(com)) 
+    //                     {
+    //                         if(c.cap.length == 1) {
+    //                             cap.getSelectionModel().select(c.cap[0] + " : " + c.getName());  
+    //                         }
 
-                            finded = !finded;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+    //                         finded = !finded;
+    //                         break;
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
 
-        //set Province
-        if(province.getSelectionModel().getSelectedItem() == null || true) 
-        {
-            for(Region r : regions) { 
-                for(Province p : r.getProvincesList()) {
-                    for(Commune c : p.getCommonsList()) 
-                    {
-                        if(c.getName().equals(com)) {
-                            province.getSelectionModel().select(province.getItems().indexOf(p.getName()));
-                            finded = !finded;
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-    }
+    //     //set Province
+    //     if(province.getSelectionModel().getSelectedItem() == null || true) 
+    //     {
+    //         for(Region r : regions) { 
+    //             for(Province p : r.getProvincesList()) {
+    //                 for(Commune c : p.getCommonsList()) 
+    //                 {
+    //                     if(c.getName().equals(com)) {
+    //                         province.getSelectionModel().select(province.getItems().indexOf(p.getName()));
+    //                         finded = !finded;
+    //                         return;
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
-    @FXML
-    public void selectProvince(ActionEvent event) {
-        ArrayList<Region> regions = this.loader.getLocations();
+    // @FXML
+    // public void selectProvince(ActionEvent event) {
+    //     ArrayList<Region> regions = this.loader.getLocations();
 
-        for(Region r : regions) { 
-            for(Province p : r.getProvincesList()) 
-            {
-                if(province.getSelectionModel().getSelectedItem().equals(p.getName()))
-                {
-                    String com = commune.getSelectionModel().getSelectedItem();
+    //     for(Region r : regions) { 
+    //         for(Province p : r.getProvincesList()) 
+    //         {
+    //             if(province.getSelectionModel().getSelectedItem().equals(p.getName()))
+    //             {
+    //                 String com = commune.getSelectionModel().getSelectedItem();
                     
-                    for(Commune c : p.getCommonsList()) 
-                    {
-                        if(c.getName().equals(com)) {
-                           return;
-                        }
-                    }
+    //                 for(Commune c : p.getCommonsList()) 
+    //                 {
+    //                     if(c.getName().equals(com)) {
+    //                        return;
+    //                     }
+    //                 }
 
-                    commune.getSelectionModel().clearSelection();
-                    cap.getSelectionModel().clearSelection();
+    //                 commune.getSelectionModel().clearSelection();
+    //                 cap.getSelectionModel().clearSelection();
                             
-                }
-            }
-        }
-    }
+    //             }
+    //         }
+    //     }
+    // }
 
     @Override
     public void injectData(Object... data) {

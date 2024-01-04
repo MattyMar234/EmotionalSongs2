@@ -258,7 +258,7 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
     
     @FXML
     public void next_page(ActionEvent event) {
-        if(currentPage < availablePage) {
+        if(currentPage < availablePage - 1) {
             currentPage++;
             new Thread(() -> {
                 Platform.runLater(() -> {makeResearch(currentPage, true);});}
