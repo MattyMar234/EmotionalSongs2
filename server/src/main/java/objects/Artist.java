@@ -6,6 +6,10 @@ import java.util.HashMap;
 
 import database.PredefinedSQLCode.Colonne;
 
+/**
+ * La classe `Artist` rappresenta un artista musicale con le relative informazioni.
+ */
+
 public class Artist implements Serializable 
 {
     private static final long serialVersionUID = 1L;
@@ -26,10 +30,28 @@ public class Artist implements Serializable
     }
 
 
+
+/**
+ * Restituisce l'ID dell'oggetto.
+ *
+ * Questo metodo restituisce l'ID dell'oggetto, che è stato precedentemente impostato.
+ *
+ * @return L'ID dell'oggetto.
+ */
     public String getID() {
         return id;
     }
 
+
+
+/**
+ * Aggiunge una lista di immagini all'oggetto.
+ *
+ * Questo metodo aggiunge una lista di immagini all'oggetto, utilizzando la dimensione
+ * dell'immagine come chiave nell'HashMap delle immagini.
+ *
+ * @param imgs La lista di immagini da aggiungere.
+ */
     public void addImages(ArrayList<MyImage> imgs) {
         for (MyImage myImage : imgs) {
             images.put(myImage.getSize(), myImage);
