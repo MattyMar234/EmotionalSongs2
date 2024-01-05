@@ -28,6 +28,12 @@ import objects.Residenze;
 import objects.Song;
 import server.Terminal;
 
+
+
+/**
+ * Questa classe gestisce le query al database e fornisce metodi
+ * per recuperare e manipolare dati come oggetti Java.
+ */
 public class QueriesManager 
 {
     private static DatabaseManager database = DatabaseManager.getInstance();
@@ -36,6 +42,15 @@ public class QueriesManager
 
 
 
+/**
+ * Genera un ID univoco basato sul timestamp corrente utilizzando l'algoritmo SHA-256.
+ *
+ * Questo metodo genera un ID univoco utilizzando il timestamp corrente, garantendo che ogni chiamata successiva
+ * avrà un timestamp diverso, evitando collisioni. L'ID è ottenuto applicando l'algoritmo di hashing SHA-256
+ * alla rappresentazione esadecimale del timestamp corrente convertito in stringa.
+ *
+ * @return Un ID univoco generato basato sul timestamp corrente.
+ */
     public synchronized static String generate_ID_from_Time() {
         while(System.currentTimeMillis() - QueriesManager.generate_ID_from_Time_last_call < 1000);
         generate_ID_from_Time_last_call = System.currentTimeMillis();
@@ -43,20 +58,35 @@ public class QueriesManager
         return DigestUtils.sha256Hex(Long.toHexString(new Date().getTime()).toUpperCase());
 	}
 
+
+
+/**
+ * Restituisce la data corrente nel formato specificato.
+ *
+ * Questo metodo ottiene la data corrente utilizzando l'istanza di Calendar e la converte in una stringa
+ * utilizzando l'oggetto SimpleDateFormat con il formato predefinito.
+ *
+ * @return Una stringa che rappresenta la data corrente nel formato specificato.
+ */
     private static String getCurrentDate() {
         Date today = Calendar.getInstance().getTime();
         return dateFormat.format(today);
     }
 
-    /**
-     * Mi restituisce un hashMap contenete tutte le infromazioni per costruire un oggeto.
-     * Nota: devono essere presenti tutti i campi della tabella.
-     * Nota: la query deve essere stata fatta solo su una tabella.
-     * @param resultSet
-     * @param tabella
-     * @return
-     * @throws SQLException
-     */
+
+
+/**
+ * Crea una HashMap di colonne e valori da un ResultSet per il costruttore di una classe.
+ *
+ * Questo metodo prende un ResultSet e una tabella specificata, e restituisce una HashMap che associa
+ * le colonne della tabella ai loro valori corrispondenti nel ResultSet. La HashMap viene utilizzata
+ * per il costruttore di una classe rappresentante la tabella.
+ *
+ * @param resultSet Il ResultSet contenente i dati della query.
+ * @param tabella   La tabella specificata per la quale ottenere la HashMap.
+ * @return Una HashMap che associa le colonne della tabella ai loro valori corrispondenti nel ResultSet.
+ * @throws SQLException Se si verifica un errore durante l'accesso al ResultSet.
+ */
     private static HashMap<Colonne, Object> getHashMap_for_ClassConstructor(ResultSet resultSet, Tabelle tabella) throws SQLException {
         Colonne[] coll = PredefinedSQLCode.tablesAttributes.get(tabella);
         HashMap<Colonne, Object> table = new HashMap<>();
@@ -68,6 +98,21 @@ public class QueriesManager
         return table;
     }
 
+
+
+/**
+ * Crea una mappa di costruttori per le classi associate alle tabelle specificate da un ResultSet.
+ *
+ * Questo metodo prende un ResultSet e un elenco di tabelle specificate, e restituisce una HashMap che associa
+ * ogni tabella ai suoi dati corrispondenti nel ResultSet. La struttura della HashMap esterna utilizza le tabelle come chiavi,
+ * e ognuna di queste ha una HashMap interna che associa le colonne della tabella ai loro valori corrispondenti nel ResultSet.
+ * Questa HashMap viene utilizzata per costruire oggetti delle classi associate alle tabelle.
+ *
+ * @param resultSet Il ResultSet contenente i dati della query.
+ * @param tabelle   Un elenco di tabelle specificate per le quali ottenere le HashMap.
+ * @return Una HashMap che associa le tabelle ai loro dati corrispondenti nel ResultSet.
+ * @throws SQLException Se si verifica un errore durante l'accesso al ResultSet.
+ */
     private static HashMap<Tabelle,HashMap<Colonne, Object>> getHashMaps_for_ClassConstructor(ResultSet resultSet, Tabelle... tabelle) throws SQLException 
     {
         HashMap<Tabelle,HashMap<Colonne, Object>> constructorsMap = new HashMap<>();
@@ -100,6 +145,19 @@ public class QueriesManager
     }
 
 
+
+/**
+ * Costruisce oggetti Song da un ResultSet e restituisce una lista di essi.
+ *
+ * Questo metodo prende un ResultSet contenente dati relativi alle canzoni, costruisce oggetti Song
+ * utilizzando la HashMap associata alla tabella SONG e restituisce una lista di questi oggetti.
+ * Opzionalmente, chiude il ResultSet automaticamente se autoClose è impostato su true.
+ *
+ * @param resultSet Il ResultSet contenente i dati delle canzoni.
+ * @param autoClose Indica se chiudere automaticamente il ResultSet dopo la costruzione degli oggetti Song.
+ * @return Una lista di oggetti Song costruiti dal ResultSet.
+ * @throws SQLException Se si verifica un errore durante l'accesso al ResultSet o la costruzione degli oggetti Song.
+ */
     private static ArrayList<Song> buildSongObjects_From_resultSet(ResultSet resultSet, boolean autoClose) throws SQLException 
     {
         ArrayList<Song> result = new ArrayList<Song>();
@@ -118,6 +176,17 @@ public class QueriesManager
     }
     
 
+
+/**
+ * Ottiene un Account associato a un'email specifica dalla base di dati.
+ *
+ * Questo metodo prende un'email come parametro, esegue una query per ottenere un ResultSet contenente
+ * i dati dell'Account e della Residenza associati a quell'email, quindi costruisce e restituisce un oggetto Account.
+ *
+ * @param Email L'email associata all'Account da recuperare.
+ * @return Un oggetto Account associato all'email specificata, o null se nessun Account è trovato.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query o la costruzione dell'oggetto Account.
+ */
     public static Account getAccountByEmail(String Email) throws SQLException {
         ResultSet resultSet = database.submitQuery(QueryBuilder.getAccountByEmail_query(Email));
 
@@ -138,6 +207,18 @@ public class QueriesManager
         }
     }
 
+
+
+/**
+ * Ottiene un Account associato a un nickname specifico dalla base di dati.
+ *
+ * Questo metodo prende un nickname come parametro, esegue una query per ottenere un ResultSet contenente
+ * i dati dell'Account e della Residenza associati a quel nickname, quindi costruisce e restituisce un oggetto Account.
+ *
+ * @param nickname Il nickname associato all'Account da recuperare.
+ * @return Un oggetto Account associato al nickname specificato, o null se nessun Account è trovato.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query o la costruzione dell'oggetto Account.
+ */
     public static Account getAccountByNickname(String nickname) throws SQLException {
         ResultSet resultSet = database.submitQuery(QueryBuilder.getAccountByNickname_query(nickname));
         
@@ -153,6 +234,18 @@ public class QueriesManager
         }
     }
 
+
+
+/**
+ * Ottiene le immagini di un album associato a un determinato ID dalla base di dati.
+ *
+ * Questo metodo prende un ID di album come parametro, esegue una query per ottenere un ResultSet contenente
+ * i dati delle immagini dell'album associato a quell'ID, quindi costruisce e restituisce una lista di oggetti MyImage.
+ *
+ * @param ID L'ID dell'album per il quale ottenere le immagini.
+ * @return Una lista di oggetti MyImage associate all'album specificato.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query o la costruzione degli oggetti MyImage.
+ */
     public static ArrayList<MyImage> getAlbumImages_by_ID(String ID) throws SQLException {
 
         ArrayList<MyImage> result = new ArrayList<MyImage>();
@@ -165,6 +258,18 @@ public class QueriesManager
         return result; 
     }
 
+
+
+/**
+ * Ottiene le immagini di un artista associato a un determinato ID dalla base di dati.
+ *
+ * Questo metodo prende un ID di artista come parametro, esegue una query per ottenere un ResultSet contenente
+ * i dati delle immagini dell'artista associato a quell'ID, quindi costruisce e restituisce una lista di oggetti MyImage.
+ *
+ * @param ID L'ID dell'artista per il quale ottenere le immagini.
+ * @return Una lista di oggetti MyImage associate all'artista specificato.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query o la costruzione degli oggetti MyImage.
+ */
     public static ArrayList<MyImage> getArtistImages_by_ID(String ID) throws SQLException {
 
         ArrayList<MyImage> result = new ArrayList<MyImage>();
@@ -179,7 +284,17 @@ public class QueriesManager
 
 
 
-
+/**
+ * Aggiunge un nuovo Account e una nuova Residenza alla base di dati.
+ *
+ * Questo metodo prende due HashMap, una contenente i dati dell'Account e l'altra contenente i dati della Residenza,
+ * esegue una query per ottenere l'ID della Residenza corrispondente, e se la Residenza non esiste, la aggiunge.
+ * Successivamente, aggiunge un nuovo Account utilizzando l'ID della Residenza ottenuto.
+ *
+ * @param colonne_account   Una HashMap contenente i dati dell'Account da aggiungere.
+ * @param colonne_residenza Una HashMap contenente i dati della Residenza associata all'Account da aggiungere.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione delle query o l'inserimento dei dati.
+ */
     public static void addAccount_and_addResidence(HashMap<Colonne, Object> colonne_account, HashMap<Colonne, Object> colonne_residenza) throws SQLException {
 
         String query = QueryBuilder.getResidenceId_Query((String)colonne_residenza.get(Colonne.VIA_PIAZZA), (int)colonne_residenza.get(Colonne.CIVIC_NUMER), (String)colonne_residenza.get(Colonne.COUNCIL_NAME), (String)colonne_residenza.get(Colonne.PROVINCE_NAME));
@@ -205,6 +320,18 @@ public class QueriesManager
 
 
 
+/**
+ * Ottiene un elenco di canzoni popolari in base al limite e all'offset specificati.
+ *
+ * Questo metodo esegue una query per ottenere un elenco di canzoni ordinate per popolarità in modo discendente.
+ * Limita il risultato in base al numero specificato e utilizza l'offset per saltare un numero specificato di risultati.
+ * Aggiunge le immagini degli album associate a ciascuna canzone.
+ *
+ * @param limit  Il numero massimo di canzoni da restituire.
+ * @param offset Il numero di canzoni da saltare prima di iniziare a restituire risultati.
+ * @return Una lista di oggetti Song rappresentanti le canzoni popolari.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query o la costruzione degli oggetti Song.
+ */
     public static ArrayList<Song> getTopPopularSongs(long limit, long offset) throws SQLException {
 
         /*
@@ -239,6 +366,19 @@ public class QueriesManager
 
 
 
+/**
+ * Ottiene un elenco di album pubblicati recentemente in base al limite, all'offset e alla soglia specificati.
+ *
+ * Questo metodo esegue una query per ottenere un elenco di album ordinati per data di pubblicazione in modo discendente.
+ * Limita il risultato in base al numero specificato e utilizza l'offset per saltare un numero specificato di risultati.
+ * Aggiunge le immagini associate a ciascun album e recupera le canzoni associate a ciascun album.
+ *
+ * @param limit     Il numero massimo di album da restituire.
+ * @param offset    Il numero di album da saltare prima di iniziare a restituire risultati.
+ * @param threshold La soglia di pubblicazione degli album.
+ * @return Una lista di oggetti Album rappresentanti gli album pubblicati recentemente.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query o la costruzione degli oggetti Album.
+ */
     public static ArrayList<Album> getRecentPublischedAlbum(long limit, long offset, int threshold) throws SQLException 
     {
         ArrayList<Album> result = new ArrayList<Album>();
@@ -277,14 +417,14 @@ public class QueriesManager
         return result;
     }
 
-    /**
-     * Cerca tutte le canzoni che contengono nel titolo la parola passata come parametro e restituisce anche il numero di elementi
-     * @param search_key la parola da cercare nel titolo delle canzoni
-     * @param limit numero di record massimi che si vuole avere come risultato
-     * @param offset numero di record da saltare
-     * @return una lista di Song che contengono nel titolo la parola passata come parametro
-     * @throws SQLException
-     */
+/**
+ * Cerca tutte le canzoni che contengono nel titolo la parola passata come parametro e restituisce anche il numero di elementi
+ * @param search_key la parola da cercare nel titolo delle canzoni
+ * @param limit numero di record massimi che si vuole avere come risultato
+ * @param offset numero di record da saltare
+ * @return una lista di Song che contengono nel titolo la parola passata come parametro
+ * @throws SQLException
+ */
     public static Object[] searchSong_and_countElement(String search_key, long limit, long offset, int mode) throws SQLException 
     {
         
@@ -312,16 +452,45 @@ public class QueriesManager
         return new Object[] {total_element, pageElement}; 
     }
 
+
+
+/**
+ * Ricerca le canzoni corrispondenti agli ID specificati.
+ *
+ * @param IDs Un array di ID delle canzoni da cercare.
+ * @return Una lista di oggetti Song corrispondenti agli ID specificati.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query o la costruzione degli oggetti Song.
+ */
     public static ArrayList<Song> searchSongByIDs(String[] IDs) throws SQLException {
         String query = QueryBuilder.getSongByID_query(IDs);
         return buildSongObjects_From_resultSet(database.submitQuery(query), true);
     }
 
+
+
+/**
+ * Ottiene un elenco di canzoni associate a un album specificato.
+ *
+ * @param albumID L'ID dell'album da cui ottenere le canzoni.
+ * @return Una lista di oggetti Song associate all'album specificato.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query o la costruzione degli oggetti Song.
+ */
     public static ArrayList<Song> getAlbumSongs(String albumID) throws SQLException {
         String query = QueryBuilder.getAlbumSongs_query(albumID);
         return buildSongObjects_From_resultSet(database.submitQuery(query), true);
     }
 
+
+
+/**
+ * Esegue una ricerca degli album in base ai criteri specificati.
+ *
+ * @param search La stringa di ricerca per gli album.
+ * @param limit  Il numero massimo di album da restituire.
+ * @param offset Il numero di album da saltare prima di iniziare a restituire risultati.
+ * @return Un array contenente il numero totale di elementi trovati e una lista di oggetti Album corrispondenti ai criteri specificati.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query o la costruzione degli oggetti Album.
+ */
     public static Object[] searchAlbum(String search, long limit, long offset) throws SQLException {
         ArrayList<Album> result = new ArrayList<Album>();
 
@@ -354,23 +523,29 @@ public class QueriesManager
     // OPERAZIONI SULLE PLAYLIST
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * Operazione per creare una muova playlist
-     * @param accountID
-     * @param playlistName
-     * @throws SQLException
-     */
+
+
+/**
+ * Aggiunge una nuova playlist per un account specificato.
+ *
+ * @param accountID    L'ID dell'account a cui aggiungere la playlist.
+ * @param playlistName Il nome della nuova playlist.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+ */
     public static void addPlaylist(String accountID, String playlistName) throws SQLException  {
         String query = QueryBuilder.addPlaylist_query(accountID, playlistName, getCurrentDate(), generate_ID_from_Time());
         database.submitInsertQuery(query);
     }
 
-    /**
-     * Operazione per ottenere tutte le canzoni di una playlist
-     * @param playlistID
-     * @return array di stringhe contenenti gli ID delle canzoni
-     * @throws SQLException
-     */
+
+
+/**
+ * Ottiene gli ID delle canzoni associate a una playlist specificata.
+ *
+ * @param playlistID L'ID della playlist da cui ottenere gli ID delle canzoni.
+ * @return Un array di stringhe contenente gli ID delle canzoni associate alla playlist.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+ */
     public static String[] getPlaylistSongsID(String playlistID) throws SQLException {
         String query = QueryBuilder.getPlaylistSongsID_query(playlistID);
         ResultSet resultSet = database.submitQuery(query);
@@ -384,13 +559,15 @@ public class QueriesManager
         return output;
     }
 
+
     
-    /**
-     * Operazione per ottenere tutte le playlist di un account
-     * @param accountID
-     * @return
-     * @throws SQLException
-     */
+/**
+ * Ottiene tutte le playlist associate a un account specificato.
+ *
+ * @param accountID L'ID dell'account da cui ottenere le playlist.
+ * @return Un'istanza di ArrayList contenente oggetti Playlist associati all'account specificato.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query o la costruzione degli oggetti Playlist.
+ */
     public static Object getAccountsPlaylists(String accountID) throws SQLException {
         String query = QueryBuilder.getAccountsPlaylists_query(accountID);
         ResultSet resultSet = database.submitQuery(query);
@@ -405,34 +582,64 @@ public class QueriesManager
         return list;
     }
 
+
+
+/**
+ * Aggiunge una canzone a una playlist specificata.
+ *
+ * @param accountID  L'ID dell'account associato alla playlist.
+ * @param playlistID L'ID della playlist a cui aggiungere la canzone.
+ * @param songID     L'ID della canzone da aggiungere alla playlist.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+ */
     public static void addSongToPlaylist(String accountID, String playlistID, String songID) throws SQLException {
         String query = QueryBuilder.addSongToPlaylist_query(playlistID, songID);
         database.submitInsertQuery(query);
     }
 
+
+
+/**
+ * Rimuove una canzone da una playlist specificata.
+ *
+ * @param accountID  L'ID dell'account associato alla playlist.
+ * @param playlistID L'ID della playlist da cui rimuovere la canzone.
+ * @param songID     L'ID della canzone da rimuovere dalla playlist.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+ */
     public static void removeSongFromPlaylist (String accountID, String playlistID, String songID) throws SQLException {
         String query = QueryBuilder.removeSongFromPlaylist_query(playlistID, songID);
         database.submitQuery(query);
     }
 
+
+
+/**
+ * Rinomina una playlist specificata.
+ *
+ * @param accountID  L'ID dell'account associato alla playlist.
+ * @param playlistID L'ID della playlist da rinominare.
+ * @param newName    Il nuovo nome per la playlist.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+ */
     public static void renamePlaylist(String accountID, String playlistID, String newName) throws SQLException {
         String query = QueryBuilder.renamePlaylist_query(playlistID, newName);
         database.submitQuery(query);
     }
 
-    /**
-     * Funnzione per crecre un nuovo commento
-     * @throws SQLException
-     */
+/**
+ * Funnzione per crecre un nuovo commento
+ * @throws SQLException
+ */
     public static void addEmotion(HashMap<Colonne, Object> ColonneValore) throws SQLException {
         String query = QueryBuilder.insert_query_creator(PredefinedSQLCode.Tabelle.EMOZIONE, ColonneValore);
         database.submitQuery(query);
     }
         
-    /**
-     * Eliminare un commento
-     * @throws SQLException
-     */
+/**
+ * Eliminare un commento
+ * @throws SQLException
+ */
     public static void deleteEmotion(String emotionID) throws SQLException{
         
         String query = QueryBuilder.deleteQueryCreator_by_primaryKey(Tabelle.EMOZIONE, emotionID);
@@ -441,7 +648,13 @@ public class QueriesManager
 
     
    
-
+/**
+ * Ottiene le emozioni associate a una canzone specificata.
+ *
+ * @param songID L'ID della canzone da cui ottenere le emozioni.
+ * @return Un'istanza di ArrayList contenente oggetti Emotion associate alla canzone specificata.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query o la costruzione degli oggetti Emotion.
+ */
     public static Object getSongEmotion(String songID) throws SQLException 
     {
         String query = QueryBuilder.getSongEmotion_query(songID);
@@ -455,6 +668,15 @@ public class QueriesManager
         return list;
     }
 
+
+
+/**
+ * Ottiene le emozioni associate a un account specificato.
+ *
+ * @param accountID L'ID dell'account da cui ottenere le emozioni.
+ * @return Un'istanza di ArrayList contenente oggetti Emotion associate all'account specificato.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query o la costruzione degli oggetti Emotion.
+ */
     public static Object getAccountEmotions(String accountID) throws SQLException 
     {
         String query = QueryBuilder.getAccountEmotions(accountID);
@@ -470,16 +692,40 @@ public class QueriesManager
 
 
 
+/**
+ * Elimina una playlist specificata associata a un account.
+ *
+ * @param accountID  L'ID dell'account a cui è associata la playlist da eliminare.
+ * @param playlistID L'ID della playlist da eliminare.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+ */
     public static void deletePlaylist(String accountID, String playlistID) throws SQLException {
         String query = QueryBuilder.deletePlaylist_query(playlistID);
         database.submitQuery(query);
     }
 
+
+
+/**
+ * Elimina un account specificato.
+ *
+ * @param accountID L'ID dell'account da eliminare.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query.
+ */
     public static void deleteAccount(String accountID) throws SQLException {
         String query = QueryBuilder.deleteAccount_query(accountID);
         database.submitQuery(query);
     }
 
+
+
+/**
+ * Ottiene tutte le canzoni associate a un artista specificato.
+ *
+ * @param artistID L'ID dell'artista da cui ottenere le canzoni.
+ * @return Un'istanza di ArrayList contenente oggetti Song associate all'artista specificato.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query o la costruzione degli oggetti Song.
+ */
     public static ArrayList<Song> getArtistSong(String artistID) throws SQLException {
         String query = QueryBuilder.getArtistSong_query(artistID);
         ArrayList<Song> result = new ArrayList<Song>();
@@ -497,6 +743,14 @@ public class QueriesManager
     }
 
 
+
+/**
+ * Ottiene un oggetto artista con l'ID specificato.
+ *
+ * @param ID L'ID dell'artista da ottenere.
+ * @return Un'istanza di Artist o null se l'artista non è trovato.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query o la costruzione dell'oggetto Artist.
+ */
     public static Artist getArtistByID(String ID) throws SQLException {
 
         String query = QueryBuilder.getArtistByID_query(ID);
@@ -513,6 +767,16 @@ public class QueriesManager
     }
 
 
+
+/**
+ * Cerca gli artisti che corrispondono alla chiave specificata.
+ *
+ * @param key   La chiave di ricerca per gli artisti.
+ * @param limit Il limite di risultati restituiti.
+ * @param offset L'offset per la paginazione dei risultati.
+ * @return Un array contenente il totale degli elementi e un'istanza di ArrayList con oggetti Artist che corrispondono alla ricerca.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query o la costruzione degli oggetti Artist.
+ */
     public static Object[] searchArtists(String key, long limit, long offset) throws SQLException {
         String query = QueryBuilder.searchArtist_query(key, limit, offset);
         ArrayList<Artist> result = new ArrayList<Artist>();
@@ -540,12 +804,27 @@ public class QueriesManager
 
 
 
-
+/**
+ * Ottiene le canzoni associate a una playlist specificata.
+ *
+ * @param playlistID L'ID della playlist da cui ottenere le canzoni.
+ * @return Un'istanza di ArrayList contenente oggetti Song associate alla playlist specificata.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query o la costruzione degli oggetti Song.
+ */
     public static ArrayList<Song> getPlaylistSong(String playlistID) throws SQLException {
         String query = QueryBuilder.getPlaylistSong_query(playlistID);
         return buildSongObjects_From_resultSet(database.submitQuery(query), true);
     }
 
+
+
+/**
+ * Ottiene un oggetto Album con l'ID specificato.
+ *
+ * @param ID L'ID dell'album da ottenere.
+ * @return Un'istanza di Album o null se l'album non è trovato.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query o la costruzione dell'oggetto Album.
+ */
     public static Album getAlbumByID(String ID) throws SQLException {
         String query = QueryBuilder.getAlbumByID_query(ID);
         ResultSet resultSet = database.submitQuery(query);
