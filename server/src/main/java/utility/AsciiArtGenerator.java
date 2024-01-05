@@ -2,9 +2,14 @@ package utility;
 
 import java.util.HashMap;
 
+/**
+ * Il compito della classe AsciiArtGenerator è quello di generare un'immagine ASCII art a partire da una stringa.
+ */
 public class AsciiArtGenerator {
 
     //https://textkool.com/en/ascii-art-generator?hl=fitted&vl=fitted&font=Big&text=_
+    
+    
     public enum ASCII_STYLE {
         BIG_FITTED,
         BIG_SMUSHING;
@@ -223,6 +228,14 @@ public class AsciiArtGenerator {
     }
     
     
+
+/**
+ * Genera arte ASCII per il testo specificato utilizzando uno stile ASCII specifico.
+ *
+ * @param text  Il testo da rappresentare in arte ASCII.
+ * @param style Lo stile ASCII da utilizzare per la generazione dell'arte.
+ * @return Una stringa contenente l'arte ASCII generata per il testo specificato e lo stile specifico.
+ */
     public static String generate(String text, ASCII_STYLE style) {
 
         HashMap<String, byte[]> hastTable = table.get(style);
