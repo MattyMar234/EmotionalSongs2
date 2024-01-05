@@ -19,11 +19,12 @@ import server.Terminal;
 
 //import javax.imageio.spi.RegisterableService;
 
-
 /**
- * The class <code>PredefinedSQLCode</code> contains the static predefined SQL query.
- * @version 1.0
+ * La classe PredefinedSQLCode definisce costanti e metodi correlati al codice SQL predefinito per le operazioni sul database.
+ * Include informazioni sui nomi delle tabelle, colonne, query e chiavi esterne.
+ * Questa classe fornisce anche metodi per generare ed eseguire query SQL per l'inserimento di dati nel database.
  */
+
 public class PredefinedSQLCode 
 {
     public static final ArrayList<Hashtable<Tabelle, String>> elenco_QuerySQL; 
@@ -87,12 +88,42 @@ public class PredefinedSQLCode
             this.size = size;
         }
         
+
+
+    /**
+     * Restituisce il nome dell'oggetto.
+     *
+     * Questo metodo restituisce il nome dell'oggetto, che è stato precedentemente impostato.
+     *
+     * @return Il nome dell'oggetto.
+     */
         public String getName(){
             return this.name;
         }
+
+
+
+    /**
+     * Restituisce il tipo dell'oggetto.
+     *
+     * Questo metodo restituisce il tipo dell'oggetto, che è stato precedentemente impostato.
+     *
+     * @return Il tipo dell'oggetto.
+     */
         public String getType(){
             return this.type;
         }
+    
+
+
+    /**
+     * Restituisce una stringa che rappresenta il tipo e la dimensione dell'oggetto.
+     *
+     * Questo metodo restituisce una stringa che rappresenta sia il tipo che la dimensione dell'oggetto,
+     * concatenandoli insieme.
+     *
+     * @return Una stringa che rappresenta il tipo e la dimensione dell'oggetto.
+     */
         public String getType_and_Size(){
             return this.type + this.size;
         }
@@ -136,6 +167,14 @@ public class PredefinedSQLCode
         }
     }
 
+
+
+/**
+ * Enumerazione che rappresenta diverse operazioni SQL.
+ *
+ * Questa enumerazione fornisce costanti per diverse operazioni SQL come CREATE, DELETE, INSERT, CLEAR_DB e TABLE_KEY.
+ * Ogni costante ha un valore di stringa associato che rappresenta l'operazione corrispondente.
+ */
     public static enum Operazioni_SQL
     {
         CREATE("CREATE TABLE IF NOT EXISTS"),
@@ -259,6 +298,14 @@ public class PredefinedSQLCode
     }
 
 
+
+/**
+ * Disponi gli elementi dell'array in base ai valori della mappa e alla tabella specificata.
+ *
+ * Questo metodo prende un array di oggetti, una mappa di valori e una tabella specificata.
+ * Organizza gli elementi dell'array in base ai valori della mappa corrispondenti alle colonne della tabella.
+ *
+ */
     public static Object[] disponiElementiColonne(Object[] array, HashMap<String, Object> valori, Tabelle t) {
         
         Object[] output = new Object[array.length];
@@ -274,6 +321,14 @@ public class PredefinedSQLCode
         return output;
     }
 
+
+
+/**
+ * Crea e esegue una query di inserimento nella tabella specificata utilizzando i dati forniti.
+ *
+ * Questo metodo prende una mappa di dati, una tabella specificata, un oggetto App principale e un parametro opzionale abilitato.
+ * Utilizza i dati forniti per generare una query di inserimento e la esegue sulla base di dati associata all'oggetto principale App.
+ */
     public static void crea_INSER_query_ed_esegui(HashMap<String, Object> data, Tabelle t, App main, boolean... enable) 
     {
         String query = "";

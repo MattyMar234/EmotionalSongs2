@@ -24,11 +24,25 @@ public class QueryBuilder
     private static Terminal terminal = Terminal.getInstance();
     private static boolean queryDebug = false;
 
+
+
+/**
+ * Imposta la modalità di debug per le query dinamiche.
+ *
+ * @param mode true per attivare la modalità di debug, false per disattivarla.
+ */
     public static void setQueryDebug(boolean mode) {
         QueryBuilder.queryDebug = mode;
         Terminal.getInstance().printInfoln(mode ? "DynamicQueryDebug: true" : "DynamicQueryDebug: false");
     }
 
+
+
+/**
+ * Stampa una query sulla console in modalità di debug asincrona.
+ *
+ * @param sb StringBuilder contenente la query da stampare.
+ */
     private static void printQuery(final StringBuilder sb) {
         
         if(!QueryBuilder.queryDebug)
@@ -39,6 +53,13 @@ public class QueryBuilder
         }).start();
     }
 
+
+
+/**
+ * Stampa una query sulla console in modalità di debug asincrona.
+ *
+ * @param s String contenente la query da stampare.
+ */
     private static void printQuery(final String s) {
         
         if(!QueryBuilder.queryDebug)
@@ -49,11 +70,13 @@ public class QueryBuilder
         }).start();
     }
 
-    /**
-     * Questa funzione restituisce una stringa che rappresenta la query SQL per la realizzazione della tabella specificata.
-     * @param tableName nome della tabella da creare
-     * @return stringa che rappresenta la query SQL
-     */
+
+
+/**
+ * Questa funzione restituisce una stringa che rappresenta la query SQL per la realizzazione della tabella specificata.
+ * @param tableName nome della tabella da creare
+ * @return stringa che rappresenta la query SQL
+ */
     protected static String createTable_query_creator(Tabelle tableName) 
     {
         StringBuilder sb = new StringBuilder();
@@ -122,11 +145,11 @@ public class QueryBuilder
     }
 
 
-   /**
-     * Questa funzione genera la query per inserire un elemento in una tabella
-     * @param tableName Nome della tabella
-     * @return La stringa che rappresenta la query
-     */
+/**
+ * Questa funzione genera la query per inserire un elemento in una tabella
+ * @param tableName Nome della tabella
+ * @return La stringa che rappresenta la query
+ */
     public static String insert_query_creator(final Tabelle tableName, HashMap<Colonne, Object> informazioni)
     {
         Colonne[] colonne = PredefinedSQLCode.tablesAttributes.get(tableName);
@@ -143,6 +166,20 @@ public class QueryBuilder
         return s;
     }
 
+
+
+/**
+ * Converte e aggiunge un valore al tipo specificato in un oggetto StringBuilder.
+ *
+ * Questo metodo gestisce la conversione di un valore di un determinato tipo di colonna SQL
+ * e lo aggiunge a uno StringBuilder nel formato corretto per la costruzione di una query SQL.
+ *
+ * @param sb    StringBuilder a cui aggiungere il valore convertito.
+ * @param type  Tipo di colonna SQL a cui il valore deve essere convertito.
+ * @param obj   Oggetto contenente il valore da convertire e aggiungere.
+ *
+ * @throws IllegalArgumentException Se il tipo di colonna SQL non è supportato.
+ */
     private static void convert_and_addType(StringBuilder sb, Colonne type, Object obj)
     {
         switch (type.getType()) 
@@ -211,6 +248,21 @@ public class QueryBuilder
         }
     }
 
+
+
+/**
+ * Crea e restituisce una stringa di query di inserimento SQL per una tabella specifica
+ * con i dati forniti.
+ *
+ * Questo metodo genera dinamicamente una query di inserimento SQL in base ai dati forniti
+ * e restituisce la stringa risultante.
+ *
+ * @param tableName Nome della tabella SQL in cui eseguire l'inserimento.
+ * @param dati      Dati da inserire nella tabella, nell'ordine delle colonne.
+ * @return          Stringa della query di inserimento SQL generata.
+ *
+ * @throws IllegalArgumentException Se il numero di parametri è diverso dal numero di colonne nella tabella.
+ */
     protected static String insert_query_creator(final Tabelle tableName, final Object... dati) 
     {
         Colonne[] colonne = PredefinedSQLCode.tablesAttributes.get(tableName);
@@ -259,6 +311,19 @@ public class QueryBuilder
         return sb.toString();
     }
 
+
+
+/**
+ * Crea e restituisce una stringa di query di esportazione SQL per una tabella specifica
+ * in formato CSV con intestazioni, utilizzando il comando COPY.
+ *
+ * Questo metodo genera dinamicamente una query di esportazione SQL in formato CSV
+ * per la tabella specificata e restituisce la stringa risultante.
+ *
+ * @param table Nome della tabella SQL da esportare.
+ * @param path  Percorso del file CSV in cui esportare i dati.
+ * @return      Stringa della query di esportazione SQL generata.
+ */
     public static String exportQuery(String table, String path) {
         
         StringBuilder sb = new StringBuilder();
@@ -272,6 +337,20 @@ public class QueryBuilder
         return sb.toString();
     }
 
+
+
+/**
+ * Crea e restituisce una stringa di query di importazione SQL per una tabella specifica
+ * da un file CSV con intestazioni, utilizzando il comando COPY.
+ *
+ * Questo metodo genera dinamicamente una query di importazione SQL da un file CSV
+ * per la tabella specificata e restituisce la stringa risultante.
+ *
+ * @param table          Nome della tabella SQL in cui importare i dati.
+ * @param path           Percorso del file CSV da cui importare i dati.
+ * @param headerFileCSV  Intestazioni del file CSV da corrispondere con le colonne della tabella.
+ * @return               Stringa della query di importazione SQL generata.
+ */
     public static String importQuery(String table, String path, String headerFileCSV) {
         
         StringBuilder sb = new StringBuilder();
@@ -288,6 +367,18 @@ public class QueryBuilder
     }
 
 
+
+/**
+ * Crea e restituisce una stringa di query di eliminazione SQL per una tabella specifica
+ * utilizzando le chiavi primarie.
+ *
+ * Questo metodo genera dinamicamente una query di eliminazione SQL per la tabella specificata
+ * utilizzando le chiavi primarie fornite come argomenti e restituisce la stringa risultante.
+ *
+ * @param tabella Nome della tabella SQL da cui eliminare i dati.
+ * @param keys    Valori delle chiavi primarie per identificare il record da eliminare.
+ * @return        Stringa della query di eliminazione SQL generata.
+ */
     public static String deleteQueryCreator_by_primaryKey(Tabelle tabella, Object...keys)
     {
         StringBuilder sb = new StringBuilder();
@@ -310,6 +401,22 @@ public class QueryBuilder
         return sb.toString();
     }
 
+
+
+/**
+ * Crea e restituisce una stringa di query di eliminazione SQL per una tabella specifica
+ * utilizzando colonne personalizzate come chiavi di confronto.
+ *
+ * Questo metodo genera dinamicamente una query di eliminazione SQL per la tabella specificata
+ * utilizzando le colonne e i valori forniti come argomenti per identificare il record da eliminare
+ * e restituisce la stringa risultante.
+ *
+ * @param tabella Nome della tabella SQL da cui eliminare i dati.
+ * @param coll    Colonne da utilizzare come chiavi di confronto per l'eliminazione.
+ * @param key     Valori corrispondenti alle colonne per identificare il record da eliminare.
+ * @return        Stringa della query di eliminazione SQL generata.
+ * @throws RuntimeException Se una o più colonne specificate non sono presenti nella tabella.
+ */
     public static String deleteQueryCreator_custom_key(Tabelle tabella, Colonne[] coll, Object[] key)
     {
         boolean allFound = true;
@@ -354,7 +461,16 @@ public class QueryBuilder
 
     
 
-
+/**
+ * Crea e restituisce una stringa di query SQL per aggiungere una colonna a una tabella specifica.
+ *
+ * Questo metodo genera dinamicamente una query SQL per aggiungere una nuova colonna
+ * alla tabella specificata e restituisce la stringa risultante.
+ *
+ * @param tabella Nome della tabella SQL a cui aggiungere la colonna.
+ * @param colonna Colonna da aggiungere alla tabella.
+ * @return        Stringa della query SQL generata per aggiungere la colonna.
+ */
     public static String addColumn(Tabelle tabella, Colonne colonna) 
     {
         StringBuilder sb = new StringBuilder();
@@ -386,6 +502,17 @@ public class QueryBuilder
     }
 
 
+
+/**
+ * Crea e restituisce una stringa di query SQL per rimuovere una colonna da una tabella specifica.
+ *
+ * Questo metodo genera dinamicamente una query SQL per rimuovere una colonna
+ * dalla tabella specificata e restituisce la stringa risultante.
+ *
+ * @param tabella Nome della tabella SQL da cui rimuovere la colonna.
+ * @param colonna Colonna da rimuovere dalla tabella.
+ * @return        Stringa della query SQL generata per rimuovere la colonna.
+ */
     public static String dropColumn(Tabelle tabella, Colonne colonna) {
         
         //alter table account DROP COLUMN element
@@ -402,6 +529,19 @@ public class QueryBuilder
 
 
     //================================================ LISTE DI ELEMENTI =================================================//
+
+/**
+ * Crea e restituisce una stringa di query SQL per ottenere l'ID di una residenza in base agli attributi specificati.
+ *
+ * Questo metodo genera dinamicamente una query SQL per selezionare l'ID di una residenza
+ * in base alla via, al numero civico, al comune e alla provincia specificati.
+ *
+ * @param via       Nome della via o piazza della residenza.
+ * @param numero    Numero civico della residenza.
+ * @param comune    Nome del comune della residenza.
+ * @param provincia Nome della provincia della residenza.
+ * @return          Stringa della query SQL generata per ottenere l'ID della residenza.
+ */
     public static String getResidenceId_Query(String via, int numero, String comune, String provincia) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT ");
@@ -422,7 +562,16 @@ public class QueryBuilder
     }
 
     
-    
+
+/**
+ * Crea e restituisce una stringa di query SQL per ottenere un account in base all'indirizzo email specificato.
+ *
+ * Questo metodo genera dinamicamente una query SQL per selezionare tutti i campi da
+ * una tabella di account e la relativa residenza in base all'indirizzo email fornito.
+ *
+ * @param Email Indirizzo email dell'account da cercare.
+ * @return      Stringa della query SQL generata per ottenere l'account in base all'indirizzo email.
+ */
     public static String getAccountByEmail_query(String Email) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM ");
@@ -438,6 +587,17 @@ public class QueryBuilder
 
     }
 
+
+
+/**
+ * Crea e restituisce una stringa di query SQL per ottenere un account in base al nickname specificato.
+ *
+ * Questo metodo genera dinamicamente una query SQL per selezionare tutti i campi da
+ * una tabella di account e la relativa residenza in base al nickname fornito.
+ *
+ * @param nickname Nickname dell'account da cercare.
+ * @return         Stringa della query SQL generata per ottenere l'account in base al nickname.
+ */
     public static String getAccountByNickname_query(String nickname) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM ");
@@ -452,12 +612,18 @@ public class QueryBuilder
         return sb.toString();
     }
 
-    /**
-     * Genera la query per ricavare i generi musicali dell'artista
-     * @param id l'id dell'artista
-     * @param artistInformation se True aggiunge ai risultati i datim dell'artista
-     * @return
-     */
+   
+
+/**
+ * Crea e restituisce una stringa di query SQL per ottenere i generi musicali di un artista.
+ *
+ * Questo metodo genera dinamicamente una query SQL per selezionare i generi musicali
+ * di un artista dalla tabella dei generi dell'artista in base all'ID specificato.
+ *
+ * @param id                  ID dell'artista per il quale si desiderano ottenere i generi.
+ * @param artistInformation  Se true, seleziona tutti i campi dell'artista, altrimenti seleziona solo il genere musicale.
+ * @return                    Stringa della query SQL generata per ottenere i generi musicali di un artista.
+ */
     public static String getArtistGeners_query(final String id, final boolean artistInformation) {
         return "SELECT "+ (artistInformation ? '*' : PredefinedSQLCode.Colonne.GENERE_MUSICALE) + " FROM " + PredefinedSQLCode.Tabelle.GENERI_ARTISTA + " NATURAL JOIN "
         + "WHERE " + PredefinedSQLCode.Tabelle.GENERI_ARTISTA + "."+PredefinedSQLCode.Colonne.ID + " = " + id;
@@ -466,6 +632,15 @@ public class QueryBuilder
     
     
 
+/**
+ * Crea e restituisce una stringa di query SQL per ottenere le canzoni di un determinato album.
+ *
+ * Questo metodo genera dinamicamente una query SQL per selezionare tutte le colonne della tabella delle canzoni
+ * in base all'ID dell'album specificato.
+ *
+ * @param albumID ID dell'album per il quale si desiderano ottenere le canzoni.
+ * @return        Stringa della query SQL generata per ottenere le canzoni di un determinato album.
+ */
     public static String getSongs_by_AlbumID_query(String albumID) {
 
         StringBuilder sb = new StringBuilder();
@@ -476,6 +651,16 @@ public class QueryBuilder
     }
 
 
+
+/**
+ * Crea e restituisce una stringa di query SQL per ottenere le immagini di un album dato il suo ID.
+ *
+ * Questo metodo genera dinamicamente una query SQL per selezionare tutte le colonne della tabella delle immagini dell'album
+ * in base all'ID specificato.
+ *
+ * @param ID ID dell'album per il quale si desiderano ottenere le immagini.
+ * @return   Stringa della query SQL generata per ottenere le immagini di un album.
+ */
     public static String getAlbumImages_by_ID(String ID) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM " + PredefinedSQLCode.Tabelle.ALBUM_IMAGES.toString());
@@ -485,6 +670,17 @@ public class QueryBuilder
         return sb.toString();
     }
 
+
+
+/**
+ * Crea e restituisce una stringa di query SQL per ottenere le immagini di un artista dato il suo ID.
+ *
+ * Questo metodo genera dinamicamente una query SQL per selezionare tutte le colonne della tabella delle immagini dell'artista
+ * in base all'ID specificato.
+ *
+ * @param ID ID dell'artista per il quale si desiderano ottenere le immagini.
+ * @return   Stringa della query SQL generata per ottenere le immagini di un artista.
+ */
     public static String getArtistImages_by_ID(String ID) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM " + PredefinedSQLCode.Tabelle.ARTIST_IMAGES.toString());
@@ -495,11 +691,16 @@ public class QueryBuilder
     }
 
 
-    /**
-     * Genera la query che ritorna le canzoni con gli ID specificati
-     * @param IDs
-     * @return
-     */
+   
+/**
+ * Crea e restituisce una stringa di query SQL per ottenere le informazioni delle canzoni dato un array di ID.
+ *
+ * Questo metodo genera dinamicamente una query SQL per selezionare tutte le colonne della tabella delle canzoni
+ * in base agli ID specificati nell'array.
+ *
+ * @param IDs Array di ID delle canzoni per le quali si desiderano ottenere le informazioni.
+ * @return    Stringa della query SQL generata per ottenere le informazioni delle canzoni dato un array di ID.
+ */
     public static String getSongByID_query(String[] IDs) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM " + PredefinedSQLCode.Tabelle.SONG.toString());
@@ -513,11 +714,17 @@ public class QueryBuilder
         return sb.toString();
     }
 
-    /**
-     * Genera la query per ottenere tutte le canzoni di un album
-     * @param ID l'ID dell'album
-     * @return
-     */
+
+
+/**
+ * Crea e restituisce una stringa di query SQL per ottenere le informazioni delle canzoni di un determinato album.
+ *
+ * Questo metodo genera dinamicamente una query SQL per selezionare tutte le colonne della tabella delle canzoni
+ * in base all'ID dell'album specificato.
+ *
+ * @param ID ID dell'album per il quale si desiderano ottenere le informazioni delle canzoni.
+ * @return   Stringa della query SQL generata per ottenere le informazioni delle canzoni di un determinato album.
+ */
     public static String getAlbumSongs_query(String ID) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM " + PredefinedSQLCode.Tabelle.SONG.toString());
@@ -532,6 +739,17 @@ public class QueryBuilder
 
 
     //================================================ OPERAZIONI PARTICOLARI =================================================//
+/**
+ * Crea e restituisce una stringa di query SQL per ottenere gli album recentemente pubblicati.
+ *
+ * Questo metodo genera dinamicamente una query SQL per selezionare tutte le colonne della tabella degli album
+ * in base a un criterio di pubblicazione recente, con un limite e un offset specificati.
+ *
+ * @param limit     Limite di risultati da restituire.
+ * @param offset    Offset per la query per paginazione.
+ * @param threshold Soglia minima per la pubblicazione dell'album.
+ * @return          Stringa della query SQL generata per ottenere gli album recentemente pubblicati.
+ */
     public static String getRecentPublischedAlbum_query(long limit, long offset, int threshold) {
 
         StringBuilder sb = new StringBuilder();
@@ -550,6 +768,18 @@ public class QueryBuilder
 
 
     //================================================ OPERAZIONI DI RICERCA =================================================//
+/**
+ * Crea e restituisce una stringa di query SQL per cercare canzoni in base a un criterio specifico.
+ *
+ * Questo metodo genera dinamicamente una query SQL per cercare canzoni in base al tipo di ricerca specificato
+ * (0 per il titolo, 1 per la data di rilascio) con un limite e un offset specificati.
+ *
+ * @param search La stringa da cercare nella ricerca delle canzoni.
+ * @param limit  Limite di risultati da restituire.
+ * @param offset Offset per la query per paginazione.
+ * @param mode   Modalità di ricerca (0 per il titolo, 1 per la data di rilascio).
+ * @return       Stringa della query SQL generata per cercare le canzoni.
+ */
     public static String getSongSearch_query(String search, long limit, long offset, int mode) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT c.* ");
@@ -583,6 +813,18 @@ public class QueryBuilder
         return sb.toString();
     }
 
+
+
+/**
+ * Crea e restituisce una stringa di query SQL per ottenere il conteggio delle canzoni in base a un criterio specifico.
+ *
+ * Questo metodo genera dinamicamente una query SQL per ottenere il conteggio delle canzoni in base al tipo di ricerca specificato
+ * (0 per il titolo, 1 per la data di rilascio).
+ *
+ * @param search La stringa da cercare nella ricerca delle canzoni.
+ * @param mode   Modalità di ricerca (0 per il titolo, 1 per la data di rilascio).
+ * @return       Stringa della query SQL generata per ottenere il conteggio delle canzoni.
+ */
     public static String getSongSearch_Count_query(String search, int mode) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT count(c.*) ");
@@ -612,6 +854,18 @@ public class QueryBuilder
         return sb.toString();
     }
 
+
+
+/**
+ * Crea e restituisce una stringa di query SQL per cercare album in base a un criterio di ricerca.
+ *
+ * Questo metodo genera dinamicamente una query SQL per cercare album in base al nome dell'album con un limite e un offset specificati.
+ *
+ * @param search La stringa da cercare nella ricerca degli album.
+ * @param limit  Limite di risultati da restituire.
+ * @param offset Offset per la query per paginazione.
+ * @return       Stringa della query SQL generata per cercare gli album.
+ */
     public static String getAlbumSearch_query(String search, long limit, long offset) 
     {
         StringBuilder sb = new StringBuilder();
@@ -625,6 +879,16 @@ public class QueryBuilder
         return sb.toString();
     }
 
+
+
+/**
+ * Crea e restituisce una stringa di query SQL per ottenere il conteggio degli album in base a un criterio di ricerca.
+ *
+ * Questo metodo genera dinamicamente una query SQL per ottenere il conteggio degli album in base al nome dell'album.
+ *
+ * @param search La stringa da cercare nella ricerca degli album.
+ * @return       Stringa della query SQL generata per ottenere il conteggio degli album.
+ */
     public static String getAlbumSearch_Count_query(String search) 
     {
         StringBuilder sb = new StringBuilder();
@@ -638,6 +902,15 @@ public class QueryBuilder
     }
 
 
+
+/**
+ * Crea e restituisce una stringa di query SQL per ottenere un artista in base all'ID specificato.
+ *
+ * Questo metodo genera dinamicamente una query SQL per ottenere un artista in base all'ID dell'artista.
+ *
+ * @param id L'ID dell'artista da cercare.
+ * @return   Stringa della query SQL generata per ottenere un artista.
+ */
     public static String getArtistByID_query(String id) {
        StringBuilder sb = new StringBuilder();
         sb.append("SELECT * ");
@@ -649,6 +922,17 @@ public class QueryBuilder
     }
 
 
+
+/**
+ * Crea e restituisce una stringa di query SQL per cercare artisti in base a un criterio di ricerca.
+ *
+ * Questo metodo genera dinamicamente una query SQL per cercare artisti in base al nome dell'artista con un limite e un offset specificati.
+ *
+ * @param search La stringa da cercare nella ricerca degli artisti.
+ * @param limit  Limite di risultati da restituire.
+ * @param offset Offset per la query per paginazione.
+ * @return       Stringa della query SQL generata per cercare gli artisti.
+ */
     public static String searchArtist_query(String search, long limit, long offset) {
        StringBuilder sb = new StringBuilder();
         sb.append("SELECT * ");
@@ -662,6 +946,15 @@ public class QueryBuilder
     }
 
 
+
+/**
+ * Crea e restituisce una stringa di query SQL per ottenere il conteggio degli artisti in base a un criterio di ricerca.
+ *
+ * Questo metodo genera dinamicamente una query SQL per ottenere il conteggio degli artisti in base al nome dell'artista.
+ *
+ * @param search La stringa da cercare nella ricerca degli artisti.
+ * @return       Stringa della query SQL generata per ottenere il conteggio degli artisti.
+ */
     public static String searchArtist_Count_query(String search) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT count(*)");
@@ -677,15 +970,17 @@ public class QueryBuilder
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // OPERAZIONI SULLE PLAYLIST
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Query per creare una nuova playlist
-     * @param accountID
-     * @param playlistName
-     * @param date
-     * @param ID
-     * @return
-     */
+/**
+ * Crea e restituisce una stringa di query SQL per aggiungere una playlist nel database.
+ *
+ * Questo metodo genera dinamicamente una query SQL per inserire una nuova playlist nel database.
+ *
+ * @param accountID    L'ID dell'account associato alla playlist.
+ * @param playlistName Il nome della playlist da aggiungere.
+ * @param date         La data di creazione della playlist.
+ * @param ID           L'ID univoco della playlist.
+ * @return             Stringa della query SQL generata per aggiungere una playlist.
+ */
     public static String addPlaylist_query(String accountID,String playlistName, String date, String ID)
     {
         StringBuilder sb = new StringBuilder();
@@ -704,11 +999,16 @@ public class QueryBuilder
         return sb.toString();
     }
 
-    /**
-     * Query per ottenere tutte le canzoni di una playlist
-     * @param playlistID
-     * @return
-     */
+    
+
+/**
+ * Crea e restituisce una stringa di query SQL per ottenere gli ID delle canzoni in una determinata playlist.
+ *
+ * Questo metodo genera dinamicamente una query SQL per ottenere gli ID delle canzoni presenti in una specifica playlist.
+ *
+ * @param playlistID L'ID della playlist per cui ottenere gli ID delle canzoni.
+ * @return           Stringa della query SQL generata per ottenere gli ID delle canzoni di una playlist.
+ */
     public static String getPlaylistSongsID_query(String playlistID) 
     {
         StringBuilder sb = new StringBuilder();
@@ -722,11 +1022,16 @@ public class QueryBuilder
         return sb.toString();
     }
 
-    /**
-     * Query per ottenere tutte le playlist di un account
-     * @param accountID
-     * @return
-     */
+
+
+/**
+ * Crea e restituisce una stringa di query SQL per ottenere le playlist di un account specifico.
+ *
+ * Questo metodo genera dinamicamente una query SQL per ottenere tutte le playlist associate a un account.
+ *
+ * @param accountID L'ID dell'account per cui ottenere le playlist.
+ * @return           Stringa della query SQL generata per ottenere le playlist di un account.
+ */
     public static String getAccountsPlaylists_query(String accountID) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM " + Tabelle.PLAYLIST + " WHERE " + Colonne.ACCOUNT_ID_REF.getName() + " = '" + accountID + "';");
@@ -735,6 +1040,17 @@ public class QueryBuilder
         return sb.toString();
     }
 
+
+
+/**
+ * Crea e restituisce una stringa di query SQL per aggiungere una canzone a una playlist.
+ *
+ * Questo metodo genera dinamicamente una query SQL per inserire una relazione tra una playlist e una canzone nel database.
+ *
+ * @param playlistID L'ID della playlist a cui aggiungere la canzone.
+ * @param songID     L'ID della canzone da aggiungere alla playlist.
+ * @return           Stringa della query SQL generata per aggiungere una canzone a una playlist.
+ */
     public static String addSongToPlaylist_query(String playlistID, String songID) {
         StringBuilder sb = new StringBuilder();
         sb.append("INSERT INTO " + Tabelle.PLAYLIST_SONGS + " (");
@@ -747,6 +1063,17 @@ public class QueryBuilder
         return sb.toString();
     }
 
+
+
+/**
+ * Crea e restituisce una stringa di query SQL per rimuovere una canzone da una playlist.
+ *
+ * Questo metodo genera dinamicamente una query SQL per rimuovere una relazione tra una playlist e una canzone nel database.
+ *
+ * @param playlistID L'ID della playlist da cui rimuovere la canzone.
+ * @param songID     L'ID della canzone da rimuovere dalla playlist.
+ * @return           Stringa della query SQL generata per rimuovere una canzone da una playlist.
+ */
     public static String removeSongFromPlaylist_query(String playlistID, String songID) {
         StringBuilder sb = new StringBuilder();
         sb.append("DELETE FROM " + Tabelle.PLAYLIST_SONGS + " WHERE ");
@@ -757,6 +1084,17 @@ public class QueryBuilder
         return sb.toString();
     }
 
+
+
+/**
+ * Crea e restituisce una stringa di query SQL per rinominare una playlist.
+ *
+ * Questo metodo genera dinamicamente una query SQL per aggiornare il nome di una playlist nel database.
+ *
+ * @param playlistID L'ID della playlist da rinominare.
+ * @param newName    Il nuovo nome da assegnare alla playlist.
+ * @return           Stringa della query SQL generata per rinominare una playlist.
+ */
     public static String renamePlaylist_query(String playlistID, String newName) {
         StringBuilder sb = new StringBuilder();
         sb.append("UPDATE " + Tabelle.PLAYLIST + " SET ");
@@ -769,6 +1107,14 @@ public class QueryBuilder
 
 
    
+/**
+ * Crea e restituisce una stringa di query SQL per ottenere le emozioni associate a una canzone.
+ *
+ * Questo metodo genera dinamicamente una query SQL per recuperare le emozioni associate a una specifica canzone.
+ *
+ * @param songID L'ID della canzone per cui ottenere le emozioni.
+ * @return        Stringa della query SQL generata per ottenere le emozioni di una canzone.
+ */
     public static String getSongEmotion_query(String songID) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM " + Tabelle.EMOZIONE + " WHERE ");
@@ -778,6 +1124,16 @@ public class QueryBuilder
         return sb.toString();
     }
 
+
+
+/**
+ * Crea e restituisce una stringa di query SQL per eliminare una playlist dal database.
+ *
+ * Questo metodo genera dinamicamente una query SQL per eliminare una playlist dal database.
+ *
+ * @param playlistID L'ID della playlist da eliminare.
+ * @return           Stringa della query SQL generata per eliminare una playlist.
+ */
     public static String deletePlaylist_query(String playlistID) {
         StringBuilder sb = new StringBuilder();
         sb.append("DELETE FROM " + Tabelle.PLAYLIST + " WHERE ");
@@ -787,6 +1143,16 @@ public class QueryBuilder
         return sb.toString();
     }
 
+
+
+/**
+ * Crea e restituisce una stringa di query SQL per eliminare un account dal database.
+ *
+ * Questo metodo genera dinamicamente una query SQL per eliminare un account dal database.
+ *
+ * @param accountID L'ID dell'account da eliminare.
+ * @return           Stringa della query SQL generata per eliminare un account.
+ */
     public static String deleteAccount_query(String accountID) {
         StringBuilder sb = new StringBuilder();
         sb.append("DELETE FROM " + Tabelle.ACCOUNT + " WHERE ");
@@ -796,6 +1162,16 @@ public class QueryBuilder
         return sb.toString();
     }
 
+
+
+/**
+ * Crea e restituisce una stringa di query SQL per ottenere le canzoni di un determinato artista.
+ *
+ * Questo metodo genera dinamicamente una query SQL per ottenere tutte le canzoni di un artista specifico.
+ *
+ * @param artistID L'ID dell'artista per cui ottenere le canzoni.
+ * @return         Stringa della query SQL generata per ottenere le canzoni di un artista.
+ */
     public static String getArtistSong_query(String artistID) {
         StringBuilder sb = new StringBuilder();
         //sb.append("SELECT * FROM " + Tabelle.SONG + " WHERE ");
@@ -811,6 +1187,16 @@ public class QueryBuilder
         return sb.toString();
     }
 
+
+
+/**
+ * Crea e restituisce una stringa di query SQL per ottenere le canzoni di una playlist.
+ *
+ * Questo metodo genera dinamicamente una query SQL per ottenere tutte le canzoni associate a una specifica playlist.
+ *
+ * @param playlistID L'ID della playlist per cui ottenere le canzoni.
+ * @return           Stringa della query SQL generata per ottenere le canzoni di una playlist.
+ */
     public static String getPlaylistSong_query(String playlistID) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM " + Tabelle.SONG + " WHERE ");
@@ -821,6 +1207,16 @@ public class QueryBuilder
         return sb.toString();
     }
 
+
+
+/**
+ * Crea e restituisce una stringa di query SQL per ottenere le informazioni di un album tramite l'ID.
+ *
+ * Questo metodo genera dinamicamente una query SQL per ottenere le informazioni di un album specifico usando l'ID.
+ *
+ * @param ID L'ID dell'album per cui ottenere le informazioni.
+ * @return   Stringa della query SQL generata per ottenere le informazioni di un album.
+ */
     public static String getAlbumByID_query(String ID) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM " + Tabelle.ALBUM + " WHERE ");
@@ -830,6 +1226,16 @@ public class QueryBuilder
         return sb.toString();
     }
 
+
+
+/**
+ * Crea e restituisce una stringa di query SQL per ottenere gli album di un determinato artista.
+ *
+ * Questo metodo genera dinamicamente una query SQL per ottenere tutti gli album di un artista specifico.
+ *
+ * @param artistID L'ID dell'artista per cui ottenere gli album.
+ * @return         Stringa della query SQL generata per ottenere gli album di un artista.
+ */
     public static String getArtistAlbum_query(String artistID) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM " + Tabelle.ALBUM + " WHERE ");
@@ -839,6 +1245,16 @@ public class QueryBuilder
         return sb.toString();
     }
 
+
+
+/**
+ * Crea e restituisce una stringa di query SQL per ottenere le emozioni associate a un account.
+ *
+ * Questo metodo genera dinamicamente una query SQL per ottenere le emozioni associate a un account specifico.
+ *
+ * @param accountID L'ID dell'account per cui ottenere le emozioni.
+ * @return          Stringa della query SQL generata per ottenere le emozioni di un account.
+ */
     public static String getAccountEmotions(String accountID)
     {
         StringBuilder sb = new StringBuilder();
@@ -850,6 +1266,15 @@ public class QueryBuilder
     }
 
     /*=======================================[Utility]=======================================*/
+/**
+ * Crea e restituisce una stringa di query SQL per modificare la dimensione di una colonna in una tabella.
+ *
+ * Questo metodo genera dinamicamente una query SQL per modificare la dimensione di una colonna specifica in una tabella specifica.
+ *
+ * @param table La tabella in cui si desidera modificare la colonna.
+ * @param colum La colonna che si desidera modificare.
+ * @return      Stringa della query SQL generata per modificare la dimensione di una colonna.
+ */
     public static String editColumSize(PredefinedSQLCode.Tabelle table, PredefinedSQLCode.Colonne colum) 
     {
         StringBuilder sb = new StringBuilder();
