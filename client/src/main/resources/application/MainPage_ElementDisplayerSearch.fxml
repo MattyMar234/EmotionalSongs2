@@ -59,7 +59,7 @@
                                                             <Button fx:id="songDateButtonFilter" minWidth="-Infinity" mnemonicParsing="false" onAction="#songDateButton_click" prefWidth="120.0" styleClass="PrimaryButton" text="Playlist" />
                                                             <Button fx:id="albumNameButtonFilter" minWidth="-Infinity" mnemonicParsing="false" onAction="#albumNameButton_click" prefWidth="120.0" styleClass="PrimaryButton" text="Playlist" />
                                                             <Button fx:id="artistNameButtonFilter" minWidth="-Infinity" mnemonicParsing="false" onAction="#artistNameButton_click" prefWidth="120.0" styleClass="PrimaryButton" text="Playlist" />
-                                                            <Button fx:id="songNameButtonFilter1" minWidth="-Infinity" mnemonicParsing="false" onAction="#songNameButton_click" prefWidth="200.0" styleClass="PrimaryButton" text="Numero Emozioni" />
+                                                            <Button fx:id="emotionNumberFilter_button" minWidth="-Infinity" mnemonicParsing="false" onAction="#emotionNumberButton_click" prefWidth="200.0" styleClass="PrimaryButton" text="Numero Emozioni" />
                                                          </children>
                                                       </HBox>
                                                    </children>

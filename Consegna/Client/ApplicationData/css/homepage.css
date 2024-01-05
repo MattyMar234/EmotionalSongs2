@@ -1,0 +1,90 @@
+* {
+    -primary: #121212;
+    -secondary: #1a1919;
+    -tertiary: #8259e3;
+}
+
+#main{
+-fx-background-color:-primary;
+}
+
+#lsidebar{
+-fx-background-color:-secondary;
+-fx-padding: 10 0 10 0;
+}
+#logocontainer{
+-fx-padding: 10 10 10 10;
+}
+#lsidebar .button{
+    -fx-background-color: transparent;
+    -fx-text-fill: #ffffff;
+    -fx-alignment: BASELINE_LEFT;
+    -fx-cursor: hand;
+
+}
+#lsidebar .button:hover{
+    -fx-background-color: -tertiary;
+}
+#lsidebar .button:pressed {
+    -fx-background-color:  #a68ff7;
+}
+
+#lsidebar .ikonli-font-icon{
+    -fx-font-size: 32px;
+    -fx-fill: #ffffff;
+}
+
+.selected{
+    -fx-border-color: -tertiary;
+    -fx-border-width: 0 0 0 5;
+}
+#show{
+-fx-background-color:red;
+}
+
+#topcontainer{
+-fx-padding: 0 50 0 50;
+}
+#searchbox{
+-fx-background-color: -secondary;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: white;
+}
+#searchbtn{
+-fx-background-color: -tertiary;
+     -fx-cursor: hand;
+    -fx-background-radius: 0 10 10 0;
+
+}
+#searchbtn .ikonli-font-icon{
+    -fx-fill: #ffffff;
+}
+#searchbtn .ikonli-font-icon:hover {
+    -fx-fill: #a68ff7;
+
+}
+
+#accesscontrolbtn{
+    -fx-background-color: -tertiary;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-cursor:hand;
+}
+#accesscontrolbtn:hover{
+    -fx-background-color:#a68ff7 ;
+
+}
+#centervbox{
+    -fx-padding: 10 0 0 0;
+}
+
+
+#accesscontrolbtn:pressed{
+ -fx-background-color: #a68ff7;
+    -fx-focus-color: transparent;
+}
+#usernamelabel{
+-fx-alignment: center-left;
+   -fx-text-fill: #ffffff;
+}
+

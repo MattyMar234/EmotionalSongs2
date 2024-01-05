@@ -209,7 +209,7 @@ public class Terminal extends Thread
         START(          "start     ", " Avvia il Server"),
         CLOSE(          "exit      ", " Termina l'applicazione"),
         //BUILD_SERVER(   "init   ", " Inizilizza il database dell'applicazione"),
-        CLEAR_DB(       "clear     ", " Cancella tutte le informazioni del database"),
+        //CLEAR_DB(       "clear     ", " Cancella tutte le informazioni del database"),
         PRINT_SQL(      "sql       ", "  Mostra i codici SQL statici creati"),
         //SAVE(           "save", " Salva i settaggi della connessione con il DB"),
         LOAD(           "load      ", " Carica i settaggi per connessione con il DB"),
@@ -352,22 +352,22 @@ public class Terminal extends Thread
                 // else if(command.equalsIgnoreCase(Command.BUILD_SERVER.getCommandValue())) {
                 //     initializeDatabase();
                 // }
-                else if(command.equalsIgnoreCase(Command.CLEAR_DB.getCommandValue())) {
+                // else if(command.equalsIgnoreCase(Command.CLEAR_DB.getCommandValue())) {
 
-                    if(main.isDatabaseConnected()) {
-                        String ask = "Are you sure you want to delete data from \"" + Color.CYAN_BOLD_BRIGHT + main.database.getDB_NAME() + Color.RESET + "\" database ?";
+                //     if(main.isDatabaseConnected()) {
+                //         String ask = "Are you sure you want to delete data from \"" + Color.CYAN_BOLD_BRIGHT + main.database.getDB_NAME() + Color.RESET + "\" database ?";
                         
-                        if(askYesNo(ask))
-                            clearDatabase();
-                        else                        
-                            printInfoln("operation cancelled");
+                //         if(askYesNo(ask))
+                //             clearDatabase();
+                //         else                        
+                //             printInfoln("operation cancelled");
                         
-                    }
-                    else {
-                        printErrorln("The database is not connected");
-                        //main.setDatabaseConnection();
-                    }        
-                }
+                //     }
+                //     else {
+                //         printErrorln("The database is not connected");
+                //         //main.setDatabaseConnection();
+                //     }        
+                // }
                 else if(command.equalsIgnoreCase(Command.PRINT_SQL.getCommandValue())) {
                     printSQL();
                 }

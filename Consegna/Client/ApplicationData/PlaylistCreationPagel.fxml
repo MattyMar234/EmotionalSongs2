@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="500.0" styleClass="Theme-color-1" stylesheets="@css/ApplicationTheme.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.PlaylistCreationController">
+   <children>
+      <Label id="Label-Style3" fx:id="labellTitle" layoutX="107.0" layoutY="49.0" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="32.0" prefWidth="235.0" styleClass="Label-Style3" text="Creazione Playlist" AnchorPane.leftAnchor="32.0" AnchorPane.topAnchor="24.0" />
+      <TextField fx:id="playtlistName" layoutX="399.0" layoutY="119.0" maxHeight="-Infinity" maxWidth="262.0" minHeight="-Infinity" prefHeight="32.0" prefWidth="262.0" styleClass="text-field-style1" AnchorPane.leftAnchor="32.0" AnchorPane.rightAnchor="32.0" AnchorPane.topAnchor="90.0" />
+      <Button id="GreenButton" fx:id="saveButton" layoutX="309.0" layoutY="264.0" mnemonicParsing="false" onAction="#saveData" prefHeight="32.0" prefWidth="100.0" styleClass="border-10PX" text="Salva" AnchorPane.bottomAnchor="16.0" AnchorPane.rightAnchor="32.0" />
+   </children>
+</AnchorPane>

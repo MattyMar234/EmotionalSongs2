@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<!--          -->
+
+<BorderPane id="main" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainPage_SideBar_Controller">
+   <left>
+      <AnchorPane prefHeight="1000.0" prefWidth="198.0" BorderPane.alignment="CENTER">
+         <children>
+            <VBox id="lsidebar" fx:id="lsidebar" prefHeight="1000.0" prefWidth="250.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      
+                  <HBox id="logocontainer" prefHeight="95.0" prefWidth="311.0">
+                  <ImageView fx:id="logo" fitHeight="50.0" fitWidth="208.0" pickOnBounds="true" preserveRatio="true" />
+                  </HBox>
+      
+               <!--Home-->
+               <Button id="home" fx:id="homeButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#setHomePage" styleClass="selected" text="Home">
+                  <graphic>
+                     <FontIcon iconLiteral="mdi2h-home" />
+                  </graphic>
+               </Button>
+      
+               <!-- Playlist -->
+               <Button id="playlist" fx:id="playlistButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#SetPlayList" text="Playlist">
+               <graphic>
+                     <FontIcon iconLiteral="mdi2p-playlist-music" />
+                  </graphic>
+               </Button>
+      
+      
+               <!-- Region per dividere i bottoni -->
+               <Region prefHeight="535.0" prefWidth="426.0" VBox.vgrow="ALWAYS" />
+      
+               <Button id="settings" fx:id="userData_button" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#set_userDatat_page" text="Settings">
+               <graphic>
+                     <FontIcon iconLiteral="mdi2a-account-details" />
+                  </graphic>
+               </Button>
+               <Button id="about" fx:id="about_button" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#set_about" text="About">
+      
+               <graphic>
+                     <FontIcon iconLiteral="mdi2i-information" />
+                  </graphic>
+               </Button>
+               <Button id="about" fx:id="logout_button" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#logout" text="About">
+                  <graphic>
+                     <FontIcon iconLiteral="mdi2l-logout" />
+                  </graphic>
+               </Button>
+      
+            </VBox>
+         </children>
+      </AnchorPane>
+   </left>
+   <center>
+      <StackPane BorderPane.alignment="CENTER">
+         <children>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="70.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="200.0" minHeight="200.0" prefHeight="200.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <AnchorPane fx:id="linearGradien_background_upper" prefHeight="200.0" prefWidth="200.0" />
+                        <AnchorPane fx:id="linearGradien_background_lower" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" />
+                     </children>
+                  </GridPane>
+               </children>
+            </AnchorPane>
+            <BorderPane fx:id="anchor">
+               <top>
+                  <AnchorPane prefHeight="70.0" prefWidth="712.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <VBox id="elementContainer" alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="56.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                                 <children>
+                                    <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="56.0" prefWidth="32.0" />
+                                    <HBox alignment="CENTER_LEFT" prefHeight="56.0" prefWidth="25.0">
+                                       <children>
+                                          <Button fx:id="buttonBackward" minWidth="26.0" mnemonicParsing="false" onMouseClicked="#BackwardAction" prefHeight="24.0" prefWidth="26.0" style="-fx-background-color: trasparent;">
+                                             <graphic>
+                                                <FontIcon iconColor="#fffbfb" iconLiteral="mdi2l-less-than" iconSize="24" wrappingWidth="26.0" />
+                                             </graphic>
+                                          </Button>
+                                          <Button fx:id="buttonForward" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="36.0" mnemonicParsing="false" onMouseClicked="#ForwardAction" prefHeight="24.0" prefWidth="36.0" style="-fx-background-color: trasparent;">
+                                             <graphic>
+                                                <FontIcon iconColor="WHITE" iconLiteral="mdi2g-greater-than" iconSize="24" wrappingWidth="24.0" />
+                                             </graphic>
+                                          </Button>
+                                       </children>
+                                    </HBox>
+                                    <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="56.0" prefWidth="12.0" />
+                                    <VBox alignment="CENTER" prefHeight="70.0" prefWidth="330.0">
+                                       <children>
+                                          <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" prefHeight="35.0" prefWidth="300.0" styleClass="search-container">
+                                             <children>
+                                                <FontIcon iconColor="#8d8d8d" iconLiteral="mdi2m-magnify" iconSize="24" wrappingWidth="24.0">
+                                                   <HBox.margin>
+                                                      <Insets left="8.0" />
+                                                   </HBox.margin>
+                                                </FontIcon>
+                                                <VBox prefHeight="35.0" prefWidth="270.0">
+                                                   <children>
+                                                      <TextField fx:id="searchField" maxHeight="-Infinity" onKeyTyped="#search" prefHeight="30.0" prefWidth="228.0" promptText="Serach..." styleClass="search-text-field" />
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                        <AnchorPane prefHeight="60.0" prefWidth="265.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="-0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+                                       <children>
+                                          <Label fx:id="userName" alignment="CENTER_RIGHT" onMouseClicked="#tryLogin" prefHeight="26.0" prefWidth="150.0" styleClass="Label-Style1" text="Label" textAlignment="RIGHT">
+                                             <font>
+                                                <Font size="14.0" />
+                                             </font>
+                                             <HBox.margin>
+                                                <Insets right="10.0" />
+                                             </HBox.margin>
+                                             <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                             </cursor>
+                                          </Label>
+                                          <FontIcon fx:id="userImage" iconColor="#c3c3c3" iconLiteral="mdi2a-account-circle" iconSize="46" onMouseClicked="#viewUserInformation" selectionFill="#bcbcbc" wrappingWidth="48.0">
+                                             <HBox.margin>
+                                                <Insets right="10.0" />
+                                             </HBox.margin>
+                                             <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                             </cursor>
+                                          </FontIcon>
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </AnchorPane>
+               </top>
+            </BorderPane>
+         </children>
+      </StackPane>
+      
+   </center>
+   <stylesheets>
+      <URL value="@css/ApplicationTheme.css" />
+      <URL value="@css/homepage.css" />
+   </stylesheets>
+</BorderPane>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<AnchorPane id="chartDetailsContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" stylesheets="@css/ApplicationTheme.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.UserPageController">
+   <children>
+      <GridPane layoutX="34.0" layoutY="14.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <AnchorPane>
+               <children>
+                  <VBox layoutX="4.099999904632568" prefWidth="148.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="4.099999904632568" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <HBox alignment="CENTER">
+                           <children>
+                              <Label fx:id="infoUserLabel" styleClass="Label-Style2" text="Info Utente" textFill="WHITE" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" VBox.vgrow="ALWAYS">
+                           <children>
+                              <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="120.0">
+                                 <children>
+                                    <FontIcon iconColor="#8259e3" iconLiteral="mdi2a-account-circle" iconSize="120" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                 </children>
+                              </AnchorPane>
+                           </children>
+                        </HBox>
+                        <Label fx:id="nameLabel" prefHeight="20.0" styleClass="Label-Style1" text="Nome" textFill="WHITE">
+                           <padding>
+                              <Insets bottom="4.0" />
+                           </padding>
+                        </Label>
+                        <Label fx:id="surnameLabel" prefHeight="20.0" styleClass="Label-Style1" text="Cognome" textFill="WHITE">
+                           <padding>
+                              <Insets bottom="4.0" />
+                           </padding>
+                        </Label>
+                        <Label fx:id="accountIDLabel" prefHeight="20.0" styleClass="Label-Style1" text="Username" textFill="WHITE">
+                           <padding>
+                              <Insets bottom="4.0" />
+                           </padding>
+                        </Label>
+                        <Label fx:id="emailLabel" prefHeight="20.0" styleClass="Label-Style1" text="Email" textFill="WHITE">
+                           <padding>
+                              <Insets bottom="4.0" />
+                           </padding>
+                        </Label>
+                        <Label fx:id="codeLabel" prefHeight="20.0" styleClass="Label-Style1" text="Codice Fiscale" textFill="WHITE">
+                           <VBox.margin>
+                              <Insets bottom="4.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label fx:id="viaLabel" prefHeight="20.0" styleClass="Label-Style1" text="Via" textFill="WHITE">
+                           <VBox.margin>
+                              <Insets bottom="4.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label fx:id="provinceLabel" prefHeight="20.0" styleClass="Label-Style1" text="Provincia" textFill="WHITE" />
+                        <Label fx:id="communeLabel" prefHeight="20.0" styleClass="Label-Style1" text="Comune" textFill="WHITE" />
+                        <Label fx:id="capLabel" prefHeight="20.0" styleClass="Label-Style1" text="CAP" textFill="WHITE">
+                           <VBox.margin>
+                              <Insets bottom="4.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#deleteAccount" styleClass="secondary-button" text="Cancella Account" textAlignment="CENTER">
+                           <VBox.margin>
+                              <Insets top="20.0" />
+                           </VBox.margin>
+                        </Button>
+                     </children>
+                     <padding>
+                        <Insets top="20.0" />
+                     </padding>
+                  </VBox>
+               </children>
+            </AnchorPane>
+            <AnchorPane style="-fx-border-color: white; -fx-border-width: 0 0 0 1;" GridPane.columnIndex="1">
+               <children>
+                  <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <Label fx:id="contibuzioneLabel" styleClass="Label-Style2" text="Contribuzione al Progetto" textFill="WHITE">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </Label>
+                        <HBox alignment="BOTTOM_CENTER">
+                           <children>
+                              <VBox HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <AnchorPane>
+                                       <children>
+                                          <Label fx:id="contValoreLabel" alignment="CENTER" contentDisplay="CENTER" prefWidth="100.0" text="00" textAlignment="CENTER" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <font>
+                                                <Font size="72.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </AnchorPane>
+                                    <AnchorPane VBox.vgrow="ALWAYS">
+                                       <children>
+                                          <Label fx:id="commentLabel" alignment="CENTER" contentDisplay="CENTER" prefWidth="100.0" styleClass="Label-Style1" text="Commenti" textAlignment="CENTER" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                        <HBox alignment="BOTTOM_CENTER">
+                           <children>
+                              <VBox HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <AnchorPane>
+                                       <children>
+                                          <Label fx:id="playlistCountLabel" alignment="CENTER" contentDisplay="CENTER" prefWidth="100.0" text="00" textAlignment="CENTER" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <font>
+                                                <Font size="72.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </AnchorPane>
+                                    <AnchorPane>
+                                       <children>
+                                          <Label fx:id="playlistLabel" alignment="CENTER" prefWidth="100.0" styleClass="Label-Style1" text="Playlist Create" textAlignment="CENTER" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                     </children>
+                     <padding>
+                        <Insets top="20.0" />
+                     </padding>
+                  </VBox>
+               </children>
+            </AnchorPane>
+         </children>
+      </GridPane>
+   </children>
+</AnchorPane>

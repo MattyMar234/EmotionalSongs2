@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane id="BackGround" prefHeight="636.0" prefWidth="780.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainPage_Home_Controller">
+   <stylesheets>
+      <URL value="@css/ApplicationTheme.css" />
+      <URL value="@css/MainPage.css" />
+   </stylesheets>
+   <children>
+      <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="100.0" minHeight="100.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <AnchorPane fx:id="linearGradien_background_upper" prefHeight="200.0" prefWidth="200.0" />
+                        <AnchorPane fx:id="linearGradien_background_lower" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" />
+                     </children>
+                  </GridPane>
+               </children>
+            </AnchorPane>
+            <BorderPane id="elementContainer" prefHeight="200.0" prefWidth="200.0" styleClass="RowContainer-Background">
+               <center>
+                  <ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER_LEFT">
+                     <content>
+                        <VBox fx:id="scrollPaneVBox" fillWidth="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
+                     </content>
+                  </ScrollPane>
+               </center>
+            </BorderPane>
+         </children>
+      </StackPane>
+   </children>
+</AnchorPane>

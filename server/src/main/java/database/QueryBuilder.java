@@ -783,28 +783,38 @@ public class QueryBuilder
     public static String getSongSearch_query(String search, long limit, long offset, int mode) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT c.* ");
-        sb.append("FROM " + Tabelle.SONG + " c JOIN " + Tabelle.ALBUM + " a ON c."+ Colonne.ALBUM_ID_REF.getName() + " = a."+ Colonne.ID.getName());
         
-        switch (mode) 
-        {
-            //NAME
-            case 0:
-                sb.append(" WHERE c." + Colonne.TITLE.getName() + " LIKE '" + search + "%'");
-                break;
+        if(mode == 2) {
 
-            //DATE
-            case 1:
-                //sb.append(" WHERE CAST(a." + Colonne.RELEASE_DATE.getName() + " AS VARCHAR) LIKE '" + search + "%'");
-                sb.append(" WHERE a." + Colonne.RELEASE_DATE.getName() + " LIKE '" + search + "%'");
-                //sb.append(" ORDER BY a." + Colonne.RELEASE_DATE.getName() + " DESC");
-                break;
-        
-            //NAME
-            default:
-                sb.append(" WHERE c." + Colonne.TITLE.getName() + " LIKE '" + search + "%'");
-                break;
+            sb.append("FROM " + Tabelle.SONG + " c LEFT JOIN " + Tabelle.EMOZIONE + " e ON c."+ Colonne.ID.getName() + " = e."+ Colonne.SONG_ID_REF.getName());
+            sb.append(" WHERE e." + Colonne.ID.getName() + " IS NOT NULL");
+            sb.append(" GROUP BY c." + Colonne.ID.getName() + ", c." + Colonne.TITLE.getName());
+            sb.append(" ORDER BY COUNT(e."+ Colonne.ID.getName() + ") DESC");
         }
+        else 
+        {
+            sb.append("FROM " + Tabelle.SONG + " c JOIN " + Tabelle.ALBUM + " a ON c."+ Colonne.ALBUM_ID_REF.getName() + " = a."+ Colonne.ID.getName());
         
+            switch (mode) 
+            {
+                //NAME
+                case 0:
+                    sb.append(" WHERE c." + Colonne.TITLE.getName() + " LIKE '" + search + "%'");
+                    break;
+
+                //DATE
+                case 1:
+                    //sb.append(" WHERE CAST(a." + Colonne.RELEASE_DATE.getName() + " AS VARCHAR) LIKE '" + search + "%'");
+                    sb.append(" WHERE a." + Colonne.RELEASE_DATE.getName() + " LIKE '" + search + "%'");
+                    //sb.append(" ORDER BY a." + Colonne.RELEASE_DATE.getName() + " DESC");
+                    break;
+            
+                //NAME
+                default:
+                    sb.append(" WHERE c." + Colonne.TITLE.getName() + " LIKE '" + search + "%'");
+                    break;
+            }
+        }
         
         //sb.append(" ORDER BY c." + Colonne.TITLE.getName() + ", a." + Colonne.RELEASE_DATE.getName());   
         sb.append(" LIMIT " + limit + " OFFSET " + offset + ";");
@@ -827,6 +837,30 @@ public class QueryBuilder
  */
     public static String getSongSearch_Count_query(String search, int mode) {
         StringBuilder sb = new StringBuilder();
+        
+        if(mode == 2) {
+
+            sb.append("SELECT COUNT(*)");
+            sb.append("FROM (");
+            sb.append("    SELECT ");
+            sb.append("        " + Tabelle.SONG + "." + Colonne.ID.getName() + ", ");
+            sb.append("        " + Tabelle.SONG + "." + Colonne.TITLE.getName() + ", ");
+            sb.append("        COUNT(" + Tabelle.EMOZIONE + "." + Colonne.ID.getName() + ") AS num_comments ");
+            sb.append("    FROM ");
+            sb.append("        " + Tabelle.SONG + " ");
+            sb.append("    LEFT JOIN ");
+            sb.append("        " + Tabelle.EMOZIONE + " ON " + Tabelle.SONG + "." + Colonne.ID.getName() + " = " + Tabelle.EMOZIONE + "." + Colonne.SONG_ID_REF.getName() + " ");
+            sb.append("    WHERE ");
+            sb.append("        " + Tabelle.EMOZIONE + "." + Colonne.ID.getName() + " IS NOT NULL ");
+            sb.append("    GROUP BY ");
+            sb.append("        " + Tabelle.SONG + "." + Colonne.ID.getName() + ", " + Tabelle.SONG + "." + Colonne.TITLE.getName() + " ");
+            sb.append(") AS grouped_data;");
+
+            printQuery(sb);
+            return sb.toString();
+        }
+        
+        
         sb.append("SELECT count(c.*) ");
         sb.append("FROM " + Tabelle.SONG + " c JOIN " + Tabelle.ALBUM + " a ON c."+ Colonne.ALBUM_ID_REF.getName() + " = a."+ Colonne.ID.getName());
         

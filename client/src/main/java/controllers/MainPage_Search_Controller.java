@@ -33,7 +33,7 @@ import utility.UtilityOS;
 public class MainPage_Search_Controller extends ControllerBase implements Initializable, Injectable
 {
     private static final int MAX_ELEMENT_FOR_PAGE = 50;
-    private enum FilterType {SONG_NAME, SONG_DATE, ALBUM_NAME, ARTIST_NAME};
+    private enum FilterType {SONG_NAME, SONG_DATE, ALBUM_NAME, ARTIST_NAME, EMOTION_NUMBER};
 
     private static FilterType filterType = FilterType.SONG_NAME;
     private MainPage_SideBar_Controller toolsController;
@@ -49,6 +49,7 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
     @FXML public Button songDateButtonFilter;
     @FXML public Button albumNameButtonFilter;
     @FXML public Button artistNameButtonFilter;
+    @FXML public Button emotionNumberFilter_button;
     
     @FXML public FontIcon backPage_Button;
     @FXML public FontIcon nectPage_Button;
@@ -93,12 +94,6 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
             currentPage = 0;
         }
 
-        // if(data.length >= 4) {
-        //     filterType = (FilterType) data[3];
-        // }
-        // else {
-        //     filterType = FilterType.SONG_NAME;
-        // }
 
         
         pageIndex.setText((0) + (Main.applicationLanguage == 0 ? " di " : " of ") + (0));
@@ -106,6 +101,7 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
         songDateButtonFilter.setText((Main.applicationLanguage == 0 ? "Data Canzone" : "Song Date"));
         albumNameButtonFilter.setText((Main.applicationLanguage == 0 ? "Titolo Album" : "Album Title"));
         artistNameButtonFilter.setText((Main.applicationLanguage == 0 ? "Artista" : "Artist"));
+        emotionNumberFilter_button.setText((Main.applicationLanguage == 0 ? "Numero Emozioni" : "Number of Emotions"));
 
         changeButtonColor();
         makeResearch(currentPage, true);
@@ -117,6 +113,8 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
     {
         try {
             Object[] result = new Object[2];
+
+            System.out.println("filterType: " + filterType);
 
             switch (filterType) {
                 
@@ -131,6 +129,9 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
                 }
                 case ARTIST_NAME -> {
                     result = connectionManager.searchArtists(key, MAX_ELEMENT_FOR_PAGE, index*MAX_ELEMENT_FOR_PAGE);
+                }
+                case EMOTION_NUMBER -> {
+                    result = connectionManager.searchSongs(key, MAX_ELEMENT_FOR_PAGE, index*MAX_ELEMENT_FOR_PAGE, 2);
                 }
             }
 
@@ -188,6 +189,7 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
                     });
                     break;
 
+                case EMOTION_NUMBER:
                 case SONG_DATE:
                 case SONG_NAME:
                     Platform.runLater(() -> {
@@ -220,6 +222,7 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
                                     listCell.injectData(ListCell_DisplayMode.DISPLAY_ARTIST, object, true, final_rowIndex + currentPage*MAX_ELEMENT_FOR_PAGE);
                                 });
                                 break;
+                            case EMOTION_NUMBER:
                             case SONG_DATE:
                             case SONG_NAME:
                                 Platform.runLater(() -> {
@@ -322,6 +325,16 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
             ).start();
     }
 
+    @FXML
+    public void emotionNumberButton_click(ActionEvent event) {
+        currentPage = 0;
+        MainPage_Search_Controller.filterType = FilterType.EMOTION_NUMBER;
+        changeButtonColor();
+        new Thread(() -> {
+            Platform.runLater(() -> {makeResearch(currentPage, true);});}
+        ).start();
+    }
+
 
     private void changeButtonColor() 
     {
@@ -329,11 +342,13 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
         songDateButtonFilter.getStyleClass().clear();
         albumNameButtonFilter.getStyleClass().clear();
         artistNameButtonFilter.getStyleClass().clear();
+        emotionNumberFilter_button.getStyleClass().clear();
 
         songNameButtonFilter.getStyleClass().add("button");
         songDateButtonFilter.getStyleClass().add("button");
         albumNameButtonFilter.getStyleClass().add("button");
         artistNameButtonFilter.getStyleClass().add("button");
+        emotionNumberFilter_button.getStyleClass().add("button");
 
         
 
@@ -343,24 +358,36 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
                 songDateButtonFilter.getStyleClass().add("PrimaryButton");
                 albumNameButtonFilter.getStyleClass().add("PrimaryButtonSelected");
                 artistNameButtonFilter.getStyleClass().add("PrimaryButton");
+                emotionNumberFilter_button.getStyleClass().add("PrimaryButton");
                 break;
             case ARTIST_NAME:
                 songNameButtonFilter.getStyleClass().add("PrimaryButton");
                 songDateButtonFilter.getStyleClass().add("PrimaryButton");
                 albumNameButtonFilter.getStyleClass().add("PrimaryButton");
                 artistNameButtonFilter.getStyleClass().add("PrimaryButtonSelected");
+                emotionNumberFilter_button.getStyleClass().add("PrimaryButton");
                 break;
             case SONG_DATE:
                 songNameButtonFilter.getStyleClass().add("PrimaryButton");
                 songDateButtonFilter.getStyleClass().add("PrimaryButtonSelected");
                 albumNameButtonFilter.getStyleClass().add("PrimaryButton");
                 artistNameButtonFilter.getStyleClass().add("PrimaryButton");
+                emotionNumberFilter_button.getStyleClass().add("PrimaryButton");
                 break;
             case SONG_NAME:
                 songNameButtonFilter.getStyleClass().add("PrimaryButtonSelected");
                 songDateButtonFilter.getStyleClass().add("PrimaryButton");
                 albumNameButtonFilter.getStyleClass().add("PrimaryButton");
                 artistNameButtonFilter.getStyleClass().add("PrimaryButton");
+                emotionNumberFilter_button.getStyleClass().add("PrimaryButton");
+                break;
+
+            case EMOTION_NUMBER:
+                songNameButtonFilter.getStyleClass().add("PrimaryButton");
+                songDateButtonFilter.getStyleClass().add("PrimaryButton");
+                albumNameButtonFilter.getStyleClass().add("PrimaryButton");
+                artistNameButtonFilter.getStyleClass().add("PrimaryButton");
+                emotionNumberFilter_button.getStyleClass().add("PrimaryButtonSelected");
                 break;
             default:
                 break;

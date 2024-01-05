@@ -445,7 +445,7 @@ public class ListCell_Controller extends ControllerBase implements Initializable
 
             for (objects.MyImage.ImageSize size : objects.MyImage.ImageSize.values()) {
                 try {
-                    link = artist.getImage(ImageSize.S64x64).getUrl();
+                    link = artist.getImage(size).getUrl();
                     break;
                 } 
                 catch (Exception e) {
