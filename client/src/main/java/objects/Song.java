@@ -3,6 +3,9 @@ package objects;
 import java.io.Serializable;
 import java.util.HashMap;
 
+/**
+ * Questa classe viene utilizzata per modella le informazioni di una canzone
+ */
 public class Song implements Serializable 
 {
     private static final long serialVersionUID = 1L;
@@ -26,58 +29,69 @@ public class Song implements Serializable
         this.albumId = albumId;
     }
 
+    /**
+     * Questa funzione resituisce l'immagine della canzone in base alla dimensione richiesta.
+     * @param size
+     * @return
+     */
     public MyImage getImage(MyImage.ImageSize size) {
         return images.get(size.getImgSize());
     }
 
-    // Metodi getter e setter per gli attributi della canzone
+    /**
+     * Restituisce l'id della canzone.
+     * @return
+     */
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
+  
+    /**
+     * Restituisce il titolo della canzone.
+     * @return
+     */
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
+  
+    /**
+     * Restituisce l'URL di Spotify della canzone.
+     * @return
+     */
     public String getSpotifyUrl() {
         return spotifyUrl;
     }
 
-    public void setSpotifyUrl(String spotifyUrl) {
-        this.spotifyUrl = spotifyUrl;
-    }
-
+   
+    /**
+     * Restituisce la durata della canzone in millisecondi.
+     * @return
+     */
     public long getDurationMs() {
         return durationMs;
     }
 
-    public void setDurationMs(long durationMs) {
-        this.durationMs = durationMs;
-    }
-
+  
+    /**
+     * Restituisce la popolarità della canzone.
+     * @return
+     */
     public int getPopularity() {
         return popularity;
     }
 
-    public void setPopularity(int popularity) {
-        this.popularity = popularity;
-    }
-
+   
+    /**
+     * Restituisce l'ID dell'album della canzone.
+     * @return
+     */
     public String getAlbumId() {
         return albumId;
     }
 
-    public void setAlbumId(String albumId) {
-        this.albumId = albumId;
-    }
+   
 
     // Override del metodo toString per visualizzare le informazioni della canzone
     @Override

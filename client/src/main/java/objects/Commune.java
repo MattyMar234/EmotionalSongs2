@@ -1,5 +1,6 @@
 package objects;
 
+
 public class Commune {
 
     protected String name;

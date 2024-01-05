@@ -2,6 +2,9 @@ package objects;
 
 import java.io.Serializable;
 
+/**
+ * Questa classe rappresenta un pacchetto contenete tutte le informazioni del servizio da rchiedere al server
+ */
 public class Packet implements Serializable 
 {
     private static final long serialVersionUID = 1L;

@@ -14,6 +14,9 @@ import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+/**
+ * Questa classe gestisce la finestra principale dell'applicazione.
+ */
 public class EmotionalSongsWindow extends Application
 {
     private static EmotionalSongsWindow classReference = null;
@@ -78,7 +81,9 @@ public class EmotionalSongsWindow extends Application
         sceneManager.setScene(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, ApplicationScene.ACCESS_PAGE);
     }
 
-
+    /**
+     * Funzione che viene richiamata per chiudere l'applicazione
+     */
     public void closeWindow() {
         sceneManager.removeStage(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, getClass());
         root.close();
@@ -86,6 +91,10 @@ public class EmotionalSongsWindow extends Application
     }
 
 
+    /**
+     * Funzione per gestire l'evento di connessione persa.
+     * @param event
+     */
     public void handleConnectionLostEvent(ConnectionEvent event) {
         System.out.println("Connection lost");
         ObjectsCache.getInstance().clearAllCache();
@@ -96,6 +105,10 @@ public class EmotionalSongsWindow extends Application
         });
     }
 
+    /**
+     * Funzione per gestire l'evento di connessione riuscita.
+     * @param event
+     */
     public void handleConnectedEvent(ConnectionEvent event) {
         System.out.println("Host connected");
 
@@ -107,20 +120,21 @@ public class EmotionalSongsWindow extends Application
         new Thread(() -> {
             try {ConnectionManager.getConnectionManager().getRecentPublischedAlbum(10,0,30);} 
             catch (Exception e) {e.printStackTrace();}
-        }).start();
-       
-
-        
-            
-        
+        }).start();  
     }
 
+    /**
+     * Funzione per gestire l'evento di connessione non riuscita.
+     * @param event
+     */
     public void handleInvalidConnectionEvent(ConnectionEvent event) {
         System.out.println("invalid parameter");
         this.showInvalidConnectionAlert();
     }
 
-
+    /**
+     * Funzione per mostrare un messaggio di errore di connessione.
+     */
     public void showConnectionAlert() 
     {
         Platform.runLater(() -> {
@@ -149,6 +163,9 @@ public class EmotionalSongsWindow extends Application
         });
 	}
 
+    /**
+     * Funzione per mostrare un messaggio di errore di connessione.
+     */
     public void showInvalidConnectionAlert() 
     {
         Platform.runLater(() -> {

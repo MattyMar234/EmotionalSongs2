@@ -3,6 +3,10 @@ package application;
 import java.util.Stack;
 import objects.SceneAction;
 
+/**
+ * Questa classe gestisce le azioni (cambi di scene) che possono essere eseguite dall'applicazione.
+ * Quinid permette di andare aventi e indietro tra le scene
+ */
 public class ApplicationActions 
 {
     private static final int MAX_SIZE = 32;
@@ -14,6 +18,9 @@ public class ApplicationActions
     private SceneAction actualAction = null;
 
  
+    /**
+     * Costrutore
+     */
     public ApplicationActions() {
         forward_queue.clear();
         backward_queue.clear();
@@ -22,18 +29,28 @@ public class ApplicationActions
         //sceneManager = SceneManager.instance();
     }
 
-    
+    /**
+     * Funzione utilizzata a fini di debug, per vedere lo stato delle code
+     */
     private void dump(){
         System.out.println("forwad size: " + forward_queue.size());
         System.out.println("backwad size: " + backward_queue.size());
     }
 
+    /**
+     * Restituisce la scene precedentemente
+     * @return la scene precedente, null se non c'è nessuna precedente
+     */
     public SceneAction previeusScene() {
         if(backward_queue.isEmpty())
             return null;
         return backward_queue.peek();
     }
 
+    /**
+     * Restituisce la scene successiva
+     * @return la scene successiva, null se non c'è nessuna successiva
+     */
     public SceneAction nextScene() {
         if(forward_queue.isEmpty())
             return null;
@@ -41,7 +58,10 @@ public class ApplicationActions
     }
 
 
-
+    /**
+     * Aggiunge una alla coda
+     * @param action
+     */
     public void addAction(SceneAction action) 
     {
         if(actualAction == null) {
@@ -70,6 +90,9 @@ public class ApplicationActions
         
     }
 
+    /**
+     * Fa l'aggiornamento della scena
+     */
     public void refresh()
     {
         if(actualAction == null)
@@ -78,6 +101,9 @@ public class ApplicationActions
         SceneManager.instance().showScene(actualAction);
     }
 
+    /**
+     * Esegue l'operazione di "torna indietro"
+     */
     public void undo() 
     {
         if(actualAction == null || backward_queue.isEmpty())
@@ -93,6 +119,9 @@ public class ApplicationActions
         if(LOG)dump();
     }
 
+    /**
+     * Esegue l'operazione di "torna avanti"
+     */
     public void redo() {
 
         if(actualAction == null || forward_queue.isEmpty())
@@ -109,10 +138,16 @@ public class ApplicationActions
         
     }
 
+    /**
+     * @return true se è possibile fare l'operazione di "torna indietro"
+    */
     public boolean undoAvailable() { 
         return !backward_queue.isEmpty();
     }
 
+    /**
+     * @return true se è possibile fare l'operazione di "torna avanti"
+    */
     public boolean redoAvailable() {
         return !forward_queue.isEmpty();
     }   

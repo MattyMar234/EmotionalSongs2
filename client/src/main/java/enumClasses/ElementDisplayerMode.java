@@ -1,5 +1,8 @@
 package enumClasses;
 
+/**
+ * Questa classe enum rappresenta tutte le possibili modalità dell'oggetto grafico "MainPage_ElementDisplayer_Controller"
+ */
 public enum ElementDisplayerMode {
 
     SHOW_SONG,

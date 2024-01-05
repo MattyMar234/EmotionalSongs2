@@ -3,6 +3,9 @@ package applicationEvents;
 import javafx.event.Event;
 import javafx.event.EventType;
 
+/**
+ * Questa classe rappresenta tutti gli eventi che possono essere generati dalla connessione al server.
+ */
 public class ConnectionEvent extends Event {
     private static final long serialVersionUID = 1L;
 

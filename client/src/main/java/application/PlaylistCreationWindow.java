@@ -11,6 +11,9 @@ import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+/**
+ * Questa classe gestisce la finestra di creazione e modifica di una playlist
+ */
 public class PlaylistCreationWindow extends Application
 {
     private final SceneManager sceneManager = SceneManager.instance();
@@ -65,6 +68,9 @@ public class PlaylistCreationWindow extends Application
         sceneManager.setScene(SceneManager.ApplicationWinodws.PLAYLIST_CREATION_WINDOW, ApplicationScene.CREATE_PLAYLIST, PlaylistCreationWindow.args);
     }
 
+    /**
+     * Funzione che chiude la finestra
+     */
     public void closeWindow() {
         sceneManager.removeStage(SceneManager.ApplicationWinodws.PLAYLIST_CREATION_WINDOW, getClass());
         root.close();

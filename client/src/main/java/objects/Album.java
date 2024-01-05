@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
+/**
+ * La classe `Album` rappresenta un album musicale con le relative informazioni.
+ */
 public class Album implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -35,6 +37,14 @@ public class Album implements Serializable {
                 '}';
     }
 
+    /**
+ * Converte la lista degli ID delle canzoni in una stringa formattata.
+ *
+ * Questo metodo converte la lista degli ID delle canzoni in una stringa formattata
+ * del tipo "[ID1, ID2, ...]".
+ *
+ * @return Una stringa formattata contenente gli ID delle canzoni.
+ */
     private String songID_listToString() {
         StringBuilder stringBuilder = new StringBuilder("[");
         for (String songID : songID_list) {
@@ -55,30 +65,65 @@ public class Album implements Serializable {
         return images.get(size.getImgSize());
     }
 
+    /**
+ * Restituisce l'ID dell'oggetto.
+ *
+ * @return L'ID dell'oggetto.
+ */
     public String getID() {
         return ID;
     }
 
+    /**
+ * Restituisce il nome dell'oggetto.
+ *
+ * @return Il nome dell'oggetto.
+ */
     public String getName() {
         return name;
     }
 
+    /**
+ * Restituisce la data di rilascio dell'oggetto.
+ *
+ * @return La data di rilascio dell'oggetto.
+ */
     public String getReleaseDate() {
         return releaseDate;
     }
 
+    /**
+     * Restituisce l'URL di Spotify associato all'oggetto.
+     *
+     * @return L'URL di Spotify associato all'oggetto.
+     */
     public String getSpotifyURL() {
         return spotifyURL;
     }
 
+    /**
+ * Restituisce il tipo dell'oggetto.
+ *
+ * @return Il tipo dell'oggetto.
+ */
     public String getType() {
         return type;
     }
 
+    /**
+     * Restituisce l'elemento associato all'oggetto.
+     *
+     * @return L'elemento associato all'oggetto.
+     */
     public int getElement() {
         return element;
     }
 
+    /**
+     * Restituisce l'ID dell'artista associato all'oggetto.
+     *
+     * @return L'ID dell'artista associato all'oggetto.
+     */
     public String getArtistID() {
         return artistID;
     }

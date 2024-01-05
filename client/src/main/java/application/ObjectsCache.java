@@ -9,10 +9,16 @@ import enumClasses.ServerServicesName;
 import javafx.scene.image.Image;
 import objects.*;
 
+/**
+ * Questa classe rappresenta una specie di contenitore di Cache software
+ */
 public class ObjectsCache 
 {
     private static final boolean DEBUG = false;
     
+    /**
+     * Classe enum che serve per indicare le varie tipologie di cache
+     */
     public enum CacheObjectType 
     {
         //cache per le immagini scaricate
@@ -44,15 +50,26 @@ public class ObjectsCache
             this.classType = classtype;
         }
 
+        /**
+         * Restituisce la grandezza della cache.
+         * @return
+         */
         protected int getSize() {
             return this.cacheSize;
         }
 
+        /**
+         * Restituisce il tipo di dato ammesso.
+         * @return
+         */
         protected Class<?> getClassType() {
             return this.classType;
         }
     }
     
+    /**
+     * Classe che rappresenta una cache software.
+     */
     private class Cache 
     {
         private int maxElement;
@@ -64,6 +81,10 @@ public class ObjectsCache
             this.maxElement = maxElement;
         }
 
+        /**
+         * Funzione per cancellare la cache.
+         * @return
+         */
         public boolean clearCache() {
             table.clear();
             removableKey_queue.clear();

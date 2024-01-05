@@ -8,6 +8,9 @@ import application.Main;
 import application.FileManager.FileType;
 import javafx.scene.image.Image;
 
+/**
+ * Questa classe rappresenta i tipi di emozioni
+ */
 public enum EmotionType {
     
     AMAZEMENT(1,    "#800080"), 
@@ -79,10 +82,18 @@ public enum EmotionType {
         // }
     }
 
+    /**
+     * Restituisce il valore del colore in formato HEX
+     * @return
+     */
     public String getColorHexValue() {
         return color;
     }
 
+    /**
+     * Restituisce l'immagine dell'emozione
+     * @return
+     */
     public Image getEmotionImage() {
         return new Image(this.image.getUrl());
     }

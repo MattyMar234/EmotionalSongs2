@@ -2,6 +2,9 @@ package objects;
 
 import application.SceneManager.ApplicationScene;
 
+/**
+ * Questa classe contiene tutte le informazioni sulla scene appena caricata
+ */
 public class SceneAction 
 {
     public ApplicationScene scena_name;

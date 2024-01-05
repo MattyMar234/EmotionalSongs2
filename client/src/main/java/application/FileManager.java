@@ -11,6 +11,9 @@ import java.util.Set;
 
 import utility.UtilityOS;
 
+/**
+ * Questa classe gestisce tutti i file necessari al funzionamento dell'applicazione.
+ */
 public class FileManager 
 {
     // public static final String FXML_folder_path = UtilityOS.formatPath(Main.ApplicationDirectory + (Main.jarExecution ? "\\application" : "\\src\\main\\resources\\application")); //main\\resources\\pages-fxml
@@ -44,6 +47,9 @@ public class FileManager
     
     private static FileManager instance = null;
 
+    /**
+     * Questa classe enum rappresenta le varie categorie di file che possiede l'appicazione
+     */
     public enum FileType {
         ICON,
         FLAG,
@@ -54,6 +60,9 @@ public class FileManager
         CSS;
     }
 
+    /**
+     * Costruttore della classe
+     */
     private FileManager() {
 
         if(Main.jarExecution)
@@ -74,6 +83,10 @@ public class FileManager
         }
     }
 
+    /**
+     * Funzione per il patternSingleton
+     * @return
+     */
     public static FileManager getInstance() {
         if (instance == null) {
             instance = new FileManager();
@@ -81,13 +94,24 @@ public class FileManager
         return instance;
     }
 
+    /**
+     * Funzione di classe utilizzata per formattare il percorso dei file
+     * @param path
+     * @return
+     */
     private String formatResoursePath(String path) {
         return path.replace("\\", "/");
     }
 
 
     
-
+    /**
+     * QUesta fuznione permette il caricamnto dei file
+     * @param fileName il nome del file da caricare
+     * @param type la categoria del file da caricare
+     * @return il file caricato altrimenti "null"
+     * @throws IOException
+     */
     public File loadFile(String fileName, FileType type) throws IOException 
     {
        

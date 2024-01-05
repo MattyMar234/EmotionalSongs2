@@ -4,7 +4,7 @@
   <groupId>Application</groupId>
   <artifactId>client</artifactId>
   <name>ClientApplication</name>
-  <version>Application-1.0</version>
+  <version>Application</version>
   <build>
     <plugins>
       <plugin>

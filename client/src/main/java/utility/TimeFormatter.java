@@ -1,6 +1,15 @@
 package utility;
 
+/**
+ * Questa classe di utility viene utilizzata per formattare un tempo.
+ */
 public class TimeFormatter {
+
+    /**
+     * Questo metodo viene utilizzato per formattare un un tempo.
+     * @param nanoSeconds
+     * @return
+     */
     public static String formatTime(double nanoSeconds) {
         if (nanoSeconds < 1e3) {
             return nanoSeconds + " ns";
@@ -23,6 +32,12 @@ public class TimeFormatter {
         }
     }
 
+    /**
+     * Questa classe permette di convertire un tempo in un altro unità.
+     * @param nanoSeconds
+     * @param unit
+     * @return
+     */
     public static String convertToMultiple(double nanoSeconds, String unit) {
         switch (unit.toLowerCase()) {
             case "ns":

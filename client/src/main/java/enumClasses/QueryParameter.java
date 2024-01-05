@@ -1,6 +1,8 @@
 package enumClasses;
 
-
+/**
+ * Questa classe enum rappresenta tutti i parametri ammessi per realizzare i "pacchetti" da inviare al server
+ */
 public enum QueryParameter 
 {    
     NAME("Nome"),

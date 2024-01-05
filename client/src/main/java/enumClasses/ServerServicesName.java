@@ -1,5 +1,8 @@
 package enumClasses;
 
+/**
+ * Questa classe enum rappresenta il servizio richiesto al server
+ */
 public enum ServerServicesName 
 {
     //account

@@ -11,7 +11,6 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import application.Main;
 import application.SceneManager;
-import application.SceneManager.FXML_elements;
 import enumClasses.ElementDisplayerMode;
 import enumClasses.ListCell_DisplayMode;
 import interfaces.Injectable;
@@ -35,7 +34,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import objects.Album;
 import objects.Artist;
-import objects.Comment;
 import objects.Playlist;
 import objects.Song;
 import objects.MyImage.ImageSize;

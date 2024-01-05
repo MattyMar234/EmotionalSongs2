@@ -30,7 +30,11 @@ import utility.TimeFormatter;
 import utility.UtilityOS;
 
 
-public class ConnectionManager implements ServerServices{
+/**
+ * Questa classe gestisce la comunicazione con il server
+ */
+public class ConnectionManager implements ServerServices
+{
 
     //Singleton pattern
     private static ConnectionManager manager;
@@ -124,10 +128,17 @@ public class ConnectionManager implements ServerServices{
 		}).start();
     }
 
+	/**
+	 * Per impostare il riferimento della label che viene usata per mostrare il PING
+	 * @param l label da impostare
+	 */
 	public synchronized void setPinLabel(Label l) {
 		this.pingLable = l;
 	}
-
+	
+	/**
+	 *  Funzione per rimuovere il riferimento della lebel che mostra il ping
+	 */
 	public synchronized void removePinLabel() {
 		this.pingLable = null;
 	}
@@ -268,11 +279,17 @@ public class ConnectionManager implements ServerServices{
 		return false;
 	}
 
-
+	/**
+	 * Funzione che ritorna lo stato della connesione
+	 * @return
+	 */
 	public boolean isConnected() {
 		return connected;
 	}
 
+	/**
+	 * Funzione che viene eseguta quando perdo la connesione con il server e viene utilizzata per resettare i parametri.
+	 */
 	private synchronized void connetionLost()
 	{
 		if(!isConnected())
@@ -294,7 +311,7 @@ public class ConnectionManager implements ServerServices{
 
 
 	/**
-	 * Disconnects the client from Watchneighbours server
+	* funzione per avvisare il server che ci vogliamo disconnettere
 	 */
 	public synchronized void disconnect() 
 	{
@@ -427,6 +444,9 @@ public class ConnectionManager implements ServerServices{
 		return result;
 	}
 
+	/**
+	 * Questa classe gestiscele le risposte del server.
+	 */
 	private class PacketLintener_thread extends Thread 
 	{
 		public PacketLintener_thread() {
@@ -448,7 +468,9 @@ public class ConnectionManager implements ServerServices{
 		}
 	}
 
-
+	/**
+	 * Funzione utilizzata da thread "PacketLintener_thread" per aspetta la disponibilità di riposte dal server
+	 */
 	private synchronized void waitForPacket() 
 	{
 		//se non ho nulla da attendere vado in wait
@@ -457,6 +479,9 @@ public class ConnectionManager implements ServerServices{
 		}
 	}
 
+	/*
+	 * Funzione utilizzata da thread "PacketLintener_thread" per leggere le risposte del server
+	 */
 	private void getPackets() throws ClassNotFoundException 
 	{
 		try {
@@ -483,7 +508,9 @@ public class ConnectionManager implements ServerServices{
 		}
 	}
 
-	
+	/**
+	 * Fuznione per verificare lo stato della connessione
+	 */
 	public boolean testConnection() throws Exception {
 		if(makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.PING.name(), null)) == null){
 			return false;
@@ -491,7 +518,9 @@ public class ConnectionManager implements ServerServices{
 		return true;
 	}
 
-
+	/**
+	 * Funzione per avvisare il server che si vuole chidere la connesione
+	 */
 	public void CloseComunication() throws Exception {
 		makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.DISCONNECT.name(), null));
 	}
@@ -531,7 +560,9 @@ public class ConnectionManager implements ServerServices{
 	}
 
 
-
+	/**
+	 * Funzione per aggiungere un account nel database
+	 */
 	public Account addAccount(String name, String username, String userID, String codiceFiscale, String Email, String password, String civicNumber, String viaPiazza, String cap, String commune, String province) throws InvalidUserNameException, InvalidEmailException, InvalidPasswordException
 	{
 		try {
@@ -581,6 +612,9 @@ public class ConnectionManager implements ServerServices{
 		return null;
 	}
 
+	/**
+	 * Funzione per rimuovere un account dal database
+	 */
 	public boolean deleteAccount(String accountID) {
 		Object[] params = new Object[]{QueryParameter.ACCOUNT_ID.toString(), accountID};
 
@@ -600,7 +634,9 @@ public class ConnectionManager implements ServerServices{
 		return false;
 	}
 
-
+	/**
+	 * Funzione per ottenere un account
+	 */
 	public Account getAccount(String Email, String password) throws InvalidPasswordException, InvalidUserNameException, InvalidEmailException {
 		Object[] params = new Object[]{QueryParameter.EMAIL.toString(), Email,QueryParameter.PASSWORD.toString(), password};
 
@@ -632,6 +668,11 @@ public class ConnectionManager implements ServerServices{
 		return null;
 	}
 
+	/**
+	 * Funzione per ottenere gli album più popolari
+	 * @param limit numero massimo di risultati
+	 * @param offset numero di risultati da saltare
+	 */
 	@SuppressWarnings("unchecked")
 	public ArrayList<Song> getMostPopularSongs(long limit, long offset) throws Exception 
 	{
@@ -659,7 +700,12 @@ public class ConnectionManager implements ServerServices{
 		
 	}
 
-
+	/**
+	 * Funzione per ottenere gli album più recenti
+	 * @param limit numero massimo di risultati
+	 * @param offset numero di risultati da saltare
+	 * @param threshold soglia minima da considerare
+	 */
 	@SuppressWarnings("unchecked")
 	public ArrayList<Album> getRecentPublischedAlbum(long limit, long offset, int threshold) throws Exception {
 		
@@ -685,7 +731,13 @@ public class ConnectionManager implements ServerServices{
 		}
 	}
 
-
+	/**
+	 * Per ricercare una canzone
+	 * @param searchString prefisso con cui deve incominciare la parola
+	 * @param limit numero massimo di risultati
+	 * @param offset numero di risultati da saltare
+	 * @param mode 0: ricerca per nome, 1: ricerca per anno, 2: ricerca per numero emozioni
+	 */
 	@SuppressWarnings("unchecked")
 	public Object[] searchSongs(String searchString, long limit, long offset, int mode) throws Exception 
 	{
@@ -733,7 +785,12 @@ public class ConnectionManager implements ServerServices{
 		}
 	}
 	
-
+	/**
+	 * Per ricercare una canzone
+	 * @param searchString prefisso con cui deve incominciare la parola
+	 * @param limit numero massimo di risultati
+	 * @param offset numero di risultati da saltare
+	 */
 	@SuppressWarnings("unchecked")
 	public Object[] searchAlbums(String searchString, long limit, long offset) throws Exception {
 		try {
@@ -767,6 +824,12 @@ public class ConnectionManager implements ServerServices{
 		}	
 	}
 
+	/**
+	 * Per ricercare una canzone
+	 * @param searchString prefisso con cui deve incominciare la parola
+	 * @param limit numero massimo di risultati
+	 * @param offset numero di risultati da saltare
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public Object[] searchArtists(String searchString, long limit, long offset) {
@@ -801,7 +864,9 @@ public class ConnectionManager implements ServerServices{
 		}
 	}
 
-
+	/**
+	 * Funzione per ottenere degli oggetti "Song" specificando i loro ID
+	 */
 	public ArrayList<Song> getSongByIDs(String[] IDs) throws Exception 
 	{
 		Object[] params = new Object[]{"IDs", IDs};
@@ -817,7 +882,11 @@ public class ConnectionManager implements ServerServices{
 		return data;
 	}
 
-
+	/**
+	 * Funzione per ottenere un'oggetto artista specificando il suo ID
+	 * @param ID l'ID dell'artista
+	 * @return
+	 */
 	public Artist getArtistByID(String ID) 
 	{
 		try {
@@ -845,7 +914,11 @@ public class ConnectionManager implements ServerServices{
 		}	
 	}
 
-
+	/**
+	 * Funzione che resituisce tutte le canzoni di un artista, specificando il suo ID
+	 * @param ArtistID L'id dell'artista
+	 * @return
+	 */
 	public ArrayList<Song> getArtistSong(String ArtistID) {
 		System.out.println("getArtistSong: ArtistID = " + ArtistID);
 
@@ -875,7 +948,11 @@ public class ConnectionManager implements ServerServices{
 		}	
 	}
 
-
+	/**
+	 * Fuznione per ottenere un oggetto "album" specificando il suo ID
+	 * @param AlbumID
+	 * @return
+	 */
 	public Album getAlbum_by_ID(String AlbumID) {
 		System.out.println("AlbumID:" + AlbumID);
 
@@ -903,6 +980,10 @@ public class ConnectionManager implements ServerServices{
 		return data;
 	}
 
+	/**
+	 * Funzione per ottenere tutte le canzoni di un album
+	 * @param AlbumID L'id dell'album
+	 */
 	@Override
     public ArrayList<Song> getAlbumSongs(String AlbumID) throws Exception 
 	{
@@ -925,7 +1006,12 @@ public class ConnectionManager implements ServerServices{
 	}
 
 	
-
+	/**
+	 * Funzione per creare una playlist
+	 * @param playlistName Il nome della playlist
+	 * @param userID L'id dell'utente
+	 * @param playlistImage L'immagine della playlist
+	 */
 	@Override
 	public boolean addPlaylist(String playlistName, String userID, Object playlistImage) {
 		System.out.println("addPlaylist: playlistName = " + playlistName + " userID = " + userID);
@@ -951,6 +1037,11 @@ public class ConnectionManager implements ServerServices{
 		}
 	}
 
+	/**
+	 * Funzione per rimuovere una playlist
+	 * @param playlistID L'id della playlist
+	 * @param userID L'id dell'utente
+	 */
 	@Override
 	public boolean deletePlaylist(String userID, String playlistID){
 		System.out.println("removePlaylist: userID = " + userID + " playlistID = " + playlistID);
@@ -970,6 +1061,11 @@ public class ConnectionManager implements ServerServices{
 		}
 	}
 
+	/**
+	 * Funzione per aggiungere una canzone in una playlist
+	 * @param userID L'id dell'utente
+	 * @param playlistID L'id della playlist
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean addSongToPlaylist(String userID, String playlistID, String songID) throws Exception {
@@ -989,6 +1085,12 @@ public class ConnectionManager implements ServerServices{
 		}
 	}
 
+	/**
+	 * Funzione per rimuovere una canzone dalla playlist
+	 * @param userID L'id dell'utente
+	 * @param playlistID L'id della playlist
+	 * @param songID L'id della canzone
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean removeSongFromPlaylist(String userID, String playlistID, String songID) throws Exception {
@@ -1009,7 +1111,10 @@ public class ConnectionManager implements ServerServices{
 		}
 	}
 	
-
+	/**
+	 * Fuzione per ottenere tutte le playlist di un utente
+	 * @param userID L'id dell'utente
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public ArrayList<Playlist> getAccountPlaylists(String userID) throws Exception {
@@ -1024,6 +1129,10 @@ public class ConnectionManager implements ServerServices{
 		return (ArrayList<Playlist>)result;
 	}
 
+	/**
+	 * Funzione per ottenere tutte le playlist di un utente
+	 * @param playlistID l'id della playlist
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public ArrayList<Song> getPlaylistSongs(String playlistID) throws Exception {
@@ -1038,6 +1147,13 @@ public class ConnectionManager implements ServerServices{
 		return (ArrayList<Song>)result;
 	}
 
+	/**
+	 * Funzione per rinominare una playlist
+	 * @param userID L'id dell'utente
+	 * @param playlistID L'id della playlist
+	 * @param newName Il nuovo nome della playlist
+	 * @return true se la playlist è stata rinominata, false altrimenti
+	*/
 	@Override
 	public boolean renamePlaylist(String userID, String playlistID, String newName) throws Exception {
 		
@@ -1058,7 +1174,12 @@ public class ConnectionManager implements ServerServices{
 		}
 	}
 
-
+	/**
+	 * Funzione per ottenere tutte le emozioni fatte da un utente
+	 * @param userID L'id dell'utente
+	 * @return
+	 * @throws Exception
+	 */
 	public ArrayList<Emotion> getAccountEmotions(String userID) throws Exception {
 
 		try {
@@ -1077,7 +1198,14 @@ public class ConnectionManager implements ServerServices{
 	}
 
 
-
+	/**
+	 * Funzione per creare una nuova emozione
+	 * @param userID L'id dell'utente
+	 * @param songID L'id della canzone
+	 * @param emotionType Il tipo di emozione
+	 * @param value Il valore dell'emozione
+	 * @param comment Il commento dell'emozione
+	 */
 	@Override
 	public boolean addEmotion(String userID, String songID, String emotionType, int value, String comment) throws Exception {
 		System.out.println("addEmotion: userID=" + userID + " songID=" + songID + " emotionType=" + emotionType + " value="+ value + " comment=" + comment);
@@ -1099,7 +1227,10 @@ public class ConnectionManager implements ServerServices{
 	}
 
 
-
+	/**
+	 * Funzione per remuovere un'emozione
+	 * @param id l'id dell'emozione
+	 */
 	@Override
 	public boolean removeEmotion(String id) throws Exception {
 		
@@ -1116,14 +1247,13 @@ public class ConnectionManager implements ServerServices{
 			System.out.println(e);
 			return false;
 		}
-//		return false;
-//		return (boolean)makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.REMOVE_EMOTION.name(), params));
-//		return (boolean)makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.REMOVE_EMOTION.name(), params));
-//		return (boolean)makeRequest(new Packet(Long.toString(Thread.currentThread().getId()), ServerServicesName.REMOVE_EMOTION.name(), params));
 	}
 
 
-
+	/**
+	 * Funzione per ottenere tutte le emozioni di una canzone
+	 * @param songID L'id della canzone
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public ArrayList<Emotion> getEmotions(String songID) throws Exception {

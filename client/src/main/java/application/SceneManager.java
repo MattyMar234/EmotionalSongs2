@@ -38,7 +38,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 
-
+/**
+ * Questa classe gestisce le scene di tutte le finestre dell'applicazione.
+ */
 public class SceneManager {
 
     private static final String AccessPage_path = "AccessPage.fxml";
@@ -103,22 +105,10 @@ public class SceneManager {
         MAIN_PAGE
     }
 
-    public enum FXML_elements {
 
-        //EDITABLE_LIST_CELL_ELEMENT(EditableListCell);
-        ;
-
-        private String file;
-    
-        private FXML_elements(String file) {
-            this.file = file;
-        }
-
-        public String getPath() {
-            return file;
-        }
-    }
-
+    /**
+     * Questa classe rappresenta in modo astratto tutti gli elementi grafici che possono essere inseriti nelle varie scene.
+     */
     public enum SceneElemets
     {
         BASE_CONTAINER(BaseContainer_path),
@@ -160,7 +150,9 @@ public class SceneManager {
     }
     
 
-
+    /**
+     * Questa classe enum rappresenta in modo astratto tutte le scene che possono essere visulizzate.
+     */
     public enum ApplicationScene 
     {
         ACCESS_PAGE,
@@ -199,11 +191,20 @@ public class SceneManager {
         return applicationState;
     }
 
-
+    /**
+     * Funzione che viene utilizzata per inmpostare lo stage di una finestra
+     * @param window
+     * @param primaryStage
+     */
     public void setStage(ApplicationWinodws window, Stage primaryStage) {
         this.windowsStage.put(window, primaryStage);
     }
 
+    /**
+     * Fuznione per rimuovere lo stage di una finestra
+     * @param window
+     * @param windowManagerClass
+     */
     public void removeStage(ApplicationWinodws window, Class<?> windowManagerClass) {
         
         //if(windowManagerClass != window.getWindowManagerClass())
@@ -270,7 +271,10 @@ public class SceneManager {
         }
     }
 
-
+    /**
+     * Funzione per chiudere una finestra
+     * @param wName
+     */
     public void closeWindow(ApplicationWinodws wName) {
 
         if(wName == null)
@@ -440,19 +444,35 @@ public class SceneManager {
     }
 
 
-
+    /**
+     * Funzione per eseguire la funzione di "torna indietro" su una determinata finestra
+     * @param window
+     */
     public void undo(ApplicationWinodws window) {
         windowUserActions.get(window).undo();
     }
 
+    /**
+     * Funzione per eseguire la funzione di "ripeti" su una determinata finestra
+     * @param window
+     */
     public void redo(ApplicationWinodws window) {
         windowUserActions.get(window).redo();
     }
 
+    /**
+     * Funzione per eseguire la funzione di "refresh" su una determinata finestra
+     * @param window
+     */
     public void refreshScene(ApplicationWinodws window) {
         windowUserActions.get(window).refresh();
     }
 
+    /**
+     * Fuzione per ottenere tutte le azioni svolte dall'utente su una determinata finestra
+     * @param window
+     * @return
+     */
     public ApplicationActions getUserActions(ApplicationWinodws window) {
         return windowUserActions.get(window);
     }
@@ -505,12 +525,22 @@ public class SceneManager {
         return different;
     }
 
-
+    /**
+     * Funzione per impostare una scena sullo stage.
+     * @param sceneAction
+     * @return
+     */
     public ControllerBase showScene(SceneAction sceneAction) {
         return executeShowScene(ApplicationWinodws.EMOTIONALSONGS_WINDOW,sceneAction.scena_name, sceneAction.args);
     }
 
-    
+    /**
+     * Funzione per impostare una scena sullo stage.
+     * @param sceneAction tipo di scene
+     * @param window su quale finestra eseguire questa operazione
+     * @param args parametri da passare al controller
+     * @return
+     */
     private ControllerBase executeShowScene(ApplicationWinodws window, ApplicationScene sceneName, Object[] args) 
     {
         if(!this.windowsStage.containsKey(window))

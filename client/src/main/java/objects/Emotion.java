@@ -5,6 +5,9 @@ import java.io.Serializable;
 import application.Main;
 import enumClasses.EmotionType;
 
+/**
+ * Questa classe rappresenta un'emozione.
+ */
 public class Emotion implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -26,31 +29,58 @@ public class Emotion implements Serializable {
             + ID_Account + "]";
     }
 
-
+    /**
+     * Metodo che restituisce l'ID dell'emozione.
+     * @return
+     */
     public String getID() {
         return ID;
     }
 
+    /**
+     * Metodo che restituisce il tipo di emozione.
+     * @return
+     */
     public EmotionType getEmotionType() {
         return EmotionType.valueOf(this.emotionType);
     }
 
+    /**
+     * Metodo che restituisce il valore dell'emozione.
+     * @return
+     */
     public int getEmotionValue() {
         return emotionValue;
     }
 
+    /**
+     * Metodo che restituisce la data dell'emozione.
+     * @return
+     */
     public String getEmotionDate() {
         return emotionDate;
     }
 
+    /**
+     * Metodo che restituisce il commento dell'emozione.
+     * @return
+     */
     public String getComment() {
         return comment;
     }
 
+    /**
+     * Metodo che restituisce l'ID della canzone.
+     * @return
+     */
     public String getID_Song() {
         return ID_Song;
     }
 
+    /**
+     * Metodo che restituisce l'ID dell'account.
+     * @return
+     */
     public String getID_Account() {
         return ID_Account;
     } 

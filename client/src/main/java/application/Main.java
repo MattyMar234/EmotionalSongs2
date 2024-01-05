@@ -21,10 +21,11 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 import application.SceneManager.ApplicationScene;
 import applicationEvents.ConnectionEvent;
-import utility.ImageDownloader;
 import utility.UtilityOS;
 
-
+/**
+ * Questa classe è l'entrypoint principale dell'applicazione
+ */
 public class Main
 {
     //================================[Variabili di classe]================================//
@@ -40,7 +41,7 @@ public class Main
     
     
 
-    public static final ImageDownloader imageDownloader = new ImageDownloader();
+    //public static final ImageDownloader imageDownloader = new ImageDownloader();
     private static Main instance = null;
     
     
@@ -51,7 +52,10 @@ public class Main
     
     private ConnectionManager connectionManager;
 
-
+    /**
+     * Serve a verificare se l'applicazione è stata eseguita come un jar file
+     * @return
+     */
     private static boolean isJarFIle() {
         try {
             File f = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI());
@@ -70,6 +74,10 @@ public class Main
         }
     }
 
+    /**
+     * Funzione utilizzata per ricavare il percorso di esecuzione dell'applicazione
+     * @return
+     */
     private static String initPath() {
         try {
             File f = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI());
@@ -95,19 +103,7 @@ public class Main
     {
         SceneManager.instance().startWindow(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW, args);
         //ManagementFactory.getPlatformMXBean(PlatformLoggingMXBean.class).setLoggerLevel("javafx.css", "OFF");
-
-        //String sha256hex = DigestUtils.sha256Hex("1234");
-        //System.out.println(sha256hex);
-        //String DeSha256hex = DigestUtils.256("2c1f6848fd51c5ff3a7d3c275bde7fc33c8e143138aa87e712f4a0470559ce40");
     }
-
-    /*
-     * Stage stage = sceneManager.getWindowStage(SceneManager.ApplicationWinodws.EMOTIONALSONGS_WINDOW);
-        stage.addEventFilter(ConnectionEvent.DISCONNECTED, this::handleConnectionLostEvent);
-     */
-    
-
-    
 
     /*private void applyModification(Stage primaryStage, StackPane root) {
         Undecorator undecorator = new Undecorator(primaryStage, root);
