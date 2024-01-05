@@ -41,6 +41,10 @@ import utility.GenericThread;
 import utility.OS_utility;
 import utility.WaithingAnimationThread;
 
+
+/** 
+ * La classe Loader si occupa di caricare i dati nel database.
+ */
 public class Loader {
 
     private static Loader instance;
@@ -51,10 +55,26 @@ public class Loader {
     private long lastprogressBarUpdate = 0;
     
 
+/**
+ * Enumerazione che rappresenta i tipi di file supportati, come JSON e CSV.
+ *
+ * Questa enumerazione definisce i possibili tipi di file che possono essere utilizzati nel sistema.
+ * Attualmente supporta i tipi di file JSON e CSV.
+ */
     private enum FileType {
         JSON, CSV
     }
 
+
+/**
+ * Restituisce l'istanza singola dell'oggetto Loader utilizzando il pattern Singleton.
+ *
+ * Questo metodo restituisce l'istanza dell'oggetto Loader e, se non è ancora stata creata,
+ * ne crea una nuova utilizzando il costruttore privato. Il pattern Singleton garantisce che
+ * ci sia una sola istanza dell'oggetto Loader nell'applicazione.
+ *
+ * @return L'istanza singola dell'oggetto Loader.
+ */
     //pattern singleton
     public static Loader getInstance() {
         if (instance == null) {
@@ -63,11 +83,33 @@ public class Loader {
         return instance;
     }
 
+
+/**
+ * Costruisce un nuovo oggetto Loader utilizzando l'istanza del terminale e l'istanza principale dell'applicazione.
+ *
+ * Questo costruttore è privato e viene utilizzato per inizializzare l'oggetto Loader.
+ * L'istanza del terminale viene ottenuta utilizzando il metodo `Terminal.getInstance()`,
+ * e l'istanza principale dell'applicazione viene ottenuta utilizzando il metodo `App.getInstance()`.
+ */
     private Loader() {
         this.terminal = Terminal.getInstance();
         this.main = App.getInstance();
     }
 
+
+
+/**
+ * Aggiunge una nuova colonna a una tabella specificata nel database.
+ *
+ * Questo metodo costruisce una query per aggiungere una colonna alla tabella specificata
+ * utilizzando l'oggetto QueryBuilder. La query viene quindi eseguita nel database attraverso
+ * il metodo `submitQuery` dell'istanza principale dell'applicazione.
+ *
+ * @param tabella L'enumerazione che rappresenta la tabella a cui aggiungere la colonna.
+ * @param colonna L'enumerazione che rappresenta la colonna da aggiungere alla tabella.
+ * @return true se l'operazione di aggiunta della colonna ha successo, altrimenti false.
+ * @throws SQLException Se si verifica un errore durante l'esecuzione della query nel database.
+ */
     public boolean addColum(Tabelle tabella, Colonne colonna) throws SQLException {
 
         String query = QueryBuilder.addColumn(tabella, colonna);
@@ -77,6 +119,16 @@ public class Loader {
     }
 
 
+
+/**
+ * Costruisce le tabelle nel database utilizzando le query predefinite.
+ *
+ * Questo metodo itera attraverso le tabelle definite nell'enumerazione Tabelle e, se l'opzione
+ * 'clear' è attiva, elimina prima ogni tabella utilizzando le relative query di eliminazione.
+ * Successivamente, crea ciascuna tabella nel database utilizzando le relative query di creazione.
+ *
+ * @param clear Indica se eliminare le tabelle esistenti prima di crearle nuovamente.
+ */
     private void buildTables(boolean clear) {
         try {
             for (Tabelle table : PredefinedSQLCode.Tabelle.values()) 
@@ -94,6 +146,19 @@ public class Loader {
         }
     }
 
+
+
+/**
+ * Stampa una barra di avanzamento nel terminale per indicare lo stato di un processo.
+ *
+ * Questo metodo crea e stampa una barra di avanzamento nel terminale, mostrando visivamente
+ * lo stato di avanzamento di un processo. La barra di avanzamento include informazioni come
+ * la percentuale completata, il numero di elementi completati rispetto al totale e il tempo
+ * stimato rimanente per il completamento del processo.
+ *
+ * @param index L'indice corrente del processo.
+ * @param total Il numero totale di elementi nel processo.
+ */
     private void makeProgressBar(long index, long total) 
     {
         final double step = terminal.getTerminalColumns() - 32;
@@ -144,6 +209,19 @@ public class Loader {
         return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 
+
+
+/**
+ * Carica i dati dell'applicazione inizializzando il database e popolando le tabelle.
+ *
+ * Questo metodo guida l'utente attraverso la selezione della cartella contenente i dati del dataset.
+ * Successivamente, inizializza il database creando le tabelle e carica i dati dal dataset, utilizzando
+ * il tipo di file specificato (JSON o CSV).
+ *
+ * @return Il numero di dati caricati o un codice di errore negativo in caso di fallimento.
+ * @throws IOException Se si verifica un errore durante l'interazione con l'input/output.
+ * @throws SQLException Se si verifica un errore durante l'interazione con il database.
+ */
     @SuppressWarnings({"rawtypes","unchecked"})
     public int loadApplicationData() throws IOException, SQLException
     {
@@ -200,6 +278,18 @@ public class Loader {
         return -1;
     }
 
+
+
+/**
+ * Carica i dati da file CSV nella base di dati.
+ *
+ * Questo metodo legge e analizza i file CSV specificati e carica i dati nelle tabelle
+ * del database. Vengono effettuate operazioni specifiche per ogni tipo di file (Artists, Album, Tracks).
+ *
+ * @param foldersPath Una mappa contenente i percorsi dei file CSV per ogni tipo.
+ * @param databaseDataFolder La cartella contenente i file CSV del dataset.
+ * @return Il numero di dati caricati o 0 se si verificano errori durante il caricamento.
+ */
     private int load_CSV(HashMap<String, File> foldersPath, File database__data_folder) 
     {
         final String ARTIST = "Artists.csv";
@@ -525,6 +615,18 @@ public class Loader {
         return 0;
     }
 
+
+
+/**
+ * Carica i dati da file JSON nella base di dati.
+ *
+ * Questo metodo legge e analizza i file JSON specificati e carica i dati nelle tabelle
+ * del database. Vengono effettuate operazioni specifiche per ogni tipo di file (Artists, Album, Tracks).
+ *
+ * @param foldersPath Una mappa contenente i percorsi dei file JSON per ogni tipo.
+ * @param databaseDataFolder La cartella contenente i file JSON del dataset.
+ * @return Il numero di dati caricati o 0 se si verificano errori durante il caricamento.
+ */
     private int load_JSON(HashMap<String, File> foldersPath, File database__data_folder) 
     {
         final String ARTIST = "Artists.json";
@@ -727,6 +829,13 @@ public class Loader {
     }
 
 
+
+/**
+ * Stampa in modo ricorsivo i valori di una struttura dati complessa, gestendo HashMap,
+ * List, Integer e String in modi specifici.
+ *
+ * @param obj L'oggetto da stampare in modo ricorsivo.
+ */
     private static void recursivePrint(Object obj) {
         if (obj instanceof HashMap) {
             HashMap<String, Object> map = (HashMap<String, Object>) obj;
@@ -749,6 +858,13 @@ public class Loader {
     }
 
 
+
+/**
+ * Converte una stringa JSON in una lista di stringhe.
+ *
+ * @param jsonArray La stringa JSON da convertire.
+ * @return Una lista di stringhe ottenute dai nodi dell'array JSON.
+ */
     private static List<String> parseJsonArray(String jsonArray) {
         List<String> result = new ArrayList<>();
 

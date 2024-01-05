@@ -1,5 +1,9 @@
 package enumclass;
 
+/**
+ * Enumerazione che rappresenta i nomi dei servizi disponibili nel server.
+ * Ogni valore enum corrisponde a un servizio specifico.
+ */
 public enum ServerServicesName 
 {
     //account

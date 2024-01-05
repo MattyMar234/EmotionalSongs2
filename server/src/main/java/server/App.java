@@ -32,14 +32,7 @@ import utility.OS_utility;
 
 
 /**
- * The main class representing the server application.
- * This class initializes and manages the server, database connection, and user interface.
- * It provides methods for starting and stopping the server, setting up the database connection,
- * loading and saving settings, and performing various operations related to the application.
- *
- * @author Your Name
- * @version 1.0
- * @since 2023-12-28
+ * Classe principale dell'applicazione server per la gestione di dati musicali.
  */
 public class App //extends JFrame
 {
@@ -49,7 +42,9 @@ public class App //extends JFrame
     public final static String FILE_POLICY_PATH = OS_utility.formatPath(SETTINGS_DIRECTORY + "/security.policy");
 
     private static App instance;
-
+/**
+ * Enum per rappresentare chiavi e valori predefiniti per dati JSON.
+ */
     private static enum JsonDataName {
 
         SERVER_PORT("Port_server"    , 8090),
@@ -87,21 +82,12 @@ public class App //extends JFrame
     private ComunicationManager server = null;
     private Terminal terminal;
 
-    /**
-     * Gets the singleton instance of the App class.
-     *
-     * @return The App instance.
-     */
+    
     public static App getInstance() {
         return instance;
     }
 
-    /**
-     * The main method that starts the server application.
-     *
-     * @param args Command line arguments.
-     * @throws Exception If an error occurs during initialization.
-     */
+    
     public static void main( String[] args ) throws Exception 
     {
         //UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
@@ -116,15 +102,17 @@ public class App //extends JFrame
         new App(args);
     }
 
-    /**
-     * The constructor for the App class.
-     *
-     * @param args Command line arguments.
-     * @throws InterruptedException If the thread is interrupted.
-     * @throws IOException If an I/O error occurs.
-     * @throws ClassNotFoundException If the class is not found during initialization.
-     * @throws SQLException If a SQL error occurs.
-     */
+   
+
+/**
+ * Costruttore dell'applicazione.
+ *
+ * @param args Gli argomenti della riga di comando.
+ * @throws InterruptedException Possibili eccezioni durante l'esecuzione.
+ * @throws IOException          Possibili eccezioni durante l'esecuzione.
+ * @throws ClassNotFoundException Possibili eccezioni durante l'esecuzione.
+ * @throws SQLException          Possibili eccezioni durante l'esecuzione.
+ */
     private App(String[] args) throws InterruptedException, IOException, ClassNotFoundException, SQLException 
     {
         super();
@@ -140,22 +128,29 @@ public class App //extends JFrame
         this.terminal.start();
     }
 
-    /**
-     * Exits the program gracefully by stopping the server and saving settings.
-     */
+/**
+ * Termina l'esecuzione dell'applicazione, ferma il server e salva le impostazioni.
+ */
     public void exit() {
         StopServer();
         saveSettings();
         System.exit(0);
     }
 
+/**
+ * Restituisce se il server deve avviarsi automaticamente.
+ *
+ * @return True se il server deve avviarsi automaticamente, false altrimenti.
+ */
     public boolean getServerAutoStart() {
         return autoRun;
     }
 
-    /**
-     * Sets up the database connection based on the configured parameters.
-     */
+
+
+/**
+ * Imposta la connessione al database utilizzando i parametri configurati.
+ */
     protected void setDatabaseConnection() 
     {
         database = DatabaseManager.getInstance();
@@ -186,20 +181,25 @@ public class App //extends JFrame
         }
     }
 
-     /**
-     * Checks if the database is currently connected.
-     *
-     * @return true if connected, false otherwise.
-     */
+
+
+/**
+ * Verifica se la connessione al database è attiva.
+ *
+ * @return true se la connessione al database è attiva, altrimenti false.
+ */
     public boolean isDatabaseConnected() {
         return database.isConnected();
     }
 
-    /**
-     * Loads settings from the settings file into the program.
-     *
-     * @throws IOException If an I/O error occurs.
-     */
+
+
+/**
+ * Controlla l'esistenza della cartella delle impostazioni e del file di impostazioni.
+ * In caso di assenza, crea la cartella e inizializza le impostazioni.
+ *
+ * @return true se le impostazioni sono valide, altrimenti false.
+ */
     private boolean checkSettings() 
     {
         Terminal terminal = Terminal.getInstance();
@@ -234,11 +234,13 @@ public class App //extends JFrame
         return true;
     }
 
-   /**
-     * Loads settings from the settings file into the program.
-     *
-     * @throws IOException If an I/O error occurs.
-     */
+  
+
+/**
+ * Carica le impostazioni dal file di configurazione.
+ * 
+ * @throws IOException se si verifica un errore durante la lettura del file.
+ */
     protected void loadSettings() throws IOException {
 
         Terminal terminal = Terminal.getInstance();
@@ -266,11 +268,13 @@ public class App //extends JFrame
 
     }
 
-    /**
-     * Initializes the setting files with default parameters.
-     *
-     * @throws IOException If an I/O error occurs.
-     */
+  
+
+/**
+ * Inizializza le impostazioni predefinite nel caso non siano presenti o non valide.
+ * 
+ * @throws IOException se si verifica un errore durante l'inizializzazione delle impostazioni.
+ */
     private void initializeSettings() throws IOException 
     {
         Terminal terminal = Terminal.getInstance();
@@ -290,9 +294,11 @@ public class App //extends JFrame
         terminal.printInfoln("settings saved");
     }
 
-    /**
-     * Saves the program parameters in the settings file.
-     */
+
+
+/**
+ * Salva le impostazioni nel file di configurazione.
+ */
     protected void saveSettings() {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode data = objectMapper.createObjectNode();
@@ -308,11 +314,13 @@ public class App //extends JFrame
         JsonParser.writeJsonFile(FILE_SETTINGS_PATH, data);
     }
 
-     /**
-     * Starts the server.
-     *
-     * @throws RemoteException If a remote error occurs.
-     */
+
+    
+/**
+ * Avvia il server di comunicazione.
+ * 
+ * @throws RemoteException se si verifica un errore durante l'avvio del server.
+ */
     public void runServer() throws RemoteException {
 
         if(server == null) {
@@ -321,9 +329,11 @@ public class App //extends JFrame
         }
     }
 
-    /**
-     * Terminates the server.
-     */
+    
+
+/**
+ * Arresta il server di comunicazione.
+ */
     public void StopServer() {
         
         if(server != null && server.isAlive()) {
@@ -337,12 +347,14 @@ public class App //extends JFrame
         } 
     } 
     
-    /**
-     * Edits the size of a database column.
-     *
-     * @param colum The column to be edited.
-     * @throws SQLException If a SQL error occurs.
-     */
+    
+
+/**
+ * Modifica la dimensione di una colonna nel database.
+ * 
+ * @param colum la colonna da modificare.
+ * @throws SQLException se si verifica un errore durante l'esecuzione della query SQL.
+ */
     public void editColumSize(Colonne colum) throws SQLException  {
         DatabaseManager db = DatabaseManager.getInstance();
         Terminal terminal = Terminal.getInstance();
@@ -360,12 +372,14 @@ public class App //extends JFrame
     }
 
 
-    /**
-     * Performs integrity testing on the database.
-     *
-     * @throws IOException If an I/O error occurs.
-     * @throws SQLException If a SQL error occurs.
-     */
+   
+/**
+ * Esegue un test di integrità del database verificando la presenza di tutte le colonne nelle tabelle specificate
+ * nel codice predefinito. Aggiunge le colonne mancanti se richiesto.
+ * 
+ * @throws IOException se si verifica un errore durante la lettura del file di configurazione.
+ * @throws SQLException se si verifica un errore durante l'esecuzione delle query SQL.
+ */
     public void DatabaseIntegrityTest() throws IOException, SQLException 
     {
         DatabaseManager db = DatabaseManager.getInstance();

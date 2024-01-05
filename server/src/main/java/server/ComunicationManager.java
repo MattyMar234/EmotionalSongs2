@@ -37,6 +37,10 @@ import objects.Song;
 import utility.TimeFormatter;
 import utility.WaithingAnimationThread;
 
+
+/*
+ * Questa classe gestisce la comunicazione tra il server e i client 
+ */
 public class ComunicationManager extends Thread implements SocketService, Serializable
 {
 	protected ArrayList<ConnectionHandler> clientsThread = new ArrayList<>();
@@ -50,11 +54,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	private boolean exit = false;
 	private int port;
 
-	/**
-	 * Costruttore della classe
-	 * @param port
-	 * @throws RemoteException
-	 */
+/**
+ * Costruisce un nuovo oggetto ComunicationManager con la porta specificata.
+ * 
+ * @param port la porta su cui il server ascolterà le richieste.
+ * @throws RemoteException se si verifica un errore durante la configurazione del server RMI.
+ */
 	public ComunicationManager(int port) throws RemoteException {
 		this.terminal = Terminal.getInstance();
 		this.port = port;
@@ -224,6 +229,15 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 
 	}
 
+
+
+/**
+ * Converte un HashMap di parametri di query in un HashMap di colonne.
+ *
+ * @param argsTable   Il HashMap che contiene i parametri di query e i loro valori.
+ * @param addIDColumn Un flag che indica se aggiungere la colonna ID.
+ * @return Un HashMap che contiene colonne e i loro valori corrispondenti.
+ */
 	private HashMap<Colonne, Object> convertFromQueryParametre2Colonne(final HashMap<String, Object> argsTable, boolean addID_colum)
 	{
 		HashMap<Colonne, Object> ColonneValore = new HashMap<Colonne, Object>();
@@ -240,14 +254,16 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		return ColonneValore;
 	}
 
-	/**
-	 * Funzione che serve per eseguire i servizi del server
-	 * @param name Nome del servizio
-	 
-	 * @param clientIP L'IP dell'host
-	 * @return
-	 */
-	//* @param params Parametri del servizio ( HashMap<String, Object> )
+
+
+/**
+ * Esegue la funzione associata al servizio del server con i parametri forniti.
+ *
+ * @param name      Il nome del servizio del server da eseguire.
+ * @param params    I parametri necessari per l'esecuzione del servizio.
+ * @param clientIP  L'indirizzo IP del client che richiede il servizio.
+ * @return L'output risultante dall'esecuzione del servizio o un'istanza di Exception in caso di errore.
+ */
 	public Object executeServerServiceFunction(final ServerServicesName name, final HashMap<String, Object> params, final String clientIP) 
 	{
 		Function<HashMap<String, Object>,Object> function = this.serverFunctions.get(name);
@@ -287,6 +303,12 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	}
 
 
+
+/**
+ * Ottiene l'indirizzo IP della macchina.
+ *
+ * @return L'indirizzo IP della macchina.
+ */
 	public static String getMachineIP()
 	{
 		String IP = "";
@@ -301,7 +323,10 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	}
 
 
-	
+
+/**
+ * Avvia il server e gestisce la connessione con i client.
+ */
 	public void run() 
 	{
 		ServerSocket server = null;
@@ -422,7 +447,13 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		}).start();
 	}
 // ==================================== UTILITY ====================================//
-
+/**
+ * Restituisce l'indirizzo IPv4 privato della macchina.
+ *
+ * @return L'indirizzo IPv4 privato della macchina.
+ * @throws UnknownHostException Se l'host è sconosciuto.
+ * @throws SocketException      Se si verifica un errore di socket.
+ */
 	@SuppressWarnings("unused")
 	public static String getPrivateIPv4() throws UnknownHostException, SocketException 
 	{
@@ -451,6 +482,16 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		return ipToReturn;
 	}
 
+
+/**
+ * La classe IPv4Validator fornisce metodi di utilità per la validazione degli indirizzi IPv4.
+ *
+ * Gli indirizzi IPv4 sono rappresentati da una sequenza di quattro numeri interi separati da punti,
+ * ognuno dei quali può variare da 0 a 255. Ad esempio, "192.168.0.1".
+ *
+ * Questa classe offre un metodo che utilizza espressioni regolari per verificare se una stringa
+ * rappresenta un indirizzo IPv4 valido.
+ */
 	private static final Pattern IPv4RegexPattern = Pattern.compile(
 			"^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 
@@ -458,6 +499,21 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		return IPv4RegexPattern.matcher(ip).matches();
 	}
 
+
+
+/**
+ * Stampa il tempo di esecuzione di una funzione in un thread separato.
+ *
+ * Questo metodo accetta il nome della funzione, l'host del client e il tempo di esecuzione,
+ * quindi crea un nuovo thread per eseguire la stampa delle informazioni sul tempo di esecuzione
+ * della funzione. Il risultato viene formattato utilizzando il metodo formatFunctionRequestTime
+ * e stampato sulla console tramite l'oggetto terminal.
+ *
+ * @param function Il nome della funzione il cui tempo di esecuzione deve essere stampato.
+ * @param clientHost L'host del client associato all'esecuzione della funzione.
+ * @param dt Il tempo di esecuzione della funzione in secondi.
+ * @throws NullPointerException Se il parametro 'function' o 'clientHost' è null.
+ */
 	private void printFunctionExecutionTime(String function, String clientHost, double dt) {
 		new Thread(() ->{
 			//Method f = this.functionName.get(function);
@@ -465,6 +521,22 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		}).start();
 	}
 
+
+
+/**
+ * Stampa gli argomenti di una funzione in un thread separato.
+ *
+ * Questo metodo accetta un oggetto di tipo Function rappresentante una funzione e l'host del client,
+ * quindi crea un nuovo thread per eseguire la stampa degli argomenti della funzione. 
+ * Per effettuare la stampa, è possibile utilizzare il metodo formatFunctionRequest dalla classe terminal.
+ * 
+ * Nota: Attualmente, il corpo del metodo è commentato e non esegue alcuna azione. 
+ * Rimuovi i commenti e implementa la logica desiderata per la stampa degli argomenti.
+ *
+ * @param functionName L'oggetto di tipo Function rappresentante la funzione di cui stampare gli argomenti.
+ * @param clientHost L'host del client associato alla richiesta della funzione.
+ * @throws NullPointerException Se il parametro 'functionName' o 'clientHost' è null.
+ */
 	private void printFunctionArgs(Function functionName, String clientHost) {
 
 		/*new Thread(() ->{
@@ -479,10 +551,38 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	}
 
 
+
+/**
+ * Formatta una richiesta di funzione per la stampa.
+ *
+ * Questo metodo accetta l'host del client e il nome della funzione e restituisce una stringa formattata
+ * rappresentante la richiesta di funzione. Il formato include il colore magenta per l'host del client,
+ * il colore ciano brillante per il nome della funzione e il reset del colore per garantire la coerenza nella stampa.
+ *
+ * @param clientHost L'host del client associato alla richiesta della funzione.
+ * @param function Il nome della funzione richiesta.
+ * @return Una stringa formattata rappresentante la richiesta di funzione.
+ * @throws NullPointerException Se il parametro 'clientHost' o 'function' è null.
+ */
 	private String formatFunctionRequest(String clientHost, String function) {
 		return "Host " + Terminal.Color.MAGENTA + clientHost + Terminal.Color.RESET + " requested function:" + Terminal.Color.CYAN_BOLD_BRIGHT + "\"" + function + "\"" + Terminal.Color.RESET;
 	}
 
+
+
+/**
+ * Formatta una richiesta di funzione includendo il tempo di esecuzione colorato.
+ *
+ * Questo metodo accetta l'host del client, il nome della funzione e il tempo di esecuzione,
+ * quindi restituisce una stringa formattata che rappresenta la richiesta di funzione.
+ * Il tempo di esecuzione è colorato in base a intervalli predefiniti di durata.
+ *
+ * @param clientHost L'host del client associato alla richiesta della funzione.
+ * @param function Il nome della funzione richiesta.
+ * @param dt Il tempo di esecuzione della funzione in nanosecondi.
+ * @return Una stringa formattata rappresentante la richiesta di funzione con il tempo di esecuzione colorato.
+ * @throws NullPointerException Se il parametro 'clientHost' o 'function' è null.
+ */
 	private String formatFunctionRequestTime(String clientHost, String function, double dt) {
 
 		String timeStr = "";
@@ -501,6 +601,17 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	}
 
 
+
+/**
+ * Stampa un'eccezione in un thread separato con informazioni sull'host e l'errore.
+ *
+ * Questo metodo accetta un'eccezione come parametro, quindi crea un nuovo thread per eseguire
+ * la stampa dell'errore sulla console tramite l'oggetto Terminal. L'output include l'host del client
+ * ottenuto dal server e il dettaglio dell'eccezione.
+ *
+ * @param e L'eccezione da stampare.
+ * @throws NullPointerException Se l'eccezione passata è null.
+ */
 	private void printError(Exception e) {
 		new Thread(() -> {
 			try {
@@ -515,14 +626,20 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 
 
 	//====================================== SOCKET SERVICES ======================================//
-	
-	/**
-     * Tests whether the provided arguments match the expected keys and have the correct size.
-     *
-     * @param argsTable A {@code HashMap<String, Object>} containing arguments for an operation.
-     * @param keys An array of keys expected in the argsTable.
-     * @return {@code true} if the arguments are valid, {@code false} otherwise.
-     */
+/**
+ * Verifica la presenza e la corrispondenza dei parametri in una tabella di argomenti.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) e un array di chiavi (keys).
+ * Verifica se la dimensione della tabella è uguale a quella dell'array di chiavi.
+ * Successivamente, verifica che la tabella contenga tutte le chiavi necessarie.
+ * In caso di mancata corrispondenza, stampa un messaggio di errore sulla console tramite l'oggetto Terminal
+ * e restituisce false; altrimenti, restituisce true.
+ *
+ * @param argsTable La tabella di argomenti da verificare.
+ * @param keys Un array di chiavi rappresentanti i parametri richiesti.
+ * @return true se la tabella contiene tutte le chiavi necessarie, false altrimenti.
+ * @throws NullPointerException Se uno dei parametri 'argsTable' o 'keys' è null.
+ */
 	private boolean testParametre(HashMap<String, Object> argsTable, String[] keys) {
 		
 		if(argsTable.size() != keys.length)
@@ -542,12 +659,20 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	
 	
 	//---------------------------- operazioni con Account ---------------------------- //
-	/**
-     * Adds a new account based on the provided parameters.
-     *
-     * @param argsTable A {@code HashMap<String, Object>} containing parameters for adding an account.
-     * @return An object representing the result of the operation or an error message.
-     */
+/**
+ * Aggiunge un nuovo account al sistema utilizzando i parametri forniti.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente le informazioni necessarie
+ * per creare un nuovo account. Effettua alcune verifiche preliminari per garantire che l'indirizzo email
+ * e il nickname siano unici nel sistema. Se l'indirizzo email o il nickname è già associato a un account,
+ * restituisce un messaggio di errore corrispondente.
+ * Altrimenti, crea un nuovo account e una nuova residenza associata a esso, quindi restituisce l'account appena creato.
+ *
+ * @param argsTable La tabella di argomenti contenente le informazioni necessarie per creare l'account.
+ * @return L'account appena creato se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ *         o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se uno dei parametri nella tabella 'argsTable' è null.
+ */
 	@Override
 	public Object addAccount(final HashMap<String, Object> argsTable) 
 	{
@@ -597,12 +722,23 @@ public class ComunicationManager extends Thread implements SocketService, Serial
         }
 	}
 
-	/**
-     * Gets an account based on the provided parameters.
-     *
-     * @param argsTable A {@code HashMap<String, Object>} containing parameters for getting an account.
-     * @return An object representing the result of the operation or an error message.
-     */
+	
+
+/**
+ * Recupera un account dal sistema utilizzando l'indirizzo email e la password forniti.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente l'indirizzo email e la password
+ * necessari per recuperare un account. Cerca un account nel sistema con l'indirizzo email fornito
+ * e verifica se la password corrisponde a quella associata all'account.
+ * Se l'indirizzo email non è valido, restituisce un messaggio di errore corrispondente.
+ * Se la password non corrisponde, restituisce un messaggio di errore corrispondente.
+ * Altrimenti, restituisce l'account associato all'indirizzo email fornito.
+ *
+ * @param argsTable La tabella di argomenti contenente l'indirizzo email e la password necessari per il recupero dell'account.
+ * @return L'account recuperato se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ *         o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se uno dei parametri nella tabella 'argsTable' è null.
+ */
 	@Override
 	@SuppressWarnings("unchecked")
 	public Object getAccount(final HashMap<String, Object> argsTable) 
@@ -627,12 +763,20 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	}
 
 	//---------------------------- operazioni con SONG ---------------------------- //
-	/**
-     * Gets the most popular songs based on the provided parameters.
-     *
-     * @param argsTable A {@code HashMap<String, Object>} containing parameters for getting popular songs.
-     * @return An object representing the result of the operation or an error message.
-     */
+/**
+ * Recupera le canzoni più popolari dal sistema utilizzando i parametri forniti.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente i parametri LIMIT e OFFSET necessari
+ * per recuperare le canzoni più popolari. Utilizza questi parametri per eseguire una query al sistema
+ * e ottenere le canzoni più popolari in base ai criteri specificati.
+ * Restituisce una lista di canzoni se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ * o un'eccezione che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente i parametri LIMIT e OFFSET per il recupero delle canzoni più popolari.
+ * @return Una lista di canzoni più popolari se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ *         o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se uno dei parametri nella tabella 'argsTable' è null.
+ */
 	@Override
 	@SuppressWarnings("unchecked")
 	public Object getMostPopularSongs(final HashMap<String, Object> argsTable) 
@@ -645,13 +789,22 @@ public class ComunicationManager extends Thread implements SocketService, Serial
         }
 	}
 
-	
-	/**
-     * Searches for songs based on the provided parameters.
-     *
-     * @param argsTable A {@code HashMap<String, Object>} containing parameters for searching songs.
-     * @return An object representing the result of the operation or an error message.
-     */
+
+
+/**
+ * Esegue una ricerca di canzoni nel sistema utilizzando i parametri forniti.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente i parametri SEARCH_STRING, LIMIT, OFFSET e MODE
+ * necessari per eseguire una ricerca di canzoni nel sistema. Utilizza questi parametri per eseguire una query
+ * e ottenere i risultati della ricerca.
+ * Restituisce un array di oggetti contenenti le informazioni sulla ricerca e il conteggio totale degli elementi
+ * se l'operazione è riuscita, altrimenti restituisce una stringa di errore o un'eccezione che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente i parametri SEARCH_STRING, LIMIT, OFFSET e MODE per la ricerca delle canzoni.
+ * @return Un array di oggetti contenenti i risultati della ricerca e il conteggio totale degli elementi
+ *         se l'operazione è riuscita, altrimenti restituisce una stringa di errore o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se uno dei parametri nella tabella 'argsTable' è null.
+ */
 	@Override
 	@SuppressWarnings("unchecked")
 	public Object searchSongs(final HashMap<String, Object> argsTable) 
@@ -672,12 +825,22 @@ public class ComunicationManager extends Thread implements SocketService, Serial
         }
 	}
 
-	/**
-     * Gets the most recently published albums based on the provided parameters.
-     *
-     * @param argsTable A {@code HashMap<String, Object>} containing parameters for getting recent albums.
-     * @return An object representing the result of the operation or an error message.
-     */
+	
+
+/**
+ * Recupera gli album più recentemente pubblicati nel sistema utilizzando i parametri forniti.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente i parametri LIMIT, OFFSET e THRESHOLD
+ * necessari per ottenere gli album più recentemente pubblicati. Utilizza questi parametri per eseguire una query
+ * e restituire gli album che soddisfano i criteri specificati.
+ * Restituisce un'ArrayList di oggetti Album se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ * o un'eccezione che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente i parametri LIMIT, OFFSET e THRESHOLD per il recupero degli album più recentemente pubblicati.
+ * @return Un'ArrayList di oggetti Album se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ *         o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se uno dei parametri nella tabella 'argsTable' è null.
+ */
 	@Override
 	@SuppressWarnings("unchecked")
 	public Object getRecentPublischedAlbum(final HashMap<String, Object> argsTable) 
@@ -692,12 +855,21 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	}
 
 
-	/**
-     * Searches for albums based on a search string, limit, and offset.
-     *
-     * @param argsTable A HashMap containing search parameters.
-     * @return An array of search results or an error string.
-     */
+
+/**
+ * Esegue una ricerca di album nel sistema utilizzando i parametri forniti.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente i parametri SEARCH_STRING, LIMIT e OFFSET
+ * necessari per eseguire una ricerca di album nel sistema. Utilizza questi parametri per eseguire una query
+ * e ottenere i risultati della ricerca.
+ * Restituisce un'ArrayList di oggetti Album se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ * o un'eccezione che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente i parametri SEARCH_STRING, LIMIT e OFFSET per la ricerca degli album.
+ * @return Un'ArrayList di oggetti Album se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ *         o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se uno dei parametri nella tabella 'argsTable' è null.
+ */
 	@Override
 	@SuppressWarnings("unchecked")
 	public Object searchAlbums(final HashMap<String, Object> argsTable) 
@@ -710,12 +882,21 @@ public class ComunicationManager extends Thread implements SocketService, Serial
         }
 	}
 
-	/**
-     * Deletes an account based on the provided parameters.
-     *
-     * @param argsTable A {@code HashMap<String, Object>} containing parameters for deleting an account.
-     * @return {@code true} if the account is deleted successfully, {@code false} otherwise.
-     */
+	
+
+/**
+ * Elimina un account dal sistema utilizzando l'ID dell'account fornito.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente l'ID dell'account da eliminare.
+ * Utilizza l'ID per eseguire l'operazione di eliminazione tramite il gestore delle query del sistema.
+ * Restituisce true se l'operazione è riuscita, altrimenti restituisce una stringa di errore o un'eccezione
+ * che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente l'ID dell'account da eliminare.
+ * @return true se l'operazione di eliminazione è riuscita, altrimenti restituisce una stringa di errore
+ *         o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se il parametro 'argsTable' o il suo valore associato a 'QueryParameter.ACCOUNT_ID' è null.
+ */
 	@Override
 	public Object deleteAccount(final HashMap<String, Object> argsTable) {
 		try {
@@ -727,6 +908,21 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		}
 	}
 
+
+
+/**
+ * Recupera le canzoni dal sistema utilizzando gli ID forniti.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente un array di ID delle canzoni.
+ * Utilizza gli ID per eseguire una query e ottenere le informazioni sulle canzoni corrispondenti.
+ * Restituisce un'ArrayList di oggetti Song se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ * o un'eccezione che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente un array di ID delle canzoni.
+ * @return Un'ArrayList di oggetti Song se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ *         o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se il parametro 'argsTable' o il suo valore associato a 'QueryParameter.ID' è null.
+ */
 	@Override
 	public Object getSongByIDs(final HashMap<String, Object> argsTable) {
 		try {
@@ -737,12 +933,21 @@ public class ComunicationManager extends Thread implements SocketService, Serial
         }
 	}
 
-	/**
-     * Searches for albums based on a search string, limit, and offset.
-     *
-     * @param argsTable A HashMap containing search parameters.
-     * @return An array of search results or an error string.
-     */
+	
+
+/**
+ * Recupera le canzoni associate a un album nel sistema utilizzando l'ID dell'album fornito.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente l'ID dell'album.
+ * Utilizza l'ID dell'album per eseguire una query e ottenere le informazioni sulle canzoni associate a quell'album.
+ * Restituisce un'ArrayList di oggetti Song se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ * o un'eccezione che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente l'ID dell'album.
+ * @return Un'ArrayList di oggetti Song se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ *         o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se il parametro 'argsTable' o il suo valore associato a 'QueryParameter.ALBUM_ID' è null.
+ */
 	@Override
 	public Object getAlbumsSongs(final HashMap<String, Object> argsTable) 
 	{
@@ -756,6 +961,21 @@ public class ComunicationManager extends Thread implements SocketService, Serial
         }
 	}
 
+
+
+/**
+ * Recupera le canzoni associate a un artista nel sistema utilizzando l'ID dell'artista fornito.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente l'ID dell'artista.
+ * Utilizza l'ID dell'artista per eseguire una query e ottenere le informazioni sulle canzoni associate a quell'artista.
+ * Restituisce un'ArrayList di oggetti Song se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ * o un'eccezione che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente l'ID dell'artista.
+ * @return Un'ArrayList di oggetti Song se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ *         o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se il parametro 'argsTable' o il suo valore associato a 'QueryParameter.ARTIST_ID' è null.
+ */
 	@Override
 	public Object getArtistSongs(final HashMap<String, Object> argsTable) {
 		try {
@@ -768,6 +988,21 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		}
 	}
 
+
+
+/**
+ * Recupera le canzoni associate a una playlist nel sistema utilizzando l'ID della playlist fornito.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente l'ID della playlist.
+ * Utilizza l'ID della playlist per eseguire una query e ottenere le informazioni sulle canzoni associate a quella playlist.
+ * Restituisce un'ArrayList di oggetti Song se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ * o un'eccezione che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente l'ID della playlist.
+ * @return Un'ArrayList di oggetti Song se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ *         o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se il parametro 'argsTable' o il suo valore associato a 'QueryParameter.PLAYLIST_ID' è null.
+ */
 	@Override
 	public Object getPlaylistSongs(final HashMap<String, Object> argsTable) {
 		try {
@@ -780,6 +1015,22 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		}
 	}
 
+
+
+/**
+ * Rinomina una playlist nel sistema utilizzando gli ID dell'account, della playlist e il nuovo nome fornito.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente gli ID dell'account, della playlist e il nuovo nome.
+ * Utilizza questi ID e il nuovo nome per eseguire l'operazione di rinomina della playlist tramite il gestore delle query del sistema.
+ * Restituisce true se l'operazione è riuscita, altrimenti restituisce una stringa di errore o un'eccezione
+ * che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente gli ID dell'account, della playlist e il nuovo nome.
+ * @return true se l'operazione di rinomina è riuscita, altrimenti restituisce una stringa di errore
+ *         o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se uno dei parametri nella tabella 'argsTable' o i loro valori associati a
+ *         'QueryParameter.ACCOUNT_ID', 'QueryParameter.PLAYLIST_ID' o 'QueryParameter.NEW_NAME' è null.
+ */
 	@Override
 	public Object renamePlaylist(final HashMap<String, Object> argsTable) {
 		try {
@@ -791,12 +1042,21 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		}
 	}
 
-	 /**
-     * Retrieves an album by its ID.
-     *
-     * @param argsTable A HashMap containing the album ID.
-     * @return An Album object or an error string.
-     */
+	
+
+/**
+ * Recupera un album dal sistema utilizzando l'ID fornito.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente l'ID dell'album.
+ * Utilizza l'ID dell'album per eseguire una query e ottenere le informazioni sull'album corrispondente.
+ * Restituisce un oggetto Album se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ * o un'eccezione che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente l'ID dell'album.
+ * @return Un oggetto Album se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ *         o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se il parametro 'argsTable' o il suo valore associato a 'QueryParameter.ID' è null.
+ */
 	@Override
 	public Object getAlbumByID(final HashMap<String, Object> argsTable) {
 		try {
@@ -808,12 +1068,21 @@ public class ComunicationManager extends Thread implements SocketService, Serial
         }
 	}
 
-	/**
-	 * Retrieves albums associated with a specific artist.
-	 *
-	 * @param argsTable A HashMap containing the artist ID.
-	 * @return A list of albums or an error string.
-	 */
+	
+
+/**
+ * Recupera gli album associati a un artista nel sistema utilizzando l'ID dell'artista fornito.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente l'ID dell'artista.
+ * Utilizza l'ID dell'artista per eseguire una query e ottenere le informazioni sugli album associati a quell'artista.
+ * Restituisce un'ArrayList di oggetti Album se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ * o un'eccezione che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente l'ID dell'artista.
+ * @return Un'ArrayList di oggetti Album se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ *         o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se il parametro 'argsTable' o il suo valore associato a 'QueryParameter.ARTIST_ID' è null.
+ */
 	@Override
 	public Object getArtistAlbums(final HashMap<String, Object> argsTable) {
 		try {
@@ -826,12 +1095,20 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		}
 	}
 
-	/**
-	 * Searches for artists based on a search string, limit, and offset.
-	 *
-	 * @param argsTable A HashMap containing search parameters.
-	 * @return An array of search results or an error string.
-	 */
+/**
+ * Esegue una ricerca degli artisti nel sistema utilizzando una stringa chiave di ricerca, un limite e uno spostamento.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente una stringa chiave di ricerca, un limite e uno spostamento.
+ * Utilizza questi parametri per eseguire una ricerca degli artisti tramite il gestore delle query del sistema.
+ * Restituisce un array di oggetti Artist e un numero totale di elementi se l'operazione è riuscita,
+ * altrimenti restituisce una stringa di errore o un'eccezione che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente la stringa chiave di ricerca, il limite e lo spostamento.
+ * @return Un array di oggetti Artist e un numero totale di elementi se l'operazione è riuscita,
+ *         altrimenti restituisce una stringa di errore o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se il parametro 'argsTable' o uno dei suoi valori associati a 'QueryParameter.SEARCH_STRING',
+ *         'QueryParameter.LIMIT' o 'QueryParameter.OFFSET' è null.
+ */
 	@Override
 	public Object searchArtists(final HashMap<String, Object> argsTable) {
 		try {
@@ -848,12 +1125,21 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		}
 	}
 
-	/**
-	 * Retrieves artists based on their IDs.
-	 *
-	 * @param argsTable A HashMap containing artist IDs.
-	 * @return An array of artists or an error string.
-	 */
+
+
+/**
+ * Recupera gli artisti dal sistema utilizzando gli ID forniti.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente un array di ID degli artisti.
+ * Utilizza gli ID per eseguire una query e ottenere le informazioni sugli artisti corrispondenti.
+ * Restituisce un oggetto Artist se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ * o un'eccezione che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente un array di ID degli artisti.
+ * @return Un oggetto Artist se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ *         o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se il parametro 'argsTable' o il suo valore associato a 'QueryParameter.ARTIST_ID' è null.
+ */
 	@Override
 	public Object getArtistsByIDs(HashMap<String, Object> argsTable) {
 		try {
@@ -865,12 +1151,22 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		}
 	}
 
-	/**
-	 * Adds a new playlist for a specific account.
-	 *
-	 * @param argsTable A HashMap containing account ID and playlist name.
-	 * @return True if the playlist was added successfully, false or an error string otherwise.
-	 */
+
+
+/**
+ * Aggiunge una nuova playlist nel sistema utilizzando l'ID dell'account e il nome della playlist forniti.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente l'ID dell'account e il nome della playlist.
+ * Utilizza questi parametri per eseguire l'operazione di aggiunta della playlist tramite il gestore delle query del sistema.
+ * Restituisce true se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ * o un'eccezione che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente l'ID dell'account e il nome della playlist.
+ * @return true se l'operazione di aggiunta della playlist è riuscita, altrimenti restituisce una stringa di errore
+ *         o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se uno dei parametri nella tabella 'argsTable' o i loro valori associati a
+ *         'QueryParameter.ACCOUNT_ID' o 'QueryParameter.PLAYLIST_NAME' è null.
+ */
 	@Override
 	public Object addPlaylist(final HashMap<String, Object> argsTable) {
 		try {
@@ -883,12 +1179,22 @@ public class ComunicationManager extends Thread implements SocketService, Serial
         }
 	}
 
-	/**
-	 * Deletes a playlist for a specific account.
-	 *
-	 * @param argsTable A HashMap containing account ID and playlist ID.
-	 * @return True if the playlist was deleted successfully, false or an error string otherwise.
-	 */
+
+
+/**
+ * Elimina una playlist dal sistema utilizzando l'ID dell'account e l'ID della playlist forniti.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente l'ID dell'account e l'ID della playlist.
+ * Utilizza questi parametri per eseguire l'operazione di eliminazione della playlist tramite il gestore delle query del sistema.
+ * Restituisce true se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ * o un'eccezione che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente l'ID dell'account e l'ID della playlist.
+ * @return true se l'operazione di eliminazione della playlist è riuscita, altrimenti restituisce una stringa di errore
+ *         o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se uno dei parametri nella tabella 'argsTable' o i loro valori associati a
+ *         'QueryParameter.ACCOUNT_ID' o 'QueryParameter.PLAYLIST_ID' è null.
+ */
 	@Override
 	public Object deletePlaylist(final HashMap<String, Object> argsTable) {
 		try {
@@ -900,12 +1206,22 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		} 
 	}
 
-	/**
-	 * Removes a song from a playlist for a specific account.
-	 *
-	 * @param argsTable A HashMap containing account ID, playlist ID, and song ID.
-	 * @return True if the song was removed successfully, false or an error string otherwise.
-	 */
+	
+
+/**
+ * Rimuove una canzone da una playlist nel sistema utilizzando l'ID dell'account, l'ID della playlist e l'ID della canzone forniti.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente l'ID dell'account, l'ID della playlist e l'ID della canzone.
+ * Utilizza questi parametri per eseguire l'operazione di rimozione della canzone dalla playlist tramite il gestore delle query del sistema.
+ * Restituisce true se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ * o un'eccezione che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente l'ID dell'account, l'ID della playlist e l'ID della canzone.
+ * @return true se l'operazione di rimozione della canzone dalla playlist è riuscita, altrimenti restituisce una stringa di errore
+ *         o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se uno dei parametri nella tabella 'argsTable' o i loro valori associati a
+ *         'QueryParameter.ACCOUNT_ID', 'QueryParameter.PLAYLIST_ID' o 'QueryParameter.SONG_ID' è null.
+ */
 	@Override
 	public Object removeSongFromPlaylist(final HashMap<String, Object> argsTable) {
 		try {
@@ -917,12 +1233,22 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		}
 	}
 
-	/**
-	 * Adds a song to a playlist for a specific account.
-	 *
-	 * @param argsTable A HashMap containing account ID, playlist ID, and song ID.
-	 * @return True if the song was added successfully, false or an error string otherwise.
-	 */
+	
+
+/**
+ * Aggiunge una canzone a una playlist nel sistema utilizzando l'ID dell'account, l'ID della playlist e l'ID della canzone forniti.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente l'ID dell'account, l'ID della playlist e l'ID della canzone.
+ * Utilizza questi parametri per eseguire l'operazione di aggiunta della canzone alla playlist tramite il gestore delle query del sistema.
+ * Restituisce true se l'operazione è riuscita, altrimenti restituisce una stringa di errore
+ * o un'eccezione che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente l'ID dell'account, l'ID della playlist e l'ID della canzone.
+ * @return true se l'operazione di aggiunta della canzone alla playlist è riuscita, altrimenti restituisce una stringa di errore
+ *         o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se uno dei parametri nella tabella 'argsTable' o i loro valori associati a
+ *         'QueryParameter.ACCOUNT_ID', 'QueryParameter.PLAYLIST_ID' o 'QueryParameter.SONG_ID' è null.
+ */
 	@Override
 	public Object addSongToPlaylist(final HashMap<String, Object> argsTable) {
 		try {
@@ -934,12 +1260,22 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		}
 	}
 
-	/**
-	 * Retrieves playlists associated with a specific account.
-	 *
-	 * @param argsTable A HashMap containing account ID.
-	 * @return A list of playlists or an error string.
-	 */
+	
+
+/**
+ * Recupera le playlist associate a un account nel sistema utilizzando l'ID dell'account fornito.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente l'ID dell'account.
+ * Utilizza questo parametro per eseguire l'operazione di recupero delle playlist associate all'account
+ * tramite il gestore delle query del sistema.
+ * Restituisce un oggetto che rappresenta le playlist associate all'account se l'operazione è riuscita,
+ * altrimenti restituisce una stringa di errore o un'eccezione che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente l'ID dell'account.
+ * @return Un oggetto che rappresenta le playlist associate all'account se l'operazione è riuscita,
+ *         altrimenti restituisce una stringa di errore o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se il parametro nella tabella 'argsTable' o il suo valore associato a 'QueryParameter.ACCOUNT_ID' è null.
+ */
 	@Override
 	public Object getAccountsPlaylists(final HashMap<String, Object> argsTable) {
 		try {
@@ -955,12 +1291,18 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 	//EMOTION
 	/////////////////////////////////////////////////////////////////////////////////
 
-	/**
-	 * Adds a new emotion for a specific song.
-	 *
-	 * @param argsTable A HashMap containing emotion parameters.
-	 * @return True if the emotion was added successfully, false or an error string otherwise.
-	 */
+/**
+ * Aggiunge un'emozione al sistema utilizzando i parametri forniti nella tabella degli argomenti.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente i parametri necessari per l'aggiunta dell'emozione.
+ * Utilizza questi parametri per eseguire l'operazione di aggiunta dell'emozione tramite il gestore delle query del sistema.
+ * Restituisce true se l'operazione è riuscita, altrimenti restituisce una stringa di errore o un'eccezione che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente i parametri necessari per l'aggiunta dell'emozione.
+ * @return true se l'operazione di aggiunta dell'emozione è riuscita, altrimenti restituisce una stringa di errore
+ *         o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se uno dei parametri nella tabella 'argsTable' o i loro valori associati ai parametri necessari sono nulli.
+ */
 	@Override
 	public Object addEmotion(final HashMap<String, Object> argsTable) {
 		try {
@@ -972,12 +1314,22 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		return true;
 	}
 
-	/**
-	 * Retrieves emotions associated with a specific song.
-	 *
-	 * @param argsTable A HashMap containing song ID.
-	 * @return A list of emotions or an error string.
-	 */
+	
+
+/**
+ * Recupera le emozioni associate a una canzone nel sistema utilizzando l'ID della canzone fornito.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente l'ID della canzone.
+ * Utilizza questo parametro per eseguire l'operazione di recupero delle emozioni associate alla canzone
+ * tramite il gestore delle query del sistema.
+ * Restituisce un oggetto che rappresenta le emozioni associate alla canzone se l'operazione è riuscita,
+ * altrimenti restituisce una stringa di errore o un'eccezione che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente l'ID della canzone.
+ * @return Un oggetto che rappresenta le emozioni associate alla canzone se l'operazione è riuscita,
+ *         altrimenti restituisce una stringa di errore o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se il parametro nella tabella 'argsTable' o il suo valore associato a 'QueryParameter.SONG_ID' è null.
+ */
 	@Override
 	public Object getSongEmotion(final HashMap<String, Object> argsTable) {
 		try {
@@ -988,12 +1340,20 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 		} 
 	}
 
-	/**
-	 * Deletes an emotion based on its ID.
-	 *
-	 * @param argsTable A HashMap containing emotion ID.
-	 * @return True if the emotion was deleted successfully, false or an error string otherwise.
-	 */
+	
+
+/**
+ * Elimina un'emozione dal sistema utilizzando l'ID dell'emozione fornito.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente l'ID dell'emozione.
+ * Utilizza questo parametro per eseguire l'operazione di eliminazione dell'emozione tramite il gestore delle query del sistema.
+ * Restituisce true se l'operazione è riuscita, altrimenti restituisce una stringa di errore o un'eccezione che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente l'ID dell'emozione.
+ * @return true se l'operazione di eliminazione dell'emozione è riuscita, altrimenti restituisce una stringa di errore
+ *         o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se il parametro nella tabella 'argsTable' o il suo valore associato a 'QueryParameter.ID' è null.
+ */
 	@Override
 	public Object deleteEmotion(final HashMap<String, Object> argsTable) {
 		try {
@@ -1007,12 +1367,22 @@ public class ComunicationManager extends Thread implements SocketService, Serial
 
 	}
 
-	/**
-	 * Retrieves emotions associated with a specific account.
-	 *
-	 * @param argsTable A HashMap containing account ID.
-	 * @return A list of emotions or an error string.
-	 */
+	
+
+/**
+ * Recupera le emozioni associate a un account nel sistema utilizzando l'ID dell'account fornito.
+ *
+ * Questo metodo accetta una tabella di argomenti (HashMap) contenente l'ID dell'account.
+ * Utilizza questo parametro per eseguire l'operazione di recupero delle emozioni associate all'account
+ * tramite il gestore delle query del sistema.
+ * Restituisce un oggetto che rappresenta le emozioni associate all'account se l'operazione è riuscita,
+ * altrimenti restituisce una stringa di errore o un'eccezione che è stata catturata durante l'esecuzione.
+ *
+ * @param argsTable La tabella di argomenti contenente l'ID dell'account.
+ * @return Un oggetto che rappresenta le emozioni associate all'account se l'operazione è riuscita,
+ *         altrimenti restituisce una stringa di errore o un'eccezione che è stata catturata durante l'esecuzione.
+ * @throws NullPointerException Se il parametro nella tabella 'argsTable' o il suo valore associato a 'QueryParameter.ACCOUNT_ID' è null.
+ */
 	@Override
 	public Object getAccountEmotion(HashMap<String, Object> argsTable) {
 		try {

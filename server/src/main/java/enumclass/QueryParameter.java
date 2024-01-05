@@ -1,6 +1,9 @@
 package enumclass;
 
-
+/**
+ * Enumerazione che rappresenta i parametri di query utilizzati nel sistema.
+ * Ogni valore enum contiene una stringa associata utilizzata come parametro di query.
+ */
 public enum QueryParameter 
 {    
     NAME("Nome"),

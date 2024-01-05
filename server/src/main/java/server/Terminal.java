@@ -28,7 +28,9 @@ import java.io.FileReader;
 
 
 
-
+/**
+ * La classe Terminal gestisce l'interazione con l'utente attraverso il terminale.
+ */
 public class Terminal extends Thread
 {
     //patter sigleton
