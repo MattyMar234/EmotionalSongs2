@@ -13,17 +13,25 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import database.PredefinedSQLCode;
 import utility.OS_utility;
 
+
+
 /**
- * This class offers various methods to parse JSON files
+ * Classe per il parsing di file JSON contenenti dati relativi ad artisti, album e tracce musicali.
  */
 public class JsonParser 
 {
-    /**
-    * This method is used to parse the JSON file and return the data.
-    * 
-    * @param path the path to the JSON file
-    * @return the data of the JSON file
-    */
+    
+
+/**
+ * Legge un file JSON da un percorso specificato e restituisce un oggetto JsonNode.
+ *
+ * Questo metodo utilizza l'ObjectMapper di Jackson per leggere un file JSON dal percorso specificato
+ * e restituisce un oggetto JsonNode che rappresenta la struttura del file JSON.
+ *
+ * @param path Il percorso del file JSON da leggere.
+ * @return Un oggetto JsonNode rappresentante la struttura del file JSON letto.
+ * @throws IOException Se si verifica un errore durante la lettura del file o se il file non esiste.
+ */
     public static JsonNode readJsonFile(String path) throws IOException {
         
         ObjectMapper objectMapper = new ObjectMapper();
@@ -38,6 +46,16 @@ public class JsonParser
     }
 
     
+
+/**
+ * Scrive un oggetto JsonNode in un file JSON nel percorso specificato.
+ *
+ * Questo metodo utilizza l'ObjectMapper di Jackson per scrivere un oggetto JsonNode in un file JSON
+ * nel percorso specificato. L'output verrà formattato con l'indentazione abilitata.
+ *
+ * @param path Il percorso del file JSON in cui scrivere i dati.
+ * @param jsonNode L'oggetto JsonNode da scrivere nel file JSON.
+ */
     public static void writeJsonFile(String path, JsonNode jsonNode) 
     {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -53,6 +71,13 @@ public class JsonParser
     }
 
 
+
+/**
+ * Restituisce il numero di elementi presenti nel file JSON nel percorso specificato.
+ *
+ * @param path Il percorso del file JSON da leggere.
+ * @return Il numero di elementi nel file JSON, o -1 se si verifica un errore durante la lettura.
+ */
     public static int getFile_element_count(String path) {
 
         try {
@@ -65,6 +90,15 @@ public class JsonParser
     }
 
 
+
+/**
+ * Analizza un file JSON contenente dati sugli artisti e restituisce un array di HashMap.
+ *
+ * @param path Il percorso del file JSON contenente i dati sugli artisti.
+ * @return Un array contenente tre HashMap: artistsData, artistsImage e artistsGenres.
+ *         Ogni HashMap contiene i dati relativi agli artisti, alle immagini degli artisti e ai generi degli artisti, rispettivamente.
+ *         Restituisce null se si verifica un errore durante l'analisi.
+ */
     public static Object[] parseArtists(String path) 
     {
         Object [] data = new Object[3];
@@ -139,6 +173,15 @@ public class JsonParser
     } 
 
 
+
+/**
+ * Analizza un file JSON contenente dati sugli album e restituisce un array di HashMap.
+ *
+ * @param path Il percorso del file JSON contenente i dati sugli album.
+ * @return Un array contenente tre HashMap: albumsData, albumsImage e albumsArtists.
+ *         Ogni HashMap contiene i dati relativi agli album, alle immagini degli album e agli artisti degli album, rispettivamente.
+ *         Restituisce null se si verifica un errore durante l'analisi.
+ */
     public static Object[] parseAlbums(String path) {
         Object[] data = new Object[3];
         HashMap<String, Object> albumsData = new HashMap<>();
@@ -215,6 +258,15 @@ public class JsonParser
     }
 
 
+
+/**
+ * Analizza un file JSON contenente dati sulle tracce e restituisce un array di HashMap.
+ *
+ * @param path Il percorso del file JSON contenente i dati sulle tracce.
+ * @return Un array contenente tre HashMap: tracksData, null e tracksArtists.
+ *         Ogni HashMap contiene i dati relativi alle tracce e agli artisti delle tracce, rispettivamente.
+ *         Restituisce null se si verifica un errore durante l'analisi.
+ */
     public static Object[] parseTracks(String path) {
         Object[] data = new Object[3];
         HashMap<String, Object> tracksData = new HashMap<>();

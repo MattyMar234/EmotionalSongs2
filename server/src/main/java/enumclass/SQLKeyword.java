@@ -1,5 +1,9 @@
 package enumclass;
 
+/**
+ * Enumerazione che rappresenta le parole chiave SQL.
+ * Ogni valore enum corrisponde a una parola chiave specifica utilizzata nei comandi SQL.
+ */
 public enum SQLKeyword {
     NUMERIC("NUMERIC"),
     DECIMAL("DECIMAL"),
@@ -95,6 +99,15 @@ public enum SQLKeyword {
         this.keyword = keyword;
     }
 
+
+    
+/**
+ * Restituisce la parola chiave associata a un oggetto di questa classe.
+ *
+ * Questo metodo restituisce la parola chiave memorizzata nell'oggetto corrente.
+ *
+ * @return La parola chiave associata all'oggetto.
+ */
     public String getKeyword() {
         return keyword;
     }

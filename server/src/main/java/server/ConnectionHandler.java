@@ -11,6 +11,11 @@ import objects.Packet;
 
 import java.io.ObjectOutputStream;
 
+
+/**
+ * La classe ConnectionHandler gestisce la comunicazione con un client attraverso un socket.
+ * Ogni istanza di questa classe viene creata per gestire la connessione con un singolo client.
+ */
 public class ConnectionHandler extends Thread {
 
     private Socket clientSocket;
@@ -22,12 +27,28 @@ public class ConnectionHandler extends Thread {
     private boolean run = true;
 
 
+
+/**
+ * Costruisce un nuovo gestore di connessione per il client utilizzando il socket del client e il gestore delle comunicazioni forniti.
+ *
+ * Questo costruttore accetta un oggetto Socket rappresentante la connessione del client e un oggetto ComunicationManager
+ * che gestisce le comunicazioni del sistema. Il terminale viene inizializzato utilizzando l'istanza singola di Terminal.
+ *
+ * @param clientSocket Il socket della connessione del client.
+ * @param manager L'oggetto ComunicationManager che gestisce le comunicazioni del sistema.
+ * @throws IOException Se si verifica un errore durante l'inizializzazione del terminale o durante la creazione del gestore di connessione.
+ */
     public ConnectionHandler(Socket clientSocket, ComunicationManager manager) throws IOException {
         this.clientSocket = clientSocket;
         this.manager = manager;
         this.terminal = Terminal.getInstance();
     }
 
+
+/**
+ * La classe CommandsExecutor gestisce l'esecuzione dei comandi ricevuti dal client.
+ * Ogni istanza di questa classe viene creata per eseguire un comando specifico.
+ */
     private class CommandsExecutor extends Thread {
 
         private Packet packet;
@@ -108,6 +129,18 @@ public class ConnectionHandler extends Thread {
     }
 
 
+
+/**
+ * Implementa il comportamento del gestore di connessione durante l'esecuzione del thread.
+ *
+ * Durante l'esecuzione del thread, il metodo inizializza gli stream di input e output del socket del client,
+ * quindi entra in un ciclo while che ascolta continuamente per pacchetti dal client. Per ogni pacchetto ricevuto,
+ * crea un nuovo oggetto `CommandsExecutor` e lo avvia come thread per eseguire i comandi associati al pacchetto.
+ * Inoltre, stampa un messaggio informativo nel terminale riguardante la richiesta del client.
+ *
+ * Se si verifica un'eccezione durante l'esecuzione, stampa un messaggio di errore nel terminale.
+ * Infine, chiude il socket del client e rimuove il gestore di connessione dal gestore delle comunicazioni.
+ */
     @Override
     public void run() 
     {
@@ -141,10 +174,28 @@ public class ConnectionHandler extends Thread {
         }
     } 
 
+
+
+/**
+ * Restituisce il socket del client associato a questo gestore di connessione.
+ *
+ * Questo metodo restituisce l'istanza del socket del client utilizzata da questo gestore di connessione.
+ * È protetto e può essere utilizzato dalle classi derivate o all'interno del pacchetto in cui è dichiarato.
+ *
+ * @return Il socket del client associato a questo gestore di connessione.
+ */
     protected Socket getSocket() {
         return clientSocket;
     }
 
+
+
+/**
+ * Termina il gestore di connessione chiudendo il suo ciclo di esecuzione e interrompendo il thread.
+ *
+ * Questo metodo imposta il flag `run` su false, interrompe il thread e chiude il socket del client associato a questo gestore di connessione.
+ * È protetto e può essere utilizzato dalle classi derivate o all'interno del pacchetto in cui è dichiarato.
+ */
     protected void terminate() {
         this.run = false;
         interrupt();
