@@ -500,16 +500,21 @@ public class NewUserRegistrationController extends ControllerBase implements Ini
         //     }
         // }
 
-        if(!email.getText().endsWith("@gmail.com")) {
+       
+        String regexPattern = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
+        Pattern emailPattern = Pattern.compile(regexPattern);
+        Matcher emailMatcher = emailPattern.matcher(email.getText());
+
+        if(!emailMatcher.matches()) {
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle(Main.applicationLanguage == 0 ? "Formato email" : "Email format");
             alert.setHeaderText("");
         
             if(Main.applicationLanguage == 0) {
-                alert.setContentText("Il formato dell'email non è valido.\nDeve finire con: '@gmail.com'");
+                alert.setContentText("Il formato dell'email non è valido.");
             }
             else if(Main.applicationLanguage == 1) {
-                alert.setContentText("Email format is not valid.\nShould end with: '@gmail.com'");
+                alert.setContentText("Email format is not valid.");
             }
 
             alert.getButtonTypes().setAll(ButtonType.OK);

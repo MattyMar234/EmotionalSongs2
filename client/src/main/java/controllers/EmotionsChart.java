@@ -58,7 +58,7 @@ public class EmotionsChart extends ControllerBase implements Initializable, Inje
             StackPane sp = (StackPane)chartContainer.getParent();
             sp.getChildren().remove(chartContainer);
             
-            labelDataNotAvailable.setText(Main.applicationLanguage == 0 ? "Nessun dato disponibile\nper la visulizzazione" : "No data available for visualization");
+            labelDataNotAvailable.setText(Main.applicationLanguage == 0 ? "Nessun dato disponibile\nper la visualizzazione" : "No data available for visualization");
         }
         else {
             StackPane sp = (StackPane)chartContainer.getParent();

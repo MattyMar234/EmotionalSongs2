@@ -205,6 +205,7 @@ public class MainPage_SideBar_Controller extends ControllerBase implements Initi
         else {
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle(Main.applicationLanguage == 0 ? "Esci dall'Account" : "Logout Account");
+            alert.setHeaderText("");
         
             if(Main.applicationLanguage == 0) {
                 alert.setContentText("Sei sicuro di volore escire dal tuo Account?");

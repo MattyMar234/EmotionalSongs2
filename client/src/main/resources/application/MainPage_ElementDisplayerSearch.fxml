@@ -54,7 +54,7 @@
                                                    <children>
                                                       <HBox alignment="CENTER_LEFT" minHeight="-Infinity" prefHeight="40.0" prefWidth="200.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                          <children>
-                                                            <Label id="filterlabel" fx:id="resultLabel1" contentDisplay="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="30.0" prefWidth="91.0" styleClass="Label-Style2" text="Filtra per:" />
+                                                            <Label id="filterlabel" fx:id="resultLabel1" contentDisplay="CENTER" minWidth="100.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="30.0" prefWidth="146.0" styleClass="Label-Style2" text="Filtra per:" />
                                                             <Button fx:id="songNameButtonFilter" minWidth="-Infinity" mnemonicParsing="false" onAction="#songNameButton_click" prefWidth="120.0" styleClass="PrimaryButton" text="Canzoni" />
                                                             <Button fx:id="songDateButtonFilter" minWidth="-Infinity" mnemonicParsing="false" onAction="#songDateButton_click" prefWidth="120.0" styleClass="PrimaryButton" text="Playlist" />
                                                             <Button fx:id="albumNameButtonFilter" minWidth="-Infinity" mnemonicParsing="false" onAction="#albumNameButton_click" prefWidth="120.0" styleClass="PrimaryButton" text="Playlist" />

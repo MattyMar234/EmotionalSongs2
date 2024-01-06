@@ -317,11 +317,8 @@ public abstract class ControllerBase {
             }
         }
         else {
-
             String myCmd = "xdg-open " + link;
             ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", "-c", myCmd);
-        
-            
             Process processo = processBuilder.start();
             try {
                 int exitCode = processo.waitFor();
