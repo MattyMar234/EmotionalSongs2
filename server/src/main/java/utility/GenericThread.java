@@ -1,5 +1,8 @@
 package utility;
 
+/**
+ * Questa classe rappresenta un thread generico che esegue un'interfaccia di funzione specificata.
+ */
 public class GenericThread extends Thread {
 
     private GenericThreadInterface function;
@@ -12,7 +15,9 @@ public class GenericThread extends Thread {
         start();
     }
 
-
+    /**
+     * Esegue la funzione specificata nell'interfaccia {@code GenericThreadInterface} con gli argomenti forniti.
+     */
     public void run() {
         function.execute(args);
     }

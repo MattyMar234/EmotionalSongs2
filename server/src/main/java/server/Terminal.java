@@ -52,6 +52,12 @@ public class Terminal extends Thread
 
 
 
+/**
+ * La classe TerminalPrinter è un thread utilizzato per stampare messaggi su terminale
+ * provenienti da una coda di messaggi. Questa classe estende la classe Thread.
+ * I messaggi sono raccolti dalla coda di messaggi terminalMessageQueue e vengono
+ * stampati su terminale in un ciclo continuo.
+ */
     private class TerminalPrinter extends Thread 
     {
         public TerminalPrinter() {
@@ -97,6 +103,11 @@ public class Terminal extends Thread
     }
 
 
+
+/**
+ * L'enumerazione Color rappresenta una serie di colori ANSI utilizzati per la formattazione
+ * del testo in terminali che supportano il controllo del colore tramite sequenze di escape ANSI.
+ */
     public enum Color {
         //Color end string, color reset
         RESET("\033[0m"),
@@ -183,6 +194,12 @@ public class Terminal extends Thread
         }
     }
 
+
+
+/**
+ * L'enumerazione MessageType rappresenta i tipi di messaggi utilizzati nell'applicazione,
+ * ciascuno associato a un colore specifico per la formattazione del testo in terminale.
+ */
     public enum MessageType 
     {
         NONE(""),
@@ -205,6 +222,11 @@ public class Terminal extends Thread
     }
 
 
+
+/**
+ * L'enumerazione Command rappresenta una serie di comandi utilizzati nell'applicazione,
+ * ciascuno associato a una stringa identificativa e una descrizione che spiega la funzionalità del comando.
+ */
     private enum Command 
     {
         HELP(           "help      ", " Elenco dei comandi"),
@@ -246,6 +268,12 @@ public class Terminal extends Thread
     }
 
     
+
+/**
+ * La classe Terminal rappresenta il terminale del server.
+ * È progettata per gestire l'interfaccia del terminale, 
+ * consentendo l'input e l'output da e verso l'utente.
+ */
     private Terminal() {
         super("Server-Terminal");
         this.main = App.getInstance();
@@ -261,8 +289,17 @@ public class Terminal extends Thread
 
         System.out.flush(); 
         this.terminalPrinterThread = new TerminalPrinter();
-    }    
+    }   
+    
 
+
+/**
+ * Restituisce un'istanza singola della classe Terminal secondo il pattern Singleton.
+ * Se l'istanza non è ancora creata, ne crea una, stampa il logo dell'applicazione 
+ * e imposta il terminale come pronto per l'uso.
+ *
+ * @return Un'istanza della classe Terminal.
+ */
     public static Terminal getInstance() 
     {
         if (Terminal.instance == null) {
@@ -277,11 +314,23 @@ public class Terminal extends Thread
         return Terminal.instance;
     }
 
+
+/**
+ * Verifica se il terminale è pronto per l'uso.
+ *
+ * @return True se il terminale è pronto, altrimenti False.
+ */
     public boolean isReady() {
         return ready;
     }
 
    
+
+/**
+ * Esegue il ciclo principale del terminale, consentendo all'utente di inserire comandi.
+ * Visualizza un prompt, accetta l'input dell'utente e gestisce l'esecuzione dei comandi corrispondenti.
+ * Il ciclo continua finché `fechUserInputs` è impostato su `true`.
+ */
     @Override
     public void run() 
     {
@@ -471,6 +520,18 @@ public class Terminal extends Thread
         }
     }
 
+
+
+/**
+ * Importa i dati dal formato CSV nel database.
+ * Richiede all'utente di specificare la cartella contenente i file CSV da importare.
+ * Crea tabelle nel database in base alle specifiche e importa i dati dai file CSV corrispondenti.
+ * Se la cartella specificata non è valida o mancano alcuni file, il processo viene interrotto.
+ * Prima dell'importazione, i file vengono copiati nella directory temporanea per consentire modifiche senza influire sulle autorizzazioni.
+ * Al termine, i file temporanei vengono eliminati.
+ *
+ * @throws IOException se si verifica un errore durante la lettura dei file o la copia nella directory temporanea.
+ */
     public void importDB() throws IOException 
     {
         File database__data_folder;
@@ -641,6 +702,16 @@ public class Terminal extends Thread
         }
     }
 
+
+
+/**
+ * Esporta i dati dal database in file CSV. Richiede all'utente di specificare la cartella di output.
+ * Per ogni tabella nel database, esegue una query di esportazione e scrive i dati in un file CSV corrispondente.
+ * Se la cartella di output non esiste o non è valida, l'operazione viene annullata.
+ * Se si verifica un errore durante l'esportazione, vengono visualizzati i dettagli dell'errore.
+ *
+ * @throws IOException se si verifica un errore durante la scrittura dei file CSV.
+ */
     public void exportDB() throws IOException
     {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -688,10 +759,23 @@ public class Terminal extends Thread
         }
     }
 
+
+
+/**
+ * Imposta la modalità di aggiunta del tempo.
+ *
+ * @param mode true se la modalità di aggiunta del tempo deve essere attivata, false altrimenti.
+ */
     public void setAddTime(boolean mode) {
         this.addTime = mode;
     }
 
+
+
+/**
+ * Apre il file di impostazioni dell'applicazione per la modifica.
+ * Stampa un messaggio informativo sulla console riguardante l'apertura del file.
+ */
     public void editSettings() 
     {
         printInfoln("opening file " + App.FILE_SETTINGS_PATH);
@@ -705,6 +789,12 @@ public class Terminal extends Thread
 
     
 
+/**
+ * Avvia un thread di attesa con un'animazione sulla console.
+ *
+ * @param text Il testo da visualizzare durante l'attesa.
+ * @param args Parametri aggiuntivi, se presenti, specificano il tipo di animazione.
+ */
     public synchronized void startWaithing(String text, Object... args) 
     {
         jline.Terminal t = jline.TerminalFactory.get();
@@ -721,6 +811,11 @@ public class Terminal extends Thread
         }
     }
 
+
+
+/**
+ * Interrompe il thread di attesa e ripristina l'eco sulla console.
+ */
     public synchronized void stopWaithing() 
     {
         jline.Terminal t = jline.TerminalFactory.get();
@@ -735,6 +830,10 @@ public class Terminal extends Thread
     
 
 
+/**
+ * Stampa le query SQL predefinite con evidenziazione delle parole chiave e
+ * visualizzazione della tipologia di operazione (creazione tabella, cancellazione tabella, inserimento dati, ecc.).
+ */
     private void printSQL() 
     {
         for (Hashtable<Tabelle, String> queries : PredefinedSQLCode.elenco_QuerySQL) {
@@ -772,6 +871,13 @@ public class Terminal extends Thread
     }
 
 
+
+/**
+ * Cancella tutte le tabelle del database utilizzando le query di eliminazione predefinite.
+ * 
+ * @return 0 se l'operazione di cancellazione è completata con successo, altrimenti restituisce un altro valore.
+ * @throws IOException Se si verifica un errore di input/output durante l'operazione.
+ */
     private int clearDatabase() throws IOException 
     {
         for (Tabelle table : PredefinedSQLCode.Tabelle.values()) {
@@ -790,13 +896,22 @@ public class Terminal extends Thread
 
     
 
-    
+/**
+ * Inizializza il database caricando i dati dell'applicazione.
+ * 
+ * @return 0 se l'inizializzazione del database è completata con successo, altrimenti restituisce un altro valore.
+ * @throws IOException Se si verifica un errore di input/output durante l'operazione.
+ * @throws SQLException Se si verifica un errore SQL durante l'operazione.
+ */
     private int initializeDatabase() throws IOException, SQLException {
         return Loader.getInstance().loadApplicationData();
     }
 
     
 
+/**
+ * Stampa la lista dei comandi disponibili.
+ */
     private void dumpCommands() {
         println("");
         for (Command commad : Command.values()) {
@@ -805,6 +920,13 @@ public class Terminal extends Thread
         println("");
     }
 
+
+
+/**
+ * Ottiene il numero di colonne del terminale.
+ *
+ * @return Il numero di colonne del terminale.
+ */
     public int getTerminalColumns() 
     {
         // int read = -1;
@@ -849,6 +971,12 @@ public class Terminal extends Thread
         return this.jlineTerminal.getWidth() - 1;
     }
 
+
+
+/**
+ * Stampa un separatore orizzontale nel terminale.
+ * Il numero di caratteri nel separatore è basato sulla larghezza del terminale.
+ */
     public void printSeparator() 
     {
         int terminalWidth = this.jlineTerminal.getWidth() - 1;
@@ -860,6 +988,12 @@ public class Terminal extends Thread
         println(sb.toString());
     }  
 
+
+
+/**
+ * Stampa una linea orizzontale nel terminale.
+ * La lunghezza della linea è basata sulla larghezza del terminale.
+ */
     public void printLine() {
         int terminalWidth = this.jlineTerminal.getWidth();
         StringBuilder sb = new StringBuilder();
@@ -872,7 +1006,13 @@ public class Terminal extends Thread
     
     
 
-
+/**
+ * Presenta una domanda con risposta "sì" o "no" nel terminale e restituisce la risposta.
+ *
+ * @param question La domanda da porre.
+ * @return true se la risposta è "sì", false se la risposta è "no".
+ * @throws IOException Se si verifica un errore di input/output durante la lettura della risposta.
+ */
     public boolean askYesNo(String question) throws IOException {
         println(question);
         print("[y/n] > ");
@@ -891,6 +1031,10 @@ public class Terminal extends Thread
     }
 
 
+
+/**
+ * Stampa una freccia di prompt nel terminale.
+ */
     public void printArrow () {
         print("> ");
     }
@@ -903,6 +1047,12 @@ public class Terminal extends Thread
         printSeparator();
     }*/
 
+
+
+/**
+ * Stampa il logo del server EmotionalSongs nel terminale.
+ * Utilizza l'arte ASCII per generare il logo.
+ */
     public void printLogo() {
         printSeparator();
 
@@ -919,6 +1069,15 @@ public class Terminal extends Thread
         printSeparator();
     }
 
+
+
+/**
+ * Stampa una serie di stringhe sul terminale in modo sincronizzato.
+ * Se è in esecuzione un thread di attesa, sospende temporaneamente il thread
+ * per evitare interferenze durante la stampa.
+ *
+ * @param strArr Array di stringhe da stampare sul terminale.
+ */
     private synchronized void printOnTerminal(String... strArr) 
     {
         if(this.waithingThread != null) {
@@ -940,6 +1099,15 @@ public class Terminal extends Thread
         } 
     }
 
+
+
+/**
+ * Aggiunge una stringa alla coda di messaggi da stampare sul terminale.
+ *
+ * @param type         Tipo del messaggio (ad esempio, INFO, ERROR, QUERY).
+ * @param message      Contenuto del messaggio da stampare.
+ * @param MessageColor Colore da applicare al messaggio.
+ */
     private void addStringToPrint(MessageType type, String message, Color MessageColor) 
     {
 

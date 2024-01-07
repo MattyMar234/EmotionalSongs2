@@ -1,7 +1,13 @@
 package utility;
 
+/**
+ * Questa classe rappresenta un thread di animazione di attesa con diverse opzioni di animazione.
+ */
 public class WaithingAnimationThread extends Thread
 {
+    /**
+     * Enumerazione che definisce diverse animazioni di attesa.
+     */
     public enum Animation {
         SPIN(new String[]{"\b|", "\b/", "\b-", "\b\\"}, 150),
         DOTS(new String[]{".", "..", "...", ""}, 700);
@@ -25,24 +31,46 @@ public class WaithingAnimationThread extends Thread
     private boolean inPause = false;
     private Thread me;
 
+    /**
+     * Costruttore che specifica il testo per l'animazione di attesa.
+     *
+     * @param text Il testo da visualizzare durante l'animazione di attesa.
+     */
     public WaithingAnimationThread(String text) {
         //this.text = (text.endsWith("...") ? text : text + "...");
         this.text = text;
         animation = Animation.SPIN;    
     }
 
+    /**
+     * Costruttore che specifica il testo e il tipo di animazione di attesa.
+     *
+     * @param text      Il testo da visualizzare durante l'animazione di attesa.
+     * @param animation Il tipo di animazione di attesa.
+     */
     public WaithingAnimationThread(String text, Animation animation) {
         //this.text = (text.endsWith("...") ? text : text + "...");
         this.text = text;
         this.animation = animation;    
     }
 
+    /**
+     * Costruttore che specifica il testo, il tipo di animazione di attesa e l'operazione in corso.
+     *
+     * @param text      Il testo da visualizzare durante l'animazione di attesa.
+     * @param animation Il tipo di animazione di attesa.
+     * @param operation L'operazione in corso.
+     */
     public WaithingAnimationThread(String text, Animation animation, String operation) {
         //this.text = (text.endsWith("...") ? text : text + "...");
         this.text = text;
         this.animation = animation;    
     }
     
+
+    /**
+     * Esegue il thread di animazione di attesa.
+     */
     public void run() 
     {
         me = Thread.currentThread();
@@ -68,6 +96,10 @@ public class WaithingAnimationThread extends Thread
             print();
         }
     }
+
+    /**
+     * Stampa l'animazione corrente.
+     */
     public synchronized void print() {
 
         if(pause && Thread.currentThread() == me) {
@@ -86,11 +118,19 @@ public class WaithingAnimationThread extends Thread
         }
     }
 
+    /**
+     * Verifica se il thread è in pausa.
+     *
+     * @return true se il thread è in pausa, false altrimenti.
+     */
     public synchronized boolean isInPause() {
         //System.out.println(this.inPause);
         return this.inPause;
     }
 
+    /**
+     * Pulisce l'output della console.
+     */
     public synchronized void clear() {
         /*for(int k = 0; k < 3; k++ ) {
             for (int i = 0; i < (int) text.length() + animation.frames.length; i++)
@@ -102,15 +142,24 @@ public class WaithingAnimationThread extends Thread
         System.out.flush();
     }
 
+    /**
+     * Mette in pausa il thread di animazione.
+     */
     public synchronized void pause() {
         pause = true;
     }
 
+    /**
+     * Riavvia il thread di animazione.
+     */
     public synchronized void restart() {
         pause = false;
         notifyAll();
     } 
 
+    /**
+     * Termina il thread di animazione.
+     */
     public synchronized void terminate() {
         end = true;
     }
