@@ -1,6 +1,0 @@
-module:application.client
-database
-interfaces
-objects
-server
-utility

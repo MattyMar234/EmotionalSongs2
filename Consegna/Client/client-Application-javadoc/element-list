@@ -1,8 +1,0 @@
-module:application.client
-application
-applicationEvents
-controllers
-enumClasses
-interfaces
-objects
-utility
