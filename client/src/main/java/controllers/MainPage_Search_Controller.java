@@ -163,15 +163,16 @@ public class MainPage_Search_Controller extends ControllerBase implements Initia
             }).start();
 
 
-            if(totalResult == 0) {
-                pageIndex.setText((Main.applicationLanguage == 0 ? "nessun risultato" : "no result"));
-                return;
-            }
+            
+            elementContainer.getChildren().clear();
 
             pageIndex.setText((index+1) + (Main.applicationLanguage == 0 ? " di " : " of ") + (availablePage));
             resultLabel.setText((Main.applicationLanguage == 0 ? "Risultati trovat: " : "Results found: ") + totalResult);
             
-            elementContainer.getChildren().clear();
+            if(totalResult == 0) {
+                pageIndex.setText((Main.applicationLanguage == 0 ? "nessun risultato" : "no result"));
+                return;
+            }
             
 
             switch (MainPage_Search_Controller.filterType) {
